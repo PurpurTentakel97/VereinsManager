@@ -8,7 +8,7 @@ performance_days: list = list()
 
 
 class Performance:
-    def __init__(self):
+    def __init__(self)->None:
         self.performance_time: str = str()
         self.performance_type: str = str()
         self.location: str = str()
@@ -18,7 +18,7 @@ class Performance:
 
 
 class PerformanceDay:
-    def __init__(self):
+    def __init__(self)->None:
         self.performance_date: date | None = None
         self.weekday: str = str()
         self.departure_time: str = str()
