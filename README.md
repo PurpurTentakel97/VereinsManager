@@ -1,5 +1,4 @@
 # Purpur Tentakel
 # 21.01.2022
-# VereinsRechner
-
+# VereinsManager
 Coding a managements' system

@@ -1,0 +1,28 @@
+[
+  {
+    "membership_type": [
+      "ACTIVE",
+      "INACTIVE",
+      "SPONSORS"
+    ],
+    "position_type": [
+      "FIRST_PRESIDENCY",
+      "SECOND_PRESIDENCY",
+      "CASHIER",
+      "SECOND_CASHIER",
+      "MANAGING_DIRECTOR",
+      "FIRST_COMMANDER",
+      "SECOND_COMMANDER",
+      "DIRIGENT",
+      "NORMAL"
+    ],
+    "uniform_type": [
+      "MUSIKZUG",
+      "BLAU_GOLD",
+      "CIVIL"
+    ],
+    "performance_type": [
+
+    ]
+  }
+]
