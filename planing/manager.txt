@@ -1,0 +1,17 @@
+member
+	first_name:str
+	last_name:str
+	
+	adress:str
+	postal_code:int	
+	
+	birth date:date
+	entry_date:date
+	
+	phone:int/str?
+	mobile:int/str?
+	mail:str
+	
+	membership_type:enum
+	position:list[enum]
+	Instrument:list[enum]

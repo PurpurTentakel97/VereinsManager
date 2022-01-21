@@ -1,0 +1,17 @@
+entry:
+	day:str (funktion?)
+	date:date
+	meeting_time:time | None
+	uniform:str
+	play_entrys:list[play_entry]
+	
+	play_entry:
+		playing_time:time | None
+		type:str
+		location:str | None
+		location_link:str
+		
+		
+def export to pdf
+
+save

@@ -1,0 +1,12 @@
+job
+	name
+	aufgabe
+	verantortlicher
+	helfer
+	datum
+	ausfürung
+	erinnerung
+	material
+	subjobs
+	
+export to pdf
