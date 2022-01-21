@@ -2,12 +2,19 @@ job
 	name
 	aufgabe
 	verantortlicher
-	helfer
 	datum
 	ausfürung
 	erinnerung
-	material
 	subjobs
 	zusatztextfeld
 	
 export to pdf
+
+
+personal_job(job):
+	
+	
+work_job(job):
+	helfer
+	verantortlicher
+	material
