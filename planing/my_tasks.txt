@@ -1,13 +1,10 @@
 job
 	name
 	aufgabe
-	verantortlicher
-	helfer
 	datum
 	ausfürung
 	erinnerung
-	material
 	subjobs
 	zusatztextfeld
-	
+
 export to pdf

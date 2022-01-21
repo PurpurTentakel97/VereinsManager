@@ -1,26 +1,31 @@
 member
-	first_name:str
-	last_name:str
+	vorname
+	nachname
 	
-	adress:str
-	postal_code:int	
+	straße
+	nummer
+	ecke
+	plz
 	
-	birth date:date
-	entry_date:date
+	geburtstag
+	eintritt
 	
-	phone:int/str?
-	mobile:int/str?
-	mail:str
+	telephone
+	handy
+	mail
 	
-	membership_type:enum
-	position:list[enum]
-	Instrument:list[enum]
+	mitgliedsart
+	Ehrenmitglied
+	position
+	instrument
+	
+	zusatztextfeld
 	
 export list_types(enum) to dpf
 
 add member
 
-remove member
+remove member (nur verschieben)
 
 Allert for b-day and anniversary 
 

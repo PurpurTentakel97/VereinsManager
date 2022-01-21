@@ -1,17 +1,17 @@
-entry:
-	day:str (funktion?)
-	date:date
-	meeting_time:time | None
-	uniform:str
-	play_entrys:list[play_entry]
+Auftrittstag
+	tag (aus datum generieren)
+	datum
+	abfahrt
+	uniform
+	zusaetztextfeld
+	Auftritte
 	
-	play_entry:
-		playing_time:time | None
-		type:str
-		location:str | None
-		location_link:str
+	Auftritt
+		auftrittszeit
+		auftrittsart
+		ort
+		ort-link
+		zusatztextfeld
 		
 		
 def export to pdf
-
-save
