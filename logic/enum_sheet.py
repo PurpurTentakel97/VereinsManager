@@ -4,6 +4,8 @@
 
 from enum import Enum
 
+weekDaysMapping = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
 
 class DateType(Enum):
     DEAD_LINE = 0

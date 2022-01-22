@@ -22,7 +22,13 @@
       "CIVIL"
     ],
     "performance_type": [
-
-    ]
+      "CONCERT"
+    ],
+    "instrument_type": [
+      "DRUM_SET"
+    ],
+    "location": {
+      "NAME": "URL"
+    }
   }
 ]
