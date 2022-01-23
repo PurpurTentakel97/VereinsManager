@@ -4,6 +4,22 @@
 
 from enum import Enum
 
+member_ship_type: list[str] = list()
+
+position_types: list[str] = list()
+
+uniform_types: list[str] = list()
+
+performance_types: list[str] = list()
+
+instrument_types: list[str] = list()
+
+locations: dict[str, str] = dict()
+
+special_user: dict[str,str] = dict()
+
+members: list[dict] = list()
+
 
 class EditLineType(Enum):
     FIRST_NAME = 0

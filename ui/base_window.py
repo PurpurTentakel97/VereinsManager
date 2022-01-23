@@ -13,6 +13,7 @@ class BaseWindow(QMainWindow):
         super().__init__()
         self._set_base_window_information()
         self._set_menu()
+        self.user: str = "Traijan__"
 
     def _set_base_window_information(self) -> None:
         pass

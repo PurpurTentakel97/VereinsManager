@@ -1,34 +1,29 @@
-[
-  {
-    "membership_type": [
-      "ACTIVE",
-      "INACTIVE",
-      "SPONSORS"
-    ],
-    "position_type": [
-      "FIRST_PRESIDENCY",
-      "SECOND_PRESIDENCY",
-      "CASHIER",
-      "SECOND_CASHIER",
-      "MANAGING_DIRECTOR",
-      "FIRST_COMMANDER",
-      "SECOND_COMMANDER",
-      "DIRIGENT",
-      "NORMAL"
-    ],
-    "uniform_type": [
-      "MUSIKZUG",
-      "BLAU_GOLD",
-      "CIVIL"
-    ],
-    "performance_type": [
-      "CONCERT"
-    ],
-    "instrument_type": [
-      "DRUM_SET"
-    ],
-    "location": {
-      "NAME": "URL"
-    }
-  }
-]
+{
+  "membership_type": [
+    "Aktiv",
+    "Inaktiv",
+    "Sponsoren"
+  ],
+  "position_type": [
+    "1.Vorsitz",
+    "2.Vorsitz",
+    "1.KassiererIn",
+    "2.KassiererIn",
+    "GerschäftsführerIn",
+    "1.KommandantIn",
+    "2.KommandantIn",
+    "DerigentIn"
+  ],
+  "uniform_type": [
+    "Musikzug",
+    "Blau-Gold",
+    "Zivil"
+  ],
+  "performance_type": [
+    "Konzert"
+  ],
+  "instrument_type": [
+    "Schlagzueg",
+    "Klavier"
+  ]
+}
