@@ -64,6 +64,7 @@ class PositionInstrumentListItem(QListWidgetItem):
         self.setText(self.name)
 
 
+# noinspection PyArgumentList
 class MembersWindow(BaseWindow):
     def __init__(self):
         super().__init__()
@@ -379,7 +380,7 @@ class MembersWindow(BaseWindow):
         else:
             self._phone_number_le.clear()
 
-    def _set_mail_address_type(self)->None:
+    def _set_mail_address_type(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         current_type: str = self._mail_address_type_box.currentText()
         if current_type in current_member.mail_addresses:
