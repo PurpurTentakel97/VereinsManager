@@ -20,9 +20,8 @@ class Member:
         self.birth_date: date | None = None
         self.entry_date: date | None = None
 
-        self.landline_phone_number: str = str()
-        self.mobile_phone_number: str = str()
-        self.mail_address: str = str()
+        self.phone_numbers: dict[str, str] = dict()
+        self.mail_addresses: dict[str, str] = dict()
 
         self.membership_type: str = str()
         self.special_member: bool = False

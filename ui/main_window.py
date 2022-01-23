@@ -5,8 +5,9 @@
 
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget
 from ui.base_window import BaseWindow
+from ui import members_window
 
-window: "MainWindow" or None = None
+main_window_: "MainWindow" or None = None
 
 
 class MainWindow(BaseWindow):
@@ -19,6 +20,10 @@ class MainWindow(BaseWindow):
         self._members_btn: QPushButton = QPushButton()
         self._members_btn.setText("Mitglieder")
         self._members_btn.clicked.connect(self._open_members)
+
+        self._old_members_btn: QPushButton = QPushButton()
+        self._old_members_btn.setText("Ehmalige Mitglieder")
+        self._old_members_btn.clicked.connect(self._open_old_members)
 
         self._performance_btn: QPushButton = QPushButton()
         self._performance_btn.setText("Auftritte")
@@ -35,9 +40,10 @@ class MainWindow(BaseWindow):
     def _set_layout(self) -> None:
         grid: QGridLayout = QGridLayout()
         grid.addWidget(self._members_btn, 0, 0)
-        grid.addWidget(self._performance_btn, 1, 0)
-        grid.addWidget(self._my_job_btn, 0, 1)
+        grid.addWidget(self._old_members_btn, 0, 1)
+        grid.addWidget(self._my_job_btn, 1, 0)
         grid.addWidget(self._job_btn, 1, 1)
+        grid.addWidget(self._performance_btn, 2, 0)
 
         widget: QWidget = QWidget()
         widget.setLayout(grid)
@@ -45,8 +51,12 @@ class MainWindow(BaseWindow):
         self.set_widget(widget)
         self.show()
 
-    def _open_members(self) -> None:
-        print("open members")
+    @staticmethod
+    def _open_members() -> None:
+        members_window.members_window_ = members_window.MembersWindow()
+
+    def _open_old_members(self) -> None:
+        print("open old members")
 
     def _open_my_jobs(self) -> None:
         print("open my jobs")
@@ -59,5 +69,5 @@ class MainWindow(BaseWindow):
 
 
 def create_main_window() -> None:
-    global window
-    window = MainWindow()
+    global main_window_
+    main_window_ = MainWindow()
