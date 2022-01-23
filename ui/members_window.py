@@ -73,8 +73,12 @@ class MembersWindow(BaseWindow):
 
         self._set_ui()
         self._set_layout()
+        self._add_member()
         self._create_positions()
         self._create_instruments()
+        self._create_phone_number_types()
+        self._create_mail_address_types()
+        self._create_member_types()
         self._load_data()
 
     def _set_ui(self) -> None:
@@ -139,6 +143,7 @@ class MembersWindow(BaseWindow):
         self._phone_numbers_lb: QLabel = QLabel()
         self._phone_numbers_lb.setText("Telefon Nummern:")
         self._phone_number_type_box: QComboBox = QComboBox()
+        self._phone_number_type_box.currentTextChanged.connect(self._set_phone_number_type)
         self._phone_number_le: QLineEdit = QLineEdit()
         self._phone_number_le.setPlaceholderText("Nummer")
         self._phone_number_le.textChanged.connect(lambda x: self._current_le_text_chanced(EditLineType.PHONE_NUMBER))
@@ -146,6 +151,7 @@ class MembersWindow(BaseWindow):
         self._mail_address_lb: QLabel = QLabel()
         self._mail_address_lb.setText("Mail Adressen:")
         self._mail_address_type_box: QComboBox = QComboBox()
+        self._mail_address_type_box.currentTextChanged.connect(self._set_mail_address_type)
         self._mail_address_le: QLineEdit = QLineEdit()
         self._mail_address_le.setPlaceholderText("E-Mail")
         self._mail_address_le.textChanged.connect(lambda x: self._current_le_text_chanced(EditLineType.MAIL_ADDRESS))
@@ -153,10 +159,11 @@ class MembersWindow(BaseWindow):
         self._member_lb: QLabel = QLabel()
         self._member_lb.setText("Mitgliedsart:")
         self._membership_type_box: QComboBox = QComboBox()
+        self._membership_type_box.currentTextChanged.connect(self._set_membership_type)
         self._special_member_cb: QCheckBox = QCheckBox()
         self._special_member_cb.toggled.connect(self._set_special_member)
-        self._special_member_cb.setText("Ehrenmitglied" if self.user.lower() not in enum_sheet.special_user
-                                        else enum_sheet.special_user[self.user.lower()])
+        self._special_member_cb.setText("Ehrenmitglied" if enum_sheet.user.lower() not in enum_sheet.special_user
+                                        else enum_sheet.special_user[enum_sheet.user.lower()])
 
         self._positions_lb: QLabel = QLabel()
         self._positions_lb.setText("Positionen:")
@@ -265,6 +272,18 @@ class MembersWindow(BaseWindow):
             self._instruments.append(new_instrument)
             self._instruments_list.addItem(new_instrument)
 
+    def _create_phone_number_types(self) -> None:
+        for phone_number_type in enum_sheet.phone_number_types:
+            self._phone_number_type_box.addItem(phone_number_type)
+
+    def _create_mail_address_types(self) -> None:
+        for mail_type in enum_sheet.mail_types:
+            self._mail_address_type_box.addItem(mail_type)
+
+    def _create_member_types(self) -> None:
+        for membership_type in enum_sheet.membership_type:
+            self._membership_type_box.addItem(membership_type)
+
     def _set_current_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         # name
@@ -287,7 +306,14 @@ class MembersWindow(BaseWindow):
         else:
             self._entry_date.setDate(QDate.currentDate())
 
-        # TODO Drop Down
+        # phone number
+        self._set_phone_number_type()
+
+        # mail address
+        self._set_mail_address_type()
+
+        # membership type
+        self._membership_type_box.setCurrentText(current_member.membership_type)
 
         # special member
         self._special_member_cb.setChecked(current_member.special_member)
@@ -341,6 +367,26 @@ class MembersWindow(BaseWindow):
         current_item: MemberListItem = self._members_list.currentItem()
         current_item.special_member = (self._special_member_cb.isChecked())
 
+    def _set_membership_type(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        current_member.membership_type = self._membership_type_box.currentText()
+
+    def _set_phone_number_type(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        current_type: str = self._phone_number_type_box.currentText()
+        if current_type in current_member.phone_numbers:
+            self._phone_number_le.setText(current_member.phone_numbers[current_type])
+        else:
+            self._phone_number_le.clear()
+
+    def _set_mail_address_type(self)->None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        current_type: str = self._mail_address_type_box.currentText()
+        if current_type in current_member.mail_addresses:
+            self._mail_address_le.setText(current_member.mail_addresses[current_type])
+        else:
+            self._mail_address_le.clear()
+
     def _current_le_text_chanced(self, edit_line: EditLineType) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         match edit_line:
@@ -367,9 +413,18 @@ class MembersWindow(BaseWindow):
                     if self._city_le.text().strip() else None
 
             case EditLineType.PHONE_NUMBER:
-                print(self._phone_number_le.text())
+                current_phone_number_type: str = self._phone_number_type_box.currentText()
+                if len(self._phone_number_le.text().strip()) > 0:
+                    current_member.phone_numbers[current_phone_number_type] = self._phone_number_le.text().strip()
+                elif current_phone_number_type in current_member.phone_numbers:
+                    del current_member.phone_numbers[current_phone_number_type]
+
             case EditLineType.MAIL_ADDRESS:
-                print(self._mail_address_le.text())
+                current_mail_address_type: str = self._mail_address_type_box.currentText()
+                if len(self._mail_address_le.text().strip()) > 0:
+                    current_member.mail_addresses[current_mail_address_type] = self._mail_address_le.text().strip()
+                elif current_mail_address_type in current_member.mail_addresses:
+                    del current_member.mail_addresses[current_mail_address_type]
 
     def _current_date_chanced(self, date_type: DateType) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -396,6 +451,9 @@ class MembersWindow(BaseWindow):
         self._members_list.addItem(new_member)
         self._members_list.setCurrentItem(new_member)
         self._set_current_member()
+        self._phone_number_type_box.setCurrentText(enum_sheet.phone_number_types[0])
+        self._mail_address_type_box.setCurrentText(enum_sheet.mail_types[0])
+        self._membership_type_box.setCurrentText(enum_sheet.membership_type[0])
         self._member_counter += 1
 
     def _remove_member(self) -> None:
@@ -413,8 +471,7 @@ class MembersWindow(BaseWindow):
             self._set_current_member()
 
     def _load_data(self):
-        self._member_counter: int = 0
-        self._add_member()
+        self._member_counter: int = 1
 
     def _save_member(self) -> None:
         print("member saved")

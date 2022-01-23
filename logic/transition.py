@@ -28,6 +28,8 @@ def put_types_in_ui(types: dict):
     enum_sheet.uniform_types = types["uniform_type"]
     enum_sheet.performance_types = types["performance_type"]
     enum_sheet.instrument_types = types["instrument_type"]
+    enum_sheet.phone_number_types = types["phone_number_type"]
+    enum_sheet.mail_types = types["mail_type"]
 
 
 def put_non_types_in_ui(non_types: dict):

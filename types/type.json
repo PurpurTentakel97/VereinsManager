@@ -25,5 +25,14 @@
   "instrument_type": [
     "Schlagzueg",
     "Klavier"
+  ],
+  "phone_number_type": [
+    "Festnetz-1",
+    "Handy-1",
+    "Arbeit-1"
+  ],
+  "mail_type": [
+    "Privat-1",
+    "Arbeit-1"
   ]
 }

@@ -4,7 +4,9 @@
 
 from enum import Enum
 
-member_ship_type: list[str] = list()
+user: str = "lordrepha"
+
+membership_type: list[str] = list()
 
 position_types: list[str] = list()
 
@@ -14,9 +16,13 @@ performance_types: list[str] = list()
 
 instrument_types: list[str] = list()
 
+phone_number_types: list[str] = list()
+
+mail_types: list[str] = list()
+
 locations: dict[str, str] = dict()
 
-special_user: dict[str,str] = dict()
+special_user: dict[str, str] = dict()
 
 members: list[dict] = list()
 
