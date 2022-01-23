@@ -14,13 +14,10 @@ class EditLineType(Enum):
     ZIP_CODE = 4
     CITY = 5
 
-    B_DAY_DAY = 7
-    B_DAY_YEAR = 6
-    B_DAY_MONTH = 8
+    PHONE_NUMBER = 6
+    MAIL_ADDRESS = 7
 
-    ENTRY_DAY_DAY = 9
-    ENTRY_DAY_MONTH = 10
-    ENTRY_DAY_YEAR = 11
 
-    PHONE_NUMBER = 12
-    MAIL_ADDRESS = 13
+class DateType(Enum):
+    B_DAY = 0
+    ENTRY = 1
