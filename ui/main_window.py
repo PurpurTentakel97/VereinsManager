@@ -37,6 +37,10 @@ class MainWindow(BaseWindow):
         self._job_btn.setText("Aufgaben")
         self._job_btn.clicked.connect(self._open_jobs)
 
+        self._edit_types_btn: QPushButton = QPushButton()
+        self._edit_types_btn.setText("Typen bearbeiten")
+        self._edit_types_btn.clicked.connect(self._open_edit_types)
+
     def _set_layout(self) -> None:
         grid: QGridLayout = QGridLayout()
         grid.addWidget(self._members_btn, 0, 0)
@@ -44,6 +48,7 @@ class MainWindow(BaseWindow):
         grid.addWidget(self._my_job_btn, 1, 0)
         grid.addWidget(self._job_btn, 1, 1)
         grid.addWidget(self._performance_btn, 2, 0)
+        grid.addWidget(self._edit_types_btn, 2, 1)
 
         widget: QWidget = QWidget()
         widget.setLayout(grid)
@@ -66,6 +71,9 @@ class MainWindow(BaseWindow):
 
     def _open_performances(self) -> None:
         print("open performances")
+
+    def _open_edit_types(self) -> None:
+        print("type edit opened")
 
 
 def create_main_window() -> None:
