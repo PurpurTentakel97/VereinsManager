@@ -197,51 +197,62 @@ class MembersWindow(BaseWindow):
         button_members_hbox.addWidget(self._save_single_btn)
         button_members_hbox.addWidget(self._save_all_btn)
 
+        row: int = 0
         # Right
         # name
         grid: QGridLayout = QGridLayout()
-        grid.addWidget(self._first_name_lb, 0, 0, 1, 1)
-        grid.addWidget(self._first_name_le, 0, 1, 1, -1)
-        grid.addWidget(self._last_name_lb, 1, 0, 1, 1)
-        grid.addWidget(self._last_name_le, 1, 1, 1, -1)
+        grid.addWidget(self._first_name_lb, row, 0, 1, 1)
+        grid.addWidget(self._first_name_le, row, 1, 1, -1)
+        row += 1
+        grid.addWidget(self._last_name_lb, row, 0, 1, 1)
+        grid.addWidget(self._last_name_le, row, 1, 1, -1)
 
         # address
-        grid.addWidget(self._address_lb, 2, 0)
-        grid.addWidget(self._street_le, 2, 1, 1, 2)
-        grid.addWidget(self._number_le, 2, 3, 1, -1)
-        grid.addWidget(self._zip_code_le, 3, 1)
-        grid.addWidget(self._city_le, 3, 2)
+        row += 1
+        grid.addWidget(self._address_lb, row, 0)
+        grid.addWidget(self._street_le, row, 1, 1, 2)
+        grid.addWidget(self._number_le, row, 3, 1, -1)
+        row += 1
+        grid.addWidget(self._zip_code_le, row, 1)
+        grid.addWidget(self._city_le, row, 2)
 
-        grid.addWidget(self._birth_lb, 4, 0)
-        grid.addWidget(self._b_day_date, 4, 1)
-        grid.addWidget(self._entry_lb, 4, 2, alignment=Qt.AlignRight)
-        grid.addWidget(self._entry_date, 4, 3, 1, -1)
+        row += 1
+        grid.addWidget(self._birth_lb, row, 0)
+        grid.addWidget(self._b_day_date, row, 1)
+        grid.addWidget(self._entry_lb, row, 2, alignment=Qt.AlignRight)
+        grid.addWidget(self._entry_date, row, 3, 1, -1)
 
         # phone
-        grid.addWidget(self._phone_numbers_lb, 5, 0)
-        grid.addWidget(self._phone_number_type_box, 5, 1)
-        grid.addWidget(self._phone_number_le, 5, 2, 1, -1)
+        row += 1
+        grid.addWidget(self._phone_numbers_lb, row, 0)
+        grid.addWidget(self._phone_number_type_box, row, 1)
+        grid.addWidget(self._phone_number_le, row, 2, 1, -1)
 
         # mail
-        grid.addWidget(self._mail_address_lb, 6, 0)
-        grid.addWidget(self._mail_address_type_box, 6, 1)
-        grid.addWidget(self._mail_address_le, 6, 2, 1, -1)
+        row += 1
+        grid.addWidget(self._mail_address_lb, row, 0)
+        grid.addWidget(self._mail_address_type_box, row, 1)
+        grid.addWidget(self._mail_address_le, row, 2, 1, -1)
 
         # member_type
-        grid.addWidget(self._member_lb, 7, 0)
-        grid.addWidget(self._membership_type_box, 7, 1)
-        grid.addWidget(self._special_member_cb, 7, 2)
+        row += 1
+        grid.addWidget(self._member_lb, row, 0)
+        grid.addWidget(self._membership_type_box, row, 1)
+        grid.addWidget(self._special_member_cb, row, 2)
 
-        # positions
-        grid.addWidget(self._positions_lb, 8, 0, 1, 2)
-        grid.addWidget(self._positions_list, 9, 0, 1, 2)
+        # positions / instruments
+        row += 1
+        grid.addWidget(self._positions_lb, row, 0, 1, 2)
+        grid.addWidget(self._instruments_lb, row, 2, 1, -1)
 
-        # instruments
-        grid.addWidget(self._instruments_lb, 8, 2, 1, -1)
-        grid.addWidget(self._instruments_list, 9, 2, 1, -1)
+        row += 1
+        grid.addWidget(self._positions_list, row, 0, 1, 2)
+        grid.addWidget(self._instruments_list, row, 2, 1, -1)
 
         # comment
+        row += 1
         grid.addWidget(self._comment_lb, 10, 0, 1, -1)
+        row += 1
         grid.addWidget(self._comment_text, 11, 0, 1, -1)
 
         right_vbox: QVBoxLayout = QVBoxLayout()
