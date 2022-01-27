@@ -1,8 +1,9 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Transition
-
+import main
 from ui import base_window, main_window, enum_sheet
+from enum import Enum
 
 
 def create_application():
@@ -36,3 +37,11 @@ def put_non_types_in_ui(non_types: dict):
     non_types: dict = non_types
     enum_sheet.locations = non_types["location"]
     enum_sheet.special_user = non_types["special_user"]
+
+
+def save_data(data: list[dict], table):
+    main.save_data(data=data, table=table)
+
+
+def load_data(table) -> list:
+    return main.load_data(table=table)

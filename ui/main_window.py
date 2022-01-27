@@ -41,14 +41,39 @@ class MainWindow(BaseWindow):
         self._edit_types_btn.setText("Typen bearbeiten")
         self._edit_types_btn.clicked.connect(self._open_edit_types)
 
+        self._user_data_btn: QPushButton = QPushButton()
+        self._user_data_btn.setText("Deine Daten")
+        self._user_data_btn.clicked.connect(self._open_user_data)
+
+        self._export_pdf_btn: QPushButton = QPushButton()
+        self._export_pdf_btn.setText("Schreiben exportieren")
+        self._export_pdf_btn.clicked.connect(self._open_export_pdf)
+
+        self._chance_user_btn: QPushButton = QPushButton()
+        self._chance_user_btn.setText("Benutzer wechseln")
+        self._chance_user_btn.clicked.connect(self._open_chance_user)
+
+        self._chance_organization_btn: QPushButton = QPushButton()
+        self._chance_organization_btn.setText("Organisation wechseln")
+        self._chance_organization_btn.clicked.connect(self._open_chance_organization)
+
     def _set_layout(self) -> None:
+        row: int = 0
         grid: QGridLayout = QGridLayout()
-        grid.addWidget(self._members_btn, 0, 0)
-        grid.addWidget(self._old_members_btn, 0, 1)
-        grid.addWidget(self._my_job_btn, 1, 0)
-        grid.addWidget(self._job_btn, 1, 1)
-        grid.addWidget(self._performance_btn, 2, 0)
-        grid.addWidget(self._edit_types_btn, 2, 1)
+        grid.addWidget(self._members_btn, row, 0)
+        grid.addWidget(self._old_members_btn, row, 1)
+        row += 1
+        grid.addWidget(self._my_job_btn, row, 0)
+        grid.addWidget(self._job_btn, row, 1)
+        row += 1
+        grid.addWidget(self._performance_btn, row, 0)
+        grid.addWidget(self._edit_types_btn, row, 1)
+        row += 1
+        grid.addWidget(self._user_data_btn, row, 0)
+        grid.addWidget(self._export_pdf_btn, row, 1)
+        row += 1
+        grid.addWidget(self._chance_user_btn, row, 0)
+        grid.addWidget(self._chance_organization_btn, row, 1)
 
         widget: QWidget = QWidget()
         widget.setLayout(grid)
@@ -75,6 +100,17 @@ class MainWindow(BaseWindow):
     def _open_edit_types(self) -> None:
         print("type edit opened")
 
+    def _open_user_data(self):
+        print("User Data opend")
+
+    def _open_export_pdf(self):
+        print("PDF export opend")
+
+    def _open_chance_user(self):
+        print("User chanced")
+
+    def _open_chance_organization(self):
+        print("Organisation chanced")
 
 def create_main_window() -> None:
     global main_window_

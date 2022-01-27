@@ -4,7 +4,7 @@
 
 from enum import Enum
 
-user: str = "crazynightowl01"
+user: str = "purpurtentakel"
 
 membership_type: list[str] = list()
 

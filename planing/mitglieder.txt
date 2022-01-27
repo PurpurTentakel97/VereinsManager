@@ -29,4 +29,6 @@ remove member (nur verschieben)
 
 Allert for b-day and anniversary 
 
-save 
+save
+
+- Änderungslog
