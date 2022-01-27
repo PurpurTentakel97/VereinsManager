@@ -113,19 +113,17 @@ def edit_data(table: SQLite_Table, data: list[dict]) -> None:
     create_table(table=table)
     for single_data in data:
         sql_statement = f"""UPDATE {table.value} SET"""
-        sql_arguments = list()
         for update in single_data.items():
             key, value = update
             if not key == MemberEntries.ID:
-                sql_statement += f" {key.value} = ?,"
                 if type(value) == bool:
-                    sql_arguments.append(1 if value else 0)
+                    sql_statement += f'{key.value} = {1 if value else 0},'
                 else:
-                    sql_arguments.append(value if value is not None else "NULL")
+                    sql_statement += f' {key.value} = "{value}",' if value else f"{key.value} = NULL,"
         sql_statement = sql_statement[:-1]
-        sql_statement += " WHERE id = ?"
-        sql_arguments.append(single_data[MemberEntries.ID])
-        cursor.execute(sql_statement, tuple(sql_arguments))
+        sql_statement += f" WHERE {MemberEntries.ID.value} = {single_data[MemberEntries.ID]}"
+        cursor.execute(sql_statement)
+    connection.commit()
 
 
 def delete_data(table: SQLite_Table, ids: list[int]) -> None:

@@ -12,7 +12,7 @@
     "GerschäftsführerIn",
     "1.KommandantIn",
     "2.KommandantIn",
-    "DerigentIn"
+    "DirigentIn"
   ],
   "uniform_type": [
     "Musikzug",
@@ -23,7 +23,7 @@
     "Konzert"
   ],
   "instrument_type": [
-    "Schlagzueg",
+    "Schlagzeug",
     "Klavier"
   ],
   "phone_number_type": [
