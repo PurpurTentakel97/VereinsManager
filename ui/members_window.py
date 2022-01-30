@@ -486,7 +486,6 @@ class MembersWindow(BaseWindow):
 
     def _load_data(self) -> None:
         load_data: list[dict] = transition.load_data(table=SQLite_Table.MEMBERS)
-        print(load_data)
         if len(load_data) > 0:
             self._member_counter: int = len(load_data) + 1
             self._members_list.clear()
@@ -510,22 +509,21 @@ class MembersWindow(BaseWindow):
 
                 new_member.membership_type = single_data[MemberEntries.MEMBERSHIP_TYPE] or None
                 new_member.special_member = single_data[MemberEntries.SPECIAL_MEMBER]
-                if len(single_data[MemberEntries.INSTRUMENTS]) >0:
-                    for instrument in single_data[MemberEntries.INSTRUMENTS]:
-                        if instrument in enum_sheet.instrument_types:
-                            for instrument_type in self._instruments:
-                                if instrument == instrument_type.name:
-                                    new_member.instruments.append(instrument_type)
+                for instrument in single_data[MemberEntries.INSTRUMENTS]:
+                    if instrument in enum_sheet.instrument_types:
+                        for instrument_type in self._instruments:
+                            if instrument == instrument_type.name:
+                                new_member.instruments.append(instrument_type)
                     else:
                         pass
-                if len(single_data[MemberEntries.POSITIONS]) >0:
-                    for position in single_data[MemberEntries.POSITIONS]:
-                        if position in enum_sheet.position_types:
-                            for position_type in self._positions:
-                                if position == position_type.name:
-                                    new_member.positions.append(position_type)
-                        else:
-                            pass
+
+                for position in single_data[MemberEntries.POSITIONS]:
+                    if position in enum_sheet.position_types:
+                        for position_type in self._positions:
+                            if position == position_type.name:
+                                new_member.positions.append(position_type)
+                    else:
+                        pass
 
                 new_member.comment_text = single_data[MemberEntries.COMMENT_TEXT] or None
                 self._members_list.addItem(new_member)

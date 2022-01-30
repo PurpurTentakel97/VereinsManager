@@ -5,7 +5,7 @@
 
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget
 from ui.base_window import BaseWindow
-from ui import members_window
+from ui import types_window
 
 main_window_: "MainWindow" or None = None
 
@@ -83,7 +83,8 @@ class MainWindow(BaseWindow):
 
     @staticmethod
     def _open_members() -> None:
-        members_window.members_window_ = members_window.MembersWindow()
+        # members_window.members_window_ = members_window.MembersWindow()
+        pass
 
     def _open_old_members(self) -> None:
         print("open old members")
@@ -97,8 +98,9 @@ class MainWindow(BaseWindow):
     def _open_performances(self) -> None:
         print("open performances")
 
-    def _open_edit_types(self) -> None:
-        print("type edit opened")
+    @staticmethod
+    def _open_edit_types() -> None:
+        types_window.types_window_ = types_window.TypesWindow()
 
     def _open_user_data(self):
         print("User Data opend")
@@ -111,7 +113,3 @@ class MainWindow(BaseWindow):
 
     def _open_chance_organization(self):
         print("Organisation chanced")
-
-def create_main_window() -> None:
-    global main_window_
-    main_window_ = MainWindow()
