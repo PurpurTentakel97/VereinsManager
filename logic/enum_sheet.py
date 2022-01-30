@@ -17,6 +17,14 @@ class SQLite_Table(Enum):
     MEMBERS = "members"
 
 
+class LogType(Enum):
+    INITIAL_DATA = "initial_data"
+
+    OLD_DATA = "old_data"
+    NEW_DATA = "new_data"
+    DATE = "date"
+
+
 class MemberEntries(Enum):
     ID = "id"
 
