@@ -2,7 +2,7 @@
 # 21.01.2022
 # VereinsManager / Members Window
 
-from PyQt5.QtCore import QDate, Qt, QDateTime
+from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtGui import QColor, QIntValidator
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
@@ -10,8 +10,7 @@ from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QCo
 from ui.base_window import BaseWindow
 from ui.enum_sheet import EditLineType, DateType
 from ui import enum_sheet
-import transition
-from logic.enum_sheet import MemberEntries, SQLite_Table
+from enum_sheet import MemberEntries
 
 members_window_: "MembersWindow" or None = None
 
@@ -276,28 +275,19 @@ class MembersWindow(BaseWindow):
         self.show()
 
     def _create_positions(self) -> None:
-        for position_name in enum_sheet.position_types:
-            new_position: PositionInstrumentListItem = PositionInstrumentListItem(position_name)
-            self._positions.append(new_position)
-            self._positions_list.addItem(new_position)
+        pass
 
     def _create_instruments(self) -> None:
-        for instrument_name in enum_sheet.instrument_types:
-            new_instrument: PositionInstrumentListItem = PositionInstrumentListItem(instrument_name)
-            self._instruments.append(new_instrument)
-            self._instruments_list.addItem(new_instrument)
+        pass
 
     def _create_phone_number_types(self) -> None:
-        for phone_number_type in enum_sheet.phone_number_types:
-            self._phone_number_type_box.addItem(phone_number_type)
+        pass
 
     def _create_mail_address_types(self) -> None:
-        for mail_type in enum_sheet.mail_types:
-            self._mail_address_type_box.addItem(mail_type)
+        pass
 
     def _create_member_types(self) -> None:
-        for membership_type in enum_sheet.membership_type:
-            self._membership_type_box.addItem(membership_type)
+        pass
 
     def _set_current_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -465,9 +455,9 @@ class MembersWindow(BaseWindow):
         self._members_list.addItem(new_member)
         self._members_list.setCurrentItem(new_member)
         self._set_current_member()
-        self._phone_number_type_box.setCurrentText(enum_sheet.phone_number_types[0])
-        self._mail_address_type_box.setCurrentText(enum_sheet.mail_types[0])
-        self._membership_type_box.setCurrentText(enum_sheet.membership_type[0])
+        # self._phone_number_type_box.setCurrentText(enum_sheet.phone_number_types[0])
+        # self._mail_address_type_box.setCurrentText(enum_sheet.mail_types[0])
+        # self._membership_type_box.setCurrentText(enum_sheet.membership_type[0])
         self._member_counter += 1
 
     def _remove_member(self) -> None:
@@ -485,49 +475,7 @@ class MembersWindow(BaseWindow):
             self._set_current_member()
 
     def _load_data(self) -> None:
-        load_data: list[dict] = transition.load_data(table=SQLite_Table.MEMBERS)
-        if len(load_data) > 0:
-            self._member_counter: int = len(load_data) + 1
-            self._members_list.clear()
-            for single_data in load_data:
-                new_member: MemberListItem = MemberListItem(id_=single_data[MemberEntries.ID])
-
-                new_member.first_name = single_data[MemberEntries.FIRST_NAME] or None
-                new_member.last_name = single_data[MemberEntries.LAST_NAME] or None
-                new_member.set_name()
-
-                new_member.street = single_data[MemberEntries.STREET] or None
-                new_member.number = single_data[MemberEntries.NUMBER] or None
-                new_member.zip_code = single_data[MemberEntries.ZIP_CODE] or None
-                new_member.city = single_data[MemberEntries.CITY] or None
-
-                new_member.birth_date = QDateTime(single_data[MemberEntries.BIRTH_DAY]).date() if single_data[MemberEntries.BIRTH_DAY] else QDate()
-                new_member.entry_date = QDateTime(single_data[MemberEntries.ENTRY_DATE]).date() if single_data[MemberEntries.ENTRY_DATE] else QDate()
-
-                new_member.phone_numbers = single_data[MemberEntries.PHONE_NUMBERS] or None
-                new_member.mail_addresses = single_data[MemberEntries.MAIL_ADDRESSES] or None
-
-                new_member.membership_type = single_data[MemberEntries.MEMBERSHIP_TYPE] or None
-                new_member.special_member = single_data[MemberEntries.SPECIAL_MEMBER]
-                for instrument in single_data[MemberEntries.INSTRUMENTS]:
-                    if instrument in enum_sheet.instrument_types:
-                        for instrument_type in self._instruments:
-                            if instrument == instrument_type.name:
-                                new_member.instruments.append(instrument_type)
-                    else:
-                        pass
-
-                for position in single_data[MemberEntries.POSITIONS]:
-                    if position in enum_sheet.position_types:
-                        for position_type in self._positions:
-                            if position == position_type.name:
-                                new_member.positions.append(position_type)
-                    else:
-                        pass
-
-                new_member.comment_text = single_data[MemberEntries.COMMENT_TEXT] or None
-                self._members_list.addItem(new_member)
-            self._members_list.setCurrentRow(0)
+        pass
 
     @staticmethod
     def _get_save_data(current_member: MemberListItem) -> dict:
@@ -566,13 +514,7 @@ class MembersWindow(BaseWindow):
         return member_output
 
     def _save_member(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if self._is_valid_input():
-            transition.save_data(data=[self._get_save_data(current_member=current_member)], table=SQLite_Table.MEMBERS)
+        pass
 
     def _save_all(self) -> None:
-        all_member_output: list[dict] = list()
-        for index in range(self._members_list.count()):
-            current_member = self._members_list.item(index)
-            all_member_output.append(self._get_save_data(current_member=current_member))
-        transition.save_data(data=all_member_output, table=SQLite_Table.MEMBERS)
+        pass

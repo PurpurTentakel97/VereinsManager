@@ -5,7 +5,7 @@
 from datetime import date
 
 from logic.members import Member
-from logic.enum_sheet import DateType
+from enum_sheet import DateType
 
 import transition
 
