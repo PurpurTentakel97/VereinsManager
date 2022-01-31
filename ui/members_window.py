@@ -3,15 +3,26 @@
 # VereinsManager / Members Window
 
 from PyQt5.QtCore import QDate, Qt
-from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
+from enum import Enum
 
 import main
 from ui.base_window import BaseWindow
 from enum_sheet import TypeType
 
 members_window_: "MembersWindow" or None = None
+
+
+class LineEditType(Enum):
+    FIRSTNAME = 0
+    LASTNAME = 1
+    STREET = 2
+    NUMBER = 3
+    ZIP_CODE = 4
+    CITY = 5
+    COMMENT = 6
 
 
 class MemberListItem(QListWidgetItem):
@@ -35,7 +46,6 @@ class MemberListItem(QListWidgetItem):
         self.membership_type: str | None = None
         self.special_member: bool = False
         self.positions: list[PositionListItem] = list()
-        self.instruments: list[PositionListItem] = list()
 
         self.comment_text: str | None = None
 
@@ -69,13 +79,14 @@ class PositionListItem(QListWidgetItem):
 class MembersWindow(BaseWindow):
     def __init__(self):
         super().__init__()
-        self._member_counter: int = int()
         self._positions: list[PositionListItem] = list()
+        self._is_edit: bool = False
 
         self._set_ui()
         self._set_layout()
 
         self._set_types()
+        self._set_edit_mode()
 
     def _set_ui(self) -> None:
         # Left
@@ -83,38 +94,49 @@ class MembersWindow(BaseWindow):
         self._members_lb.setText("Mitglieder:")
 
         self._members_list: QListWidget = QListWidget()
+        self._members_list.itemClicked.connect(self._set_current_member)
 
         self._add_member_btn: QPushButton = QPushButton()
         self._add_member_btn.setText("Mitglied hinzufügen")
+        self._add_member_btn.clicked.connect(self._add_member)
         self._remove_member_btn: QPushButton = QPushButton()
         self._remove_member_btn.setText("Mitglied löschen")
 
-        self._save_single_btn: QPushButton = QPushButton()
-        self._save_single_btn.setText("Mitglied speichern")
-        self._save_all_btn: QPushButton = QPushButton()
-        self._save_all_btn.setText("Alles speichern")
+        self._break_btn: QPushButton = QPushButton()
+        self._break_btn.setText("Zurücksetzten")
+        self._break_btn.setEnabled(False)
+        self._save_btn: QPushButton = QPushButton()
+        self._save_btn.setText("Speichern")
+        self._save_btn.setEnabled(False)
+        self._save_btn.clicked.connect(self._save)
 
         # Right
         self._first_name_lb: QLabel = QLabel()
         self._first_name_lb.setText("Vorname:")
         self._first_name_le: QLineEdit = QLineEdit()
         self._first_name_le.setPlaceholderText("Vorname")
+        self._first_name_le.textChanged.connect(lambda: self._set_el_input(LineEditType.FIRSTNAME))
         self._last_name_lb: QLabel = QLabel()
         self._last_name_lb.setText("Nachname:")
         self._last_name_le: QLineEdit = QLineEdit()
         self._last_name_le.setPlaceholderText("Nachname")
+        self._last_name_le.textChanged.connect(lambda: self._set_el_input(LineEditType.LASTNAME))
 
         self._address_lb: QLabel = QLabel()
         self._address_lb.setText("Adresse:")
         self._street_le: QLineEdit = QLineEdit()
         self._street_le.setPlaceholderText("Straße")
+        self._street_le.textChanged.connect(lambda: self._set_el_input(LineEditType.STREET))
         self._number_le: QLineEdit = QLineEdit()
         self._number_le.setPlaceholderText("Hausnummer")
+        self._number_le.textChanged.connect(lambda: self._set_el_input(LineEditType.NUMBER))
         self._zip_code_le: QLineEdit = QLineEdit()
         self._zip_code_le.setPlaceholderText("PLZ")
         self._zip_code_le.setValidator(QIntValidator())
+        self._zip_code_le.textChanged.connect(lambda: self._set_el_input(LineEditType.ZIP_CODE))
         self._city_le: QLineEdit = QLineEdit()
         self._city_le.setPlaceholderText("Stadt")
+        self._city_le.textChanged.connect(lambda: self._set_el_input(LineEditType.CITY))
 
         self._birth_lb: QLabel = QLabel()
         self._birth_lb.setText("Geburtstag:")
@@ -126,28 +148,33 @@ class MembersWindow(BaseWindow):
         self._phone_numbers_lb: QLabel = QLabel()
         self._phone_numbers_lb.setText("Telefon Nummern:")
         self._phone_number_type_box: QComboBox = QComboBox()
+        self._phone_number_type_box.currentTextChanged.connect(self._set_phone_type)
         self._phone_number_le: QLineEdit = QLineEdit()
         self._phone_number_le.setPlaceholderText("Nummer")
+        self._phone_number_le.textChanged.connect(self._set_phone_number_input)
 
         self._mail_address_lb: QLabel = QLabel()
         self._mail_address_lb.setText("Mail Adressen:")
         self._mail_address_type_box: QComboBox = QComboBox()
+        self._mail_address_type_box.currentTextChanged.connect(self._set_mail_type)
         self._mail_address_le: QLineEdit = QLineEdit()
         self._mail_address_le.setPlaceholderText("E-Mail")
+        self._mail_address_le.textChanged.connect(self._set_mail_input)
 
         self._member_lb: QLabel = QLabel()
         self._member_lb.setText("Mitgliedsart:")
         self._membership_type_box: QComboBox = QComboBox()
         self._special_member_cb: QCheckBox = QCheckBox()
         self._special_member_cb.setText("Ehrenmitglied")
-
         self._positions_lb: QLabel = QLabel()
         self._positions_lb.setText("Positionen:")
         self._positions_list: QListWidget = QListWidget()
+        self._positions_list.itemClicked.connect(self._set_position)
 
         self._comment_lb: QLabel = QLabel()
         self._comment_lb.setText("Kommentar:")
         self._comment_text: QTextEdit = QTextEdit()
+        self._comment_text.textChanged.connect(lambda: self._set_el_input(LineEditType.COMMENT))
 
     def _set_layout(self) -> None:
         # Left
@@ -159,8 +186,8 @@ class MembersWindow(BaseWindow):
         button_members_hbox.addWidget(self._add_member_btn)
         button_members_hbox.addWidget(self._remove_member_btn)
         button_members_hbox.addStretch()
-        button_members_hbox.addWidget(self._save_single_btn)
-        button_members_hbox.addWidget(self._save_all_btn)
+        button_members_hbox.addWidget(self._break_btn)
+        button_members_hbox.addWidget(self._save_btn)
 
         row: int = 0
         # Right
@@ -263,3 +290,105 @@ class MembersWindow(BaseWindow):
         if self._mail_address_type_box.currentText().strip() == "":
             self._mail_address_type_box.setEnabled(False)
             self._mail_address_le.setEnabled(False)
+
+    def _set_edit_mode(self) -> None:
+        invert_edit = not self._is_edit
+
+        self._save_btn.setEnabled(self._is_edit)
+        self._break_btn.setEnabled(self._is_edit)
+
+        self._members_list.setEnabled(invert_edit)
+        self._add_member_btn.setEnabled(invert_edit)
+        self._remove_member_btn.setEnabled(invert_edit)
+
+    def _set_current_member(self) -> None:
+        pass
+
+    def _set_el_input(self, type_: LineEditType) -> None:
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
+        current_member: MemberListItem = self._members_list.currentItem()
+        match type_:
+            case LineEditType.FIRSTNAME:
+                current_member.first_name = self._first_name_le.text()
+                current_member.set_name()
+            case LineEditType.LASTNAME:
+                current_member.last_name = self._last_name_le.text()
+                current_member.set_name()
+            case LineEditType.STREET:
+                current_member.street = self._street_le.text()
+            case LineEditType.NUMBER:
+                current_member.number = self._number_le.text()
+            case LineEditType.ZIP_CODE:
+                current_member.zip_code = self._zip_code_le.text()
+            case LineEditType.CITY:
+                current_member.city = self._city_le.text()
+            case LineEditType.COMMENT:
+                current_member.comment_text = self._comment_text.toPlainText()
+
+    def _set_phone_type(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        if current_member is not None:
+            try:
+                self._phone_number_le.setText(current_member.phone_numbers[self._phone_number_type_box.currentText()])
+            except KeyError:
+                self._phone_number_le.setText(None)
+
+    def _set_phone_number_input(self) -> None:
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
+        current_member: MemberListItem = self._members_list.currentItem()
+        if len(self._phone_number_le.text().strip()) > 0 or \
+                self._phone_number_type_box.currentText() in current_member.phone_numbers:
+            current_member.phone_numbers[
+                self._phone_number_type_box.currentText()] = self._phone_number_le.text().strip()
+
+    def _set_mail_type(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        if current_member is not None:
+            try:
+                self._mail_address_le.setText(current_member.mail_addresses[self._mail_address_type_box.currentText()])
+            except KeyError:
+                self._mail_address_le.setText(None)
+
+    def _set_mail_input(self) -> None:
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
+        current_member: MemberListItem = self._members_list.currentItem()
+        if len(self._mail_address_le.text().strip()) > 0 or \
+                self._mail_address_type_box.currentText() in current_member.mail_addresses:
+            current_member.mail_addresses[
+                self._mail_address_type_box.currentText()] = self._mail_address_le.text().strip()
+
+    def _set_membership_type(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        current_member.membership_type = self._membership_type_box.currentText()
+
+    def _set_special_member(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        current_member.special_member = self._special_member_cb.isChecked()
+
+    def _set_position(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        current_position: PositionListItem = self._positions_list.currentItem()
+        if current_position in current_member.positions:
+            current_member.positions.remove(current_position)
+            current_position.setBackground(QColor("white"))
+        else:
+            current_member.positions.append(current_position)
+            current_position.setBackground(QColor("light grey"))
+        self._positions_list.setCurrentItem(None)
+
+    def _add_member(self) -> None:
+        self._is_edit = True
+        self._set_edit_mode()
+        new_member: MemberListItem = MemberListItem()
+        self._members_list.addItem(new_member)
+        self._members_list.setCurrentItem(new_member)
+
+    def _save(self) -> None:
+        self._is_edit = False
+        self._set_edit_mode()
