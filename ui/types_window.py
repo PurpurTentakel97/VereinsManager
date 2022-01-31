@@ -84,7 +84,7 @@ class TypesWindow(BaseWindow):
         self._add_btn.setEnabled(self._is_add())
         self._edit_btn.setEnabled(self._is_edit())
         self._remove_btn.setEnabled(self._is_remove())
-        types: list = main.get_type_list(self._types_box.currentText())
+        types: list = main.get_type_list(display_name=self._types_box.currentText())
         for type_ in types:
             new_type: TypesListEntry = TypesListEntry(type_[1])
             self._types_list.addItem(new_type)
@@ -93,7 +93,7 @@ class TypesWindow(BaseWindow):
         self._types_list.setCurrentItem(None)
 
     def _set_types(self) -> None:
-        types: list = main.get_types()
+        types: list[str] = main.get_types()
         for type_ in types:
             self._types_box.addItem(type_)
 
@@ -134,7 +134,7 @@ class TypesWindow(BaseWindow):
                     double = True
                     break
             if not double:
-                main.add_type(table_name=self._types_box.currentText(), type_=self._edit.text())
+                main.add_type(display_name=self._types_box.currentText(), type_=self._edit.text())
                 self._set_current_type()
             else:
                 self.set_status_bar("Typ bereits vorhanden")

@@ -5,11 +5,10 @@
 from enum import Enum
 
 types = [
-    "instruments",
-    "positions",
-    "membership_type",
-    "phone_number",
-    "e_mail"
+    ("positions", "Positionsarten"),
+    ("membership_type", "Mitglietsarten"),
+    ("phone_number", "Telefonarten"),
+    ("e_mail", "Mailarten")
 ]
 
 
