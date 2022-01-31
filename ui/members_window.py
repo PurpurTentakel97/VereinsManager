@@ -7,7 +7,9 @@ from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
 
+import main
 from ui.base_window import BaseWindow
+from enum_sheet import TypeType
 
 members_window_: "MembersWindow" or None = None
 
@@ -72,6 +74,8 @@ class MembersWindow(BaseWindow):
 
         self._set_ui()
         self._set_layout()
+
+        self._set_types()
 
     def _set_ui(self) -> None:
         # Left
@@ -229,3 +233,33 @@ class MembersWindow(BaseWindow):
         widget.setLayout(global_vbox)
         self.set_widget(widget)
         self.show()
+
+    def _set_types(self) -> None:
+        position_, membership_, phone_number_, mail_ = main.get_types(type_=TypeType.MEMBER)
+
+        positions: list = main.get_type_list(display_name=position_)
+        for _, position in positions:
+            new_position: PositionListItem = PositionListItem(position)
+            self._positions.append(new_position)
+            self._positions_list.addItem(new_position)
+
+        memberships: list = main.get_type_list(display_name=membership_)
+        for _, membership in memberships:
+            self._membership_type_box.addItem(membership)
+        if self._membership_type_box.currentText().strip() == "":
+            self._membership_type_box.setEnabled(False)
+            self._special_member_cb.setEnabled(False)
+
+        phone_numbers: list = main.get_type_list(display_name=phone_number_)
+        for _, phone_number in phone_numbers:
+            self._phone_number_type_box.addItem(phone_number)
+        if self._phone_number_type_box.currentText().strip() == "":
+            self._phone_number_type_box.setEnabled(False)
+            self._phone_number_le.setEnabled(False)
+
+        mails: list = main.get_type_list(display_name=mail_)
+        for _, mail in mails:
+            self._mail_address_type_box.addItem(mail)
+        if self._mail_address_type_box.currentText().strip() == "":
+            self._mail_address_type_box.setEnabled(False)
+            self._mail_address_le.setEnabled(False)

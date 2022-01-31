@@ -5,6 +5,7 @@
 import sqlite3
 
 import enum_sheet
+from enum_sheet import TypeType
 
 
 class Database:
@@ -57,19 +58,27 @@ class Handler:
 
     @staticmethod
     def create_all_tables() -> None:
-        for type_ in enum_sheet.types:
+        for type_ in enum_sheet.get_all_types():
             database.create_type_table(table_name=type_[0])
 
     @staticmethod
-    def get_display_types() -> list[str]:
+    def get_display_types(type_type: TypeType) -> list[str]:
         display_types: list = list()
-        for type_ in enum_sheet.types:
+        dummy_list: list = list()
+
+        match type_type:
+            case TypeType.ALL:
+                dummy_list = enum_sheet.get_all_types()
+            case TypeType.MEMBER:
+                dummy_list = enum_sheet.member_types
+
+        for type_ in dummy_list:
             display_types.append(type_[1])
         return display_types
 
     @staticmethod
     def get_type_from_display_name(display_name: str) -> str:
-        for type_ in enum_sheet.types:
+        for type_ in enum_sheet.get_all_types():
             if display_name in type_:
                 return type_[0]
 
