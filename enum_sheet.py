@@ -5,6 +5,6 @@
 types = [
     ("position_type", "Positions-arten"),
     ("membership_type", "Mitgliets-arten"),
-    ("phone_number_type", "Telefon-arten"),
+    ("phone_number_type", "Telephon-arten"),
     ("mail_type", "Mail-arten")
 ]
