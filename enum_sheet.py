@@ -2,15 +2,9 @@
 # 21.01.2022
 # VereinsManager / ENUM
 
-from enum import Enum
-
 types = [
-    ("positions", "Positionsarten"),
-    ("membership_type", "Mitglietsarten"),
-    ("phone_number", "Telefonarten"),
-    ("e_mail", "Mailarten")
+    ("position_type", "Positions-arten"),
+    ("membership_type", "Mitgliets-arten"),
+    ("phone_number_type", "Telefon-arten"),
+    ("mail_type", "Mail-arten")
 ]
-
-
-class SQLite_Table(Enum):
-    MEMBERS = "members"

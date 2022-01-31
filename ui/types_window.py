@@ -48,6 +48,7 @@ class TypesWindow(BaseWindow):
         self._remove_btn: QPushButton = QPushButton()
         self._remove_btn.setText("Typ löschen")
         self._remove_btn.setEnabled(False)
+        self._remove_btn.clicked.connect(self._remove_type)
 
         self._types_list: QListWidget = QListWidget()
         self._types_list.currentItemChanged.connect(self._row_chanced)
@@ -100,7 +101,8 @@ class TypesWindow(BaseWindow):
     def _row_chanced(self) -> None:
         current_type: TypesListEntry = self._types_list.currentItem()
         self._set_btn()
-        self._edit.setText(current_type.name)
+        if current_type is not None:
+            self._edit.setText(current_type.name)
         self._edit.setFocus()
 
     def _text_chanced(self) -> None:
@@ -143,3 +145,8 @@ class TypesWindow(BaseWindow):
 
     def _edit_type(self) -> None:
         pass
+
+    def _remove_type(self) -> None:
+        main.remove_type(display_name=self._types_box.currentText(), type_=self._types_list.currentItem().name)
+        self._set_current_type()
+        self._edit.clear()
