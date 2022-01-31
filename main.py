@@ -8,8 +8,8 @@ from ui import base_window, main_window
 
 
 # types
-def get_types() -> list:
-    return sqlite.handler.get_display_types()
+def get_types(type_) -> list:
+    return sqlite.handler.get_display_types(type_type=type_)
 
 
 def get_type_list(display_name: str) -> list:

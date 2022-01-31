@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListW
 
 from ui.base_window import BaseWindow
 import main
+from enum_sheet import TypeType
 
 
 class TypesListEntry(QListWidgetItem):
@@ -95,7 +96,7 @@ class TypesWindow(BaseWindow):
         self._types_list.setCurrentItem(None)
 
     def _set_types(self) -> None:
-        types: list[str] = main.get_types()
+        types: list[str] = main.get_types(type_=TypeType.ALL)
         for type_ in types:
             self._types_box.addItem(type_)
 
