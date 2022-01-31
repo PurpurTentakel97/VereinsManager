@@ -7,13 +7,13 @@ from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListW
 from ui.base_window import BaseWindow
 import main
 
-types_window_: "TypesWindow" or None = None
-
 
 class TypesListEntry(QListWidgetItem):
-    def __init__(self, name: str) -> None:
+    def __init__(self, type_: tuple) -> None:
         super().__init__()
-        self.name: str = name
+        self.id_: int = int()
+        self.name: str = str()
+        self.id_, self.name = type_
         self._set_name()
 
     def _set_name(self) -> None:
@@ -45,6 +45,7 @@ class TypesWindow(BaseWindow):
         self._edit_btn: QPushButton = QPushButton()
         self._edit_btn.setText("Typ bearbeiten")
         self._edit_btn.setEnabled(False)
+        self._edit_btn.clicked.connect(self._edit_type)
         self._remove_btn: QPushButton = QPushButton()
         self._remove_btn.setText("Typ löschen")
         self._remove_btn.setEnabled(False)
@@ -87,7 +88,7 @@ class TypesWindow(BaseWindow):
         self._remove_btn.setEnabled(self._is_remove())
         types: list = main.get_type_list(display_name=self._types_box.currentText())
         for type_ in types:
-            new_type: TypesListEntry = TypesListEntry(type_[1])
+            new_type: TypesListEntry = TypesListEntry(type_)
             self._types_list.addItem(new_type)
             self._types_list_items.append(new_type)
         self._edit.setFocus()
@@ -144,9 +145,15 @@ class TypesWindow(BaseWindow):
             self.set_status_bar("Kein Name eingegeben")
 
     def _edit_type(self) -> None:
-        pass
-
-    def _remove_type(self) -> None:
-        main.remove_type(display_name=self._types_box.currentText(), type_=self._types_list.currentItem().name)
+        main.edit_type(display_name=self._types_box.currentText(), new_type_=self._edit.text().strip(),
+                       type_id=self._types_list.currentItem().id_)
         self._set_current_type()
         self._edit.clear()
+
+    def _remove_type(self) -> None:
+        main.remove_type(display_name=self._types_box.currentText(), type_id=self._types_list.currentItem().id_)
+        self._set_current_type()
+        self._edit.clear()
+
+
+types_window_: TypesWindow | None = None
