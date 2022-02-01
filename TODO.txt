@@ -2,9 +2,4 @@
 # 21.01.2022
 # VereinsManager // TODO
 
-- änderungsdaten
-    -änderungen angeben
-
-member Window
-    - member hinterlegen, wenn bearbeitet
-    - cancel button
+wrong date format at SQLite

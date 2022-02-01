@@ -36,6 +36,15 @@ def remove_type(display_name: str, type_id: int) -> None:
         main_window.main_window_.set_status_bar("Type konnte nichtgelöscht werden.")
 
 
+# member
+def save_member(output: dict) -> int:
+    return sqlite.database.save_member(output=output)
+
+
+def update_member(output: dict) -> None:
+    pass
+
+
 # main
 if __name__ == "__main__":
     sqlite.database = sqlite.Database()
