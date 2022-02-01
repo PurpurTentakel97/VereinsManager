@@ -138,7 +138,7 @@ class TypesWindow(BaseWindow):
                     double = True
                     break
             if not double:
-                main.add_type(display_name=self._types_box.currentText(), type_=self._edit.text())
+                main.add_type(display_name=self._types_box.currentText(), type_=self._edit.text().strip().title())
                 self._set_current_type()
             else:
                 self.set_status_bar("Typ bereits vorhanden")
@@ -146,7 +146,7 @@ class TypesWindow(BaseWindow):
             self.set_status_bar("Kein Name eingegeben")
 
     def _edit_type(self) -> None:
-        main.edit_type(display_name=self._types_box.currentText(), new_type_=self._edit.text().strip(),
+        main.edit_type(display_name=self._types_box.currentText(), new_type_=self._edit.text().strip().title(),
                        type_id=self._types_list.currentItem().id_)
         self._set_current_type()
         self._edit.clear()
