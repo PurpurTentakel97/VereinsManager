@@ -25,6 +25,11 @@ class LineEditType(Enum):
     COMMENT = 6
 
 
+class DateType:
+    ENTRY = 0
+    B_DAY = 1
+
+
 class MemberListItem(QListWidgetItem):
     def __init__(self, id_: int | None = None):
         super().__init__()
@@ -85,7 +90,7 @@ class MembersWindow(BaseWindow):
         self._set_ui()
         self._set_layout()
 
-        self._add_member()
+        self._add_member()  # TODO if no member
         self._set_types()
         self._set_edit_mode()
 
@@ -142,9 +147,11 @@ class MembersWindow(BaseWindow):
         self._birth_lb: QLabel = QLabel()
         self._birth_lb.setText("Geburtstag:")
         self._b_day_date: QDateEdit = QDateEdit(calendarPopup=True)
+        self._b_day_date.dateChanged.connect(lambda: self._set_date(type_=DateType.B_DAY))
         self._entry_lb: QLabel = QLabel()
         self._entry_lb.setText("Eintritt:")
         self._entry_date: QDateEdit = QDateEdit(calendarPopup=True)
+        self._entry_date.dateChanged.connect(lambda: self._set_date(type_=DateType.ENTRY))
 
         self._phone_numbers_lb: QLabel = QLabel()
         self._phone_numbers_lb.setText("Telefon Nummern:")
@@ -361,6 +368,21 @@ class MembersWindow(BaseWindow):
                 current_member.city = self._city_le.text()
             case LineEditType.COMMENT:
                 current_member.comment_text = self._comment_text.toPlainText()
+
+    def _set_date(self, type_: DateType) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+
+        match type_:
+            case DateType.B_DAY:
+                current_member.birth_date = self._b_day_date.date()
+                print(current_member.birth_date)
+            case DateType.ENTRY:
+                current_member.entry_date = self._entry_date.date()
+                print(current_member.entry_date)
+
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
 
     def _set_phone_type(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
