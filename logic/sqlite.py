@@ -35,11 +35,21 @@ class Database:
         self.cursor.execute(sql_command)
         self.connection.commit()
 
-    def remove_type(self, table_name: str, type_: str) -> None:
-        sql_command: str = f"""DELETE FROM {table_name} WHERE {table_name} ='{type_}';"""
+    def edit_type(self, table_name: str, new_type: str, type_id: int):
+        sql_command: str = f"""UPDATE {table_name} SET {table_name} = '{new_type}' WHERE ID = {type_id};"""
 
         self.cursor.execute(sql_command)
         self.connection.commit()
+
+    def remove_type(self, table_name: str, type_id: int) -> bool:
+        sql_command: str = f"""DELETE FROM {table_name} WHERE ID ='{type_id}';"""
+
+        try:
+            self.cursor.execute(sql_command)
+            self.connection.commit()
+            return True
+        except:
+            return False
 
 
 class Handler:
