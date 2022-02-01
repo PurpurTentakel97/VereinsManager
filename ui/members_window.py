@@ -85,6 +85,7 @@ class MembersWindow(BaseWindow):
         self._set_ui()
         self._set_layout()
 
+        self._add_member()
         self._set_types()
         self._set_edit_mode()
 
@@ -164,8 +165,10 @@ class MembersWindow(BaseWindow):
         self._member_lb: QLabel = QLabel()
         self._member_lb.setText("Mitgliedsart:")
         self._membership_type_box: QComboBox = QComboBox()
+        self._membership_type_box.currentTextChanged.connect(self._set_membership_type)
         self._special_member_cb: QCheckBox = QCheckBox()
         self._special_member_cb.setText("Ehrenmitglied")
+        self._special_member_cb.toggled.connect(self._set_special_member)
         self._positions_lb: QLabel = QLabel()
         self._positions_lb.setText("Positionen:")
         self._positions_list: QListWidget = QListWidget()
@@ -302,7 +305,39 @@ class MembersWindow(BaseWindow):
         self._remove_member_btn.setEnabled(invert_edit)
 
     def _set_current_member(self) -> None:
-        pass
+        self._load_single_member()
+        current_member: MemberListItem = self._members_list.currentItem()
+
+        self._first_name_le.setText(current_member.first_name)
+        self._last_name_le.setText(current_member.last_name)
+        self._street_le.setText(current_member.street)
+        self._number_le.setText(current_member.number)
+        self._zip_code_le.setText(current_member.zip_code)
+        self._city_le.setText(current_member.city)
+        self._b_day_date.setDate(current_member.birth_date)
+        self._entry_date.setDate(current_member.entry_date)
+        self._comment_text.setText(current_member.comment_text)
+        self._membership_type_box.setCurrentText(current_member.membership_type)
+        self._special_member_cb.setChecked(current_member.special_member)
+
+        try:
+            self._phone_number_le.setText(current_member.phone_numbers[self._phone_number_type_box.currentText()])
+        except KeyError:
+            self._phone_number_le.setText("")
+
+        try:
+            self._mail_address_le.setText(current_member.mail_addresses[self._mail_address_type_box.currentText()])
+        except KeyError:
+            self._mail_address_le.setText("")
+
+        for position in self._positions:
+            if position in current_member.positions:
+                position.setBackground(QColor("light grey"))
+            else:
+                position.setBackground(QColor("white"))
+
+        self._is_edit = False
+        self._set_edit_mode()
 
     def _set_el_input(self, type_: LineEditType) -> None:
         if not self._is_edit:
@@ -336,14 +371,14 @@ class MembersWindow(BaseWindow):
                 self._phone_number_le.setText(None)
 
     def _set_phone_number_input(self) -> None:
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
         current_member: MemberListItem = self._members_list.currentItem()
         if len(self._phone_number_le.text().strip()) > 0 or \
                 self._phone_number_type_box.currentText() in current_member.phone_numbers:
             current_member.phone_numbers[
                 self._phone_number_type_box.currentText()] = self._phone_number_le.text().strip()
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
 
     def _set_mail_type(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -354,22 +389,28 @@ class MembersWindow(BaseWindow):
                 self._mail_address_le.setText(None)
 
     def _set_mail_input(self) -> None:
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
         current_member: MemberListItem = self._members_list.currentItem()
         if len(self._mail_address_le.text().strip()) > 0 or \
                 self._mail_address_type_box.currentText() in current_member.mail_addresses:
             current_member.mail_addresses[
                 self._mail_address_type_box.currentText()] = self._mail_address_le.text().strip()
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
 
     def _set_membership_type(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         current_member.membership_type = self._membership_type_box.currentText()
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
 
     def _set_special_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         current_member.special_member = self._special_member_cb.isChecked()
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
 
     def _set_position(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -381,13 +422,20 @@ class MembersWindow(BaseWindow):
             current_member.positions.append(current_position)
             current_position.setBackground(QColor("light grey"))
         self._positions_list.setCurrentItem(None)
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
 
     def _add_member(self) -> None:
-        self._is_edit = True
-        self._set_edit_mode()
         new_member: MemberListItem = MemberListItem()
         self._members_list.addItem(new_member)
         self._members_list.setCurrentItem(new_member)
+        self._set_current_member()
+        self._is_edit = True
+        self._set_edit_mode()
+
+    def _load_single_member(self) -> None:
+        pass
 
     def _save(self) -> None:
         self._is_edit = False
