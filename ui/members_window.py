@@ -10,7 +10,7 @@ from enum import Enum
 
 import main
 from ui.base_window import BaseWindow
-from enum_sheet import TypeType
+from enum_sheet import TypeType, MemberTypes
 
 members_window_: "MembersWindow" or None = None
 
@@ -332,7 +332,6 @@ class MembersWindow(BaseWindow):
             self._membership_type_box.setCurrentText(current_member.membership_type)
         else:
             self._membership_type_box.setCurrentText("")
-        print(current_member.membership_type)
 
         # birthday
         if not current_member.birth_date.isNull():
@@ -486,9 +485,34 @@ class MembersWindow(BaseWindow):
         pass
 
     def _save(self) -> None:
+        output, new_ = self._get_member_save_data()
+
+        if new_:
+            id_: int = main.save_member(output=output)
+            output[MemberTypes.ID.value] = id_
+        else:
+            main.update_member(output=output)
+
         self._is_edit = False
         self._set_edit_mode()
 
-    def _get_member_save_data(self)->list:
-        pass
-
+    def _get_member_save_data(self) -> [dict, bool]:
+        current_member: MemberListItem = self._members_list.currentItem()
+        new_: bool = True
+        output: dict = {
+            MemberTypes.FIRST_NAME.value: current_member.first_name,
+            MemberTypes.LAST_NAME.value: current_member.last_name,
+            MemberTypes.STREET.value: current_member.street,
+            MemberTypes.NUMBER.value: current_member.number,
+            MemberTypes.ZIP_CODE.value: current_member.zip_code,
+            MemberTypes.CITY.value: current_member.city,
+            MemberTypes.B_DAY_DATE.value: current_member.birth_date.toPyDate() if not current_member.birth_date.isNull() else None,
+            MemberTypes.ENTRY_DATE.value: current_member.entry_date.toPyDate() if not current_member.entry_date.isNull() else None,
+            MemberTypes.MEMBERSHIP_TYPE.value: current_member.membership_type,
+            MemberTypes.SPECIAL_MEMBER.value: current_member.special_member,
+            MemberTypes.COMMENT.value: current_member.comment_text
+        }
+        if current_member.id_ is not None:
+            new_ = False
+            output[MemberTypes.ID.value] = current_member.id_
+        return output, new_
