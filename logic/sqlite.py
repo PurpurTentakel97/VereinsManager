@@ -62,8 +62,8 @@ class Database:
             "{MemberTypes.NUMBER.value}"	TEXT,
             "{MemberTypes.ZIP_CODE.value}"	INTEGER,
             "{MemberTypes.CITY.value}"	TEXT,
-            "{MemberTypes.B_DAY_DATE.value}"	DATE,
-            "{MemberTypes.ENTRY_DATE.value}"	DATE,
+            "{MemberTypes.B_DAY_DATE.value}"	TEXT,
+            "{MemberTypes.ENTRY_DATE.value}"	TEXT,
             "{MemberTypes.MEMBERSHIP_TYPE.value}"	TEXT,
             "{MemberTypes.SPECIAL_MEMBER.value}"	INTEGER,
             "{MemberTypes.COMMENT.value}"	TEXT,
@@ -97,9 +97,9 @@ class Database:
         sql_command += f"{output[MemberTypes.ZIP_CODE.value]}," \
             if output[MemberTypes.ZIP_CODE.value] is not None else null
         sql_command += f"'{output[MemberTypes.CITY.value]}'," if output[MemberTypes.CITY.value] is not None else null
-        sql_command += f"{output[MemberTypes.B_DAY_DATE.value]}," \
+        sql_command += f"'{output[MemberTypes.B_DAY_DATE.value].strftime('%Y-%m-%d')}'," \
             if output[MemberTypes.B_DAY_DATE.value] is not None else null
-        sql_command += f"{output[MemberTypes.ENTRY_DATE.value]}," \
+        sql_command += f"'{output[MemberTypes.ENTRY_DATE.value].strftime('%Y-%m-%d')}'," \
             if output[MemberTypes.ENTRY_DATE.value] is not None else null
         sql_command += f"'{output[MemberTypes.MEMBERSHIP_TYPE.value]}'," \
             if output[MemberTypes.MEMBERSHIP_TYPE.value] is not None else null
@@ -115,7 +115,7 @@ class Database:
 
     # member phone
     def create_member_phone_table(self) -> None:
-        sql_command: str = f"""CREATE TABLE "{TableTypes.MEMBER_PHONE.value}" (
+        sql_command: str = f"""CREATE TABLE IF NOT EXISTS "{TableTypes.MEMBER_PHONE.value}" (
         "{MemberPhoneTypes.ID.value}"	INTEGER NOT NULL UNIQUE,
         "{MemberPhoneTypes.MEMBER_ID.value}"	INTEGER NOT NULL,
         "{MemberPhoneTypes.TYPE_ID.value}"	INTEGER NOT NULL,
@@ -165,4 +165,4 @@ database: Database | None = None
 handler: Handler | None = None
 
 # date = datetime.strptime( "2022-10-01", '%Y %m %d').date()
-# date_str=t.strftime('%m/%d/%Y')
+# date_str=t.strftime('%Y/%m/%d')
