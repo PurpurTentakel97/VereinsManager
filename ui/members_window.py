@@ -568,6 +568,7 @@ class MembersWindow(BaseWindow):
             if len(inner) == 0:
                 inner.append(None)
             inner.append(self._get_id_from_type(type_=value_type, table_type=table_type))
+            inner.append(value_type)
             inner.append(value)
             output.append(tuple(inner))
         return tuple(output)  # (member_id,table_type,((member,phone_id,phone_type_id,number),(next_number))

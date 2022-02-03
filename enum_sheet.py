@@ -36,6 +36,7 @@ class TableTypes(Enum):
     MEMBER_PHONE = "member_phone"
     MEMBER_MAIL = "member_mail"
     MEMBER_POSITION = "member_position"
+    LOG = "log"
 
 
 class MemberTypes(Enum):
@@ -72,3 +73,13 @@ class MemberPositionTypes(Enum):
     ID = "ID"
     MEMBER_ID = "member_id"
     TYPE_ID = "type_id"
+
+
+class LogTypes(Enum):
+    ID = "ID"
+    MEMBER_ID = "member_id"
+    LOG_TYPE = "log_type"
+    DATE = "date"
+    OLD_DATA = "old_data"
+    NEW_DATA = "new_data"
+
