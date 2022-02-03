@@ -34,6 +34,8 @@ class TypeType(Enum):
 class TableTypes(Enum):
     MEMBER = "member"
     MEMBER_PHONE = "member_phone"
+    MEMBER_MAIL = "member_mail"
+    MEMBER_POSITION = "member_position"
 
 
 class MemberTypes(Enum):
@@ -49,6 +51,7 @@ class MemberTypes(Enum):
     MEMBERSHIP_TYPE = "membership_type"
     SPECIAL_MEMBER = "special_member"
     COMMENT = "comment"
+    ACTIVE_MEMBER = "active_member"
 
 
 class MemberPhoneTypes(Enum):
@@ -56,3 +59,16 @@ class MemberPhoneTypes(Enum):
     MEMBER_ID = "member_id"
     TYPE_ID = "type_id"
     NUMBER = "number"
+
+
+class MemberMailTypes(Enum):
+    ID = "ID"
+    MEMBER_ID = "member_id"
+    TYPE_ID = "type_id"
+    MAIL = "mail"
+
+
+class MemberPositionTypes(Enum):
+    ID = "ID"
+    MEMBER_ID = "member_id"
+    TYPE_ID = "type_id"

@@ -8,6 +8,8 @@ from ui.base_window import BaseWindow
 import main
 from enum_sheet import TypeType
 
+types_window_: "TypesWindow" or None = None
+
 
 class TypesListEntry(QListWidgetItem):
     def __init__(self, type_: tuple) -> None:
@@ -155,6 +157,3 @@ class TypesWindow(BaseWindow):
         main.remove_type(display_name=self._types_box.currentText(), type_id=self._types_list.currentItem().id_)
         self._set_current_type()
         self._edit.clear()
-
-
-types_window_: TypesWindow | None = None

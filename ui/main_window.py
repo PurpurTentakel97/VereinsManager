@@ -2,10 +2,12 @@
 # 21.01.2022
 # VereinsManager / Main Window
 
-
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget
+
 from ui.base_window import BaseWindow
 from ui import members_window, types_window
+
+main_window_: "MainWindow" or None = None
 
 
 class MainWindow(BaseWindow):
@@ -110,6 +112,3 @@ class MainWindow(BaseWindow):
 
     def _open_chance_organization(self):
         print("Organisation chanced")
-
-
-main_window_: MainWindow | None = None
