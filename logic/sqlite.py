@@ -68,7 +68,7 @@ class Database:
             "{MemberTypes.MEMBERSHIP_TYPE.value}"	TEXT,
             "{MemberTypes.SPECIAL_MEMBER.value}"	INTEGER,
             "{MemberTypes.COMMENT.value}"	TEXT,
-            "{MemberTypes.ACTIVE_MEMBER.value}" TEXT,
+            "{MemberTypes.ACTIVE_MEMBER.value}" INTEGER,
             PRIMARY KEY("ID" AUTOINCREMENT));"""
 
         self.cursor.execute(sql_command)
@@ -116,6 +116,23 @@ class Database:
         self.connection.commit()
 
         return self.cursor.lastrowid
+
+    def update_member(self, output: dict):
+        pass
+
+    def load_member(self, id_: int) -> list:
+        sql_command: str = f"""SELECT * FROM '{TableTypes.MEMBER.value}' WHERE {MemberTypes.ID.value} = {id_}"""
+
+        self.cursor.execute(sql_command)
+        data = self.cursor.fetchall()
+        data = list(data[0])
+
+        for i in range(1, len(data)):
+            if data[i] == 1:
+                data[i] = True
+            elif data[i] == 0:
+                data[i] = False
+        return data
 
     # member nexus
     def create_member_nexus_tables(self) -> None:
