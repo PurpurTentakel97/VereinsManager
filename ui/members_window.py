@@ -10,7 +10,7 @@ from enum import Enum
 
 import main
 from ui.base_window import BaseWindow
-from enum_sheet import TypeType, MemberTypes
+from enum_sheet import TypeType, MemberTypes, TableTypes
 
 members_window_: "MembersWindow" or None = None
 
@@ -46,14 +46,14 @@ class MemberListItem(QListWidgetItem):
         self.entry_date: QDate = QDate()
 
         self.phone_numbers: dict[str, str] = dict()  # {type:number}
-        self.phone_number_ids: dict[str, int | None] = dict()  # {type:ID}
+        self.phone_member_ids: dict[str, int | None] = dict()  # {type:ID}
         self.mail_addresses: dict[str, str] = dict()  # {type:mail}
-        self.mail_address_ids: dict[str, int | None] = dict()  # {type:ID}
+        self.mail_member_ids: dict[str, int | None] = dict()  # {type:ID}
 
         self.membership_type: str | None = None
         self.special_member: bool = False
         self.positions: list[PositionListItem] = list()
-        self.position_ids: dict[str, int] = dict()  # {position:ID}
+        self.position_member_ids: dict[str, int] = dict()  # {position:ID}
 
         self.comment_text: str | None = None
 
@@ -87,8 +87,12 @@ class PositionListItem(QListWidgetItem):
 class MembersWindow(BaseWindow):
     def __init__(self):
         super().__init__()
-        self._positions: list[PositionListItem] = list()
+        self._positions_items: list[PositionListItem] = list()
         self._is_edit: bool = False
+
+        self.phone_number_ids: list[tuple] = list()
+        self.mail_ids: list[tuple] = list()
+        self.position_ids: list[tuple] = list()
 
         self._set_ui()
         self._set_layout()
@@ -278,10 +282,11 @@ class MembersWindow(BaseWindow):
         position_, membership_, phone_number_, mail_ = main.get_types(type_=TypeType.MEMBER)
 
         positions: list = main.get_type_list(display_name=position_)
-        for _, position in positions:
+        for ID, position in positions:
             new_position: PositionListItem = PositionListItem(position)
-            self._positions.append(new_position)
+            self._positions_items.append(new_position)
             self._positions_list.addItem(new_position)
+            self.position_ids.append((ID, position))
 
         memberships: list = main.get_type_list(display_name=membership_)
 
@@ -294,15 +299,17 @@ class MembersWindow(BaseWindow):
         self._membership_type_box.setCurrentText("")
 
         phone_numbers: list = main.get_type_list(display_name=phone_number_)
-        for _, phone_number in phone_numbers:
+        for ID, phone_number in phone_numbers:
             self._phone_number_type_box.addItem(phone_number)
+            self.phone_number_ids.append((ID, phone_number))
         if self._phone_number_type_box.currentText().strip() == "":
             self._phone_number_type_box.setEnabled(False)
             self._phone_number_le.setEnabled(False)
 
         mails: list = main.get_type_list(display_name=mail_)
-        for _, mail in mails:
+        for ID, mail in mails:
             self._mail_address_type_box.addItem(mail)
+            self.mail_ids.append((ID, mail))
         if self._mail_address_type_box.currentText().strip() == "":
             self._mail_address_type_box.setEnabled(False)
             self._mail_address_le.setEnabled(False)
@@ -363,7 +370,7 @@ class MembersWindow(BaseWindow):
             self._mail_address_le.setText("")
 
         # positions
-        for position in self._positions:
+        for position in self._positions_items:
             if position in current_member.positions:
                 position.setBackground(QColor("light grey"))
             else:
@@ -385,7 +392,7 @@ class MembersWindow(BaseWindow):
                 current_member.last_name = self._last_name_le.text().strip().title()
                 current_member.set_name()
             case LineEditType.STREET:
-                current_member.street = self._street_le.text().strip()
+                current_member.street = self._street_le.text().strip().title()
             case LineEditType.NUMBER:
                 current_member.number = self._number_le.text().strip()
             case LineEditType.ZIP_CODE:
@@ -488,13 +495,22 @@ class MembersWindow(BaseWindow):
         pass
 
     def _save(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
         output, new_ = self._get_member_save_data()
 
         if new_:
             id_: int = main.save_member(output=output)
+            current_member.member_id_ = id_
             output[MemberTypes.ID.value] = id_
         else:
             main.update_member(output=output)
+
+        main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_PHONE,
+                               output=self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_PHONE))
+        main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_MAIL,
+                               output=self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_MAIL))
+        main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_POSITION,
+                               output=self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_POSITION))
 
         self._is_edit = False
         self._set_edit_mode()
@@ -524,3 +540,48 @@ class MembersWindow(BaseWindow):
             output[MemberTypes.ID.value] = current_member.member_id_
 
         return output, new_
+
+    def _get_member_nexus_save_data(self, table_type: TableTypes) -> tuple:
+        current_member: MemberListItem = self._members_list.currentItem()
+        dummy_values = list()
+        dummy_ids = list()
+
+        match table_type:
+            case TableTypes.MEMBER_PHONE:
+                dummy_values = current_member.phone_numbers.items()
+                dummy_ids = current_member.phone_member_ids.items()
+            case TableTypes.MEMBER_MAIL:
+                dummy_values = current_member.mail_addresses.items()
+                dummy_ids = current_member.mail_member_ids.items()
+            case TableTypes.MEMBER_POSITION:
+                dummy_values = list()
+                for position in current_member.positions:
+                    dummy_values.append([position.name, position.name])
+                dummy_ids = current_member.position_member_ids.items()
+
+        output: list = list()  # [ID,value]
+        for value_type, value in dummy_values:  # {type:value}
+            inner: list = list()
+            for ID_type, ID in dummy_ids:  # {type:ID}
+                if value_type == ID_type:
+                    inner.append(ID)
+            if len(inner) == 0:
+                inner.append(None)
+            inner.append(self._get_id_from_type(type_=value_type, table_type=table_type))
+            inner.append(value)
+            output.append(tuple(inner))
+        return tuple(output)  # (member_id,table_type,((member,phone_id,phone_type_id,number),(next_number))
+
+    def _get_id_from_type(self, type_: str, table_type: TableTypes) -> int:
+        dummy: list = list()
+        match table_type:
+            case TableTypes.MEMBER_PHONE:
+                dummy: list = self.phone_number_ids
+            case TableTypes.MEMBER_MAIL:
+                dummy: list = self.mail_ids
+            case TableTypes.MEMBER_POSITION:
+                dummy: list = self.position_ids
+
+        for ID, entry in dummy:
+            if entry == type_:
+                return ID

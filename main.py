@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Main
+import datetime
 
 from logic import sqlite
 
@@ -38,7 +39,11 @@ def remove_type(display_name: str, type_id: int) -> None:
 
 # member
 def save_member(output: dict) -> int:
-    return sqlite.database.save_member(output=output)
+    id_ = sqlite.database.save_member(output=output)
+
+    _log_initial_member_data(output=output, member_id=id_)
+
+    return id_
 
 
 def update_member(output: dict) -> None:
@@ -49,6 +54,25 @@ def update_member(output: dict) -> None:
 def save_member_nexus(member_id: int, table_type, output: tuple) -> None:
     if len(output) > 0:
         sqlite.handler.save_member_nexus(member_id=member_id, table_type=table_type, output=output)
+
+
+# log data
+def _log_initial_member_data(output: dict, member_id: int) -> None:
+    for log_type, value in output.items():
+        match value:
+            case None:
+                continue
+            case "":
+                continue
+
+        if type(value) == bool:
+            if value:
+                value = 1
+            else:
+                value = 0
+
+        sqlite.database.log_data(member_id=member_id, log_type=log_type,
+                                 date=datetime.date.today().strftime('%Y-%m-%d'), old_data=None, new_data=value)
 
 
 # main

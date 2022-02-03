@@ -1,11 +1,12 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / SQLite
-
+import datetime
 import sqlite3
 
 import enum_sheet
-from enum_sheet import TypeType, MemberTypes, TableTypes, MemberPhoneTypes, MemberMailTypes, MemberPositionTypes
+from enum_sheet import TypeType, MemberTypes, TableTypes, MemberPhoneTypes, MemberMailTypes, MemberPositionTypes, \
+    LogTypes
 
 
 class Database:
@@ -184,10 +185,35 @@ class Database:
 
     # log
     def create_log_tables(self) -> None:
-        sql_command: str = """CREATE TABLE "log_type" (
-        "ID"	INTEGER NOT NULL UNIQUE,
-        "log_type"	TEXT NOT NULL,
-        PRIMARY KEY("ID" AUTOINCREMENT));"""
+        sql_command: str = f"""CREATE TABLE IF NOT EXISTS "{TableTypes.LOG.value}" (
+        "{LogTypes.ID.value}"	INTEGER NOT NULL UNIQUE,
+        "{LogTypes.MEMBER_ID.value}"	INTEGER NOT NULL,
+        "{LogTypes.LOG_TYPE.value}"	TEXT NOT NULL,
+        "{LogTypes.DATE.value}"	TEXT NOT NULL,
+        "{LogTypes.OLD_DATA.value}"	TEXT,
+        "{LogTypes.NEW_DATA.value}"	TEXT,
+        FOREIGN KEY("{LogTypes.MEMBER_ID.value}") REFERENCES "member",
+        PRIMARY KEY("{LogTypes.ID.value}" AUTOINCREMENT));"""
+
+        self.cursor.execute(sql_command)
+        self.connection.commit()
+
+    def log_data(self, member_id: int, log_type: str, date: str, old_data: str | None, new_data: str | None) -> None:
+        null = "NULL,"
+        sql_command: str = f"""INSERT INTO "{TableTypes.LOG.value}"
+        ("{LogTypes.MEMBER_ID.value}",
+         "{LogTypes.LOG_TYPE.value}",
+         "{LogTypes.DATE.value}",
+         "{LogTypes.OLD_DATA.value}",
+         "{LogTypes.NEW_DATA.value}")
+        VALUES ('{member_id}', '{log_type}', '{date}',"""
+        sql_command += f"'{old_data}'," if old_data is not None else null
+        sql_command += f"'{new_data}'," if new_data is not None else null
+        sql_command = sql_command[:-1]
+        sql_command += ");"
+
+        self.cursor.execute(sql_command)
+        self.connection.commit()
 
 
 class Handler:
@@ -226,12 +252,14 @@ class Handler:
     @staticmethod
     def save_member_nexus(member_id: int, table_type, output: tuple) -> None:
         for _ in output:
-            member_table_id, value_id, value = _
+            member_table_id, value_id, value_type, value = _
             print(_)
             if member_table_id is None and len(value) == 0:  # no entry
                 continue
             elif member_table_id is None and len(value) > 0:  # save entry
                 database.save_member_nexus(table_type=table_type, member_id=member_id, value_id=value_id, value=value)
+                database.log_data(member_id=member_id, log_type=value_type,
+                                  date=datetime.date.today().strftime('%Y-%m-%d'), old_data=None, new_data=value)
             elif member_table_id is not None and len(value) > 0:  # update entry
                 database.update_member_nexus()
             elif member_table_id is not None and len(value) == 0:  # delete entry
