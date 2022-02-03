@@ -5,7 +5,7 @@
 import sqlite3
 
 import enum_sheet
-from enum_sheet import TypeType, MemberTypes, TableTypes, MemberPhoneTypes
+from enum_sheet import TypeType, MemberTypes, TableTypes, MemberPhoneTypes, MemberMailTypes, MemberPositionTypes
 
 
 class Database:
@@ -67,6 +67,7 @@ class Database:
             "{MemberTypes.MEMBERSHIP_TYPE.value}"	TEXT,
             "{MemberTypes.SPECIAL_MEMBER.value}"	INTEGER,
             "{MemberTypes.COMMENT.value}"	TEXT,
+            "{MemberTypes.ACTIVE_MEMBER.value}" TEXT,
             PRIMARY KEY("ID" AUTOINCREMENT));"""
 
         self.cursor.execute(sql_command)
@@ -85,7 +86,8 @@ class Database:
         "{MemberTypes.ENTRY_DATE.value}", 
         "{MemberTypes.MEMBERSHIP_TYPE.value}", 
         "{MemberTypes.SPECIAL_MEMBER.value}", 
-        "{MemberTypes.COMMENT.value}") VALUES ("""
+        "{MemberTypes.COMMENT.value}",
+        "{MemberTypes.ACTIVE_MEMBER.value}") VALUES ("""
         sql_command += f"'{output[MemberTypes.FIRST_NAME.value]}'," \
             if output[MemberTypes.FIRST_NAME.value] is not None else null
         sql_command += f"'{output[MemberTypes.LAST_NAME.value]}'," \
@@ -105,6 +107,7 @@ class Database:
             if output[MemberTypes.MEMBERSHIP_TYPE.value] is not None else null
         sql_command += f'{1},' if output[MemberTypes.SPECIAL_MEMBER.value] else f'{0},'
         sql_command += f"'{output[MemberTypes.COMMENT.value]}'," if output[MemberTypes.COMMENT.value] != "" else null
+        sql_command += "1,"
         sql_command = sql_command[:-1]
         sql_command += ");"
 
@@ -113,8 +116,8 @@ class Database:
 
         return self.cursor.lastrowid
 
-    # member phone
-    def create_member_phone_table(self) -> None:
+    # member nexus
+    def create_member_nexus_tables(self) -> None:
         sql_command: str = f"""CREATE TABLE IF NOT EXISTS "{TableTypes.MEMBER_PHONE.value}" (
         "{MemberPhoneTypes.ID.value}"	INTEGER NOT NULL UNIQUE,
         "{MemberPhoneTypes.MEMBER_ID.value}"	INTEGER NOT NULL,
@@ -125,7 +128,66 @@ class Database:
         FOREIGN KEY("{MemberPhoneTypes.MEMBER_ID.value}") REFERENCES "member")"""
 
         self.cursor.execute(sql_command)
+
+        sql_command: str = f"""CREATE TABLE IF NOT EXISTS "{TableTypes.MEMBER_MAIL.value}" (
+        "{MemberMailTypes.ID.value}"	INTEGER NOT NULL UNIQUE,
+        "{MemberMailTypes.MEMBER_ID.value}"	INTEGER NOT NULL,
+        "{MemberMailTypes.TYPE_ID.value}"	INTEGER NOT NULL,
+        "{MemberMailTypes.MAIL.value}"	TEXT NOT NULL,
+        PRIMARY KEY("{MemberMailTypes.ID.value}" AUTOINCREMENT),
+        FOREIGN KEY("{MemberMailTypes.TYPE_ID.value}") REFERENCES "phone_number_type",
+        FOREIGN KEY("{MemberMailTypes.MEMBER_ID.value}") REFERENCES "member")"""
+
+        self.cursor.execute(sql_command)
+
+        sql_command: str = f"""CREATE TABLE IF NOT EXISTS "{TableTypes.MEMBER_POSITION.value}" (
+        "{MemberPositionTypes.ID.value}"	INTEGER NOT NULL UNIQUE,
+        "{MemberPositionTypes.MEMBER_ID.value}"	INTEGER NOT NULL,
+        "{MemberPositionTypes.TYPE_ID.value}"	INTEGER NOT NULL,
+        PRIMARY KEY("{MemberPositionTypes.ID.value}" AUTOINCREMENT),
+        FOREIGN KEY("{MemberPositionTypes.TYPE_ID.value}") REFERENCES "phone_number_type",
+        FOREIGN KEY("{MemberPositionTypes.MEMBER_ID.value}") REFERENCES "member")"""
+
+        self.cursor.execute(sql_command)
         self.connection.commit()
+
+    def save_member_nexus(self, table_type, member_id, value_id, value) -> None:
+        sql_command: str = str()
+
+        match table_type:
+            case TableTypes.MEMBER_PHONE:
+                sql_command: str = f"""INSERT INTO "{table_type.value}"
+                ("{MemberPhoneTypes.MEMBER_ID.value}",
+                "{MemberPhoneTypes.TYPE_ID.value}",
+                "{MemberPhoneTypes.NUMBER.value}")
+                VALUES ('{member_id}', '{value_id}', '{value}');"""
+            case TableTypes.MEMBER_MAIL:
+                sql_command: str = f"""INSERT INTO "{table_type.value}"
+                    ("{MemberMailTypes.MEMBER_ID.value}",
+                    "{MemberMailTypes.TYPE_ID.value}",
+                    "{MemberMailTypes.MAIL.value}")
+                    VALUES ('{member_id}', '{value_id}', '{value}');"""
+            case TableTypes.MEMBER_POSITION:
+                sql_command: str = f"""INSERT INTO "{table_type.value}"
+                        ("{MemberPositionTypes.MEMBER_ID.value}",
+                        "{MemberPositionTypes.TYPE_ID.value}")
+                        VALUES ('{member_id}', '{value_id}');"""
+
+        self.cursor.execute(sql_command)
+        self.connection.commit()
+
+    def update_member_nexus(self) -> None:
+        pass
+
+    def delete_member_nexus(self) -> None:
+        pass
+
+    # log
+    def create_log_tables(self) -> None:
+        sql_command: str = """CREATE TABLE "log_type" (
+        "ID"	INTEGER NOT NULL UNIQUE,
+        "log_type"	TEXT NOT NULL,
+        PRIMARY KEY("ID" AUTOINCREMENT));"""
 
 
 class Handler:
@@ -137,7 +199,8 @@ class Handler:
         for type_ in enum_sheet.get_all_types():
             database.create_type_table(table_name=type_[0])
         database.create_member_table()
-        database.create_member_phone_table()
+        database.create_member_nexus_tables()
+        database.create_log_tables()
 
     @staticmethod
     def get_display_types(type_type: TypeType) -> list[str]:
@@ -159,6 +222,22 @@ class Handler:
         for type_ in enum_sheet.get_all_types():
             if display_name in type_:
                 return type_[0]
+
+    @staticmethod
+    def save_member_nexus(member_id: int, table_type, output: tuple) -> None:
+        for _ in output:
+            member_table_id, value_id, value = _
+            print(_)
+            if member_table_id is None and len(value) == 0:  # no entry
+                continue
+            elif member_table_id is None and len(value) > 0:  # save entry
+                database.save_member_nexus(table_type=table_type, member_id=member_id, value_id=value_id, value=value)
+            elif member_table_id is not None and len(value) > 0:  # update entry
+                database.update_member_nexus()
+            elif member_table_id is not None and len(value) == 0:  # delete entry
+                database.delete_member_nexus()
+            else:
+                print("Error save member nexus")
 
 
 database: Database | None = None

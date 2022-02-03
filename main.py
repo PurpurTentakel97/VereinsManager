@@ -42,7 +42,13 @@ def save_member(output: dict) -> int:
 
 
 def update_member(output: dict) -> None:
-    pass
+    print("updating member")
+
+
+# member nexus
+def save_member_nexus(member_id: int, table_type, output: tuple) -> None:
+    if len(output) > 0:
+        sqlite.handler.save_member_nexus(member_id=member_id, table_type=table_type, output=output)
 
 
 # main
