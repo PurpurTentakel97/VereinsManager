@@ -10,7 +10,7 @@ from enum import Enum
 
 import main
 from ui.base_window import BaseWindow
-from enum_sheet import TypeType, MemberTypes, TableTypes
+from enum_sheet import TypeType, MemberTypes
 
 members_window_: "MembersWindow" or None = None
 
@@ -33,7 +33,7 @@ class DateType:
 class MemberListItem(QListWidgetItem):
     def __init__(self, id_: int | None = None):
         super().__init__()
-        self.id_: int = id_
+        self.member_id_: int = id_
         self.first_name: str | None = None
         self.last_name: str | None = None
 
@@ -45,12 +45,15 @@ class MemberListItem(QListWidgetItem):
         self.birth_date: QDate = QDate()
         self.entry_date: QDate = QDate()
 
-        self.phone_numbers: dict[str, str] = dict()
-        self.mail_addresses: dict[str, str] = dict()
+        self.phone_numbers: dict[str, str] = dict()  # {type:number}
+        self.phone_number_ids: dict[str, int | None] = dict()  # {type:ID}
+        self.mail_addresses: dict[str, str] = dict()  # {type:mail}
+        self.mail_address_ids: dict[str, int | None] = dict()  # {type:ID}
 
         self.membership_type: str | None = None
         self.special_member: bool = False
         self.positions: list[PositionListItem] = list()
+        self.position_ids: dict[str, int] = dict()  # {position:ID}
 
         self.comment_text: str | None = None
 
@@ -516,8 +519,8 @@ class MembersWindow(BaseWindow):
         }
 
         new_: bool = True
-        if current_member.id_ is not None:
+        if current_member.member_id_ is not None:
             new_ = False
-            output[MemberTypes.ID.value] = current_member.id_
+            output[MemberTypes.ID.value] = current_member.member_id_
 
         return output, new_
