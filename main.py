@@ -69,22 +69,24 @@ def _log_initial_member_data(output: dict, member_id: int) -> None:
             case "":
                 continue
 
-        if type(value) == bool:
-            if value:
-                value = 1
-            else:
-                value = 0
-
         sqlite.database.log_data(member_id=member_id, log_type=log_type,
-                                 date=datetime.date.today().strftime('%Y-%m-%d'), old_data=None, new_data=value)
+                                 log_date=datetime.date.today(), old_data=None, new_data=value)
 
 
 def _log_update_member_data(output: dict, reference_data: list) -> None:
     reference_data = reference_data[:-1]
     reference_data.pop(0)
+    output_list = list(output.items())
 
-    print(output)
-    print(reference_data)
+    for index, old_value in enumerate(reference_data):
+        log_type, value = output_list[index]
+
+        if value == "":
+            value = None
+
+        if old_value != value:
+            sqlite.database.log_data(member_id=output[MemberTypes.ID.value], log_type=log_type,
+                                     log_date=datetime.date.today(), old_data=old_value, new_data=value)
 
 
 # main

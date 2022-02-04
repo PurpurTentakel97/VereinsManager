@@ -3,6 +3,7 @@
 # VereinsManager / SQLite
 import datetime
 import sqlite3
+from datetime import date
 
 import enum_sheet
 from enum_sheet import TypeType, MemberTypes, TableTypes, MemberPhoneTypes, MemberMailTypes, MemberPositionTypes, \
@@ -118,7 +119,6 @@ class Database:
         return self.cursor.lastrowid
 
     def update_member(self, output: dict):
-        print(MemberTypes.FIRST_NAME.value)
         sql_command: str = f"""UPDATE {TableTypes.MEMBER.value}
         SET {MemberTypes.FIRST_NAME.value} = ?,
         {MemberTypes.LAST_NAME.value} = ?,
@@ -162,6 +162,7 @@ class Database:
                 data[i] = True
             elif data[i] == 0:
                 data[i] = False
+
         return data
 
     # member nexus
@@ -245,21 +246,28 @@ class Database:
         self.cursor.execute(sql_command)
         self.connection.commit()
 
-    def log_data(self, member_id: int, log_type: str, date: str, old_data: str | None, new_data: str | None) -> None:
-        null = "NULL,"
+    def log_data(self, member_id: int, log_type: str, log_date: date, old_data: str | None,
+                 new_data: str | None) -> None:
         sql_command: str = f"""INSERT INTO "{TableTypes.LOG.value}"
         ("{LogTypes.MEMBER_ID.value}",
          "{LogTypes.LOG_TYPE.value}",
          "{LogTypes.DATE.value}",
          "{LogTypes.OLD_DATA.value}",
          "{LogTypes.NEW_DATA.value}")
-        VALUES ('{member_id}', '{log_type}', '{date}',"""
-        sql_command += f"'{old_data}'," if old_data is not None else null
-        sql_command += f"'{new_data}'," if new_data is not None else null
-        sql_command = sql_command[:-1]
-        sql_command += ");"
+        VALUES (?, ?, ?, ?, ?);"""
+        values = [
+            member_id,
+            log_type,
+            log_date.strftime('%Y-%m-%d') if log_date is not None else None,
+        ]
+        if type(old_data) == bool or type(new_data) == bool:
+            values.append(old_data)
+            values.append(new_data)
+        else:
+            values.append(old_data or None)
+            values.append(new_data or None)
 
-        self.cursor.execute(sql_command)
+        self.cursor.execute(sql_command, tuple(values))
         self.connection.commit()
 
 
