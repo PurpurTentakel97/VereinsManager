@@ -7,7 +7,7 @@ from datetime import date
 
 import enum_sheet
 from enum_sheet import TypeType, MemberTypes, TableTypes, MemberPhoneTypes, MemberMailTypes, MemberPositionTypes, \
-    LogTypes
+    LogTypes, date_format
 
 
 class Database:
@@ -109,7 +109,7 @@ class Database:
 
         return self.cursor.lastrowid
 
-    def update_member(self, output: dict):
+    def update_member(self, output: dict) -> None:
         sql_command: str = f"""UPDATE {TableTypes.MEMBER.value}
         SET {MemberTypes.FIRST_NAME.value} = ?,
         {MemberTypes.LAST_NAME.value} = ?,
@@ -141,7 +141,27 @@ class Database:
             output[MemberTypes.ID.value]))
         self.connection.commit()
 
-    def load_member(self, id_: int) -> list:
+    def delete_recover_member(self, member_id: int, active: bool) -> None:
+
+        sql_command: str = f"""UPDATE {TableTypes.MEMBER.value}
+        SET {MemberTypes.ACTIVE_MEMBER.value} = ? 
+        WHERE {MemberTypes.ID.value} = ?;"""
+
+        self.cursor.execute(sql_command, (active, member_id))
+        self.connection.commit()
+
+    def load_all_member_names(self, active: bool) -> list:
+        sql_command: str = f"""SELECT {MemberTypes.ID.value}, 
+        {MemberTypes.FIRST_NAME.value}, 
+        {MemberTypes.LAST_NAME.value} 
+        FROM {TableTypes.MEMBER.value} 
+        WHERE {MemberTypes.ACTIVE_MEMBER.value} LIKE ?;"""
+
+        self.cursor.execute(sql_command, (active,))
+        data = self.cursor.fetchall()
+        return data
+
+    def load_all_data_from_member(self, id_: int) -> list:
         sql_command: str = f"""SELECT * FROM '{TableTypes.MEMBER.value}' WHERE {MemberTypes.ID.value} = {id_}"""
 
         self.cursor.execute(sql_command)
@@ -154,6 +174,15 @@ class Database:
             elif data[i] == 0:
                 data[i] = False
 
+        return data
+
+    def load_data_from_single_member(self, id_: int) -> list:
+        data = self.load_all_data_from_member(id_=id_)
+        data = data[:-1]
+        if data[7] is not None:
+            data[7] = datetime.datetime.strptime(data[7],date_format).date()
+        if data[8] is not None:
+            data[8] = datetime.datetime.strptime(data[8],date_format).date()
         return data
 
     # member nexus

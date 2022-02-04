@@ -2,6 +2,8 @@
 # 21.01.2022
 # VereinsManager / Members Window
 
+from datetime import date
+
 from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
@@ -31,11 +33,11 @@ class DateType:
 
 
 class MemberListItem(QListWidgetItem):
-    def __init__(self, id_: int | None = None):
+    def __init__(self, id_: int | None = None, firstname: str | None = None, lastname: str | None = None):
         super().__init__()
         self.member_id_: int = id_
-        self.first_name: str | None = None
-        self.last_name: str | None = None
+        self.first_name: str = firstname
+        self.last_name: str = lastname
 
         self.street: str | None = None
         self.number: str | None = None
@@ -89,6 +91,7 @@ class MembersWindow(BaseWindow):
         super().__init__()
         self._positions_items: list[PositionListItem] = list()
         self._is_edit: bool = False
+        self.member_counter: int = int()
 
         self.phone_number_ids: list[tuple] = list()
         self.mail_ids: list[tuple] = list()
@@ -97,7 +100,7 @@ class MembersWindow(BaseWindow):
         self._set_ui()
         self._set_layout()
 
-        self._add_member()  # TODO if no member
+        self._load_all_member_names()
         self._set_types()
         self._set_edit_mode()
 
@@ -114,6 +117,7 @@ class MembersWindow(BaseWindow):
         self._add_member_btn.clicked.connect(self._add_member)
         self._remove_member_btn: QPushButton = QPushButton()
         self._remove_member_btn.setText("Mitglied löschen")
+        self._remove_member_btn.clicked.connect(self._delete)
 
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
@@ -332,7 +336,7 @@ class MembersWindow(BaseWindow):
         self._last_name_le.setText(current_member.last_name)
         self._street_le.setText(current_member.street)
         self._number_le.setText(current_member.number)
-        self._zip_code_le.setText(current_member.zip_code)
+        self._zip_code_le.setText(str(current_member.zip_code))
         self._city_le.setText(current_member.city)
         self._comment_text.setText(current_member.comment_text)
         self._special_member_cb.setChecked(current_member.special_member)
@@ -490,9 +494,44 @@ class MembersWindow(BaseWindow):
         self._set_current_member()
         self._is_edit = True
         self._set_edit_mode()
+        self.member_counter += 1
+
+    def _load_all_member_names(self) -> None:
+        member_names: list = main.load_all_member_names(True)
+        self.counter = 0
+        for member_id, first_name, last_name in member_names:
+            new_member: MemberListItem = MemberListItem(id_=member_id, firstname=first_name, lastname=last_name)
+            self._members_list.addItem(new_member)
+            self.counter += 1
+        if self.counter > 0:
+            self._members_list.setCurrentRow(0)
+            self._set_current_member()
+        else:
+            self._add_member()
 
     def _load_single_member(self) -> None:
-        pass
+        current_member: MemberListItem = self._members_list.currentItem()
+        data = main.load_data_from_single_member(current_member.member_id_)
+        print(data)
+        if len(data) == 0:
+            return
+        birth_date: date
+        entry_date: date
+        id_, first_name, last_name, street, number, zip_code, city, \
+        birth_date, entry_date, membership_type, special_member, comment_text = data
+        current_member.first_name = first_name
+        current_member.last_name = last_name
+        current_member.street = street
+        current_member.number = number
+        current_member.zip_code = zip_code
+        current_member.city = city
+        current_member.birth_date = QDate(birth_date.year, birth_date.month, birth_date.day) \
+            if birth_date is not None else QDate()
+        current_member.entry_date = QDate(entry_date.year, entry_date.month, entry_date.day) \
+            if entry_date is not None else QDate()
+        current_member.membership_type = membership_type
+        current_member.special_member = special_member
+        current_member.comment_text = comment_text
 
     def _save(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -514,6 +553,15 @@ class MembersWindow(BaseWindow):
 
         self._is_edit = False
         self._set_edit_mode()
+
+    def _delete(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        current_index: int = self._members_list.currentRow()
+        main.delete_recover_member([current_member.member_id_, False])
+        self._members_list.takeItem(current_index)
+        self.member_counter -= 1
+        if self.member_counter == 0:
+            self._add_member()
 
     def _get_member_save_data(self) -> [dict, bool]:
         current_member: MemberListItem = self._members_list.currentItem()
