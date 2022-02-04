@@ -70,13 +70,12 @@ class Database:
             "{MemberTypes.SPECIAL_MEMBER.value}"	INTEGER,
             "{MemberTypes.COMMENT.value}"	TEXT,
             "{MemberTypes.ACTIVE_MEMBER.value}" INTEGER,
-            PRIMARY KEY("ID" AUTOINCREMENT));"""
+            PRIMARY KEY("{MemberTypes.ID.value}" AUTOINCREMENT));"""
 
         self.cursor.execute(sql_command)
         self.connection.commit()
 
     def save_member(self, output: dict) -> int:
-        null = "NULL,"
         sql_command: str = f"""INSERT INTO "{TableTypes.MEMBER.value}" (
         "{MemberTypes.FIRST_NAME.value}", 
         "{MemberTypes.LAST_NAME.value}", 
@@ -89,31 +88,23 @@ class Database:
         "{MemberTypes.MEMBERSHIP_TYPE.value}", 
         "{MemberTypes.SPECIAL_MEMBER.value}", 
         "{MemberTypes.COMMENT.value}",
-        "{MemberTypes.ACTIVE_MEMBER.value}") VALUES ("""
-        sql_command += f"'{output[MemberTypes.FIRST_NAME.value]}'," \
-            if output[MemberTypes.FIRST_NAME.value] is not None else null
-        sql_command += f"'{output[MemberTypes.LAST_NAME.value]}'," \
-            if output[MemberTypes.LAST_NAME.value] is not None else null
-        sql_command += f"'{output[MemberTypes.STREET.value]}'," \
-            if output[MemberTypes.STREET.value] is not None else null
-        sql_command += f"'{output[MemberTypes.NUMBER.value]}'," \
-            if output[MemberTypes.NUMBER.value] is not None else null
-        sql_command += f"{output[MemberTypes.ZIP_CODE.value]}," \
-            if output[MemberTypes.ZIP_CODE.value] is not None else null
-        sql_command += f"'{output[MemberTypes.CITY.value]}'," if output[MemberTypes.CITY.value] is not None else null
-        sql_command += f"'{output[MemberTypes.B_DAY_DATE.value].strftime('%Y-%m-%d')}'," \
-            if output[MemberTypes.B_DAY_DATE.value] is not None else null
-        sql_command += f"'{output[MemberTypes.ENTRY_DATE.value].strftime('%Y-%m-%d')}'," \
-            if output[MemberTypes.ENTRY_DATE.value] is not None else null
-        sql_command += f"'{output[MemberTypes.MEMBERSHIP_TYPE.value]}'," \
-            if output[MemberTypes.MEMBERSHIP_TYPE.value] is not None else null
-        sql_command += "1," if output[MemberTypes.SPECIAL_MEMBER.value] else "0,"
-        sql_command += f"'{output[MemberTypes.COMMENT.value]}'," if output[MemberTypes.COMMENT.value] != "" else null
-        sql_command += "1,"
-        sql_command = sql_command[:-1]
-        sql_command += ");"
+        "{MemberTypes.ACTIVE_MEMBER.value}") VALUES (?,?,?,?,?,?,?,?,?,?,?,?);"""
 
-        self.cursor.execute(sql_command)
+        self.cursor.execute(sql_command, (
+            output[MemberTypes.FIRST_NAME.value] or None,
+            output[MemberTypes.LAST_NAME.value] or None,
+            output[MemberTypes.STREET.value] or None,
+            output[MemberTypes.NUMBER.value] or None,
+            output[MemberTypes.ZIP_CODE.value] or None,
+            output[MemberTypes.CITY.value] or None,
+            output[MemberTypes.B_DAY_DATE.value].strftime('%Y-%m-%d') \
+                if output[MemberTypes.B_DAY_DATE.value] is not None else None,
+            output[MemberTypes.ENTRY_DATE.value].strftime('%Y-%m-%d') \
+                if output[MemberTypes.ENTRY_DATE.value] is not None else None,
+            output[MemberTypes.MEMBERSHIP_TYPE.value] or None,
+            output[MemberTypes.SPECIAL_MEMBER.value],
+            output[MemberTypes.COMMENT.value] or None,
+            True))
         self.connection.commit()
 
         return self.cursor.lastrowid
@@ -337,13 +328,12 @@ class Handler:
     def save_member_nexus(member_id: int, table_type, output: tuple) -> None:
         for _ in output:
             member_table_id, value_id, value_type, value = _
-            print(_)
             if member_table_id is None and len(value) == 0:  # no entry
                 continue
             elif member_table_id is None and len(value) > 0:  # save entry
                 database.save_member_nexus(table_type=table_type, member_id=member_id, value_id=value_id, value=value)
                 database.log_data(member_id=member_id, log_type=value_type,
-                                  date=datetime.date.today().strftime('%Y-%m-%d'), old_data=None, new_data=value)
+                                  log_date=datetime.date.today(), old_data=None, new_data=value)
             elif member_table_id is not None and len(value) > 0:  # update entry
                 database.update_member_nexus()
             elif member_table_id is not None and len(value) == 0:  # delete entry

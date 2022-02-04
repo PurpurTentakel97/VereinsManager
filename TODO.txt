@@ -2,6 +2,9 @@
 # 21.01.2022
 # VereinsManager // TODO
 
+sql database
+    let unser coose database name
+
 sql handler
     save type delete
     save log delete
@@ -13,3 +16,4 @@ ui
     member_window
         break memberwindow without member
         User logdate auswählen lassen
+        chane initial edit mode
