@@ -50,8 +50,8 @@ def save_member(output: dict) -> int:
 
 def update_member(output: dict) -> None:
     reference_data: list = sqlite.database.load_member(id_=output[MemberTypes.ID.value])
-    sqlite.database.update_member(output=output)
     _log_update_member_data(output=output, reference_data=reference_data)
+    sqlite.database.update_member(output=output)
 
 
 # member nexus
@@ -81,7 +81,7 @@ def _log_initial_member_data(output: dict, member_id: int) -> None:
 
 def _log_update_member_data(output: dict, reference_data: list) -> None:
     reference_data = reference_data[:-1]
-    reference_data.append(reference_data.pop(0))
+    reference_data.pop(0)
 
     print(output)
     print(reference_data)

@@ -118,7 +118,37 @@ class Database:
         return self.cursor.lastrowid
 
     def update_member(self, output: dict):
-        pass
+        print(MemberTypes.FIRST_NAME.value)
+        sql_command: str = f"""UPDATE {TableTypes.MEMBER.value}
+        SET {MemberTypes.FIRST_NAME.value} = ?,
+        {MemberTypes.LAST_NAME.value} = ?,
+        {MemberTypes.STREET.value} = ?,
+        {MemberTypes.NUMBER.value} = ?,
+        {MemberTypes.ZIP_CODE.value} = ?,
+        {MemberTypes.CITY.value} = ?,
+        {MemberTypes.B_DAY_DATE.value} = ?,
+        {MemberTypes.ENTRY_DATE.value} = ?,
+        {MemberTypes.MEMBERSHIP_TYPE.value} = ?,
+        {MemberTypes.SPECIAL_MEMBER.value} = ?,
+        {MemberTypes.COMMENT.value} = ?
+        WHERE {MemberTypes.ID.value} = ?;"""
+
+        self.cursor.execute(sql_command, (
+            output[MemberTypes.FIRST_NAME.value] or None,
+            output[MemberTypes.LAST_NAME.value] or None,
+            output[MemberTypes.STREET.value] or None,
+            output[MemberTypes.NUMBER.value] or None,
+            output[MemberTypes.ZIP_CODE.value] or None,
+            output[MemberTypes.CITY.value] or None,
+            output[MemberTypes.B_DAY_DATE.value].strftime('%Y-%m-%d') \
+                if output[MemberTypes.B_DAY_DATE.value] is not None else None,
+            output[MemberTypes.ENTRY_DATE.value].strftime('%Y-%m-%d') \
+                if output[MemberTypes.ENTRY_DATE.value] is not None else None,
+            output[MemberTypes.MEMBERSHIP_TYPE.value] or None,
+            output[MemberTypes.SPECIAL_MEMBER.value],
+            output[MemberTypes.COMMENT.value] or None,
+            output[MemberTypes.ID.value]))
+        self.connection.commit()
 
     def load_member(self, id_: int) -> list:
         sql_command: str = f"""SELECT * FROM '{TableTypes.MEMBER.value}' WHERE {MemberTypes.ID.value} = {id_}"""
