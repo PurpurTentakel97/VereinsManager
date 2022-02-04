@@ -107,7 +107,7 @@ class Database:
             if output[MemberTypes.ENTRY_DATE.value] is not None else null
         sql_command += f"'{output[MemberTypes.MEMBERSHIP_TYPE.value]}'," \
             if output[MemberTypes.MEMBERSHIP_TYPE.value] is not None else null
-        sql_command += f'{1},' if output[MemberTypes.SPECIAL_MEMBER.value] else f'{0},'
+        sql_command += "1," if output[MemberTypes.SPECIAL_MEMBER.value] else "0,"
         sql_command += f"'{output[MemberTypes.COMMENT.value]}'," if output[MemberTypes.COMMENT.value] != "" else null
         sql_command += "1,"
         sql_command = sql_command[:-1]
@@ -327,4 +327,3 @@ database: Database | None = None
 handler: Handler | None = None
 
 # date = datetime.strptime( "2022-10-01", '%Y %m %d').date()
-# date_str=t.strftime('%Y/%m/%d')

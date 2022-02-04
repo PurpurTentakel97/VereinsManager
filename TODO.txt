@@ -3,3 +3,4 @@
 # VereinsManager // TODO
 
 User logdate auswählen lassen
+save type delete
