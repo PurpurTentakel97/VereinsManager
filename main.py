@@ -2,6 +2,7 @@
 # 21.01.2022
 # VereinsManager / Main
 import datetime
+from sqlite3 import OperationalError
 
 from logic import sqlite
 
@@ -49,9 +50,28 @@ def save_member(output: dict) -> int:
 
 
 def update_member(output: dict) -> None:
-    reference_data: list = sqlite.database.load_member(id_=output[MemberTypes.ID.value])
+    reference_data: list = sqlite.database.load_all_data_from_member(id_=output[MemberTypes.ID.value])
     _log_update_member_data(output=output, reference_data=reference_data)
     sqlite.database.update_member(output=output)
+
+
+def delete_recover_member(output: list) -> None:
+    member_id, active = output
+    reverence_data = sqlite.database.load_all_data_from_member(id_=member_id)
+    reverence_data = [reverence_data[0], reverence_data[-1]]
+    sqlite.database.delete_recover_member(member_id=member_id, active=active)
+    _log_update_member_active(output=output, reverence_data=reverence_data)
+
+
+def load_all_member_names(active: bool) -> list:
+    return sqlite.database.load_all_member_names(active=active)
+
+
+def load_data_from_single_member(id_: int) -> list:
+    try:
+        return sqlite.database.load_data_from_single_member(id_=id_)
+    except OperationalError:
+        return list()
 
 
 # member nexus
@@ -87,6 +107,14 @@ def _log_update_member_data(output: dict, reference_data: list) -> None:
         if old_value != value:
             sqlite.database.log_data(member_id=output[MemberTypes.ID.value], log_type=log_type,
                                      log_date=datetime.date.today(), old_data=old_value, new_data=value)
+
+
+def _log_update_member_active(output: list, reverence_data: list) -> None:
+    output_id, output_value = output
+    reverence_data_id, reverence_data_value = reverence_data
+    if output_value != reverence_data_value:
+        sqlite.database.log_data(member_id=reverence_data_id, log_type=MemberTypes.ACTIVE_MEMBER.value,
+                                 log_date=datetime.date.today(), old_data=reverence_data_value, new_data=output_value)
 
 
 # main

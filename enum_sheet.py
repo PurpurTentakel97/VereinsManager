@@ -4,6 +4,8 @@
 
 from enum import Enum
 
+date_format: str = '%Y-%m-%d'
+
 _all_types: dict = {
     "position": ("position_type", "Positions-Arten"),
     "membership": ("membership_type", "Mitglieds-Arten"),
@@ -82,4 +84,3 @@ class LogTypes(Enum):
     DATE = "date"
     OLD_DATA = "old_data"
     NEW_DATA = "new_data"
-
