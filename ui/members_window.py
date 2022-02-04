@@ -512,7 +512,6 @@ class MembersWindow(BaseWindow):
     def _load_single_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         data = main.load_data_from_single_member(current_member.member_id_)
-        print(data)
         if len(data) == 0:
             return
         birth_date: date
@@ -546,6 +545,7 @@ class MembersWindow(BaseWindow):
 
         main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_PHONE,
                                output=self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_PHONE))
+
         main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_MAIL,
                                output=self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_MAIL))
         main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_POSITION,
