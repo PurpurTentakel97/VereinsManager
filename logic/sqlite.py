@@ -6,8 +6,9 @@ import sqlite3
 from datetime import date
 
 import enum_sheet
+import main
 from enum_sheet import TypeType, MemberTypes, TableTypes, MemberPhoneTypes, MemberMailTypes, MemberPositionTypes, \
-    LogTypes, date_format
+    LogTypes
 
 
 class Database:
@@ -97,9 +98,9 @@ class Database:
             output[MemberTypes.NUMBER.value] or None,
             output[MemberTypes.ZIP_CODE.value] or None,
             output[MemberTypes.CITY.value] or None,
-            output[MemberTypes.B_DAY_DATE.value].strftime('%Y-%m-%d') \
+            output[MemberTypes.B_DAY_DATE.value].strftime(enum_sheet.date_format) \
                 if output[MemberTypes.B_DAY_DATE.value] is not None else None,
-            output[MemberTypes.ENTRY_DATE.value].strftime('%Y-%m-%d') \
+            output[MemberTypes.ENTRY_DATE.value].strftime(enum_sheet.date_format) \
                 if output[MemberTypes.ENTRY_DATE.value] is not None else None,
             output[MemberTypes.MEMBERSHIP_TYPE.value] or None,
             output[MemberTypes.SPECIAL_MEMBER.value],
@@ -131,9 +132,9 @@ class Database:
             output[MemberTypes.NUMBER.value] or None,
             output[MemberTypes.ZIP_CODE.value] or None,
             output[MemberTypes.CITY.value] or None,
-            output[MemberTypes.B_DAY_DATE.value].strftime('%Y-%m-%d') \
+            output[MemberTypes.B_DAY_DATE.value].strftime(enum_sheet.date_format) \
                 if output[MemberTypes.B_DAY_DATE.value] is not None else None,
-            output[MemberTypes.ENTRY_DATE.value].strftime('%Y-%m-%d') \
+            output[MemberTypes.ENTRY_DATE.value].strftime(enum_sheet.date_format) \
                 if output[MemberTypes.ENTRY_DATE.value] is not None else None,
             output[MemberTypes.MEMBERSHIP_TYPE.value] or None,
             output[MemberTypes.SPECIAL_MEMBER.value],
@@ -180,9 +181,9 @@ class Database:
         data = self.load_all_data_from_member(id_=id_)
         data = data[:-1]
         if data[7] is not None:
-            data[7] = datetime.datetime.strptime(data[7],date_format).date()
+            data[7] = datetime.datetime.strptime(data[7], enum_sheet.date_format).date()
         if data[8] is not None:
-            data[8] = datetime.datetime.strptime(data[8],date_format).date()
+            data[8] = datetime.datetime.strptime(data[8], enum_sheet.date_format).date()
         return data
 
     # member nexus
@@ -220,7 +221,7 @@ class Database:
         self.cursor.execute(sql_command)
         self.connection.commit()
 
-    def save_member_nexus(self, table_type, member_id, value_id, value) -> None:
+    def save_member_nexus(self, table_type: TableTypes, member_id: int, value_id: int, value) -> int:
         sql_command: str = str()
 
         match table_type:
@@ -244,12 +245,36 @@ class Database:
 
         self.cursor.execute(sql_command)
         self.connection.commit()
+        return self.cursor.lastrowid
 
-    def update_member_nexus(self) -> None:
-        pass
+    def update_member_nexus(self, table_type: TableTypes, member_table_id: int, value, value_id: int) -> None:
+        sql_command: str = str()
+
+        match table_type:
+            case TableTypes.MEMBER_PHONE:
+                sql_command = f"""UPDATE {TableTypes.MEMBER_PHONE.value}  
+                            SET {MemberPhoneTypes.NUMBER.value} = ?
+                            WHERE {MemberPhoneTypes.ID.value} = ?"""
+                self.cursor.execute(sql_command, (value, member_table_id))
+            case TableTypes.MEMBER_MAIL:
+                sql_command = f"""UPDATE {TableTypes.MEMBER_MAIL.value}  
+                            SET {MemberMailTypes.MAIL.value} = ?
+                            WHERE {MemberMailTypes.ID.value} = ?"""
+                self.cursor.execute(sql_command, (value, member_table_id))
+            case TableTypes.MEMBER_POSITION:
+                sql_command = f"""UPDATE {TableTypes.MEMBER_POSITION.value}  
+                            SET {MemberPositionTypes.TYPE_ID.value} = ?
+                            WHERE {MemberPositionTypes.ID.value} = ?"""
+                self.cursor.execute(sql_command, (value_id, member_table_id))
 
     def delete_member_nexus(self) -> None:
         pass
+
+    def load_nexus_item_from_id(self, table_type: TableTypes, id_: int) -> list:
+        sql_command: str = f"""SELECT * FROM {table_type.value} WHERE ID is {id_};"""
+        self.cursor.execute(sql_command)
+        data = self.cursor.fetchall()
+        return data
 
     # log
     def create_log_tables(self) -> None:
@@ -278,7 +303,7 @@ class Database:
         values = [
             member_id,
             log_type,
-            log_date.strftime('%Y-%m-%d') if log_date is not None else None,
+            log_date.strftime(enum_sheet.date_format) if log_date is not None else None,
         ]
         if type(old_data) == bool or type(new_data) == bool:
             values.append(old_data)
@@ -325,17 +350,23 @@ class Handler:
                 return type_[0]
 
     @staticmethod
-    def save_member_nexus(member_id: int, table_type, output: tuple) -> None:
+    def save_member_nexus(member_id: int, table_type, output: tuple):
         for _ in output:
             member_table_id, value_id, value_type, value = _
             if member_table_id is None and len(value) == 0:  # no entry
                 continue
+
             elif member_table_id is None and len(value) > 0:  # save entry
-                database.save_member_nexus(table_type=table_type, member_id=member_id, value_id=value_id, value=value)
-                database.log_data(member_id=member_id, log_type=value_type,
-                                  log_date=datetime.date.today(), old_data=None, new_data=value)
+                database.save_member_nexus(table_type=table_type, member_id=member_id, value_id=value_id,
+                                                 value=value)
+                main.log_initial_member_nexus(member_id=member_id, log_type=value_type, new_data=value)
+
             elif member_table_id is not None and len(value) > 0:  # update entry
-                database.update_member_nexus()
+                reference_data = database.load_nexus_item_from_id(table_type=table_type, id_=member_table_id)
+                database.update_member_nexus(table_type=table_type, member_table_id=member_table_id, value=value,
+                                             value_id=value_id)
+                main.log_update_member_nexus(reverence_data=reference_data, new_data=value)
+
             elif member_table_id is not None and len(value) == 0:  # delete entry
                 database.delete_member_nexus()
             else:

@@ -48,9 +48,9 @@ class MemberListItem(QListWidgetItem):
         self.entry_date: QDate = QDate()
 
         self.phone_numbers: dict[str, str] = dict()  # {type:number}
-        self.phone_member_ids: dict[str, int | None] = dict()  # {type:ID}
+        self.phone_member_ids: dict[str, int] = dict()  # {type:ID}
         self.mail_addresses: dict[str, str] = dict()  # {type:mail}
-        self.mail_member_ids: dict[str, int | None] = dict()  # {type:ID}
+        self.mail_member_ids: dict[str, int] = dict()  # {type:ID}
 
         self.membership_type: str | None = None
         self.special_member: bool = False
@@ -511,6 +511,8 @@ class MembersWindow(BaseWindow):
 
     def _load_single_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
+
+        # member
         data = main.load_data_from_single_member(current_member.member_id_)
         if len(data) == 0:
             return
@@ -532,6 +534,22 @@ class MembersWindow(BaseWindow):
         current_member.special_member = special_member
         current_member.comment_text = comment_text
 
+        # phone
+        data = main.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_PHONE)
+        current_member.phone_numbers.clear()
+        current_member.phone_member_ids.clear()
+        for id_, member_id, type_, number in data:
+            current_member.phone_numbers[type_] = number
+            current_member.phone_member_ids[type_] = id_
+
+        # mail
+        data = main.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_MAIL)
+        current_member.mail_addresses.clear()
+        current_member.mail_member_ids.clear()
+        for id_, member_id, type_, mail in data:
+            current_member.mail_addresses[type_] = mail
+            current_member.mail_member_ids[type_] = id_
+
     def _save(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         output, new_ = self._get_member_save_data()
@@ -543,13 +561,38 @@ class MembersWindow(BaseWindow):
         else:
             main.update_member(output=output)
 
-        main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_PHONE,
-                               output=self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_PHONE))
+        phone_ids: dict = main.save_member_nexus(member_id=output[MemberTypes.ID.value],
+                                                 table_type=TableTypes.MEMBER_PHONE,
+                                                 output=self._get_member_nexus_save_data(
+                                                     table_type=TableTypes.MEMBER_PHONE))
+        if not phone_ids:
+            phone_ids: dict = dict()
+        if current_member.phone_member_ids:
+            current_member.phone_member_ids = current_member.phone_member_ids | phone_ids
+        else:
+            current_member.phone_member_ids = phone_ids
 
-        main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_MAIL,
-                               output=self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_MAIL))
-        main.save_member_nexus(member_id=output[MemberTypes.ID.value], table_type=TableTypes.MEMBER_POSITION,
-                               output=self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_POSITION))
+        mail_ids: dict = main.save_member_nexus(member_id=output[MemberTypes.ID.value],
+                                                table_type=TableTypes.MEMBER_MAIL,
+                                                output=self._get_member_nexus_save_data(
+                                                    table_type=TableTypes.MEMBER_MAIL))
+        if not mail_ids:
+            mail_ids: dict = dict()
+        if current_member.mail_member_ids:
+            current_member.mail_member_ids = current_member.mail_member_ids | mail_ids
+        else:
+            current_member.mail_member_ids = mail_ids
+
+        # position_ids: dict = main.save_member_nexus(member_id=output[MemberTypes.ID.value],
+        #                                             table_type=TableTypes.MEMBER_POSITION,
+        #                                             output=self._get_member_nexus_save_data(
+        #                                                 table_type=TableTypes.MEMBER_POSITION))
+        # if not position_ids:
+        #     position_ids: dict = dict()
+        # if current_member.phone_member_ids:
+        #     current_member.position_member_ids = current_member.position_member_ids | position_ids
+        # else:
+        #     current_member.position_member_ids = position_ids
 
         self._is_edit = False
         self._set_edit_mode()

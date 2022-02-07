@@ -4,6 +4,7 @@
 
 sql database
     let unser coose database name
+    log member active
 
 sql handler
     save type delete
@@ -14,6 +15,8 @@ main
 
 ui
     member_window
-        break memberwindow without member
+        incorrent loag // membertype
         User logdate auswählen lassen
-        chane initial edit mode
+        chance initial edit mode
+        Zip_code initial None
+        # break memberwindow without member
