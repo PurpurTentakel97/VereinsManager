@@ -28,6 +28,19 @@ def get_all_types() -> list:
     return all_types
 
 
+def get_single_type(table_type: "TableTypes") -> str:
+    match table_type:
+        case TableTypes.MEMBER_PHONE:
+            data = _all_types["phone_number"]
+            return data[0]
+        case TableTypes.MEMBER_MAIL:
+            data = _all_types["mail"]
+            return data[0]
+        case TableTypes.MEMBER_POSITION:
+            data = _all_types["position"]
+            return data[0]
+
+
 class TypeType(Enum):
     ALL = 0
     MEMBER = 1

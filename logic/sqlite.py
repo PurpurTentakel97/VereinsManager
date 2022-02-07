@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / SQLite
+
 import datetime
 import sqlite3
 from datetime import date
@@ -31,6 +32,12 @@ class Database:
         self.cursor.execute(sql_command)
         types_list: list = self.cursor.fetchall()
         return types_list
+
+    def get_type_from_id(self, id_: int, table_type) -> str:
+        sql_command: str = f"""SELECT {table_type} FROM {table_type} WHERE ID is {id_}"""
+        self.cursor.execute(sql_command)
+        type_ = self.cursor.fetchall()
+        return type_[0][0]
 
     def add_type(self, table_name: str, type_: str) -> None:
         sql_command: str = f"""INSERT INTO "{table_name}"
@@ -237,19 +244,12 @@ class Database:
                     "{MemberMailTypes.TYPE_ID.value}",
                     "{MemberMailTypes.MAIL.value}")
                     VALUES ('{member_id}', '{value_id}', '{value}');"""
-            case TableTypes.MEMBER_POSITION:
-                sql_command: str = f"""INSERT INTO "{table_type.value}"
-                        ("{MemberPositionTypes.MEMBER_ID.value}",
-                        "{MemberPositionTypes.TYPE_ID.value}")
-                        VALUES ('{member_id}', '{value_id}');"""
 
         self.cursor.execute(sql_command)
         self.connection.commit()
         return self.cursor.lastrowid
 
-    def update_member_nexus(self, table_type: TableTypes, member_table_id: int, value, value_id: int) -> None:
-        sql_command: str = str()
-
+    def update_member_nexus(self, table_type: TableTypes, member_table_id: int, value) -> None:
         match table_type:
             case TableTypes.MEMBER_PHONE:
                 sql_command = f"""UPDATE {TableTypes.MEMBER_PHONE.value}  
@@ -261,20 +261,23 @@ class Database:
                             SET {MemberMailTypes.MAIL.value} = ?
                             WHERE {MemberMailTypes.ID.value} = ?"""
                 self.cursor.execute(sql_command, (value, member_table_id))
-            case TableTypes.MEMBER_POSITION:
-                sql_command = f"""UPDATE {TableTypes.MEMBER_POSITION.value}  
-                            SET {MemberPositionTypes.TYPE_ID.value} = ?
-                            WHERE {MemberPositionTypes.ID.value} = ?"""
-                self.cursor.execute(sql_command, (value_id, member_table_id))
+        self.connection.commit()
 
-    def delete_member_nexus(self) -> None:
-        pass
+    def delete_member_nexus(self, table_type: TableTypes, id_: int) -> None:
+        sql_command: str = f"""DELETE FROM {table_type.value} WHERE ID IS {id_};"""
+        self.cursor.execute(sql_command)
+        self.connection.commit()
+
+    def load_member_nexus(self, member_id, table_type: str) -> list:
+        sql_command: str = f"""SELECT * FROM {table_type} WHERE member_id is {member_id}"""
+        self.cursor.execute(sql_command)
+        return self.cursor.fetchall()
 
     def load_nexus_item_from_id(self, table_type: TableTypes, id_: int) -> list:
         sql_command: str = f"""SELECT * FROM {table_type.value} WHERE ID is {id_};"""
         self.cursor.execute(sql_command)
         data = self.cursor.fetchall()
-        return data
+        return data[0]
 
     # log
     def create_log_tables(self) -> None:
@@ -350,30 +353,57 @@ class Handler:
                 return type_[0]
 
     @staticmethod
-    def save_member_nexus(member_id: int, table_type, output: tuple):
-        for _ in output:
-            member_table_id, value_id, value_type, value = _
+    def save_member_nexus(member_id: int, table_type, output: tuple) -> dict:
+        ids: dict = dict()
+        for member_table_id, value_id, value_type, value in output:
             if member_table_id is None and len(value) == 0:  # no entry
                 continue
 
             elif member_table_id is None and len(value) > 0:  # save entry
-                database.save_member_nexus(table_type=table_type, member_id=member_id, value_id=value_id,
+                id_ = database.save_member_nexus(table_type=table_type, member_id=member_id, value_id=value_id,
                                                  value=value)
+                ids[value_type] = id_
                 main.log_initial_member_nexus(member_id=member_id, log_type=value_type, new_data=value)
 
             elif member_table_id is not None and len(value) > 0:  # update entry
                 reference_data = database.load_nexus_item_from_id(table_type=table_type, id_=member_table_id)
-                database.update_member_nexus(table_type=table_type, member_table_id=member_table_id, value=value,
-                                             value_id=value_id)
-                main.log_update_member_nexus(reverence_data=reference_data, new_data=value)
+                database.update_member_nexus(table_type=table_type, member_table_id=member_table_id, value=value)
+                main.log_update_member_nexus(reverence_data=reference_data, log_type=value_type, new_data=value)
 
             elif member_table_id is not None and len(value) == 0:  # delete entry
-                database.delete_member_nexus()
+                reference_data = database.load_nexus_item_from_id(table_type=table_type, id_=member_table_id)
+                database.delete_member_nexus(table_type=table_type, id_=member_table_id)
+                main.log_update_member_nexus(reverence_data=reference_data, log_type=value_type, new_data=value)
             else:
                 print("Error save member nexus")
+        return ids
+
+    @staticmethod
+    def load_member_nexus(member_id, table_type: TableTypes):
+        value_type: str = str()
+        match table_type:
+            case TableTypes.MEMBER_PHONE:
+                value_type: str = enum_sheet.get_single_type(table_type=table_type)
+                table_type: str = TableTypes.MEMBER_PHONE.value
+            case TableTypes.MEMBER_MAIL:
+                value_type: str = enum_sheet.get_single_type(table_type=table_type)
+                table_type: str = TableTypes.MEMBER_MAIL.value
+            case TableTypes.MEMBER_POSITION:
+                value_type: str = enum_sheet.get_single_type(table_type=table_type)
+                table_type: str = TableTypes.MEMBER_POSITION.value
+
+        data = database.load_member_nexus(member_id=member_id, table_type=table_type)
+        data_ = list()
+        for i in data:
+            i = list(i)
+            type_id = i[2]
+            type_ = database.get_type_from_id(id_=type_id, table_type=value_type)
+            i[2] = type_
+            data_.append(i)
+        return data_
 
 
 database: Database | None = None
 handler: Handler | None = None
 
-# date = datetime.strptime( "2022-10-01", '%Y %m %d').date()
+# date = datetime.strptime("2022-10-01", '%Y %m %d').date()

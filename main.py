@@ -75,9 +75,13 @@ def load_data_from_single_member(id_: int) -> list:
 
 
 # member nexus
-def save_member_nexus(member_id: int, table_type, output: tuple):
+def save_member_nexus(member_id: int, table_type, output: tuple) -> dict:
     if len(output) > 0:
-        sqlite.handler.save_member_nexus(member_id=member_id, table_type=table_type, output=output)
+        return sqlite.handler.save_member_nexus(member_id=member_id, table_type=table_type, output=output)
+
+
+def load_member_nexus(member_id, table_type) -> list:
+    return sqlite.handler.load_member_nexus(member_id=member_id, table_type=table_type)
 
 
 # log data
@@ -122,8 +126,11 @@ def log_initial_member_nexus(member_id, log_type, new_data) -> None:
                              log_date=datetime.date.today(), old_data=None, new_data=new_data)
 
 
-def log_update_member_nexus(reverence_data: list, new_data) -> None:
-    print(reverence_data)
+def log_update_member_nexus(reverence_data: list, log_type: str, new_data) -> None:
+    id_, member_id, type_id, value = reverence_data
+    if value != new_data:
+        sqlite.database.log_data(member_id=member_id, log_type=log_type, log_date=datetime.date.today(), old_data=value,
+                                 new_data=new_data)
 
 
 # main
