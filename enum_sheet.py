@@ -6,7 +6,7 @@ from enum import Enum
 
 date_format: str = '%Y-%m-%d'
 
-_all_types: dict = {
+all_types: dict = {
     "position": ("position_type", "Positions-Arten"),
     "membership": ("membership_type", "Mitglieds-Arten"),
     "phone_number": ("phone_number_type", "Telephon-Arten"),
@@ -14,30 +14,26 @@ _all_types: dict = {
 }
 
 member_types: list = [
-    _all_types["position"],
-    _all_types["membership"],
-    _all_types["phone_number"],
-    _all_types["mail"]
+    all_types["position"],
+    all_types["membership"],
+    all_types["phone_number"],
+    all_types["mail"]
 ]
 
 
-def get_all_types() -> list:
-    all_types: list = list()
-    for type_ in _all_types.items():
-        all_types.append(type_[1])
-    return all_types
+
 
 
 def get_single_type(table_type: "TableTypes") -> str:
     match table_type:
         case TableTypes.MEMBER_PHONE:
-            data = _all_types["phone_number"]
+            data = all_types["phone_number"]
             return data[0]
         case TableTypes.MEMBER_MAIL:
-            data = _all_types["mail"]
+            data = all_types["mail"]
             return data[0]
         case TableTypes.MEMBER_POSITION:
-            data = _all_types["position"]
+            data = all_types["position"]
             return data[0]
 
 

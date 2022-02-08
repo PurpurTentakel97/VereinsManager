@@ -46,3 +46,8 @@ class Database:
     def select_one(self, sql_command: str) -> list:
         self.cursor.execute(sql_command)
         return self.cursor.fetchone()
+
+
+def create_database() -> None:
+    global database
+    database = Database()
