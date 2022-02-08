@@ -6,10 +6,6 @@ sql database
     let unser coose database name
     log member active
 
-sql handler
-    save type delete
-    save log delete
-
 main
     log dates and zip_code every time
 
