@@ -1,7 +1,7 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Members Window
-
+import datetime
 from datetime import date
 
 from PyQt5.QtCore import QDate, Qt
@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QCo
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
 from enum import Enum
 
+import transition
 import main
 from ui.base_window import BaseWindow
 from enum_sheet import TypeType, MemberTypes, TableTypes
@@ -54,7 +55,7 @@ class MemberListItem(QListWidgetItem):
 
         self.membership_type: str | None = None
         self.special_member: bool = False
-        self.positions: list[PositionListItem] = list()
+        self.positions: list[list[PositionListItem, bool]] = list()
         self.position_member_ids: dict[str, int] = dict()  # {position:ID}
 
         self.comment_text: str | None = None
@@ -283,16 +284,16 @@ class MembersWindow(BaseWindow):
         self.show()
 
     def _set_types(self) -> None:
-        position_, membership_, phone_number_, mail_ = main.get_types(type_=TypeType.MEMBER)
+        position_, membership_, phone_number_, mail_ = transition.get_display_types(type_=TypeType.MEMBER)
 
-        positions: list = main.get_type_list(display_name=position_)
+        positions: list = transition.get_type_list(display_name=position_)
         for ID, position in positions:
             new_position: PositionListItem = PositionListItem(position)
             self._positions_items.append(new_position)
             self._positions_list.addItem(new_position)
             self.position_ids.append((ID, position))
 
-        memberships: list = main.get_type_list(display_name=membership_)
+        memberships: list = transition.get_type_list(display_name=membership_)
 
         for _, membership in memberships:
             self._membership_type_box.addItem(membership)
@@ -302,7 +303,7 @@ class MembersWindow(BaseWindow):
         self._membership_type_box.addItem("")
         self._membership_type_box.setCurrentText("")
 
-        phone_numbers: list = main.get_type_list(display_name=phone_number_)
+        phone_numbers: list = transition.get_type_list(display_name=phone_number_)
         for ID, phone_number in phone_numbers:
             self._phone_number_type_box.addItem(phone_number)
             self.phone_number_ids.append((ID, phone_number))
@@ -310,7 +311,7 @@ class MembersWindow(BaseWindow):
             self._phone_number_type_box.setEnabled(False)
             self._phone_number_le.setEnabled(False)
 
-        mails: list = main.get_type_list(display_name=mail_)
+        mails: list = transition.get_type_list(display_name=mail_)
         for ID, mail in mails:
             self._mail_address_type_box.addItem(mail)
             self.mail_ids.append((ID, mail))
@@ -476,12 +477,22 @@ class MembersWindow(BaseWindow):
     def _set_position(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         current_position: PositionListItem = self._positions_list.currentItem()
-        if current_position in current_member.positions:
-            current_member.positions.remove(current_position)
-            current_position.setBackground(QColor("white"))
-        else:
-            current_member.positions.append(current_position)
+        position_set = False
+        for position in current_member.positions:
+            if current_position in position:
+                position_set = True
+                if position[1]:
+                    position[1] = False
+                    current_position.setBackground(QColor("white"))
+                    continue
+                else:
+                    position[1] = True
+                    current_position.setBackground(QColor("light grey"))
+                    continue
+        if not position_set:
+            current_member.positions.append([current_position, True])
             current_position.setBackground(QColor("light grey"))
+
         self._positions_list.setCurrentItem(None)
         if not self._is_edit:
             self._is_edit = True
@@ -497,7 +508,7 @@ class MembersWindow(BaseWindow):
         self.member_counter += 1
 
     def _load_all_member_names(self) -> None:
-        member_names: list = main.load_all_member_names(True)
+        member_names: list = transition.load_all_member_names(True)
         self.counter = 0
         for member_id, first_name, last_name in member_names:
             new_member: MemberListItem = MemberListItem(id_=member_id, firstname=first_name, lastname=last_name)
@@ -513,7 +524,7 @@ class MembersWindow(BaseWindow):
         current_member: MemberListItem = self._members_list.currentItem()
 
         # member
-        data = main.load_data_from_single_member(current_member.member_id_)
+        data = transition.load_data_single_member(current_member.member_id_)
         if len(data) == 0:
             return
         birth_date: date
@@ -535,7 +546,7 @@ class MembersWindow(BaseWindow):
         current_member.comment_text = comment_text
 
         # phone
-        data = main.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_PHONE)
+        data = transition.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_PHONE)
         current_member.phone_numbers.clear()
         current_member.phone_member_ids.clear()
         for id_, member_id, type_, number in data:
@@ -543,7 +554,7 @@ class MembersWindow(BaseWindow):
             current_member.phone_member_ids[type_] = id_
 
         # mail
-        data = main.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_MAIL)
+        data = transition.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_MAIL)
         current_member.mail_addresses.clear()
         current_member.mail_member_ids.clear()
         for id_, member_id, type_, mail in data:
@@ -552,69 +563,44 @@ class MembersWindow(BaseWindow):
 
     def _save(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
-        output, new_ = self._get_member_save_data()
+        member_output: dict = self._get_member_save_data()
+        member_phone_output: tuple = self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_PHONE)
+        member_mail_output: tuple = self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_MAIL)
+        member_position_output: tuple = self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_POSITION)
+        output: dict = {
+            "member": member_output,
+            "member_phone": member_phone_output,
+            "member_mail": member_mail_output,
+            "member_position": member_position_output
+        }
 
-        if new_:
-            id_: int = main.save_member(output=output)
-            current_member.member_id_ = id_
-            output[MemberTypes.ID.value] = id_
-        else:
-            main.update_member(output=output)
+        ids: dict = transition.save_update_member(output=output, time_stamp=datetime.date.today())
 
-        phone_ids: dict = main.save_member_nexus(member_id=output[MemberTypes.ID.value],
-                                                 table_type=TableTypes.MEMBER_PHONE,
-                                                 output=self._get_member_nexus_save_data(
-                                                     table_type=TableTypes.MEMBER_PHONE))
-        if not phone_ids:
-            phone_ids: dict = dict()
-        if current_member.phone_member_ids:
-            current_member.phone_member_ids = current_member.phone_member_ids | phone_ids
-        else:
-            current_member.phone_member_ids = phone_ids
-
-        mail_ids: dict = main.save_member_nexus(member_id=output[MemberTypes.ID.value],
-                                                table_type=TableTypes.MEMBER_MAIL,
-                                                output=self._get_member_nexus_save_data(
-                                                    table_type=TableTypes.MEMBER_MAIL))
-        if not mail_ids:
-            mail_ids: dict = dict()
-        if current_member.mail_member_ids:
-            current_member.mail_member_ids = current_member.mail_member_ids | mail_ids
-        else:
-            current_member.mail_member_ids = mail_ids
-
-        # position_ids: dict = main.save_member_nexus(member_id=output[MemberTypes.ID.value],
-        #                                             table_type=TableTypes.MEMBER_POSITION,
-        #                                             output=self._get_member_nexus_save_data(
-        #                                                 table_type=TableTypes.MEMBER_POSITION))
-        # if not position_ids:
-        #     position_ids: dict = dict()
-        # if current_member.phone_member_ids:
-        #     current_member.position_member_ids = current_member.position_member_ids | position_ids
-        # else:
-        #     current_member.position_member_ids = position_ids
+        current_member.member_id_ = ids["member"]
+        current_member.phone_member_ids = current_member.phone_member_ids | ids["member_phone"]
+        current_member.mail_member_ids = current_member.mail_member_ids | ids["member_mail"]
+        current_member.position_member_ids = current_member.position_member_ids | ids["member_position"]
 
         self._is_edit = False
         self._set_edit_mode()
 
     def _delete(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        current_index: int = self._members_list.currentRow()
-        main.delete_recover_member([current_member.member_id_, False])
-        self._members_list.takeItem(current_index)
-        self.member_counter -= 1
-        if self.member_counter == 0:
-            self._add_member()
+        pass
 
-    def _get_member_save_data(self) -> [dict, bool]:
+    def _get_member_save_data(self) -> dict:
         current_member: MemberListItem = self._members_list.currentItem()
+        try:
+            zip_code = int(current_member.zip_code)
+        except ValueError:
+            zip_code = None
 
         output: dict = {
+            MemberTypes.ID.value: current_member.member_id_,
             MemberTypes.FIRST_NAME.value: current_member.first_name,
             MemberTypes.LAST_NAME.value: current_member.last_name,
             MemberTypes.STREET.value: current_member.street,
             MemberTypes.NUMBER.value: current_member.number,
-            MemberTypes.ZIP_CODE.value: current_member.zip_code,
+            MemberTypes.ZIP_CODE.value: zip_code,
             MemberTypes.CITY.value: current_member.city,
             MemberTypes.B_DAY_DATE.value: current_member.birth_date.toPyDate() \
                 if not current_member.birth_date.isNull() else None,
@@ -622,15 +608,9 @@ class MembersWindow(BaseWindow):
                 if not current_member.entry_date.isNull() else None,
             MemberTypes.MEMBERSHIP_TYPE.value: current_member.membership_type,
             MemberTypes.SPECIAL_MEMBER.value: current_member.special_member,
-            MemberTypes.COMMENT.value: current_member.comment_text
+            MemberTypes.COMMENT.value: current_member.comment_text or None
         }
-
-        new_: bool = True
-        if current_member.member_id_ is not None:
-            new_ = False
-            output[MemberTypes.ID.value] = current_member.member_id_
-
-        return output, new_
+        return output
 
     def _get_member_nexus_save_data(self, table_type: TableTypes) -> tuple:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -646,8 +626,8 @@ class MembersWindow(BaseWindow):
                 dummy_ids = current_member.mail_member_ids.items()
             case TableTypes.MEMBER_POSITION:
                 dummy_values = list()
-                for position in current_member.positions:
-                    dummy_values.append([position.name, position.name])
+                for position, active in current_member.positions:
+                    dummy_values.append([position.name, active])
                 dummy_ids = current_member.position_member_ids.items()
 
         output: list = list()  # [ID,value]

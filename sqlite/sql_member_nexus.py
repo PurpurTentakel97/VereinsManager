@@ -88,6 +88,13 @@ class DatabaseMemberNexus:
                 values: tuple = (value, member_table_id)
                 self.database.update(sql_command=sql_command, values=values)
 
+            case TableTypes.MEMBER_POSITION:
+                sql_command = f"""UPDATE {TableTypes.MEMBER_POSITION.value}  
+                                SET {MemberPositionTypes.TYPE_ID.value} = ?
+                                WHERE {MemberPositionTypes.ID.value} = ?"""
+                values: tuple = (value, member_table_id)
+                self.database.update(sql_command=sql_command, values=values)
+
     def delete_member_nexus(self, table_type: TableTypes, id_: int) -> None:
         sql_command: str = f"""DELETE FROM {table_type.value} WHERE ID IS {id_};"""
         self.database.delete(sql_command=sql_command)
@@ -98,5 +105,5 @@ class DatabaseMemberNexus:
 
     def load_nexus_item_from_id(self, table_type: TableTypes, id_: int) -> tuple:
         sql_command: str = f"""SELECT * FROM {table_type.value} WHERE ID is {id_};"""
-        data = self.database.select_all(sql_command)
-        return data[0]
+        data = self.database.select_one(sql_command)
+        return data
