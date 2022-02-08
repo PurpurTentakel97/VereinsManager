@@ -26,16 +26,16 @@ def safe_update_member_nexus(member_id: int, table_type, output: tuple, time_sta
             continue
 
         elif member_value_id is not None and len(value) > 0:  # update entry
-            reverence_data: list = sql_database.database.member_nexus.load_nexus_item_from_id(table_type=table_type,
-                                                                                              id_=member_value_id)
+            reverence_data: tuple = sql_database.database.member_nexus.load_nexus_item_from_id(table_type=table_type,
+                                                                                               id_=member_value_id)
             sql_database.database.member_nexus.update_member_nexus(table_type=table_type,
                                                                    member_table_id=member_value_id, value=value)
             log_handler.log_data(reference_data=reverence_data, output=data, time_stamp=time_stamp,
                                  table_type=table_type)
             continue
         elif member_value_id is not None and len(value) == 0:  # delete entry
-            reverence_data: list = sql_database.database.member_nexus.load_nexus_item_from_id(table_type=table_type,
-                                                                                              id_=member_value_id)
+            reverence_data: tuple = sql_database.database.member_nexus.load_nexus_item_from_id(table_type=table_type,
+                                                                                               id_=member_value_id)
             sql_database.database.member_nexus.delete_member_nexus(table_type=table_type, id_=member_value_id)
             log_handler.log_data(reference_data=reverence_data, output=data, time_stamp=time_stamp,
                                  table_type=table_type)
