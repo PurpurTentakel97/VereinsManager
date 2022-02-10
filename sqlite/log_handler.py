@@ -19,7 +19,6 @@ def _log_data(new_data, old_data, type_: str, member_id: int, time_stamp: date):
 
 
 def log_data(reference_data: tuple, output, time_stamp: date, table_type: TableTypes) -> None:
-    print("*** LOG HANDLER // LOG DATA ***", reference_data, "//", output, "//", time_stamp)
     match table_type:
         case TableTypes.MEMBER:
             _log_member(reference_data=reference_data, output=output, time_stamp=time_stamp)

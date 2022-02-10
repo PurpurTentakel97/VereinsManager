@@ -5,6 +5,7 @@
 sql database
     let unser coose database name
     log member active
+    refactor type Types
 
 main
     log dates and zip_code every time
