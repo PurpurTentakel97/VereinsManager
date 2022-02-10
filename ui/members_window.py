@@ -11,9 +11,10 @@ from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QCo
 from enum import Enum
 
 import transition
-import main
 from ui.base_window import BaseWindow
 from enum_sheet import TypeType, MemberTypes, TableTypes
+
+import debug
 
 members_window_: "MembersWindow" or None = None
 
@@ -104,6 +105,9 @@ class MembersWindow(BaseWindow):
         self._load_all_member_names()
         self._set_types()
         self._set_edit_mode()
+
+    def __str__(self) -> str:
+        return "MEMBERS WINDOW"
 
     def _set_ui(self) -> None:
         # Left
@@ -525,6 +529,7 @@ class MembersWindow(BaseWindow):
 
         # member
         data = transition.load_data_single_member(current_member.member_id_)
+        debug.debug(item=self, keyword="Member Data", message=data)
         if len(data) == 0:
             return
         birth_date: date
@@ -547,6 +552,7 @@ class MembersWindow(BaseWindow):
 
         # phone
         data = transition.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_PHONE)
+        debug.debug(item=self, keyword="Member Phone Data", message=data)
         current_member.phone_numbers.clear()
         current_member.phone_member_ids.clear()
         for id_, member_id, type_, number in data:
@@ -555,11 +561,29 @@ class MembersWindow(BaseWindow):
 
         # mail
         data = transition.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_MAIL)
+        debug.debug(item=self, keyword="Member Mail Data", message=data)
         current_member.mail_addresses.clear()
         current_member.mail_member_ids.clear()
         for id_, member_id, type_, mail in data:
             current_member.mail_addresses[type_] = mail
             current_member.mail_member_ids[type_] = id_
+
+        # positions
+        data = transition.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_POSITION)
+        debug.debug(item=self, keyword="Position Data", message=data)
+        current_member.positions.clear()
+        current_member.position_member_ids.clear()
+        for member_position_id, member_id, type_ in data:
+            current_member.position_member_ids[type_] = member_position_id
+
+        for position in self._positions_items:
+            for member_position_id, member_id, type_ in data:
+                if position.name == type_:
+                    current_member.positions.append([position, True])
+
+        debug.debug(item=self,keyword="self._positions_items",message=self._positions_items)
+        debug.debug(item=self,keyword="current_member.positions",message=current_member.positions)
+        debug.debug(item=self,keyword="current_member.position_member_ids",message=current_member.position_member_ids)
 
     def _save(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()

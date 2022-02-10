@@ -24,7 +24,6 @@ def create_all_tables() -> None:
 
 
 def save_update_member(output: dict, time_stamp: date) -> dict:
-    print("***GLOBAL HANDLER // SAVE UPDATE MEMBER ***", output)
     try:
         member_output: dict = output["member"]
         member_phone_output: tuple = output["member_phone"]

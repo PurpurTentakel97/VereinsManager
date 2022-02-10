@@ -7,10 +7,10 @@ from enum import Enum
 date_format: str = '%Y-%m-%d'
 
 all_types: dict = {
-    "position": ("position_type", "Positions-Arten"),
-    "membership": ("membership_type", "Mitglieds-Arten"),
-    "phone_number": ("phone_number_type", "Telephon-Arten"),
-    "mail": ("mail_type", "Mail-Arten")
+    "position": ("type_position", "Positions-Arten"),
+    "membership": ("type_membership", "Mitglieds-Arten"),
+    "phone_number": ("type_phone_number", "Telephon-Arten"),
+    "mail": ("type_mail", "Mail-Arten")
 }
 
 member_types: list = [
@@ -19,9 +19,6 @@ member_types: list = [
     all_types["phone_number"],
     all_types["mail"]
 ]
-
-
-
 
 
 def get_single_type(table_type: "TableTypes") -> str:
