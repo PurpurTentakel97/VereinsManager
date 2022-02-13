@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListW
 
 from ui.base_window import BaseWindow
 import transition
-from enum_sheet import TypeType
+from config_sheet import TypeType
 
 types_window_: "TypesWindow" or None = None
 

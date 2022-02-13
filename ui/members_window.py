@@ -12,7 +12,7 @@ from enum import Enum
 
 import transition
 from ui.base_window import BaseWindow
-from enum_sheet import TypeType, MemberTypes, TableTypes
+from config_sheet import TypeType, MemberTypes, TableTypes
 
 import debug
 

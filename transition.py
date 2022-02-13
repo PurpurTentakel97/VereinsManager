@@ -5,7 +5,7 @@
 from sqlite import types_handler, global_handler, member_handler, member_nexus_handler
 
 
-# types
+# config
 def get_display_types(type_) -> list:
     return types_handler.get_display_types(type_type=type_)
 
