@@ -15,14 +15,8 @@ class Config:
     def __init__(self) -> None:
         self.config: dict = dict()
 
-        self.date_formats: dict = dict()
-        self.type_table: dict = dict()
-        self.log_table: dict = dict()
-
-        self.member_table: dict = dict()
-        self.member_phone_table: dict = dict()
-        self.member_mail_table: dict = dict()
-        self.member_position_table: dict = dict()
+        self.date_format: dict = dict()
+        self.special_user: dict = dict()
 
         self.load_config()
 
@@ -34,24 +28,9 @@ class Config:
             json_data = json.load(json_file)
 
         self.config: dict = json_data
-        debug.info(item=self, keyword="load config", message="config = " + str(self.config))
 
-        self.date_formats: dict = json_data["date_formats"]
-        debug.info(item=self, keyword="load config", message="date format = " + str(self.date_formats))
-        self.log_table: dict = json_data["log"]
-        debug.info(item=self, keyword="load config", message="log = " + str(self.log_table))
-        self.type_table: dict = json_data["type_table"]
-        debug.info(item=self, keyword="load config", message="type table = " + str(self.type_table))
-
-        self.member_table: dict = json_data["member"]
-        debug.info(item=self, keyword="load config", message="member  = " + str(self.member_table))
-        self.member_phone_table: dict = json_data["member_phone"]
-        debug.info(item=self, keyword="load config", message="member phone  = " + str(self.member_phone_table))
-        self.member_mail_table: dict = json_data["member_mail"]
-        debug.info(item=self, keyword="load config", message="member mail = " + str(self.member_mail_table))
-        self.member_position_table: dict = json_data["member_position"]
-        debug.info(item=self, keyword="load config",
-                   message="member position = " + str(self.member_position_table))
+        self.date_format: dict = json_data["date_formats"]
+        self.special_user: dict = json_data["special_user"]
 
 
 def create_config():
