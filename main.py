@@ -10,7 +10,7 @@ from sqlite import database
 # main
 if __name__ == "__main__":
     database.crate_database()
-    #config_sheet.create_config()
+    config_sheet.create_config()
     #main_handler.create_database_classes()
     #main_handler.create_all_tables()
     #base_window.create_application()

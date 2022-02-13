@@ -3,107 +3,14 @@
     "short": "%Y-%m-%d",
     "long": "%Y-%m-%d-%H-%M-%S"
   },
-  "type_table": {
-    "table_names": {
-      "type_position": "type_position",
-      "type_membership": "type_membership",
-      "type_phone_number": "type_phone_number",
-      "type_mail": "type_mail"
-    },
-    "names": {
-      "id": "ID",
-      "timestamp": "timestamp",
-      "type": "type"
-    }
-  },
-  "member": {
-    "name": "member",
-    "names": {
-      "id": "ID",
-      "timestamp": "timestamp",
-      "first_name": "first_name",
-      "last_name": "last_name",
-      "street": "street",
-      "number": "number",
-      "zip_code": "zip_code",
-      "city": "city",
-      "b_day_date": "b_day_date",
-      "entry_date": "entry_date",
-      "membership_type": "membership_type",
-      "special_member": "special_member",
-      "comment": "comment",
-      "active": "active"
-    }
-  },
-  "member_phone": {
-    "name": "member_phone",
-    "names": {
-      "id": "ID",
-      "timestamp": "timestamp",
-      "member_id": "member_id",
-      "type_id": "type_id",
-      "number": "number"
-    },
-    "types": {
-      "id": "INTEGER",
-      "timestamp": "TEXT",
-      "member_id": "INTEGER",
-      "type_id": "INTEGER",
-      "number": "TEXT"
-    }
-  },
-  "member_mail": {
-    "name": "member_mail",
-    "names": {
-      "id": "ID",
-      "timestamp": "timestamp",
-      "member_id": "member_id",
-      "type_id": "type_id",
-      "number": "mail"
-    },
-    "types": {
-      "id": "INTEGER",
-      "timestamp": "TEXT",
-      "member_id": "INTEGER",
-      "type_id": "INTEGER",
-      "number": "TEXT"
-    }
-  },
-  "member_position": {
-    "name": "member_position",
-    "names": {
-      "id": "ID",
-      "timestamp": "timestamp",
-      "member_id": "member_id",
-      "type_id": "type_id"
-    },
-    "types": {
-      "id": "INTEGER",
-      "timestamp": "TEXT",
-      "member_id": "INTEGER",
-      "type_id": "INTEGER"
-    }
-  },
-  "log": {
-    "name": "log",
-    "names": {
-      "id": "ID",
-      "timestamp": "timestamp",
-      "member_id": "member_id",
-      "log_type_id": "log_type_id",
-      "date": "date",
-      "old_data": "old_data",
-      "new_data": "new_data"
-    },
-    "types": {
-      "id": "INTEGER",
-      "timestamp": "TEXT",
-      "member_id": "INTEGER",
-      "log_type_id": "INTEGER",
-      "date": "TEXT",
-      "old_data": "TEXT",
-      "new_data": "TEXT"
-    }
+  "special_user": {
+    "traijan__": "Ehrenmannmitglied",
+    "necromenzer": "Ehren Todgeweihter",
+    "coder2k": "Ehren Coder",
+    "purpurtentakel": "Ehren Tentakel",
+    "lordrepha": "Ehren Lord",
+    "crazynightowl01" : "Ehren Eule",
+    "quatschsalat": "Ehren Quatsch"
   }
 }
 
