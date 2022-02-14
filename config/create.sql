@@ -1,29 +1,60 @@
+/* Type Type */
+CREATE TABLE IF NOT EXISTS "main"."type_type"(
+"ID" INTEGER NOT NULL UNIQUE,
+"_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
+"_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
+"type_name" Varchar(10) NOT NULL UNIQUE,
+PRIMARY KEY (ID AUTOINCREMENT)
+);
+INSERT OR IGNORE INTO type_type (type_name) VALUES ("Mitgliedsart");
+INSERT OR IGNORE INTO type_type (type_name) VALUES ("E-Mail");
+INSERT OR IGNORE INTO type_type (type_name) VALUES ("Telefon");
+INSERT OR IGNORE INTO type_type (type_name) VALUES ("Position");
+/* date */
+CREATE TRIGGER IF NOT EXISTS "trigger_update_type_type"
+    AFTER UPDATE ON "type_type"
+BEGIN
+    UPDATE "type_type" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+END;
+
 /* TYPE */
 CREATE TABLE IF NOT EXISTS "main"."type" (
 "ID" INTEGER NOT NULL UNIQUE,
 "_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "name" Varchar(10) NOT NULL,
-"type" INTEGER(1) NOT NULL,
+"type_id" INTEGER(1) NOT NULL,
 "_active" INTEGER(1) DEFAULT 1,
-PRIMARY KEY ("ID" AUTOINCREMENT)
+PRIMARY KEY ("ID" AUTOINCREMENT),
+FOREIGN KEY ("type_id") REFERENCES "type_type"
 );
-/* Active Member Type */
-CREATE VIEW IF NOT EXISTS "main"."v_active_member_type" AS
-SELECT ID,name,type
-FROM type
-WHERE _active = 1 AND type IN (0,1,2,3);
-/* Inactive Member Type */
-CREATE VIEW IF NOT EXISTS "main"."v_inactive_member_type" AS
-SELECT ID,name,type
-FROM type
-WHERE _active = 0 AND type IN (0,1,2,3);
 /* date */
 CREATE TRIGGER IF NOT EXISTS "trigger_update_type"
     AFTER UPDATE ON "type"
 BEGIN
     UPDATE "type" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
 END;
+/* Active Type */
+CREATE VIEW IF NOT EXISTS "main"."v_active_type" AS
+SELECT type.ID, type.name, type.type_id, type_type.type_name
+FROM type INNER JOIN type_type ON type.type_id = type_type.ID
+WHERE type._active = 1;
+/* Active Member Type */
+CREATE VIEW IF NOT EXISTS "main"."v_inactive_type" AS
+SELECT type.ID,type.name,type.type_id,type_type.type_name
+FROM type INNER JOIN type_type ON type.type_id = type_type.ID
+WHERE type._active = 0;
+/* Active Member Type */
+CREATE VIEW IF NOT EXISTS "main"."v_active_member_type" AS
+SELECT ID,name,type_id
+FROM type
+WHERE _active = 1 AND type_id IN (1,2,3,4);
+/* Inactive Member Type */
+CREATE VIEW IF NOT EXISTS "main"."v_inactive_member_type" AS
+SELECT ID,name,type_id
+FROM type
+WHERE _active = 0 AND type_id IN (1,2,3,4);
+
 
 /* MEMBER PHONE */
 CREATE TABLE IF NOT EXISTS "main"."member_phone" (
