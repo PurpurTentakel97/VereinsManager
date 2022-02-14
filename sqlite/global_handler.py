@@ -4,7 +4,7 @@
 
 from sqlite import select_handler
 
-global_handler: "GlobalHandler"
+global_handler: "GlobalHandler" or None = None
 
 
 class GlobalHandler:
