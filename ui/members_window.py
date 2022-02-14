@@ -12,7 +12,6 @@ from enum import Enum
 
 import transition
 from ui.base_window import BaseWindow
-from config_sheet import TypeType, MemberTypes, TableTypes
 
 import debug
 
@@ -288,40 +287,7 @@ class MembersWindow(BaseWindow):
         self.show()
 
     def _set_types(self) -> None:
-        position_, membership_, phone_number_, mail_ = transition.get_display_types(type_=TypeType.MEMBER)
-
-        positions: list = transition.get_type_list(display_name=position_)
-        for ID, position in positions:
-            new_position: PositionListItem = PositionListItem(position)
-            self._positions_items.append(new_position)
-            self._positions_list.addItem(new_position)
-            self.position_ids.append((ID, position))
-
-        memberships: list = transition.get_type_list(display_name=membership_)
-
-        for _, membership in memberships:
-            self._membership_type_box.addItem(membership)
-        if self._membership_type_box.currentText().strip() == "":
-            self._membership_type_box.setEnabled(False)
-            self._special_member_cb.setEnabled(False)
-        self._membership_type_box.addItem("")
-        self._membership_type_box.setCurrentText("")
-
-        phone_numbers: list = transition.get_type_list(display_name=phone_number_)
-        for ID, phone_number in phone_numbers:
-            self._phone_number_type_box.addItem(phone_number)
-            self.phone_number_ids.append((ID, phone_number))
-        if self._phone_number_type_box.currentText().strip() == "":
-            self._phone_number_type_box.setEnabled(False)
-            self._phone_number_le.setEnabled(False)
-
-        mails: list = transition.get_type_list(display_name=mail_)
-        for ID, mail in mails:
-            self._mail_address_type_box.addItem(mail)
-            self.mail_ids.append((ID, mail))
-        if self._mail_address_type_box.currentText().strip() == "":
-            self._mail_address_type_box.setEnabled(False)
-            self._mail_address_le.setEnabled(False)
+        pass
 
     def _set_edit_mode(self) -> None:
         invert_edit = not self._is_edit
@@ -334,59 +300,7 @@ class MembersWindow(BaseWindow):
         self._remove_member_btn.setEnabled(invert_edit)
 
     def _set_current_member(self) -> None:
-        self._load_single_member()
-        current_member: MemberListItem = self._members_list.currentItem()
-
-        self._first_name_le.setText(current_member.first_name)
-        self._last_name_le.setText(current_member.last_name)
-        self._street_le.setText(current_member.street)
-        self._number_le.setText(current_member.number)
-        self._zip_code_le.setText(str(current_member.zip_code))
-        self._city_le.setText(current_member.city)
-        self._comment_text.setText(current_member.comment_text)
-        self._special_member_cb.setChecked(current_member.special_member)
-
-        # membership
-        if current_member.membership_type is not None:
-            self._membership_type_box.setCurrentText(current_member.membership_type)
-        else:
-            self._membership_type_box.setCurrentText("")
-
-        # birthday
-        if not current_member.birth_date.isNull():
-            self._b_day_date.setDate(current_member.birth_date)
-        else:
-            self._b_day_date.setDate(QDate().currentDate())
-            current_member.birth_date = QDate()
-
-        # entry day
-        if not current_member.entry_date.isNull():
-            self._entry_date.setDate(current_member.entry_date)
-        else:
-            self._entry_date.setDate(QDate().currentDate())
-            current_member.entry_date = QDate()
-
-        # phone number
-        try:
-            self._phone_number_le.setText(current_member.phone_numbers[self._phone_number_type_box.currentText()])
-        except KeyError:
-            self._phone_number_le.setText("")
-
-        # mail
-        try:
-            self._mail_address_le.setText(current_member.mail_addresses[self._mail_address_type_box.currentText()])
-        except KeyError:
-            self._mail_address_le.setText("")
-
-        # positions
-        for position in self._positions_items:
-            if position in current_member.positions:
-                position.setBackground(QColor("light grey"))
-            else:
-                position.setBackground(QColor("white"))
-
-        self._is_edit = False
-        self._set_edit_mode()
+        pass
 
     def _set_el_input(self, type_: LineEditType) -> None:
         if not self._is_edit:
@@ -479,28 +393,7 @@ class MembersWindow(BaseWindow):
             self._set_edit_mode()
 
     def _set_position(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        current_position: PositionListItem = self._positions_list.currentItem()
-        position_set = False
-        for position in current_member.positions:
-            if current_position in position:
-                position_set = True
-                if position[1]:
-                    position[1] = False
-                    current_position.setBackground(QColor("white"))
-                    continue
-                else:
-                    position[1] = True
-                    current_position.setBackground(QColor("light grey"))
-                    continue
-        if not position_set:
-            current_member.positions.append([current_position, True])
-            current_position.setBackground(QColor("light grey"))
-
-        self._positions_list.setCurrentItem(None)
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
+        pass
 
     def _add_member(self) -> None:
         new_member: MemberListItem = MemberListItem()
@@ -512,171 +405,13 @@ class MembersWindow(BaseWindow):
         self.member_counter += 1
 
     def _load_all_member_names(self) -> None:
-        member_names: list = transition.load_all_member_names(True)
-        self.counter = 0
-        for member_id, first_name, last_name in member_names:
-            new_member: MemberListItem = MemberListItem(id_=member_id, firstname=first_name, lastname=last_name)
-            self._members_list.addItem(new_member)
-            self.counter += 1
-        if self.counter > 0:
-            self._members_list.setCurrentRow(0)
-            self._set_current_member()
-        else:
-            self._add_member()
+        pass
 
     def _load_single_member(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-
-        # member
-        data = transition.load_data_single_member(current_member.member_id_)
-        debug.debug(item=self, keyword="Member Data", message=data)
-        if len(data) == 0:
-            return
-        birth_date: date
-        entry_date: date
-        id_, first_name, last_name, street, number, zip_code, city, \
-        birth_date, entry_date, membership_type, special_member, comment_text = data
-        current_member.first_name = first_name
-        current_member.last_name = last_name
-        current_member.street = street
-        current_member.number = number
-        current_member.zip_code = zip_code
-        current_member.city = city
-        current_member.birth_date = QDate(birth_date.year, birth_date.month, birth_date.day) \
-            if birth_date is not None else QDate()
-        current_member.entry_date = QDate(entry_date.year, entry_date.month, entry_date.day) \
-            if entry_date is not None else QDate()
-        current_member.membership_type = membership_type
-        current_member.special_member = special_member
-        current_member.comment_text = comment_text
-
-        # phone
-        data = transition.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_PHONE)
-        debug.debug(item=self, keyword="Member Phone Data", message=data)
-        current_member.phone_numbers.clear()
-        current_member.phone_member_ids.clear()
-        for id_, member_id, type_, number in data:
-            current_member.phone_numbers[type_] = number
-            current_member.phone_member_ids[type_] = id_
-
-        # mail
-        data = transition.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_MAIL)
-        debug.debug(item=self, keyword="Member Mail Data", message=data)
-        current_member.mail_addresses.clear()
-        current_member.mail_member_ids.clear()
-        for id_, member_id, type_, mail in data:
-            current_member.mail_addresses[type_] = mail
-            current_member.mail_member_ids[type_] = id_
-
-        # positions
-        data = transition.load_member_nexus(member_id=current_member.member_id_, table_type=TableTypes.MEMBER_POSITION)
-        debug.debug(item=self, keyword="Position Data", message=data)
-        current_member.positions.clear()
-        current_member.position_member_ids.clear()
-        for member_position_id, member_id, type_ in data:
-            current_member.position_member_ids[type_] = member_position_id
-
-        for position in self._positions_items:
-            for member_position_id, member_id, type_ in data:
-                if position.name == type_:
-                    current_member.positions.append([position, True])
-
-        debug.debug(item=self,keyword="self._positions_items",message=self._positions_items)
-        debug.debug(item=self,keyword="current_member.positions",message=current_member.positions)
-        debug.debug(item=self,keyword="current_member.position_member_ids",message=current_member.position_member_ids)
+        pass
 
     def _save(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        member_output: dict = self._get_member_save_data()
-        member_phone_output: tuple = self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_PHONE)
-        member_mail_output: tuple = self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_MAIL)
-        member_position_output: tuple = self._get_member_nexus_save_data(table_type=TableTypes.MEMBER_POSITION)
-        output: dict = {
-            "member": member_output,
-            "member_phone": member_phone_output,
-            "member_mail": member_mail_output,
-            "member_position": member_position_output
-        }
-
-        ids: dict = transition.save_update_member(output=output, time_stamp=datetime.date.today())
-
-        current_member.member_id_ = ids["member"]
-        current_member.phone_member_ids = current_member.phone_member_ids | ids["member_phone"]
-        current_member.mail_member_ids = current_member.mail_member_ids | ids["member_mail"]
-        current_member.position_member_ids = current_member.position_member_ids | ids["member_position"]
-
-        self._is_edit = False
-        self._set_edit_mode()
+        pass
 
     def _delete(self) -> None:
         pass
-
-    def _get_member_save_data(self) -> dict:
-        current_member: MemberListItem = self._members_list.currentItem()
-        try:
-            zip_code = int(current_member.zip_code)
-        except ValueError:
-            zip_code = None
-
-        output: dict = {
-            MemberTypes.ID.value: current_member.member_id_,
-            MemberTypes.FIRST_NAME.value: current_member.first_name,
-            MemberTypes.LAST_NAME.value: current_member.last_name,
-            MemberTypes.STREET.value: current_member.street,
-            MemberTypes.NUMBER.value: current_member.number,
-            MemberTypes.ZIP_CODE.value: zip_code,
-            MemberTypes.CITY.value: current_member.city,
-            MemberTypes.B_DAY_DATE.value: current_member.birth_date.toPyDate() \
-                if not current_member.birth_date.isNull() else None,
-            MemberTypes.ENTRY_DATE.value: current_member.entry_date.toPyDate() \
-                if not current_member.entry_date.isNull() else None,
-            MemberTypes.MEMBERSHIP_TYPE.value: current_member.membership_type,
-            MemberTypes.SPECIAL_MEMBER.value: current_member.special_member,
-            MemberTypes.COMMENT.value: current_member.comment_text or None
-        }
-        return output
-
-    def _get_member_nexus_save_data(self, table_type: TableTypes) -> tuple:
-        current_member: MemberListItem = self._members_list.currentItem()
-        dummy_values = list()
-        dummy_ids = list()
-
-        match table_type:
-            case TableTypes.MEMBER_PHONE:
-                dummy_values = current_member.phone_numbers.items()
-                dummy_ids = current_member.phone_member_ids.items()
-            case TableTypes.MEMBER_MAIL:
-                dummy_values = current_member.mail_addresses.items()
-                dummy_ids = current_member.mail_member_ids.items()
-            case TableTypes.MEMBER_POSITION:
-                dummy_values = list()
-                for position, active in current_member.positions:
-                    dummy_values.append([position.name, active])
-                dummy_ids = current_member.position_member_ids.items()
-
-        output: list = list()  # [ID,value]
-        for value_type, value in dummy_values:  # {type:value}
-            inner: list = list()
-            for ID_type, ID in dummy_ids:  # {type:ID}
-                if value_type == ID_type:
-                    inner.append(ID)
-            if len(inner) == 0:
-                inner.append(None)
-            inner.append(self._get_id_from_type(type_=value_type, table_type=table_type))
-            inner.append(value)
-            output.append(tuple(inner))
-        return tuple(output)  # (member_id,table_type,((member,phone_id,phone_type_id,number),(next_number))
-
-    def _get_id_from_type(self, type_: str, table_type: TableTypes) -> int:
-        dummy: list = list()
-        match table_type:
-            case TableTypes.MEMBER_PHONE:
-                dummy: list = self.phone_number_ids
-            case TableTypes.MEMBER_MAIL:
-                dummy: list = self.mail_ids
-            case TableTypes.MEMBER_POSITION:
-                dummy: list = self.position_ids
-
-        for ID, entry in dummy:
-            if entry == type_:
-                return ID

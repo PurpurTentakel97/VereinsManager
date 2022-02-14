@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListW
 
 from ui.base_window import BaseWindow
 import transition
-from config_sheet import TypeType
 
 types_window_: "TypesWindow" or None = None
 
@@ -27,9 +26,11 @@ class TypesWindow(BaseWindow):
     def __init__(self) -> None:
         super().__init__()
         self._types_list_items: list = list()
+
         self._create_ui()
         self._create_layout()
         self._set_window_information()
+
         self._set_types()
 
     def _create_ui(self) -> None:
@@ -98,9 +99,8 @@ class TypesWindow(BaseWindow):
         self._types_list.setCurrentItem(None)
 
     def _set_types(self) -> None:
-        types: list[str] = transition.get_display_types(type_=TypeType.ALL)
-        for type_ in types:
-            self._types_box.addItem(type_)
+        data = transition.get_types_of_member()
+
 
     def _row_chanced(self) -> None:
         current_type: TypesListEntry = self._types_list.currentItem()
@@ -149,7 +149,7 @@ class TypesWindow(BaseWindow):
 
     def _edit_type(self) -> None:
         transition.edit_type(display_name=self._types_box.currentText(), new_type_=self._edit.text().strip().title(),
-                       type_id=self._types_list.currentItem().id_)
+                             type_id=self._types_list.currentItem().id_)
         self._set_current_type()
         self._edit.clear()
 
