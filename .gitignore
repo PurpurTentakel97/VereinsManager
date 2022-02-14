@@ -1,5 +1,6 @@
 # special ignored items
 spielewiese.py
+*.vm
 
 # Default ignored files
 /shelf/
