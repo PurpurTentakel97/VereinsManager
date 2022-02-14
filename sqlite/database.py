@@ -19,12 +19,18 @@ class Database:
 
         self._create_tables()
 
+    def __str__(self) -> str:
+        return "Database"
+
     def _create_tables(self) -> None:
         with open("config/create.sql") as create_file:
-            self.cursor.executescript(create_file.read())
+            try:
+                self.cursor.executescript(create_file.read())
+            except self.OperationalError as error:
+                debug.error(item=self, keyword="_create_tables", message=f"create tables failed\n"
+                                                                         f"error = {' '.join(error.args)}")
 
         self.connection.commit()
-
 
 
 def crate_database() -> None:
