@@ -3,11 +3,21 @@ CREATE TABLE IF NOT EXISTS "main"."type" (
 "ID" INTEGER NOT NULL UNIQUE,
 "_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
-"name" Varchar(10) NOT NULL UNIQUE,
-"type" INTEGER(1) NOT NULL UNIQUE,
+"name" Varchar(10) NOT NULL,
+"type" INTEGER(1) NOT NULL,
 "_active" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT)
 );
+/* Active Member Type */
+CREATE VIEW IF NOT EXISTS "main"."v_active_member_type" AS
+SELECT ID,name,type
+FROM type
+WHERE _active = 1 AND type IN (0,1,2,3);
+/* Inactive Member Type */
+CREATE VIEW IF NOT EXISTS "main"."v_inactive_member_type" AS
+SELECT ID,name,type
+FROM type
+WHERE _active = 0 AND type IN (0,1,2,3);
 /* date */
 CREATE TRIGGER IF NOT EXISTS "trigger_update_type"
     AFTER UPDATE ON "type"
@@ -116,6 +126,18 @@ CREATE TABLE IF NOT EXISTS "main"."member" (
 PRIMARY KEY ("ID" AUTOINCREMENT)
 FOREIGN KEY ("membership_type") REFERENCES "type"
 );
+/* Active Member */
+CREATE VIEW IF NOT EXISTS "main"."v_active_member" AS
+SELECT ID,first_name,last_name,street,number,zip_code,city,b_day,entry_day,membership_type,special_member,comment
+FROM member
+WHERE active = 1;
+
+/* Inactive Member */
+CREATE VIEW IF NOT EXISTS "main"."v_inactive_member" AS
+SELECT ID,first_name,last_name,street,number,zip_code,city,b_day,entry_day,membership_type,special_member,comment
+FROM member
+WHERE active = 0;
+
 /* date */
 CREATE TRIGGER IF NOT EXISTS "trigger_update_member"
     AFTER UPDATE ON "member"
@@ -213,10 +235,10 @@ END;
 /* Log (active) */
 CREATE TRIGGER IF NOT EXISTS "trigger_log_member_active"
     AFTER UPDATE ON "member"
-    WHEN NEW._active IS NOT OLD._active
+    WHEN NEW.active IS NOT OLD.active
 BEGIN
     INSERT INTO "log" (_target_table,_target_id,_target_column,old_data,new_data) VALUES
-    ("member",OLD.ID,"_active",OLD._active, NEW._active);
+    ("member",OLD.ID,"active",OLD.active, NEW.active);
 END;
 
 
