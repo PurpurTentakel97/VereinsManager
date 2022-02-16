@@ -1,20 +1,21 @@
-/* Type Type */
-CREATE TABLE IF NOT EXISTS "main"."type_type"(
+/* Raw Type */
+CREATE TABLE IF NOT EXISTS "main"."raw_type"(
 "ID" INTEGER NOT NULL UNIQUE,
 "_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "type_name" Varchar(10) NOT NULL UNIQUE,
 PRIMARY KEY (ID AUTOINCREMENT)
 );
-INSERT OR IGNORE INTO type_type (type_name) VALUES ("Mitgliedsart");
-INSERT OR IGNORE INTO type_type (type_name) VALUES ("E-Mail");
-INSERT OR IGNORE INTO type_type (type_name) VALUES ("Telefon");
-INSERT OR IGNORE INTO type_type (type_name) VALUES ("Position");
+INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Mitgliedsart");
+INSERT OR IGNORE INTO raw_type (type_name) VALUES ("E-Mail");
+INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Telefon");
+INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Position");
+INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Job");
 /* date */
-CREATE TRIGGER IF NOT EXISTS "trigger_update_type_type"
-    AFTER UPDATE ON "type_type"
+CREATE TRIGGER IF NOT EXISTS "trigger_update_raw_type"
+    AFTER UPDATE ON "raw_type"
 BEGIN
-    UPDATE "type_type" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+    UPDATE "raw_type" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
 END;
 
 /* TYPE */
@@ -26,7 +27,7 @@ CREATE TABLE IF NOT EXISTS "main"."type" (
 "type_id" INTEGER(1) NOT NULL,
 "_active" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT),
-FOREIGN KEY ("type_id") REFERENCES "type_type"
+FOREIGN KEY ("type_id") REFERENCES "raw_type"
 );
 /* date */
 CREATE TRIGGER IF NOT EXISTS "trigger_update_type"
@@ -36,24 +37,24 @@ BEGIN
 END;
 /* Active Type */
 CREATE VIEW IF NOT EXISTS "main"."v_active_type" AS
-SELECT type.ID, type.name, type.type_id, type_type.type_name
-FROM type INNER JOIN type_type ON type.type_id = type_type.ID
+SELECT type.ID, type.name, type.type_id, raw_type.type_name
+FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
 WHERE type._active = 1;
 /* Active Member Type */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_type" AS
-SELECT type.ID,type.name,type.type_id,type_type.type_name
-FROM type INNER JOIN type_type ON type.type_id = type_type.ID
+SELECT type.ID,type.name,type.type_id,raw_type.type_name
+FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
 WHERE type._active = 0;
 /* Active Member Type */
 CREATE VIEW IF NOT EXISTS "main"."v_active_member_type" AS
-SELECT ID,name,type_id
-FROM type
-WHERE _active = 1 AND type_id IN (1,2,3,4);
+SELECT type.ID,type.name,type.type_id,raw_type.type_name
+FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
+WHERE type._active = 1 AND type_id IN (1,2,3,4);
 /* Inactive Member Type */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_member_type" AS
-SELECT ID,name,type_id
-FROM type
-WHERE _active = 0 AND type_id IN (1,2,3,4);
+SELECT type.ID,type.name,type.type_id,raw_type.type_name
+FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
+WHERE type._active = 0 AND type_id IN (1,2,3,4);
 
 
 /* MEMBER PHONE */
