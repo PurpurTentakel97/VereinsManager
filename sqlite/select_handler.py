@@ -16,6 +16,7 @@ class SelectHandler(Database):
     def __str__(self) -> str:
         return "Select Handler"
 
+    # member
     def get_names_of_member(self, active: bool = True) -> tuple:
         active_str: str = "v_active_member" if active else "v_inactive_member"
         sql_command: str = f"""SELECT ID,first_name,last_name FROM {active_str} ORDER BY last_name ASC,first_name ASC;"""
@@ -36,16 +37,16 @@ class SelectHandler(Database):
                                                                                  f"command = {sql_command}\n"
                                                                                  f"error = {' '.join(error.args)}")
 
-    def get_all_types(self, active: bool = True) -> tuple:
-        active_str: str = "v_active_type" if active else "v_inactive_type"
-        sql_command: str = f"""SELECT * FROM {active_str} ORDER BY type_id ASC,type_name ASC;"""
+    def get_raw_types(self) -> tuple:
+        sql_command: str = f"""SELECT ID,type_name FROM raw_type ORDER BY type_name ASC;"""
         try:
             return self.cursor.execute(sql_command).fetchall()
         except sqlite3.OperationalError as error:
-            debug.error(item=self, keyword="get_all_types", message=f"load types failed\n"
-                                                                          f"command = {sql_command}\n"
-                                                                          f"error = {' '.join(error.args)}")
+            debug.error(item=self, keyword="get_raw_types", message=f"load raw types failed\n"
+                                                                    f"command = {sql_command}\n"
+                                                                    f"error = {' '.join(error.args)}")
 
+    # type
     def get_types_of_member(self, active: bool = True) -> tuple:
         active_str: str = "v_active_member_type" if active else "v_inactive_member_type"
         sql_command: str = f"""SELECT * FROM {active_str} ORDER BY type_id ASC,name ASC;"""

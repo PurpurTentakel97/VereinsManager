@@ -4,6 +4,7 @@
 
 from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListWidget, QListWidgetItem, QLineEdit
 
+import debug
 from ui.base_window import BaseWindow
 import transition
 
@@ -26,6 +27,7 @@ class TypesWindow(BaseWindow):
     def __init__(self) -> None:
         super().__init__()
         self._types_list_items: list = list()
+        self._raw_types:tuple = tuple()
 
         self._create_ui()
         self._create_layout()
@@ -33,9 +35,12 @@ class TypesWindow(BaseWindow):
 
         self._set_types()
 
+    def __str__(self) -> str:
+        return "TypesWindow(BaseWindow)"
+
     def _create_ui(self) -> None:
         self._types_box: QComboBox = QComboBox()
-        self._types_box.currentTextChanged.connect(self._set_current_type)
+        #self._types_box.currentTextChanged.connect(self._set_current_type)
 
         self._edit: QLineEdit = QLineEdit()
         self._edit.textChanged.connect(self._text_chanced)
@@ -99,8 +104,11 @@ class TypesWindow(BaseWindow):
         self._types_list.setCurrentItem(None)
 
     def _set_types(self) -> None:
-        data = transition.get_types_of_member()
-
+        self._raw_types = transition.get_raw_types()
+        self._types_box.clear()
+        for ID,text in self._raw_types:
+            self._types_box.addItem(text)
+        debug.info(item=self, keyword="_set_types", message=f"all active types = {self._raw_types}")
 
     def _row_chanced(self) -> None:
         current_type: TypesListEntry = self._types_list.currentItem()
