@@ -2,7 +2,7 @@
 # 13.02.2022
 # VereinsManager / Global Handler
 
-from sqlite import select_handler, add_handler
+from sqlite import select_handler, add_handler,update_handler
 
 global_handler: "GlobalHandler" or None = None
 
@@ -19,6 +19,7 @@ class GlobalHandler:
     def create_handler() -> None:
         select_handler.create_select_handler()
         add_handler.create_add_handler()
+        update_handler.crate_update_handler()
 
 
 def create_global_handler() -> None:

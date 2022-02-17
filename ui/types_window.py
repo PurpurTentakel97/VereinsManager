@@ -97,12 +97,12 @@ class TypesWindow(BaseWindow):
         self._edit.clear()
         self._types_list.clear()
         self._types_list_items.clear()
-        types: tuple = transition.get_single_type(raw_type_id=self._get_id_from_raw_type(self._types_box.currentText()))
+        types: tuple = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()))
         for type_ in types:
             new_type: TypesListEntry = TypesListEntry(type_=type_)
             self._types_list.addItem(new_type)
             self._types_list_items.append(new_type)
-        types: tuple = transition.get_single_type(raw_type_id=self._get_id_from_raw_type(self._types_box.currentText()),
+        types: tuple = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
                                                   active=False)
         for type_ in types:
             new_type: TypesListEntry = TypesListEntry(type_=type_, active=False)
@@ -151,39 +151,47 @@ class TypesWindow(BaseWindow):
     def _edit_line_return_pressed(self) -> None:
         self._edit_type() if self._is_edit() else self._add_type()
 
-    def _get_id_from_raw_type(self, type_name: str) -> int:
+    def _get_raw_id_from_name(self, type_name: str) -> int:
         for ID, type_ in self._raw_types:
             if type_ == type_name:
                 return ID
 
     def _add_type(self) -> None:
+        if self._is_correct_input():
+            if not transition.add_type(type_name=self._edit.text().strip().title(),
+                                       raw_type_id=self._get_raw_id_from_name(type_name=self._types_box.currentText())):
+                debug.error(item=self, keyword="_add_type", message="Typ anlegen fehlgeschlagen")
+                self.set_status_bar("Typ angelen fehlgeschlagen")
+
+            else:
+                self._set_current_type()
+
+    def _edit_type(self) -> None:
+        if self._is_correct_input():
+            current_item: TypesListEntry = self._types_list.currentItem()
+            if not transition.update_type(id_=current_item.id_, name=self._edit.text().strip().title()):
+                debug.error(item=self, keyword="_edit_type", message="Typ editieren fehlgeschlagen")
+                self.set_status_bar("Typ editieren fehlgeschlagen")
+            else:
+                self._set_current_type()
+
+    def _is_correct_input(self) -> bool:
         if len(self._edit.text().strip()) > 0:
             double: bool = False
-            name: str = self._edit.text().strip().title()
-            raw_id = self._get_id_from_raw_type(self._types_box.currentText())
             for item in self._types_list_items:
-                if item.name == name:
+                if item.name == self._edit.text().strip().title():
                     double = True
                     break
             if not double:
-                if not transition.add_type(type_name=name,
-                                                       raw_type_id=raw_id) :
-                    debug.error(item=self, keyword="_add_type", message="Typ angelen fehlgeschlagen")
-                    self.set_status_bar("Typ angelen fehlgeschlagen")
-
-                else:
-                    self._set_current_type()
+                return True
             else:
-                debug.error(item=self, keyword="_add_type", message="Typ bereits vorhanden")
+                debug.info(item=self, keyword="_is_correct_input", message="Typ bereits vorhanden")
                 self.set_status_bar("Typ bereits vorhanden")
+                return False
         else:
-            debug.error(item=self, keyword="_add_type", message="Kein Typ eingegeben")
+            debug.info(item=self, keyword="_is_correct_input", message="Kein Typ eingegeben")
             self.set_status_bar("Kein Typ eingegeben")
-
-    def _edit_type(self) -> None:
-        transition.edit_type(display_name=self._types_box.currentText(), new_type_=self._edit.text().strip().title(),
-                             type_id=self._types_list.currentItem().id_)
-        self._set_current_type()
+            return False
 
     def _remove_type(self) -> None:
         transition.remove_type(display_name=self._types_box.currentText(), type_id=self._types_list.currentItem().id_)
