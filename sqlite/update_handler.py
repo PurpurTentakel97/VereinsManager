@@ -17,7 +17,7 @@ class UpdateHandler(Database):
 
     # types
     def update_type(self, id_: int, name: str) -> bool:
-        sql_command: str = f"""UPDATE type SET name = ? WHERE ID is ?;"""
+        sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
         try:
             self.cursor.execute(sql_command, (name, id_))
             self.connection.commit()
@@ -26,6 +26,18 @@ class UpdateHandler(Database):
             debug.error(item=self, keyword="update_type", message=f"update type failed\n"
                                                                   f"command = {sql_command}\n"
                                                                   f"error = {' '.join(error.args)}")
+            return False
+
+    def update_type_activity(self, id_: int, active: bool) -> bool:
+        sql_command: str = """UPDATE type SET _active = ? WHERE ID is ?;"""
+        try:
+            self.cursor.execute(sql_command, (active, id_))
+            self.connection.commit()
+            return True
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="update_type_activity", message=f"update type failed\n"
+                                                                           f"command = {sql_command}\n"
+                                                                           f"error = {' '.join(error.args)}")
             return False
 
 
