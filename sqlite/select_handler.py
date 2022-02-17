@@ -5,7 +5,7 @@
 from sqlite.database import Database
 import debug
 
-select_handler: "SelectHandler" or None = None
+select_handler: "SelectHandler"
 
 
 class SelectHandler(Database):
@@ -27,9 +27,9 @@ class SelectHandler(Database):
 
     def get_single_type(self, raw_type_id: int, active: bool = True) -> tuple:
         table: str = "v_active_type" if active else "v_inactive_type"
-        sql_command: str = f"""SELECT * FROM {table} WHERE type_id is {raw_type_id} ORDER BY name ASC;"""
+        sql_command: str = f"""SELECT * FROM {table} WHERE type_id is ? ORDER BY name ASC;"""
         try:
-            return self.cursor.execute(sql_command).fetchall()
+            return self.cursor.execute(sql_command, (raw_type_id,)).fetchall()
         except self.OperationalError as error:
             debug.error(item=self, keyword="get_single_type", message=f"load raw types failed\n"
                                                                       f"command = {sql_command}\n"
@@ -37,8 +37,8 @@ class SelectHandler(Database):
 
     # member
     def get_names_of_member(self, active: bool = True) -> tuple:
-        active_str: str = "v_active_member" if active else "v_inactive_member"
-        sql_command: str = f"""SELECT ID,first_name,last_name FROM {active_str} ORDER BY last_name ASC,first_name ASC;"""
+        table: str = "v_active_member" if active else "v_inactive_member"
+        sql_command: str = f"""SELECT ID,first_name,last_name FROM {table} ORDER BY last_name ASC,first_name ASC;"""
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
@@ -47,10 +47,10 @@ class SelectHandler(Database):
                                                                           f"error = {' '.join(error.args)}")
 
     def get_data_from_member_by_id(self, id_: int, active: bool = True) -> tuple:
-        active_str: str = "v_active_member" if active else "v_inactive_member"
-        sql_command: str = f"""SELECT * FROM {active_str} WHERE ID = {id_};"""
+        table: str = "v_active_member" if active else "v_inactive_member"
+        sql_command: str = f"""SELECT * FROM {table} WHERE ID = ?;"""
         try:
-            return self.cursor.execute(sql_command).fetchone()
+            return self.cursor.execute(sql_command, (id_,)).fetchone()
         except self.OperationalError as error:
             debug.error(item=self, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
                                                                                  f"command = {sql_command}\n"
