@@ -63,7 +63,7 @@ class TypesWindow(BaseWindow):
         self._remove_btn: QPushButton = QPushButton()
         self._remove_btn.setText("Typ deaktivieren")
         self._remove_btn.setEnabled(False)
-        self._remove_btn.clicked.connect(self._remove_type)
+        self._remove_btn.clicked.connect(self._set_type_activity)
 
         self._types_list: QListWidget = QListWidget()
         self._types_list.currentItemChanged.connect(self._row_chanced)
@@ -193,7 +193,11 @@ class TypesWindow(BaseWindow):
             self.set_status_bar("Kein Typ eingegeben")
             return False
 
-    def _remove_type(self) -> None:
-        transition.remove_type(display_name=self._types_box.currentText(), type_id=self._types_list.currentItem().id_)
-        self._set_current_type()
-        self._edit.clear()
+    def _set_type_activity(self) -> None:
+        current_item: TypesListEntry = self._types_list.currentItem()
+        if not transition.update_type_activity(id_=current_item.id_, active=False if current_item.active else True):
+            debug.error(item=self, keyword="_remove_type", message="Typ konnte nicht gesetzt werden")
+            self.set_status_bar("Typ konnte nicht gesetzt werden")
+        else:
+            self._set_current_type()
+            self._edit.clear()

@@ -20,3 +20,7 @@ def add_type(type_name: str, raw_type_id: int) -> int:
 
 def update_type(id_: int, name: str) -> bool:
     return u_h.update_handler.update_type(id_=id_, name=name)
+
+
+def update_type_activity(id_: int, active: bool) -> bool:
+    return u_h.update_handler.update_type_activity(id_=id_, active=active)
