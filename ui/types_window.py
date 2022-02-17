@@ -16,7 +16,9 @@ class TypesListEntry(QListWidgetItem):
         super().__init__()
         self.id_: int = int()
         self.name: str = str()
-        self.id_, self.name = type_
+        self.raw_id: int = int()
+        self.raw_name: str = str()
+        self.id_, self.name, self.raw_id, self.raw_name = type_
         self._set_name()
 
     def _set_name(self) -> None:
@@ -27,7 +29,7 @@ class TypesWindow(BaseWindow):
     def __init__(self) -> None:
         super().__init__()
         self._types_list_items: list = list()
-        self._raw_types:tuple = tuple()
+        self._raw_types: tuple = tuple()
 
         self._create_ui()
         self._create_layout()
@@ -40,7 +42,7 @@ class TypesWindow(BaseWindow):
 
     def _create_ui(self) -> None:
         self._types_box: QComboBox = QComboBox()
-        #self._types_box.currentTextChanged.connect(self._set_current_type)
+        self._types_box.currentTextChanged.connect(self._set_current_type)
 
         self._edit: QLineEdit = QLineEdit()
         self._edit.textChanged.connect(self._text_chanced)
@@ -95,7 +97,7 @@ class TypesWindow(BaseWindow):
         self._add_btn.setEnabled(self._is_add())
         self._edit_btn.setEnabled(self._is_edit())
         self._remove_btn.setEnabled(self._is_remove())
-        types: list = transition.get_type_list(display_name=self._types_box.currentText())
+        types: tuple = transition.get_single_type(raw_type_id=self._get_id_from_raw_type(self._types_box.currentText()))
         for type_ in types:
             new_type: TypesListEntry = TypesListEntry(type_)
             self._types_list.addItem(new_type)
@@ -106,7 +108,7 @@ class TypesWindow(BaseWindow):
     def _set_types(self) -> None:
         self._raw_types = transition.get_raw_types()
         self._types_box.clear()
-        for ID,text in self._raw_types:
+        for ID, text in self._raw_types:
             self._types_box.addItem(text)
         debug.info(item=self, keyword="_set_types", message=f"all active types = {self._raw_types}")
 
@@ -139,6 +141,11 @@ class TypesWindow(BaseWindow):
             self._edit_type()
         else:
             self._add_type()
+
+    def _get_id_from_raw_type(self, type_name: str) -> int:
+        for ID, type_ in self._raw_types:
+            if type_ == type_name:
+                return ID
 
     def _add_type(self) -> None:
         if len(self._edit.text().strip()) > 0:
