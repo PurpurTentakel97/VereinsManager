@@ -5,7 +5,7 @@
 from sqlite.database import Database
 import debug
 
-add_handler: "AddHandler" or None = None
+add_handler: "AddHandler"
 
 
 class AddHandler(Database):
@@ -17,9 +17,9 @@ class AddHandler(Database):
 
     # type
     def add_type(self, type_name: str, raw_type_id: int) -> bool:
-        sql_command: str = f"""INSERT INTO type (name,type_id) VALUES ('{type_name}',{raw_type_id});"""
+        sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
         try:
-            self.cursor.execute(sql_command)
+            self.cursor.execute(sql_command, (type_name, raw_type_id))
             self.connection.commit()
             return True
         except self.OperationalError as error:
