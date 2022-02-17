@@ -49,24 +49,23 @@ class TypesWindow(BaseWindow):
 
         self._edit: QLineEdit = QLineEdit()
         self._edit.textChanged.connect(self._text_chanced)
-        self._edit.returnPressed.connect(self._edit_line_return_pressed)
+        self._edit.returnPressed.connect(self._add_edit_type)
         self._edit.setPlaceholderText("Typ:")
-
-        self._add_btn: QPushButton = QPushButton()
-        self._add_btn.setText("Typ hinzufügen")
-        self._add_btn.setEnabled(False)
-        self._add_btn.clicked.connect(self._add_type)
-        self._edit_btn: QPushButton = QPushButton()
-        self._edit_btn.setText("Typ bearbeiten")
-        self._edit_btn.setEnabled(False)
-        self._edit_btn.clicked.connect(self._edit_type)
-        self._remove_btn: QPushButton = QPushButton()
-        self._remove_btn.setText("Typ deaktivieren")
-        self._remove_btn.setEnabled(False)
-        self._remove_btn.clicked.connect(self._set_type_activity)
 
         self._types_list: QListWidget = QListWidget()
         self._types_list.currentItemChanged.connect(self._row_chanced)
+
+        self._add_edit_btn: QPushButton = QPushButton()
+        self._add_edit_btn.setText("Typ hinzufügen")
+        self._add_edit_btn.clicked.connect(self._add_edit_type)
+        self._activity_btn: QPushButton = QPushButton()
+        self._activity_btn.setText("Typ deaktivieren")
+        self._activity_btn.clicked.connect(self._set_type_activity)
+        self._remove_btn: QPushButton = QPushButton()
+        self._remove_btn.setText("Typ löschen")
+        self._remove_btn.clicked.connect(self._remove_type)
+
+        self._set_btn()
 
     def _create_layout(self) -> None:
         grid: QGridLayout = QGridLayout()
@@ -78,8 +77,8 @@ class TypesWindow(BaseWindow):
         grid.addWidget(self._edit, row, 0, 1, -1)
 
         row += 1
-        grid.addWidget(self._add_btn, row, 0)
-        grid.addWidget(self._edit_btn, row, 1)
+        grid.addWidget(self._add_edit_btn, row, 0)
+        grid.addWidget(self._activity_btn, row, 1)
         grid.addWidget(self._remove_btn, row, 2)
 
         row += 1
@@ -130,26 +129,35 @@ class TypesWindow(BaseWindow):
         self._set_btn()
 
     def _set_btn(self) -> None:
-        self._add_btn.setEnabled(self._is_add())
-        self._edit_btn.setEnabled(self._is_edit())
+        self._is_edit_mode()
+        self._add_edit_btn.setEnabled(self._is_input())
+        self._activity_btn.setEnabled(self._is_activity())
         self._remove_btn.setEnabled(self._is_remove())
 
-    def _is_add(self) -> bool:
-        return self._types_list.currentItem() is None and len(self._edit.text().strip()) > 0
-
-    def _is_edit(self) -> bool:
-        return self._types_list.currentItem() is not None and len(self._edit.text().strip()) > 0
-
-    def _is_remove(self) -> bool:
+    def _is_edit_mode(self) -> bool:
         if self._types_list.currentItem() is not None:
-            self._remove_btn.setText(
-                "deaktivieren") if self._types_list.currentItem().active else self._remove_btn.setText("aktivieren")
+            self._add_edit_btn.setText("Typ beartbeiten")
+            return True
+        else:
+            self._add_edit_btn.setText("Typ hinzufügen")
+            return False
+
+    def _is_input(self) -> bool:
+        return False if len(self._edit.text().strip()) == 0 else True
+
+    def _is_activity(self) -> bool:
+        if self._types_list.currentItem() is not None:
+            self._activity_btn.setText(
+                "deaktivieren") if self._types_list.currentItem().active else self._activity_btn.setText("aktivieren")
             return True
         else:
             return False
 
-    def _edit_line_return_pressed(self) -> None:
-        self._edit_type() if self._is_edit() else self._add_type()
+    def _is_remove(self) -> bool:
+        return self._types_list.currentItem() is not None
+
+    def _add_edit_type(self) -> None:
+        self._edit_type() if self._is_edit_mode() else self._add_type()
 
     def _get_raw_id_from_name(self, type_name: str) -> int:
         for ID, type_ in self._raw_types:
@@ -167,13 +175,20 @@ class TypesWindow(BaseWindow):
                 self._set_current_type()
 
     def _edit_type(self) -> None:
-        if self._is_correct_input():
-            current_item: TypesListEntry = self._types_list.currentItem()
-            if not transition.update_type(id_=current_item.id_, name=self._edit.text().strip().title()):
-                debug.error(item=self, keyword="_edit_type", message="Typ editieren fehlgeschlagen")
-                self.set_status_bar("Typ editieren fehlgeschlagen")
-            else:
-                self._set_current_type()
+        current_item: TypesListEntry = self._types_list.currentItem()
+        text: str = self._edit.text().strip().title()
+        if current_item.name != text:
+            if self._is_correct_input():
+                if not transition.update_type(id_=current_item.id_, name=text):
+                    debug.error(item=self, keyword="_edit_type", message="Typ editieren fehlgeschlagen")
+                    self.set_status_bar("Typ editieren fehlgeschlagen")
+                else:
+                    self._set_current_type()
+        else:
+            self.set_status_bar("Keine Änderung vorgenommen")
+            self._types_list.setCurrentItem(None)
+            self._edit.clear()
+            self._set_btn()
 
     def _is_correct_input(self) -> bool:
         if len(self._edit.text().strip()) > 0:
@@ -196,7 +211,7 @@ class TypesWindow(BaseWindow):
     def _set_type_activity(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
         if not transition.update_type_activity(id_=current_item.id_, active=False if current_item.active else True):
-            debug.error(item=self, keyword="_remove_type", message="Typ konnte nicht gesetzt werden")
+            debug.error(item=self, keyword="_set_type_activity", message="Typ konnte nicht gesetzt werden")
             self.set_status_bar("Typ konnte nicht gesetzt werden")
         else:
             self._set_current_type()
