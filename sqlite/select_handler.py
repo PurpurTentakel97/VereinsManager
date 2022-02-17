@@ -1,7 +1,6 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Select Handler
-import sqlite3
 
 from sqlite.database import Database
 import debug
@@ -27,7 +26,7 @@ class SelectHandler(Database):
                                                                     f"error = {' '.join(error.args)}")
 
     def get_single_type(self, raw_type_id: int, active: bool = True) -> tuple:
-        table: str = "v_active_type" if active else "v_active_type"
+        table: str = "v_active_type" if active else "v_inactive_type"
         sql_command: str = f"""SELECT * FROM {table} WHERE type_id is {raw_type_id} ORDER BY name ASC;"""
         try:
             return self.cursor.execute(sql_command).fetchall()

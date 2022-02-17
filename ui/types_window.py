@@ -12,17 +12,20 @@ types_window_: "TypesWindow" or None = None
 
 
 class TypesListEntry(QListWidgetItem):
-    def __init__(self, type_: tuple) -> None:
+    def __init__(self, type_: tuple, active: bool = True) -> None:
         super().__init__()
         self.id_: int = int()
         self.name: str = str()
         self.raw_id: int = int()
         self.raw_name: str = str()
         self.id_, self.name, self.raw_id, self.raw_name = type_
+
+        self.active: bool = active
+
         self._set_name()
 
     def _set_name(self) -> None:
-        self.setText(self.name)
+        self.setText(self.name) if self.active else self.setText(self.name + " (inactive)")
 
 
 class TypesWindow(BaseWindow):
@@ -58,7 +61,7 @@ class TypesWindow(BaseWindow):
         self._edit_btn.setEnabled(False)
         self._edit_btn.clicked.connect(self._edit_type)
         self._remove_btn: QPushButton = QPushButton()
-        self._remove_btn.setText("Typ löschen")
+        self._remove_btn.setText("Typ deaktivieren")
         self._remove_btn.setEnabled(False)
         self._remove_btn.clicked.connect(self._remove_type)
 
@@ -94,30 +97,34 @@ class TypesWindow(BaseWindow):
         self._edit.clear()
         self._types_list.clear()
         self._types_list_items.clear()
-        self._add_btn.setEnabled(self._is_add())
-        self._edit_btn.setEnabled(self._is_edit())
-        self._remove_btn.setEnabled(self._is_remove())
         types: tuple = transition.get_single_type(raw_type_id=self._get_id_from_raw_type(self._types_box.currentText()))
         for type_ in types:
-            new_type: TypesListEntry = TypesListEntry(type_)
+            new_type: TypesListEntry = TypesListEntry(type_=type_)
+            self._types_list.addItem(new_type)
+            self._types_list_items.append(new_type)
+        types: tuple = transition.get_single_type(raw_type_id=self._get_id_from_raw_type(self._types_box.currentText()),
+                                                  active=False)
+        for type_ in types:
+            new_type: TypesListEntry = TypesListEntry(type_=type_, active=False)
             self._types_list.addItem(new_type)
             self._types_list_items.append(new_type)
         self._edit.setFocus()
         self._types_list.setCurrentItem(None)
+        self._edit.clear()
+
+        self._set_btn()
 
     def _set_types(self) -> None:
         self._raw_types = transition.get_raw_types()
         self._types_box.clear()
         for ID, text in self._raw_types:
             self._types_box.addItem(text)
-        debug.info(item=self, keyword="_set_types", message=f"all active types = {self._raw_types}")
 
     def _row_chanced(self) -> None:
-        current_type: TypesListEntry = self._types_list.currentItem()
-        self._set_btn()
-        if current_type is not None:
-            self._edit.setText(current_type.name)
-        self._edit.setFocus()
+        current_item: TypesListEntry = self._types_list.currentItem()
+        if current_item is not None:
+            self._edit.setText(current_item.name)
+            self._set_btn()
 
     def _text_chanced(self) -> None:
         self._set_btn()
@@ -134,13 +141,15 @@ class TypesWindow(BaseWindow):
         return self._types_list.currentItem() is not None and len(self._edit.text().strip()) > 0
 
     def _is_remove(self) -> bool:
-        return self._types_list.currentItem() is not None
+        if self._types_list.currentItem() is not None:
+            self._remove_btn.setText(
+                "deaktivieren") if self._types_list.currentItem().active else self._remove_btn.setText("aktivieren")
+            return True
+        else:
+            return False
 
     def _edit_line_return_pressed(self) -> None:
-        if self._is_edit():
-            self._edit_type()
-        else:
-            self._add_type()
+        self._edit_type() if self._is_edit() else self._add_type()
 
     def _get_id_from_raw_type(self, type_name: str) -> int:
         for ID, type_ in self._raw_types:
@@ -150,23 +159,31 @@ class TypesWindow(BaseWindow):
     def _add_type(self) -> None:
         if len(self._edit.text().strip()) > 0:
             double: bool = False
+            name: str = self._edit.text().strip().title()
+            raw_id = self._get_id_from_raw_type(self._types_box.currentText())
             for item in self._types_list_items:
-                if item.name == self._edit.text():
+                if item.name == name:
                     double = True
                     break
             if not double:
-                transition.add_type(display_name=self._types_box.currentText(), type_=self._edit.text().strip().title())
-                self._set_current_type()
+                if not transition.add_type(type_name=name,
+                                                       raw_type_id=raw_id) :
+                    debug.error(item=self, keyword="_add_type", message="Typ angelen fehlgeschlagen")
+                    self.set_status_bar("Typ angelen fehlgeschlagen")
+
+                else:
+                    self._set_current_type()
             else:
+                debug.error(item=self, keyword="_add_type", message="Typ bereits vorhanden")
                 self.set_status_bar("Typ bereits vorhanden")
         else:
-            self.set_status_bar("Kein Name eingegeben")
+            debug.error(item=self, keyword="_add_type", message="Kein Typ eingegeben")
+            self.set_status_bar("Kein Typ eingegeben")
 
     def _edit_type(self) -> None:
         transition.edit_type(display_name=self._types_box.currentText(), new_type_=self._edit.text().strip().title(),
                              type_id=self._types_list.currentItem().id_)
         self._set_current_type()
-        self._edit.clear()
 
     def _remove_type(self) -> None:
         transition.remove_type(display_name=self._types_box.currentText(), type_id=self._types_list.currentItem().id_)
