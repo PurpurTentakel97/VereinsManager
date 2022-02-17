@@ -4,16 +4,13 @@
 
 sql database
     let unser coose database name
-    log member active
-    refactor type Types
+    log type
 
-main
-    log dates and zip_code every time
 
 ui
+    type_winodw
+        delete -> set activ / inactive
     member_window
         incorrent loag // membertype
-        User logdate auswählen lassen
         chance initial edit mode
         Zip_code initial None
-        # break memberwindow without member
