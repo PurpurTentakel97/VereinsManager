@@ -8,8 +8,6 @@ sql database
 
 
 ui
-    type_winodw
-        delete -> set activ / inactive
     member_window
         incorrent loag // membertype
         chance initial edit mode
