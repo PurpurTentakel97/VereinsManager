@@ -200,4 +200,11 @@ class TypesWindow(BaseWindow):
             self.set_status_bar("Typ konnte nicht gesetzt werden")
         else:
             self._set_current_type()
-            self._edit.clear()
+
+    def _remove_type(self) -> None:
+        current_item: TypesListEntry = self._types_list.currentItem()
+        if not transition.delete_type(id_=current_item.id_):
+            debug.error(item=self, keyword="_remove_type", message="Typ konnte nicht gelöscht werden")
+            self.set_status_bar(massage="Löschen fehlgeschlagen. (Typ noch in Benutzung?)")
+        else:
+            self._set_current_type()

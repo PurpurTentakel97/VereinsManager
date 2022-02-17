@@ -2,7 +2,7 @@
 # 08.02.2022
 # VereinsManager / Transition
 
-from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h
+from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h
 
 
 # type
@@ -24,3 +24,7 @@ def update_type(id_: int, name: str) -> bool:
 
 def update_type_activity(id_: int, active: bool) -> bool:
     return u_h.update_handler.update_type_activity(id_=id_, active=active)
+
+
+def delete_type(id_: int) -> bool:
+    return d_h.delete_handler.delete_type(id_=id_)
