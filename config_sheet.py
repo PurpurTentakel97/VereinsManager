@@ -24,7 +24,7 @@ class Config:
         return "Config"
 
     def load_config(self) -> None:
-        with open("config/sqlite_config.json") as json_file:
+        with open("config/config.json") as json_file:
             json_data = json.load(json_file)
 
         self.config: dict = json_data
