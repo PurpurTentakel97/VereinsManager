@@ -27,13 +27,23 @@ class SelectHandler(Database):
                                                                     f"error = {' '.join(error.args)}")
             return ErrorCode.LOAD_E, ()
 
+    def get_all_single_type(self) -> [ErrorCode, tuple]:
+        sql_command: str = f"""SELECT ID,name,type_id,_active FROM type ORDER BY name ASC;"""
+        try:
+            return ErrorCode.LOAD_S, self.cursor.execute(sql_command).fetchall()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="get_all_single_type", message=f"load all types failed\n"
+                                                                          f"command = {sql_command}\n"
+                                                                          f"error = {' '.join(error.args)}")
+            return ErrorCode.LOAD_E, ()
+
     def get_single_type(self, raw_type_id: int, active: bool = True) -> [ErrorCode, tuple]:
         table: str = "v_active_type" if active else "v_inactive_type"
         sql_command: str = f"""SELECT * FROM {table} WHERE type_id is ? ORDER BY name ASC;"""
         try:
             return ErrorCode.LOAD_S, self.cursor.execute(sql_command, (raw_type_id,)).fetchall()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_single_type", message=f"load raw types failed\n"
+            debug.error(item=self, keyword="get_single_type", message=f"load types failed\n"
                                                                       f"command = {sql_command}\n"
                                                                       f"error = {' '.join(error.args)}")
             return ErrorCode.LOAD_E, ()

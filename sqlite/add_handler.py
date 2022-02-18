@@ -4,6 +4,7 @@
 
 from sqlite.database import Database
 from config.error_code import ErrorCode
+from logic import validation
 import debug
 
 add_handler: "AddHandler"
@@ -18,17 +19,20 @@ class AddHandler(Database):
 
     # type
     def add_type(self, type_name: str, raw_type_id: int) -> ErrorCode:
-        # TODO Validation
-        sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
-        try:
-            self.cursor.execute(sql_command, (type_name, raw_type_id))
-            self.connection.commit()
-            return ErrorCode.ADD_S
-        except self.OperationalError as error:
-            debug.error(item=self, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
-                                                                                 f"command = {sql_command}\n"
-                                                                                 f"error = {' '.join(error.args)}")
-            return ErrorCode.ADD_E
+        error_code: ErrorCode = validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
+        if error_code == ErrorCode.OK_S:
+            sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
+            try:
+                self.cursor.execute(sql_command, (type_name.strip().title(), raw_type_id))
+                self.connection.commit()
+                return ErrorCode.ADD_S
+            except self.OperationalError as error:
+                debug.error(item=self, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
+                                                                                     f"command = {sql_command}\n"
+                                                                                     f"error = {' '.join(error.args)}")
+                return ErrorCode.ADD_E
+        else:
+            return error_code
 
 
 def create_add_handler() -> None:

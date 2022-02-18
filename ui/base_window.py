@@ -63,8 +63,14 @@ class BaseWindow(QMainWindow):
                     massage=f"Error: {error_code.value} // In anderen Datensätzden noch in Verwändung: {type_}")
 
             # Input Error
+            case ErrorCode.NO_INPUT:
+                self.set_status_bar(massage=f"Error: {error_code.value} // Kein Input eingegeben: {type_}")
+            case ErrorCode.NO_ID:
+                self.set_status_bar(massage=f"Error: {error_code.value} // Keine ID vorhanden: {type_}")
             case ErrorCode.NO_CHANCE:
                 self.set_status_bar(massage=f"Error: {error_code.value} // Keine Änderung der Daten: {type_}")
+            case ErrorCode.ALREADY_EXISTS_E:
+                self.set_status_bar(massage=f"Error: {error_code.value} // Bereits vorhanden: {type_}")
 
             # Default
             case _:

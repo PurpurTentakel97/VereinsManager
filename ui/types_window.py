@@ -26,7 +26,7 @@ class TypesListEntry(QListWidgetItem):
         self._set_name()
 
     def _set_name(self) -> None:
-        self.setText(self.name) if self.active else self.setText(self.name + " (inactive)")
+        self.setText(self.name) if self.active else self.setText(self.name + " (inaktiv)")
 
 
 class TypesWindow(BaseWindow):
@@ -179,14 +179,14 @@ class TypesWindow(BaseWindow):
                 return ID
 
     def _add_type(self) -> None:
-        error_code: ErrorCode = transition.add_type(type_name=self._edit.text().strip().title(),
+        error_code: ErrorCode = transition.add_type(type_name=self._edit.text(),
                                                     raw_type_id=self._get_raw_id_from_name(
-                                                        type_name=self._types_box.currentText()))
+                                                    type_name=self._types_box.currentText()))
         if error_code == ErrorCode.ADD_S:
             self._set_current_type()
         else:
             debug.error(item=self, keyword="_add_type", message="Typ anlegen fehlgeschlagen")
-            self.handle_error_code(error_code=error_code, type_="Typ")
+            self.handle_error_code(error_code=error_code, type_=f"Typ: {self._edit.text()}")
 
     def _edit_type(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
