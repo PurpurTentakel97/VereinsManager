@@ -13,12 +13,10 @@ database_path: str = "saves/test.vm"
 
 class Database:
     def __init__(self) -> None:
-        self.connection = sqlite3.connect(database_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        self.connection.execute("PRAGMA foreign_keys = ON")
-        self.cursor = self.connection.cursor()
         self.OperationalError = sqlite3.OperationalError
         self.IntegrityError = sqlite3.IntegrityError
 
+        self.create_cursor_connection()
         self._create_tables()
 
     def __str__(self) -> str:
@@ -33,6 +31,14 @@ class Database:
                                                                          f"error = {' '.join(error.args)}")
 
         self.connection.commit()
+
+    def create_cursor_connection(self) -> None:
+        self.connection = sqlite3.connect(database_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        self.connection.execute("PRAGMA foreign_keys = ON")
+        self.cursor = self.connection.cursor()
+
+    def drop_connection(self) -> None:
+        pass
 
 
 def crate_database() -> None:
