@@ -25,4 +25,7 @@ class ErrorCode(Enum):
     F_KEY_E = 200
 
     # Input Error
-    NO_CHANCE = 300
+    NO_INPUT = 300
+    NO_ID = 301
+    NO_CHANCE = 302
+    ALREADY_EXISTS_E = 303

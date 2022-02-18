@@ -5,6 +5,7 @@
 
 from config import config_sheet
 from sqlite import database, global_handler as g_h
+from logic import validation
 
 from ui import base_window, main_window
 
@@ -17,6 +18,7 @@ def _test() -> None:
 if __name__ == "__main__":
     database.crate_database()
     config_sheet.create_config()
+    validation.create_validation()
     g_h.create_global_handler()
     _test()
     base_window.create_application()
