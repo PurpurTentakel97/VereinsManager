@@ -34,6 +34,7 @@ class DeleteHandler(Database):
             debug.error(item=self, keyword="delete_type", message=f"delete type still used\n"
                                                                   f"command = {sql_command}\n"
                                                                   f"error = {' '.join(error.args)}")
+            self.connection.commit()
             return ErrorCode.F_KEY_E
 
 
