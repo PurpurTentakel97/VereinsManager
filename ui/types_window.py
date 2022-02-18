@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListW
 
 import debug
 from ui.base_window import BaseWindow
+from config.error_code import ErrorCode
 import transition
 
 types_window_: "TypesWindow" or None = None
@@ -96,28 +97,41 @@ class TypesWindow(BaseWindow):
         self._edit.clear()
         self._types_list.clear()
         self._types_list_items.clear()
-        types: tuple = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()))
-        for type_ in types:
-            new_type: TypesListEntry = TypesListEntry(type_=type_)
-            self._types_list.addItem(new_type)
-            self._types_list_items.append(new_type)
-        types: tuple = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
-                                                  active=False)
-        for type_ in types:
-            new_type: TypesListEntry = TypesListEntry(type_=type_, active=False)
-            self._types_list.addItem(new_type)
-            self._types_list_items.append(new_type)
-        self._edit.setFocus()
-        self._types_list.setCurrentItem(None)
-        self._edit.clear()
+        error_code, types = transition.get_single_type(
+            raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()))
+        if error_code == ErrorCode.LOAD_S:
+            for type_ in types:
+                new_type: TypesListEntry = TypesListEntry(type_=type_)
+                self._types_list.addItem(new_type)
+                self._types_list_items.append(new_type)
+        else:
+            self.handle_error_code(error_code=error_code, type_="Typen")
 
-        self._set_btn()
+        error_code, types = transition.get_single_type(
+            raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
+            active=False)
+        if error_code == ErrorCode.LOAD_S:
+            for type_ in types:
+                new_type: TypesListEntry = TypesListEntry(type_=type_, active=False)
+                self._types_list.addItem(new_type)
+                self._types_list_items.append(new_type)
+            self._edit.setFocus()
+            self._types_list.setCurrentItem(None)
+            self._edit.clear()
+
+            self._set_btn()
+
+        else:
+            self.handle_error_code(error_code=error_code, type_="Typen")
 
     def _set_types(self) -> None:
-        self._raw_types = transition.get_raw_types()
-        self._types_box.clear()
-        for ID, text in self._raw_types:
-            self._types_box.addItem(text)
+        error_code, self._raw_types = transition.get_raw_types()
+        if error_code == ErrorCode.LOAD_S:
+            self._types_box.clear()
+            for ID, text in self._raw_types:
+                self._types_box.addItem(text)
+        else:
+            self.handle_error_code(error_code=error_code, type_="Grund Typen")
 
     def _row_chanced(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
@@ -165,30 +179,27 @@ class TypesWindow(BaseWindow):
                 return ID
 
     def _add_type(self) -> None:
-        if self._is_correct_input():
-            if not transition.add_type(type_name=self._edit.text().strip().title(),
-                                       raw_type_id=self._get_raw_id_from_name(type_name=self._types_box.currentText())):
-                debug.error(item=self, keyword="_add_type", message="Typ anlegen fehlgeschlagen")
-                self.set_status_bar("Typ angelen fehlgeschlagen")
-
-            else:
-                self._set_current_type()
+        error_code: ErrorCode = transition.add_type(type_name=self._edit.text().strip().title(),
+                                                    raw_type_id=self._get_raw_id_from_name(
+                                                        type_name=self._types_box.currentText()))
+        if error_code == ErrorCode.ADD_S:
+            self._set_current_type()
+        else:
+            debug.error(item=self, keyword="_add_type", message="Typ anlegen fehlgeschlagen")
+            self.handle_error_code(error_code=error_code, type_="Typ")
 
     def _edit_type(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
         text: str = self._edit.text().strip().title()
-        if current_item.name != text:
-            if self._is_correct_input():
-                if not transition.update_type(id_=current_item.id_, name=text):
-                    debug.error(item=self, keyword="_edit_type", message="Typ editieren fehlgeschlagen")
-                    self.set_status_bar("Typ editieren fehlgeschlagen")
-                else:
-                    self._set_current_type()
+        error_code: ErrorCode = transition.update_type(id_=current_item.id_, name=text)
+        if error_code == ErrorCode.UPDATE_S:
+            self._set_current_type()
+        elif error_code == ErrorCode.NO_CHANCE:
+            self._set_current_type()
+            self.set_status_bar("Keine Änderungen vorgenommen.")
         else:
-            self.set_status_bar("Keine Änderung vorgenommen")
-            self._types_list.setCurrentItem(None)
-            self._edit.clear()
-            self._set_btn()
+            debug.error(item=self, keyword="_edit_type", message="Typ editieren fehlgeschlagen")
+            self.handle_error_code(error_code=error_code, type_=f"Typ {text}")
 
     def _is_correct_input(self) -> bool:
         if len(self._edit.text().strip()) > 0:
@@ -210,16 +221,19 @@ class TypesWindow(BaseWindow):
 
     def _set_type_activity(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        if not transition.update_type_activity(id_=current_item.id_, active=False if current_item.active else True):
-            debug.error(item=self, keyword="_set_type_activity", message="Typ konnte nicht gesetzt werden")
-            self.set_status_bar("Typ konnte nicht gesetzt werden")
-        else:
+        error_code: ErrorCode = transition.update_type_activity(id_=current_item.id_,
+                                                                active=False if current_item.active else True)
+        if error_code == ErrorCode.UPDATE_S:
             self._set_current_type()
+        else:
+            debug.error(item=self, keyword="_set_type_activity", message="Typ konnte nicht gesetzt werden")
+            self.handle_error_code(error_code=error_code, type_=f"Typ {current_item.name}")
 
     def _remove_type(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        if not transition.delete_type(id_=current_item.id_):
-            debug.error(item=self, keyword="_remove_type", message="Typ konnte nicht gelöscht werden")
-            self.set_status_bar(massage="Löschen fehlgeschlagen. (Typ noch in Benutzung?)")
-        else:
+        error_code: ErrorCode = transition.delete_type(id_=current_item.id_)
+        if error_code == ErrorCode.DELETE_S:
             self._set_current_type()
+        else:
+            debug.error(item=self, keyword="_remove_type", message="Typ konnte nicht gelöscht werden")
+            self.handle_error_code(error_code=error_code, type_=f"Typ {current_item.name}")
