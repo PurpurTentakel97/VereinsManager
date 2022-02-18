@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Main
+# Python 3.10
 
 import config_sheet
 from sqlite import database, global_handler as g_h
