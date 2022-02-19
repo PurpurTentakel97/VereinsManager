@@ -35,6 +35,26 @@ CREATE TRIGGER IF NOT EXISTS "trigger_update_type"
 BEGIN
     UPDATE "type" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
 END;
+/* Log Type */
+CREATE TRIGGER IF NOT EXISTS "trigger_log_type"
+    AFTER UPDATE ON "type"
+    WHEN NEW.name IS NOT OLD.name
+BEGIN
+    INSERT INTO "log" (_target_table,_target_id,_target_column,old_data,new_data) VALUES
+    ("type",OLD.ID,"type",OLD.name, NEW.name);
+END;
+CREATE TRIGGER IF NOT EXISTS "trigger_log_new_type"
+    AFTER INSERT ON "type"
+BEGIN
+    INSERT INTO "log" (_target_table,_target_id,_target_column,old_data,new_data) VALUES
+    ("type",NEW.ID,"type",NULL, NEW.name);
+END;
+CREATE TRIGGER IF NOT EXISTS "trigger_log_delete_type"
+    AFTER DELETE ON "type"
+BEGIN
+    INSERT INTO "log" (_target_table,_target_id,_target_column,old_data,new_data) VALUES
+    ("type",OLD.ID,"type",OLD.name, NULL);
+END;
 /* Active Type */
 CREATE VIEW IF NOT EXISTS "main"."v_active_type" AS
 SELECT type.ID, type.name, type.type_id, raw_type.type_name
