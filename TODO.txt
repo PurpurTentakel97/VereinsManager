@@ -4,7 +4,6 @@
 
 sql database
     let unser coose database name
-    log type
 
 
 ui
