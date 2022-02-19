@@ -56,6 +56,16 @@ class SelectHandler(Database):
                                                                       f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Typen").message
 
+    def get_active_member_type(self) -> tuple | str:
+        sql_command: str = f"""SELECT * FROM v_active_member_type ORDER BY type_id ASC, name ASC;"""
+        try:
+            return self.cursor.execute(sql_command).fetchall()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="get_raw_types", message=f"load raw types failed\n"
+                                                                    f"command = {sql_command}\n"
+                                                                    f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Active Member Type").message
+
     # member
     def get_names_of_member(self, active: bool = True) -> tuple | str:
         try:

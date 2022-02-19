@@ -14,6 +14,10 @@ def get_single_type(raw_type_id: int, active: bool = True) -> tuple | str:
     return s_h.select_handler.get_single_type(raw_type_id=raw_type_id, active=active)
 
 
+def get_active_member_type() -> tuple | str:
+    return s_h.select_handler.get_active_member_type()
+
+
 def add_type(type_name: str, raw_type_id: int) -> str | None:
     return a_h.add_handler.add_type(type_name=type_name, raw_type_id=raw_type_id)
 
