@@ -3,7 +3,7 @@
 # VereinsManager / Add Handler
 
 from sqlite.database import Database
-from config.error_code import ErrorCode
+from config import error_code as e
 from logic import validation
 import debug
 
@@ -18,21 +18,22 @@ class AddHandler(Database):
         return "AddHandler(Database)"
 
     # type
-    def add_type(self, type_name: str, raw_type_id: int) -> ErrorCode:
-        error_code: ErrorCode = validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
-        if error_code == ErrorCode.OK_S:
-            sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
-            try:
-                self.cursor.execute(sql_command, (type_name.strip().title(), raw_type_id))
-                self.connection.commit()
-                return ErrorCode.ADD_S
-            except self.OperationalError as error:
-                debug.error(item=self, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
-                                                                                     f"command = {sql_command}\n"
-                                                                                     f"error = {' '.join(error.args)}")
-                return ErrorCode.ADD_E
-        else:
-            return error_code
+    def add_type(self, type_name: str, raw_type_id: int) -> str | None:
+        try:
+            validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
+        except (e.NoInput, e.NoId, e.AlreadyExists) as error:
+            return error.message
+
+        sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
+        try:
+            self.cursor.execute(sql_command, (type_name.strip().title(), raw_type_id))
+            self.connection.commit()
+            return
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
+                                                                                 f"command = {sql_command}\n"
+                                                                                 f"error = {' '.join(error.args)}")
+            return e.AddFailed(info=type_name).message
 
 
 def create_add_handler() -> None:
