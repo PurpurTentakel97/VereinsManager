@@ -77,10 +77,11 @@ class MemberListItem(QListWidgetItem):
 
 
 class PositionListItem(QListWidgetItem):
-    def __init__(self, name_str):
+    def __init__(self, name: str, id_: int):
         super().__init__()
-        self.name: str = name_str
+        self.name: str = name
         self._set_name()
+        self.ID: int = id_
 
     def _set_name(self):
         self.setText(self.name)
@@ -94,6 +95,7 @@ class MembersWindow(BaseWindow):
         self._is_edit: bool = False
         self.member_counter: int = int()
 
+        self.membership_ids: list[tuple] = list()
         self.phone_number_ids: list[tuple] = list()
         self.mail_ids: list[tuple] = list()
         self.position_ids: list[tuple] = list()
@@ -102,6 +104,7 @@ class MembersWindow(BaseWindow):
         self._set_layout()
 
         self._load_all_member_names()
+        self._add_member()
         self._set_types()
         self._set_edit_mode()
 
@@ -287,7 +290,32 @@ class MembersWindow(BaseWindow):
         self.show()
 
     def _set_types(self) -> None:
-        pass
+        data = transition.get_active_member_type()
+        if isinstance(data, str):
+            self.set_status_bar(massage=data)
+        else:
+            for ID, name, type_id, type_name in data:
+                match type_id:
+                    case 1:  # member_type
+                        self.membership_ids.append((ID, name))
+                        self._membership_type_box.addItem(name)
+
+                    case 2:  # mail
+                        self.mail_ids.append((ID, name))
+                        self._mail_address_type_box.addItem(name)
+
+                    case 3:  # phone
+                        self.phone_number_ids.append((ID, name))
+                        self._phone_number_type_box.addItem(name)
+
+                    case 4:  # position
+                        self.position_ids.append((ID, name))
+                        new_position: PositionListItem = PositionListItem(name=name, id_=ID)
+                        self._positions_items.append(new_position)
+                        self._positions_list.addItem(new_position)
+
+            self._membership_type_box.addItem("")
+            self._membership_type_box.setCurrentText("")
 
     def _set_edit_mode(self) -> None:
         invert_edit = not self._is_edit
