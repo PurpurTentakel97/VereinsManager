@@ -2,30 +2,78 @@
 # 18.02.2022
 # VereinsManager / Error Code
 
-from enum import Enum
+
+# Operational Error
+class LoadingFailed(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Laden Fehlgeschlagen"
+        self.message: str = str_ + "//" + info if info else str_
 
 
-class ErrorCode(Enum):
-    # Success
-    OK_S = 0
-    LOAD_S = 1
-    ADD_S = 2
-    UPDATE_S = 3
-    ACTIVE_SET_S = 4
-    DELETE_S = 5
+class AddFailed(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Hinzufügen Fehlgeschlagen"
+        self.message: str = str_ + "//" + info if info else str_
 
-    # Operational Error
-    LOAD_E = 100
-    ADD_E = 101
-    UPDATE_E = 102
-    ACTIVE_SET_E = 103
-    DELETE_E = 104
 
-    # Database
-    F_KEY_E = 200
+class UpdateFailed(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Update Fehlgeschlagen"
+        self.message: str = str_ + "//" + info if info else str_
 
-    # Input Error
-    NO_INPUT = 300
-    NO_ID = 301
-    NO_CHANCE = 302
-    ALREADY_EXISTS_E = 303
+
+class ActiveSetFailed(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Änderung der Aktivität Fehlgeschlagen"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class DeleteFailed(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Löschen Fehlgeschlagen"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+# Database
+class ForeignKeyError(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Datensatz noch in Benutzung"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+# Input Error
+class NoInput(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Keine Eingabe"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class NoBool(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Kein Bool-Wert"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class NoId(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Keine ID"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class NoChance(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Keine Änderung"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class AlreadyExists(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Bereits vorhanden"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+# General
+class NotFound(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Nicht gefunden"
+        self.message: str = str_ + "//" + info if info else str_

@@ -3,7 +3,7 @@
 # VereinsManager / Validation
 
 from sqlite import select_handler as s_h
-from config.error_code import ErrorCode
+from config import error_code as e
 
 validation: "Validation"
 
@@ -15,30 +15,63 @@ class Validation:
     def __str__(self) -> str:
         return "Validation"
 
-    def add_type(self, type_name: str, raw_type_id: int) -> ErrorCode:
-        if not self._is_str(text=type_name):
-            return ErrorCode.NO_INPUT
-        if not self._is_id(id_=raw_type_id):
-            return ErrorCode.NO_ID
+    # type
+    def add_type(self, type_name: str, raw_type_id: int) -> None:
+        self.must_str(text=type_name)
+        self.must_id(id_=raw_type_id)
 
-        error_code, data = s_h.select_handler.get_all_single_type()
+        data = s_h.select_handler.get_all_single_type()
         type_name = type_name.strip().title()
-        if error_code == ErrorCode.LOAD_S:
-            for _, name, id_, _ in data:
-                if type_name == name and id_ == raw_type_id:
-                    return ErrorCode.ALREADY_EXISTS_E
-            return ErrorCode.OK_S
+        for _, name, id_, _ in data:
+            if type_name == name and id_ == raw_type_id:
+                raise e.AlreadyExists()
 
-        else:
-            return error_code
+    def edit_type(self, new_id: int, new_name: str) -> None:
+        self.must_str(new_name)
+        self.must_id(new_id)
+
+        data = s_h.select_handler.get_all_single_type()
+        exists: bool = False
+        for old_id, old_name, *_ in data:
+            if new_id == old_id:
+                if new_name == old_name:
+                    raise e.NoChance(info=new_name)
+                exists = True
+                break
+
+        if not exists:
+            raise e.NotFound(info=new_name)
+
+    def edit_type_activity(self, id_: int, active: bool) -> None:
+        self.must_id(id_=id_)
+        self.must_bool(bool_=active)
+
+        data = s_h.select_handler.get_all_single_type()
+        exists: bool = False
+        for old_id, old_name, old_type_id, old_active in data:
+            if old_id == id_:
+                if old_active != active:
+                    raise e.NoChance(info="Type Aktivität")
+                exists = True
+                break
+
+        if not exists:
+            raise e.NotFound(info="Typ Aktivität")
 
     @staticmethod
-    def _is_str(text: str) -> bool:
-        return isinstance(text, str) and len(text.strip()) > 0
+    def must_str(text: str) -> None:
+        if not isinstance(text, str) or len(text.strip()) == 0:
+            raise e.NoInput(info=text)
 
     @staticmethod
-    def _is_id(id_: int) -> bool:
-        return isinstance(id_, int) and id_ > 0
+    def must_bool(bool_: bool) -> None:
+        if not isinstance(bool_, bool):
+            raise e.NoBool()
+
+    @staticmethod
+    def must_id(id_: int) -> None:
+        if not isinstance(id_, int) or id_ <= 0:
+            raise e.NoId()
 
 
 def create_validation() -> None:
