@@ -37,3 +37,7 @@ def delete_type(id_: int) -> str | None:
 # member
 def load_all_member_name(active: bool = True) -> str | tuple:
     return s_h.select_handler.get_names_of_member(active=active)
+
+
+def get_data_from_member_by_id(id_: int, active: bool = True) -> tuple | str:
+    return s_h.select_handler.get_data_from_member_by_id(id_=id_, active=active)
