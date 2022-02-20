@@ -32,3 +32,8 @@ def update_type_activity(id_: int, active: bool) -> str | None:
 
 def delete_type(id_: int) -> str | None:
     return d_h.delete_handler.delete_type(id_=id_)
+
+
+# member
+def load_all_member_name(active: bool = True) -> str | tuple:
+    return s_h.select_handler.get_names_of_member(active=active)
