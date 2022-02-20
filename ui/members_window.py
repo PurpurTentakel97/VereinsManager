@@ -10,6 +10,8 @@ from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QCo
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
 from enum import Enum
 
+from datetime import datetime
+
 import transition
 from ui.base_window import BaseWindow
 
@@ -28,7 +30,7 @@ class LineEditType(Enum):
     COMMENT = 6
 
 
-class DateType:
+class DateType(Enum):
     ENTRY = 0
     B_DAY = 1
 
@@ -102,10 +104,10 @@ class MembersWindow(BaseWindow):
 
         self._set_ui()
         self._set_layout()
+        self._set_types()
 
         self._load_all_member_names()
-        self._set_types()
-        self._set_edit_mode()
+        self._load_single_member()
 
     def __str__(self) -> str:
         return "MEMBERS WINDOW"
@@ -123,7 +125,7 @@ class MembersWindow(BaseWindow):
         self._add_member_btn.clicked.connect(self._add_member)
         self._remove_member_btn: QPushButton = QPushButton()
         self._remove_member_btn.setText("Mitglied löschen")
-        self._remove_member_btn.clicked.connect(self._delete)
+        self._remove_member_btn.clicked.connect(self._set_active)
 
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
@@ -327,7 +329,55 @@ class MembersWindow(BaseWindow):
         self._remove_member_btn.setEnabled(invert_edit)
 
     def _set_current_member(self) -> None:
-        pass
+        current_member: MemberListItem = self._members_list.currentItem()
+        if current_member.first_name:
+            self._first_name_le.setText(current_member.first_name)
+        else:
+            self._first_name_le.setText("")
+
+        if current_member.last_name:
+            self._last_name_le.setText(current_member.last_name)
+        else:
+            self._last_name_le.setText("")
+
+        if current_member.street:
+            self._street_le.setText(current_member.street)
+        else:
+            self._street_le.setText("")
+
+        if current_member.number:
+            self._number_le.setText(current_member.number)
+        else:
+            self._number_le.setText("")
+
+        if current_member.zip_code:
+            self._zip_code_le.setText(current_member.zip_code)
+        else:
+            self._zip_code_le.setText("")
+
+        if current_member.city:
+            self._city_le.setText(current_member.city)
+        else:
+            self._city_le.setText("")
+
+        if current_member.birth_date:
+            date_: datetime = datetime.fromtimestamp(current_member.birth_date)
+            self._b_day_date.setDate(QDate(date_.year, date_.month, date_.day))
+        else:
+            self._b_day_date.setDate(QDate())
+
+        if current_member.entry_date:
+            date_: datetime = datetime.fromtimestamp(current_member.entry_date)
+            self._entry_date.setDate(QDate(date_.year, date_.month, date_.day))
+        else:
+            self._entry_date.setDate(QDate())
+
+        self._special_member_cb.setChecked(current_member.special_member)
+
+        if current_member.comment_text:
+            self._comment_text.setText(current_member.comment_text)
+        else:
+            self._comment_text.setText("")
 
     def _set_el_input(self, type_: LineEditType) -> None:
         if not self._is_edit:
@@ -401,10 +451,27 @@ class MembersWindow(BaseWindow):
             self._set_edit_mode()
 
     def _load_single_member(self) -> None:
-        pass
+        current_member: MemberListItem = self._members_list.currentItem()
+        data = transition.get_data_from_member_by_id(id_=current_member.member_id_)
+        if isinstance(data, str):
+            self.set_status_bar(massage=data)
+        else:
+            current_member.first_name = data[1]
+            current_member.last_name = data[2]
+            current_member.street = data[3]
+            current_member.number = data[4]
+            current_member.zip_code = str(data[5])
+            current_member.city = data[6]
+            current_member.birth_date = data[7]
+            current_member.entry_date = data[8]
+            current_member.membership_type = data[9]
+            current_member.special_member = data[10]
+            current_member.comment_text = data[11]
+
+            self._set_current_member()
 
     def _save(self) -> None:
         pass
 
-    def _delete(self) -> None:
+    def _set_active(self) -> None:
         pass
