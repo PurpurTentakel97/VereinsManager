@@ -34,11 +34,11 @@ class DateType:
 
 
 class MemberListItem(QListWidgetItem):
-    def __init__(self, id_: int | None = None, firstname: str | None = None, lastname: str | None = None):
+    def __init__(self, id_: int | None = None, first_name: str | None = None, last_name: str | None = None):
         super().__init__()
         self.member_id_: int = id_
-        self.first_name: str = firstname
-        self.last_name: str = lastname
+        self.first_name: str = first_name
+        self.last_name: str = last_name
 
         self.street: str | None = None
         self.number: str | None = None
@@ -104,7 +104,6 @@ class MembersWindow(BaseWindow):
         self._set_layout()
 
         self._load_all_member_names()
-        self._add_member()
         self._set_types()
         self._set_edit_mode()
 
@@ -354,71 +353,25 @@ class MembersWindow(BaseWindow):
                 current_member.comment_text = self._comment_text.toPlainText().strip()
 
     def _set_date(self, type_: DateType) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-
-        match type_:
-            case DateType.B_DAY:
-                current_member.birth_date = self._b_day_date.date()
-            case DateType.ENTRY:
-                current_member.entry_date = self._entry_date.date()
-
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
+        pass
 
     def _set_phone_type(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if current_member is not None:
-            try:
-                self._phone_number_le.setText(current_member.phone_numbers[self._phone_number_type_box.currentText()])
-            except KeyError:
-                self._phone_number_le.setText(None)
+        pass
 
     def _set_phone_number_input(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if len(self._phone_number_le.text().strip()) > 0 or \
-                self._phone_number_type_box.currentText() in current_member.phone_numbers:
-            current_member.phone_numbers[
-                self._phone_number_type_box.currentText()] = self._phone_number_le.text().strip()
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
+        pass
 
     def _set_mail_type(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if current_member is not None:
-            try:
-                self._mail_address_le.setText(current_member.mail_addresses[self._mail_address_type_box.currentText()])
-            except KeyError:
-                self._mail_address_le.setText(None)
+        pass
 
     def _set_mail_input(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if len(self._mail_address_le.text().strip()) > 0 or \
-                self._mail_address_type_box.currentText() in current_member.mail_addresses:
-            current_member.mail_addresses[
-                self._mail_address_type_box.currentText()] = self._mail_address_le.text().strip()
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
+        pass
 
     def _set_membership_type(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if self._membership_type_box.currentText() == "":
-            current_member.membership_type = None
-        else:
-            current_member.membership_type = self._membership_type_box.currentText()
-
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
+        pass
 
     def _set_special_member(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        current_member.special_member = self._special_member_cb.isChecked()
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
+        pass
 
     def _set_position(self) -> None:
         pass
@@ -433,7 +386,19 @@ class MembersWindow(BaseWindow):
         self.member_counter += 1
 
     def _load_all_member_names(self) -> None:
-        pass
+        data = transition.load_all_member_name()
+        if isinstance(data, str):
+            self.set_status_bar(massage=data)
+        elif len(data) == 0:
+            self._add_member()
+        else:
+            self._members_list.setCurrentItem(None)
+            for ID, first_name, last_name in data:
+                new_member: MemberListItem = MemberListItem(id_=ID, first_name=first_name, last_name=last_name)
+                self._members_list.addItem(new_member)
+            self._members_list.setCurrentRow(0)
+            self._is_edit = False
+            self._set_edit_mode()
 
     def _load_single_member(self) -> None:
         pass
