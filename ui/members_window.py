@@ -4,7 +4,7 @@
 import datetime
 from datetime import date
 
-from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtCore import QDate, Qt, QDateTime
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
@@ -44,7 +44,7 @@ class MemberListItem(QListWidgetItem):
 
         self.street: str | None = None
         self.number: str | None = None
-        self.zip_code: str | None = None
+        self.zip_code: str = ""
         self.city: str | None = None
 
         self.birth_date: QDate = QDate()
@@ -316,9 +316,6 @@ class MembersWindow(BaseWindow):
                         self._positions_items.append(new_position)
                         self._positions_list.addItem(new_position)
 
-            self._membership_type_box.addItem("")
-            self._membership_type_box.setCurrentText("")
-
     def _set_edit_mode(self) -> None:
         invert_edit = not self._is_edit
 
@@ -459,6 +456,7 @@ class MembersWindow(BaseWindow):
 
     def _add_member(self) -> None:
         new_member: MemberListItem = MemberListItem()
+        new_member.membership_type = self._membership_type_box.currentText()
         self._members_list.addItem(new_member)
         self._members_list.setCurrentItem(new_member)
         self._set_current_member()
@@ -491,18 +489,43 @@ class MembersWindow(BaseWindow):
             current_member.last_name = member_data["last_name"]
             current_member.street = member_data["street"]
             current_member.number = member_data["number"]
-            current_member.zip_code = str(member_data["zip_code"])
+            current_member.zip_code = "" if member_data["zip_code"] is None else str(member_data["zip_code"])
             current_member.city = member_data["city"]
             current_member.birth_date = member_data["birth_date"]
             current_member.entry_date = member_data["entry_date"]
             current_member.membership_type = member_data["membership_type"]
-            current_member.special_member = member_data["special_member"]
+            current_member.special_member = True if member_data["special_member"] else False
             current_member.comment_text = member_data["comment_text"]
 
             self._set_current_member()
 
     def _save(self) -> None:
-        pass
+        current_member: MemberListItem = self._members_list.currentItem()
+        member_data: dict = {
+            "first_name": current_member.first_name,
+            "last_name": current_member.last_name,
+            "street": current_member.street,
+            "number": current_member.number,
+            "zip_code": None if current_member.zip_code == "" else int(current_member.zip_code),
+            "birth_date": QDateTime.toSecsSinceEpoch(QDateTime(current_member.birth_date)),
+            "entry_date": QDateTime.toSecsSinceEpoch(QDateTime(current_member.entry_date)),
+            "city": current_member.city,
+            "membership_type": current_member.membership_type,
+            "special_member": current_member.special_member,
+            "comment_text": current_member.comment_text
+        }
+
+        data: dict = {
+            "member_data": member_data,
+        }
+
+        result = transition.update_member_data(id_=current_member.member_id_, data=data)
+        if isinstance(result, str):
+            self.set_status_bar(massage=result)
+        else:
+            current_member.member_id_ = result
+            self._is_edit = False
+            self._set_edit_mode()
 
     def _set_active(self) -> None:
         pass

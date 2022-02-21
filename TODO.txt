@@ -4,10 +4,11 @@
 
 sql database
     let unser coose database name
+    convert empty string to None
 
 
 ui
     member_window
-        incorrent loag // membertype
-        chance initial edit mode
-        Zip_code initial None
+        incorrect dates
+        new member in database
+        move date from set current member to load member
