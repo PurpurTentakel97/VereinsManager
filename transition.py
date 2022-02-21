@@ -2,7 +2,8 @@
 # 08.02.2022
 # VereinsManager / Transition
 
-from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h
+from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
+    global_handler as g_h
 
 
 # type
@@ -35,9 +36,9 @@ def delete_type(id_: int) -> str | None:
 
 
 # member
-def load_all_member_name(active: bool = True) -> str | tuple:
+def load_all_member_name(active: bool = True) -> tuple | str:
     return s_h.select_handler.get_names_of_member(active=active)
 
 
-def get_data_from_member_by_id(id_: int, active: bool = True) -> tuple | str:
-    return s_h.select_handler.get_data_from_member_by_id(id_=id_, active=active)
+def get_member_data_by_id(id_: int, active: bool = True) -> dict | str:
+    return g_h.global_handler.get_member_data(id_=id_, active=active)

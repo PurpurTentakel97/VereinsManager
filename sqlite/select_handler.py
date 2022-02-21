@@ -66,6 +66,21 @@ class SelectHandler(Database):
                                                                     f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Active Member Type").message
 
+    def get_type_name_by_id(self, id_: int) -> tuple | str:
+        try:
+            v.validation.must_id(id_=id_)
+        except e.NoId as error:
+            return error.message
+
+        sql_command: str = f"""SELECT name FROM type WHERE ID is ?;"""
+        try:
+            return self.cursor.execute(sql_command, (id_,)).fetchone()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="get_type_name_by_id", message=f"load single type failed\n"
+                                                                          f"command = {sql_command}\n"
+                                                                          f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Mitgliedsdaten").message
+
     # member
     def get_names_of_member(self, active: bool = True) -> tuple | str:
         try:
@@ -83,7 +98,7 @@ class SelectHandler(Database):
                                                                           f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedernamen").message
 
-    def get_data_from_member_by_id(self, id_: int, active: bool = True) -> tuple | str:
+    def get_member_data_by_id(self, id_: int, active: bool = True) -> dict | str:
         try:
             v.validation.must_id(id_=id_)
             v.validation.must_bool(bool_=active)
@@ -93,7 +108,28 @@ class SelectHandler(Database):
         table: str = "v_active_member" if active else "v_inactive_member"
         sql_command: str = f"""SELECT * FROM {table} WHERE ID = ?;"""
         try:
-            return self.cursor.execute(sql_command, (id_,)).fetchone()
+            data = self.cursor.execute(sql_command, (id_,)).fetchone()
+            data_ = {
+                "ID": data[0],
+                "first_name": data[1],
+                "last_name": data[2],
+                "street": data[3],
+                "number": data[4],
+                "zip_code": data[5],
+                "city": data[6],
+                "birth_date": data[7],
+                "entry_date": data[8],
+                "membership_type": data[9],
+                "special_member": data[10],
+                "comment_text": data[11],
+            }
+            if isinstance(data_["membership_type"], int):
+                data = self.get_type_name_by_id(data_["membership_type"])
+                if isinstance(data, str):
+                    return data
+                else:
+                    data_["membership_type"] = data[0]
+            return data_
 
         except self.OperationalError as error:
             debug.error(item=self, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
