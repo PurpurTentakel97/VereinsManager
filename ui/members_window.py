@@ -94,7 +94,6 @@ class MembersWindow(BaseWindow):
     def __init__(self):
         super().__init__()
         self._positions_items: list[PositionListItem] = list()
-        self._is_edit: bool = False
         self.member_counter: int = int()
 
         self.membership_ids: list[tuple] = list()
@@ -106,6 +105,8 @@ class MembersWindow(BaseWindow):
         self._set_layout()
         self._set_types()
 
+        self._is_edit: bool = False
+        self._set_edit_mode()
         self._load_all_member_names()
         self._load_single_member()
 
@@ -118,7 +119,7 @@ class MembersWindow(BaseWindow):
         self._members_lb.setText("Mitglieder:")
 
         self._members_list: QListWidget = QListWidget()
-        self._members_list.itemClicked.connect(self._set_current_member)
+        self._members_list.itemClicked.connect(self._load_single_member)
 
         self._add_member_btn: QPushButton = QPushButton()
         self._add_member_btn.setText("Mitglied hinzufügen")
@@ -361,16 +362,27 @@ class MembersWindow(BaseWindow):
             self._city_le.setText("")
 
         if current_member.birth_date:
-            date_: datetime = datetime.fromtimestamp(current_member.birth_date)
-            self._b_day_date.setDate(QDate(date_.year, date_.month, date_.day))
+            if isinstance(current_member.birth_date, int):
+                date_: datetime = datetime.fromtimestamp(current_member.birth_date)
+                self._b_day_date.setDate(QDate(date_.year, date_.month, date_.day))
+            else:
+                self._b_day_date.setDate(current_member.birth_date)
         else:
-            self._b_day_date.setDate(QDate())
+            self._b_day_date.setDate(QDate(1900, 1, 1))
 
         if current_member.entry_date:
-            date_: datetime = datetime.fromtimestamp(current_member.entry_date)
-            self._entry_date.setDate(QDate(date_.year, date_.month, date_.day))
+            if isinstance(current_member.entry_date, int):
+                date_: datetime = datetime.fromtimestamp(current_member.entry_date)
+                self._entry_date.setDate(QDate(date_.year, date_.month, date_.day))
+            else:
+                self._entry_date.setDate(current_member.entry_date)
         else:
-            self._entry_date.setDate(QDate())
+            self._entry_date.setDate(QDate(1900, 1, 1))
+
+        if current_member.membership_type:
+            self._membership_type_box.setCurrentText(current_member.membership_type)
+        else:
+            self._membership_type_box.setCurrentText("")
 
         self._special_member_cb.setChecked(current_member.special_member)
 
@@ -379,10 +391,10 @@ class MembersWindow(BaseWindow):
         else:
             self._comment_text.setText("")
 
+        self._is_edit = False
+        self._set_edit_mode()
+
     def _set_el_input(self, type_: LineEditType) -> None:
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
         current_member: MemberListItem = self._members_list.currentItem()
         match type_:
             case LineEditType.FIRSTNAME:
@@ -402,8 +414,21 @@ class MembersWindow(BaseWindow):
             case LineEditType.COMMENT:
                 current_member.comment_text = self._comment_text.toPlainText().strip()
 
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
+
     def _set_date(self, type_: DateType) -> None:
-        pass
+        current_member: MemberListItem = self._members_list.currentItem()
+        match type_:
+            case DateType.B_DAY:
+                current_member.birth_date = self._b_day_date.date()
+            case DateType.ENTRY:
+                current_member.entry_date = self._entry_date.date()
+
+        if not self._is_edit:
+            self._is_edit = True
+            self._set_edit_mode()
 
     def _set_phone_type(self) -> None:
         pass
@@ -418,7 +443,13 @@ class MembersWindow(BaseWindow):
         pass
 
     def _set_membership_type(self) -> None:
-        pass
+        current_member: MemberListItem = self._members_list.currentItem()
+        if current_member:
+            current_member.membership_type = self._membership_type_box.currentText()
+
+            if not self._is_edit:
+                self._is_edit = True
+                self._set_edit_mode()
 
     def _set_special_member(self) -> None:
         pass
@@ -446,27 +477,27 @@ class MembersWindow(BaseWindow):
             for ID, first_name, last_name in data:
                 new_member: MemberListItem = MemberListItem(id_=ID, first_name=first_name, last_name=last_name)
                 self._members_list.addItem(new_member)
+                self.member_counter += 1
             self._members_list.setCurrentRow(0)
-            self._is_edit = False
-            self._set_edit_mode()
 
     def _load_single_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
-        data = transition.get_data_from_member_by_id(id_=current_member.member_id_)
+        data = transition.get_member_data_by_id(id_=current_member.member_id_)
         if isinstance(data, str):
             self.set_status_bar(massage=data)
         else:
-            current_member.first_name = data[1]
-            current_member.last_name = data[2]
-            current_member.street = data[3]
-            current_member.number = data[4]
-            current_member.zip_code = str(data[5])
-            current_member.city = data[6]
-            current_member.birth_date = data[7]
-            current_member.entry_date = data[8]
-            current_member.membership_type = data[9]
-            current_member.special_member = data[10]
-            current_member.comment_text = data[11]
+            member_data = data["member_data"]
+            current_member.first_name = member_data["first_name"]
+            current_member.last_name = member_data["last_name"]
+            current_member.street = member_data["street"]
+            current_member.number = member_data["number"]
+            current_member.zip_code = str(member_data["zip_code"])
+            current_member.city = member_data["city"]
+            current_member.birth_date = member_data["birth_date"]
+            current_member.entry_date = member_data["entry_date"]
+            current_member.membership_type = member_data["membership_type"]
+            current_member.special_member = member_data["special_member"]
+            current_member.comment_text = member_data["comment_text"]
 
             self._set_current_member()
 
