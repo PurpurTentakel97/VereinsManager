@@ -17,7 +17,7 @@ class Validation:
 
     # type
     def add_type(self, type_name: str, raw_type_id: int) -> None:
-        self.must_str(text=type_name)
+        self.must_str_with_len(text=type_name)
         self.must_id(id_=raw_type_id)
 
         data = s_h.select_handler.get_all_single_type()
@@ -27,7 +27,7 @@ class Validation:
                 raise e.AlreadyExists()
 
     def edit_type(self, new_id: int, new_name: str) -> None:
-        self.must_str(new_name)
+        self.must_str_with_len(new_name)
         self.must_id(new_id)
 
         data = s_h.select_handler.get_all_single_type()
@@ -58,10 +58,44 @@ class Validation:
         if not exists:
             raise e.NotFound(info="Typ Aktivität")
 
+    # member
+    @classmethod
+    def update_member(cls, data: dict) -> None:
+        cls.must_dict(dict_=data)
+        keys: list = [
+            "first_name",
+            "last_name",
+            "street",
+            "number",
+            "city",
+            "membership_type",
+            "comment_text",
+        ]
+        for key in keys:
+            if data[key] is not None:
+                cls.must_str(text=data[key])
+
+        keys: list = [
+            "zip_code",
+            "birth_date",
+            "entry_date",
+        ]
+        for key in keys:
+            if data[key] is not None:
+                cls.must_int(int_=data[key])
+
+        if data["special_member"] is not None:
+            cls.must_bool(bool_=data["special_member"])
+
+    @staticmethod
+    def must_str_with_len(text: str) -> None:
+        if not isinstance(text, str) or len(text.strip()) == 0:
+            raise e.NoStr(info=text)
+
     @staticmethod
     def must_str(text: str) -> None:
-        if not isinstance(text, str) or len(text.strip()) == 0:
-            raise e.NoInput(info=text)
+        if not isinstance(text, str):
+            raise e.NoStr(info=text)
 
     @staticmethod
     def must_bool(bool_: bool) -> None:
@@ -72,6 +106,16 @@ class Validation:
     def must_id(id_: int) -> None:
         if not isinstance(id_, int) or id_ <= 0:
             raise e.NoId()
+
+    @staticmethod
+    def must_int(int_: int) -> None:
+        if not isinstance(int_, int):
+            raise e.NoInt()
+
+    @staticmethod
+    def must_dict(dict_: dict) -> None:
+        if not isinstance(dict_, dict):
+            raise e.NoDict()
 
 
 def create_validation() -> None:

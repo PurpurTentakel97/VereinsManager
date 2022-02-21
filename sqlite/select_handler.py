@@ -79,7 +79,20 @@ class SelectHandler(Database):
             debug.error(item=self, keyword="get_type_name_by_id", message=f"load single type failed\n"
                                                                           f"command = {sql_command}\n"
                                                                           f"error = {' '.join(error.args)}")
-            return e.LoadingFailed(info="Mitgliedsdaten").message
+            return e.LoadingFailed(info="Typ ID").message
+
+    def get_id_by_type_name(self, raw_id: int, name: str) -> tuple | str:
+        sql_command: str = f"""SELECT ID FROM type WHERE type_id = ? and name = ?;"""
+        try:
+            return self.cursor.execute(sql_command, (
+                raw_id,
+                name,
+            )).fetchone()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="get_id_by_type_name", message=f"load single type failed\n"
+                                                                          f"command = {sql_command}\n"
+                                                                          f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Typ Name").message
 
     # member
     def get_names_of_member(self, active: bool = True) -> tuple | str:

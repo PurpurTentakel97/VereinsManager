@@ -21,7 +21,7 @@ class AddHandler(Database):
     def add_type(self, type_name: str, raw_type_id: int) -> str | None:
         try:
             validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
-        except (e.NoInput, e.NoId, e.AlreadyExists) as error:
+        except (e.NoStr, e.NoId, e.AlreadyExists) as error:
             return error.message
 
         sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
@@ -34,6 +34,19 @@ class AddHandler(Database):
                                                                                  f"command = {sql_command}\n"
                                                                                  f"error = {' '.join(error.args)}")
             return e.AddFailed(info=type_name).message
+
+    # member
+    def add_member(self) -> int | str:
+        sql_command: str = f"""INSERT INTO member (first_name) VALUES (?);"""
+        try:
+            self.cursor.execute(sql_command, (None,))
+            self.connection.commit()
+            return self.cursor.lastrowid
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="add_member", message=f"add member failed\n"
+                                                                 f"command = {sql_command}\n"
+                                                                 f"error = {' '.join(error.args)}")
+            return e.AddFailed().message
 
 
 def create_add_handler() -> None:

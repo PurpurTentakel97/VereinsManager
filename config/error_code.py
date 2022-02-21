@@ -42,7 +42,7 @@ class ForeignKeyError(Exception):
 
 
 # Input Error
-class NoInput(Exception):
+class NoStr(Exception):
     def __init__(self, info: str = ""):
         str_ = "Keine Eingabe"
         self.message: str = str_ + "//" + info if info else str_
@@ -57,6 +57,18 @@ class NoBool(Exception):
 class NoId(Exception):
     def __init__(self, info: str = ""):
         str_ = "Keine ID"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class NoDict(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Kein Dictionary"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class NoInt(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Keine Zahl"
         self.message: str = str_ + "//" + info if info else str_
 
 
