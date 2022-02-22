@@ -20,7 +20,7 @@ class DeleteHandler(Database):
     # type
     def delete_type(self, id_: int) -> str | None:
         try:
-            v.validation.must_id(id_)
+            v.validation.must_positive_int(id_)
         except e.NoId as error:
             return error.message
 

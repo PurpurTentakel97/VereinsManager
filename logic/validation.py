@@ -16,9 +16,10 @@ class Validation:
         return "Validation"
 
     # type
-    def add_type(self, type_name: str, raw_type_id: int) -> None:
-        self.must_str_with_len(text=type_name)
-        self.must_id(id_=raw_type_id)
+    @classmethod
+    def add_type(cls, type_name: str, raw_type_id: int) -> None:
+        cls.must_str(text=type_name)
+        cls.must_positive_int(int_=raw_type_id)
 
         data = s_h.select_handler.get_all_single_type()
         type_name = type_name.strip().title()
@@ -26,9 +27,10 @@ class Validation:
             if type_name == name and id_ == raw_type_id:
                 raise e.AlreadyExists()
 
-    def edit_type(self, new_id: int, new_name: str) -> None:
-        self.must_str_with_len(new_name)
-        self.must_id(new_id)
+    @classmethod
+    def edit_type(cls, new_id: int, new_name: str) -> None:
+        cls.must_str(new_name)
+        cls.must_positive_int(new_id)
 
         data = s_h.select_handler.get_all_single_type()
         exists: bool = False
@@ -42,9 +44,10 @@ class Validation:
         if not exists:
             raise e.NotFound(info=new_name)
 
-    def edit_type_activity(self, id_: int, active: bool) -> None:
-        self.must_id(id_=id_)
-        self.must_bool(bool_=active)
+    @classmethod
+    def edit_type_activity(cls, id_: int, active: bool) -> None:
+        cls.must_positive_int(int_=id_)
+        cls.must_bool(bool_=active)
 
         data = s_h.select_handler.get_all_single_type()
         exists: bool = False
@@ -88,13 +91,8 @@ class Validation:
             cls.must_bool(bool_=data["special_member"])
 
     @staticmethod
-    def must_str_with_len(text: str) -> None:
-        if not isinstance(text, str) or len(text.strip()) == 0:
-            raise e.NoStr(info=text)
-
-    @staticmethod
     def must_str(text: str) -> None:
-        if not isinstance(text, str):
+        if not isinstance(text, str) or len(text.strip()) == 0:
             raise e.NoStr(info=text)
 
     @staticmethod
@@ -103,9 +101,11 @@ class Validation:
             raise e.NoBool()
 
     @staticmethod
-    def must_id(id_: int) -> None:
-        if not isinstance(id_, int) or id_ <= 0:
-            raise e.NoId()
+    def must_positive_int(int_: int) -> None:
+        if not isinstance(int_, int):
+            raise e.NoInt(info=str(int_))
+        if int_ <= 0:
+            raise e.NoPositiveInt(info=str(int_))
 
     @staticmethod
     def must_int(int_: int) -> None:

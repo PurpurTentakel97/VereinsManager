@@ -46,15 +46,15 @@ class GlobalHandler:
 
         try:
             v.validation.update_member(data=member_data)
-        except (e.NoDict, e.NoStr, e.NoInt, e.NoBool) as error:
+        except (e.NoDict, e.NoStr, e.NoPositiveInt, e.NoBool) as error:
             return error.message
 
-        try:
-            v.validation.must_id(id_=id_)
-        except e.NoId:
+        if id_ is None:
             id_: int = a_h.add_handler.add_member()
-            if isinstance(id_, str):
-                return id_
+        try:
+            v.validation.must_positive_int(int_=id_)
+        except e.NoPositiveInt as error:
+            return error.message
 
         result = u_h.update_handler.update_member(id_=id_, data=member_data)
         if isinstance(result, str):

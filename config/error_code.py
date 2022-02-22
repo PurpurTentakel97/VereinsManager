@@ -54,12 +54,6 @@ class NoBool(Exception):
         self.message: str = str_ + "//" + info if info else str_
 
 
-class NoId(Exception):
-    def __init__(self, info: str = ""):
-        str_ = "Keine ID"
-        self.message: str = str_ + "//" + info if info else str_
-
-
 class NoDict(Exception):
     def __init__(self, info: str = ""):
         str_ = "Kein Dictionary"
@@ -68,7 +62,13 @@ class NoDict(Exception):
 
 class NoInt(Exception):
     def __init__(self, info: str = ""):
-        str_ = "Keine Zahl"
+        str_ = "Keine Ganzzahl"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class NoPositiveInt(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Keine positive Ganzzahl"
         self.message: str = str_ + "//" + info if info else str_
 
 
