@@ -41,9 +41,9 @@ class SelectHandler(Database):
 
     def get_single_type(self, raw_type_id: int, active: bool = True) -> tuple | str:
         try:
-            v.validation.must_id(id_=raw_type_id)
+            v.validation.must_positive_int(int_=raw_type_id)
             v.validation.must_bool(bool_=active)
-        except (e.NoBool, e.NoId) as error:
+        except (e.NoBool, e.NoPositiveInt) as error:
             return error.message
 
         table: str = "v_active_type" if active else "v_inactive_type"
@@ -69,8 +69,8 @@ class SelectHandler(Database):
 
     def get_type_name_by_id(self, id_: int) -> tuple | str:
         try:
-            v.validation.must_id(id_=id_)
-        except e.NoId as error:
+            v.validation.must_positive_int(int_=id_)
+        except e.NoPositiveInt as error:
             return error.message
 
         sql_command: str = f"""SELECT name FROM type WHERE ID is ?;"""
@@ -114,9 +114,9 @@ class SelectHandler(Database):
 
     def get_member_data_by_id(self, id_: int, active: bool = True) -> dict | str:
         try:
-            v.validation.must_id(id_=id_)
+            v.validation.must_positive_int(int_=id_)
             v.validation.must_bool(bool_=active)
-        except (e.NoId, e.NoBool) as error:
+        except (e.NoPositiveInt, e.NoBool) as error:
             return error.message
 
         table: str = "v_active_member" if active else "v_inactive_member"

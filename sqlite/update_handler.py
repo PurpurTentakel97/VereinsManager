@@ -23,7 +23,7 @@ class UpdateHandler(Database):
     def update_type(self, id_: int, name: str) -> str | None:
         try:
             v.validation.edit_type(new_id=id_, new_name=name)
-        except (e.NoStr, e.NoId, e.NoChance, e.NotFound) as error:
+        except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
             return error.message
 
         sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
@@ -40,7 +40,7 @@ class UpdateHandler(Database):
     def update_type_activity(self, id_: int, active: bool) -> str | None:
         try:
             v.validation.edit_type_activity(id_=id_, active=active)
-        except (e.NoStr, e.NoId, e.NoChance, e.NotFound) as error:
+        except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
             return error.message
 
         sql_command: str = """UPDATE type SET _active = ? WHERE ID is ?;"""
