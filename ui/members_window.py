@@ -5,16 +5,17 @@
 from PyQt5.QtCore import QDate, Qt, QDateTime
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
-    QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
+    QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit, QMessageBox
 from enum import Enum
 
 import transition
 from ui.base_window import BaseWindow
+from ui import recover_member_window
 from config import config_sheet as c
 
 import debug
 
-members_window_: "MembersWindow" or None = None
+members_window_: "MembersWindow"
 
 
 class LineEditType(Enum):
@@ -123,6 +124,9 @@ class MembersWindow(BaseWindow):
         self._remove_member_btn: QPushButton = QPushButton()
         self._remove_member_btn.setText("Mitglied löschen")
         self._remove_member_btn.clicked.connect(self._set_inactive)
+        self._recover_member_btn: QPushButton = QPushButton()
+        self._recover_member_btn.setText("Mitglied wieder herstellen")
+        self._recover_member_btn.clicked.connect(self._recover)
 
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
@@ -211,6 +215,7 @@ class MembersWindow(BaseWindow):
         button_members_hbox: QHBoxLayout = QHBoxLayout()
         button_members_hbox.addWidget(self._add_member_btn)
         button_members_hbox.addWidget(self._remove_member_btn)
+        button_members_hbox.addWidget(self._recover_member_btn)
         button_members_hbox.addStretch()
         button_members_hbox.addWidget(self._break_btn)
         button_members_hbox.addWidget(self._save_btn)
@@ -427,7 +432,7 @@ class MembersWindow(BaseWindow):
         self.member_counter += 1
 
     def _load_all_member_names(self) -> None:
-        data = transition.load_all_member_name()
+        data = transition.get_all_member_name()
         self._members_list.clear()
         if isinstance(data, str):
             self.set_status_bar(massage=data)
@@ -490,6 +495,23 @@ class MembersWindow(BaseWindow):
             current_member.member_id_ = result
             self._is_edit = False
             self._set_edit_mode()
+
+    def _recover(self) -> None:
+        recover_member_window.create_recover_member_window()
+        if self._is_edit:
+            if self._save_permission():
+                self._save()
+        self.close()
+
+    @staticmethod
+    def _save_permission() -> bool:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Fenster wird geschlossen.")
+        msg.setInformativeText("Du hast ungespeicherte Daten. Möchtest du diese Daten vorher speichern?")
+        msg.setWindowTitle("Daten Speichern?")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        return msg.exec_() == QMessageBox.Yes
 
     def _set_inactive(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
