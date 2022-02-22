@@ -1,16 +1,12 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Members Window
-import datetime
-from datetime import date
 
 from PyQt5.QtCore import QDate, Qt, QDateTime
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
 from enum import Enum
-
-from datetime import datetime
 
 import transition
 from ui.base_window import BaseWindow
@@ -358,23 +354,8 @@ class MembersWindow(BaseWindow):
         else:
             self._city_le.setText("")
 
-        if current_member.birth_date:
-            if isinstance(current_member.birth_date, int):
-                date_: datetime = datetime.fromtimestamp(current_member.birth_date)
-                self._b_day_date.setDate(QDate(date_.year, date_.month, date_.day))
-            else:
-                self._b_day_date.setDate(current_member.birth_date)
-        else:
-            self._b_day_date.setDate(QDate(1900, 1, 1))
-
-        if current_member.entry_date:
-            if isinstance(current_member.entry_date, int):
-                date_: datetime = datetime.fromtimestamp(current_member.entry_date)
-                self._entry_date.setDate(QDate(date_.year, date_.month, date_.day))
-            else:
-                self._entry_date.setDate(current_member.entry_date)
-        else:
-            self._entry_date.setDate(QDate(1900, 1, 1))
+        self._b_day_date.setDate(current_member.birth_date)
+        self._entry_date.setDate(current_member.entry_date)
 
         if current_member.membership_type:
             self._membership_type_box.setCurrentText(current_member.membership_type)
@@ -491,8 +472,8 @@ class MembersWindow(BaseWindow):
             current_member.number = member_data["number"]
             current_member.zip_code = "" if member_data["zip_code"] is None else str(member_data["zip_code"])
             current_member.city = member_data["city"]
-            current_member.birth_date = member_data["birth_date"]
-            current_member.entry_date = member_data["entry_date"]
+            current_member.birth_date = QDateTime().fromSecsSinceEpoch(member_data["birth_date"]).date()
+            current_member.entry_date = QDateTime().fromSecsSinceEpoch(member_data["entry_date"]).date()
             current_member.membership_type = member_data["membership_type"]
             current_member.special_member = True if member_data["special_member"] else False
             current_member.comment_text = member_data["comment_text"]
@@ -502,17 +483,17 @@ class MembersWindow(BaseWindow):
     def _save(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         member_data: dict = {
-            "first_name": current_member.first_name,
-            "last_name": current_member.last_name,
-            "street": current_member.street,
-            "number": current_member.number,
+            "first_name": None if current_member.first_name == "" else current_member.first_name,
+            "last_name": None if current_member.last_name == "" else current_member.last_name,
+            "street": None if current_member.street == "" else current_member.street,
+            "number": None if current_member.number == "" else current_member.number,
             "zip_code": None if current_member.zip_code == "" else int(current_member.zip_code),
             "birth_date": QDateTime.toSecsSinceEpoch(QDateTime(current_member.birth_date)),
             "entry_date": QDateTime.toSecsSinceEpoch(QDateTime(current_member.entry_date)),
-            "city": current_member.city,
-            "membership_type": current_member.membership_type,
+            "city": None if current_member.city == "" else current_member.city,
+            "membership_type": None if current_member.membership_type == "" else current_member.membership_type,
             "special_member": current_member.special_member,
-            "comment_text": current_member.comment_text
+            "comment_text": None if current_member.comment_text == "" else current_member.comment_text,
         }
 
         data: dict = {
