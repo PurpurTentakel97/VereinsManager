@@ -7,6 +7,7 @@ from logic import validation as v
 from config import error_code as e
 from sqlite import select_handler as s_h
 import debug
+from config import config_sheet as c
 
 update_handler: "UpdateHandler"
 
@@ -62,7 +63,15 @@ class UpdateHandler(Database):
         if isinstance(result, str):
             return result
         else:
-            data["membership_type"] = result[0]
+            if result:
+                data["membership_type"] = result[0]
+            else:
+                data["membership_type"] = result
+
+        if data["birth_date"] == c.config.date_format["None_date"]:
+            data["birth_date"] = None
+        if data["entry_date"] == c.config.date_format["None_date"]:
+            data["entry_date"] = None
 
         sql_command: str = f"""Update member SET first_name = ?, last_name = ?, street = ?,number = ?,zip_code = ?,
         city = ?,b_day = ?,entry_day = ?, membership_type = ?,special_member = ?,comment = ? WHERE ID is ?;"""

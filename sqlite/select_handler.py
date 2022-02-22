@@ -6,6 +6,7 @@ from sqlite.database import Database
 from config import error_code as e
 from logic import validation as v
 import debug
+from config import config_sheet as c
 
 select_handler: "SelectHandler"
 
@@ -142,6 +143,12 @@ class SelectHandler(Database):
                     return data
                 else:
                     data_["membership_type"] = data[0]
+
+            if data_["birth_date"] is None:
+                data_["birth_date"] = c.config.date_format["None_date"]
+            if data_["entry_date"] is None:
+                data_["entry_date"] = c.config.date_format["None_date"]
+
             return data_
 
         except self.OperationalError as error:

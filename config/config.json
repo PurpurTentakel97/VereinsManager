@@ -1,7 +1,8 @@
 {
   "date_formats": {
     "short": "%Y-%m-%d",
-    "long": "%Y-%m-%d-%H-%M-%S"
+    "long": "%Y-%m-%d-%H-%M-%S",
+    "None_date": -2208992400
   },
   "special_user": {
     "traijan__": "Ehrenmannmitglied",
@@ -9,7 +10,7 @@
     "coder2k": "Ehren Coder",
     "purpurtentakel": "Ehren Tentakel",
     "lordrepha": "Ehren Lord",
-    "crazynightowl01" : "Ehren Eule",
+    "crazynightowl01": "Ehren Eule",
     "quatschsalat": "Ehren Quatsch"
   }
 }
