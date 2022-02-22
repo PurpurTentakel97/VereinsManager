@@ -10,6 +10,7 @@ from enum import Enum
 
 import transition
 from ui.base_window import BaseWindow
+from config import config_sheet as c
 
 import debug
 
@@ -104,7 +105,6 @@ class MembersWindow(BaseWindow):
         self._is_edit: bool = False
         self._set_edit_mode()
         self._load_all_member_names()
-        self._load_single_member()
 
     def __str__(self) -> str:
         return "MEMBERS WINDOW"
@@ -122,7 +122,7 @@ class MembersWindow(BaseWindow):
         self._add_member_btn.clicked.connect(self._add_member)
         self._remove_member_btn: QPushButton = QPushButton()
         self._remove_member_btn.setText("Mitglied löschen")
-        self._remove_member_btn.clicked.connect(self._set_active)
+        self._remove_member_btn.clicked.connect(self._set_inactive)
 
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
@@ -312,6 +312,13 @@ class MembersWindow(BaseWindow):
                         self._positions_items.append(new_position)
                         self._positions_list.addItem(new_position)
 
+            if len(self.phone_number_ids) == 0:
+                self._phone_number_le.setEnabled(False)
+            if len(self.mail_ids) == 0:
+                self._mail_address_le.setEnabled(False)
+            if len(self.membership_ids) == 0:
+                self._special_member_cb.setEnabled(False)
+
     def _set_edit_mode(self) -> None:
         invert_edit = not self._is_edit
 
@@ -324,50 +331,21 @@ class MembersWindow(BaseWindow):
 
     def _set_current_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
-        if current_member.first_name:
-            self._first_name_le.setText(current_member.first_name)
-        else:
-            self._first_name_le.setText("")
 
-        if current_member.last_name:
-            self._last_name_le.setText(current_member.last_name)
-        else:
-            self._last_name_le.setText("")
-
-        if current_member.street:
-            self._street_le.setText(current_member.street)
-        else:
-            self._street_le.setText("")
-
-        if current_member.number:
-            self._number_le.setText(current_member.number)
-        else:
-            self._number_le.setText("")
-
-        if current_member.zip_code:
-            self._zip_code_le.setText(current_member.zip_code)
-        else:
-            self._zip_code_le.setText("")
-
-        if current_member.city:
-            self._city_le.setText(current_member.city)
-        else:
-            self._city_le.setText("")
+        self._first_name_le.setText(current_member.first_name)
+        self._last_name_le.setText(current_member.last_name)
+        self._street_le.setText(current_member.street)
+        self._number_le.setText(current_member.number)
+        self._zip_code_le.setText(current_member.zip_code)
+        self._city_le.setText(current_member.city)
+        self._comment_text.setText(current_member.comment_text)
 
         self._b_day_date.setDate(current_member.birth_date)
         self._entry_date.setDate(current_member.entry_date)
 
-        if current_member.membership_type:
-            self._membership_type_box.setCurrentText(current_member.membership_type)
-        else:
-            self._membership_type_box.setCurrentText("")
+        self._membership_type_box.setCurrentText(current_member.membership_type)
 
         self._special_member_cb.setChecked(current_member.special_member)
-
-        if current_member.comment_text:
-            self._comment_text.setText(current_member.comment_text)
-        else:
-            self._comment_text.setText("")
 
         self._is_edit = False
         self._set_edit_mode()
@@ -438,6 +416,9 @@ class MembersWindow(BaseWindow):
     def _add_member(self) -> None:
         new_member: MemberListItem = MemberListItem()
         new_member.membership_type = self._membership_type_box.currentText()
+        new_member.birth_date = QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date()
+        new_member.entry_date = QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date()
+        new_member.membership_type = self._membership_type_box.currentText()
         self._members_list.addItem(new_member)
         self._members_list.setCurrentItem(new_member)
         self._set_current_member()
@@ -447,6 +428,7 @@ class MembersWindow(BaseWindow):
 
     def _load_all_member_names(self) -> None:
         data = transition.load_all_member_name()
+        self._members_list.clear()
         if isinstance(data, str):
             self.set_status_bar(massage=data)
         elif len(data) == 0:
@@ -458,6 +440,7 @@ class MembersWindow(BaseWindow):
                 self._members_list.addItem(new_member)
                 self.member_counter += 1
             self._members_list.setCurrentRow(0)
+            self._load_single_member()
 
     def _load_single_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -466,17 +449,17 @@ class MembersWindow(BaseWindow):
             self.set_status_bar(massage=data)
         else:
             member_data = data["member_data"]
-            current_member.first_name = member_data["first_name"]
-            current_member.last_name = member_data["last_name"]
-            current_member.street = member_data["street"]
-            current_member.number = member_data["number"]
+            current_member.first_name = "" if member_data["first_name"] is None else member_data["first_name"]
+            current_member.last_name = "" if member_data["last_name"] is None else member_data["last_name"]
+            current_member.street = "" if member_data["street"] is None else member_data["street"]
+            current_member.number = "" if member_data["number"] is None else member_data["number"]
             current_member.zip_code = "" if member_data["zip_code"] is None else str(member_data["zip_code"])
-            current_member.city = member_data["city"]
+            current_member.city = "" if member_data["city"] is None else member_data["city"]
             current_member.birth_date = QDateTime().fromSecsSinceEpoch(member_data["birth_date"]).date()
             current_member.entry_date = QDateTime().fromSecsSinceEpoch(member_data["entry_date"]).date()
             current_member.membership_type = member_data["membership_type"]
             current_member.special_member = True if member_data["special_member"] else False
-            current_member.comment_text = member_data["comment_text"]
+            current_member.comment_text = "" if member_data["comment_text"] is None else member_data["comment_text"]
 
             self._set_current_member()
 
@@ -508,5 +491,10 @@ class MembersWindow(BaseWindow):
             self._is_edit = False
             self._set_edit_mode()
 
-    def _set_active(self) -> None:
-        pass
+    def _set_inactive(self) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        result = transition.update_member_activity(id_=current_member.member_id_, active=False)
+        if isinstance(result, str):
+            self.set_status_bar(massage=result)
+            return
+        self._load_all_member_names()

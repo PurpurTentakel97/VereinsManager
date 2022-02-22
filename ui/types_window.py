@@ -194,28 +194,28 @@ class TypesWindow(BaseWindow):
         else:
             self._set_current_type()
 
-    def _is_correct_input(self) -> bool:
-        if len(self._edit.text().strip()) > 0:
-            double: bool = False
-            for item in self._types_list_items:
-                if item.name == self._edit.text().strip().title():
-                    double = True
-                    break
-            if not double:
-                return True
-            else:
-                debug.info(item=self, keyword="_is_correct_input", message="Typ bereits vorhanden")
-                self.set_status_bar("Typ bereits vorhanden")
-                return False
-        else:
-            debug.info(item=self, keyword="_is_correct_input", message="Kein Typ eingegeben")
-            self.set_status_bar("Kein Typ eingegeben")
-            return False
+    # def _is_correct_input(self) -> bool:
+    #     if len(self._edit.text().strip()) > 0:
+    #         double: bool = False
+    #         for item in self._types_list_items:
+    #             if item.name == self._edit.text().strip().title():
+    #                 double = True
+    #                 break
+    #         if not double:
+    #             return True
+    #         else:
+    #             debug.info(item=self, keyword="_is_correct_input", message="Typ bereits vorhanden")
+    #             self.set_status_bar("Typ bereits vorhanden")
+    #             return False
+    #     else:
+    #         debug.info(item=self, keyword="_is_correct_input", message="Kein Typ eingegeben")
+    #         self.set_status_bar("Kein Typ eingegeben")
+    #         return False
 
     def _set_type_activity(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
         error: str = transition.update_type_activity(id_=current_item.id_,
-                                                     active=current_item.active)
+                                                     active=False if current_item.active else True)
         if error:
             self.set_status_bar(massage=error)
         else:

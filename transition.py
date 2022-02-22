@@ -46,3 +46,7 @@ def get_member_data_by_id(id_: int, active: bool = True) -> dict | str:
 
 def update_member_data(id_: int, data: dict) -> str | None:
     return g_h.global_handler.update_member_data(id_=id_, data=data)
+
+
+def update_member_activity(id_: int, active: bool) -> str | None:
+    return u_h.update_handler.update_member_activity(id_=id_, active=active)
