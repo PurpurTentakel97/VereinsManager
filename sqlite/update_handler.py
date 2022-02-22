@@ -45,7 +45,7 @@ class UpdateHandler(Database):
 
         sql_command: str = """UPDATE type SET _active = ? WHERE ID is ?;"""
         try:
-            self.cursor.execute(sql_command, (False if active else True, id_))
+            self.cursor.execute(sql_command, (active, id_))
             self.connection.commit()
             return
 
@@ -96,6 +96,27 @@ class UpdateHandler(Database):
             debug.error(item=self, keyword="update_member", message=f"update member failed\n"
                                                                     f"command = {sql_command}\n"
                                                                     f"error = {' '.join(error.args)}")
+            return e.ActiveSetFailed().message
+
+    def update_member_activity(self, id_: int, active: bool) -> str | None:
+        try:
+            v.validation.must_positive_int(int_=id_)
+            v.validation.must_bool(bool_=active)
+        except (e.NoPositiveInt, e.NoBool) as error:
+            return error.message
+
+        sql_command: str = f"""UPDATE member SET active = ? WHERE ID is ?;"""
+        try:
+            self.cursor.execute(sql_command, (
+                active,
+                id_,
+            ))
+            self.connection.commit()
+            return
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="update_member_activity", message=f"update member activity failed\n"
+                                                                             f"command = {sql_command}\n"
+                                                                             f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
 
 
