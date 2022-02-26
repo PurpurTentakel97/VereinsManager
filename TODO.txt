@@ -7,3 +7,5 @@ sql database
 
 ui
     member_window
+        look if member_window
+        lock if recover_member_window

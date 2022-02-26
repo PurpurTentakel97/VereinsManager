@@ -5,10 +5,9 @@
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
 from ui.base_window import BaseWindow
+from ui import window_manager as w, members_window as m_w
 
 import transition
-
-recover_member_window: "RecoverMemberWindow"
 
 
 class MemberListItem(QListWidgetItem):
@@ -93,7 +92,11 @@ class RecoverMemberWindow(BaseWindow):
             return
         self._load_member_names()
 
-
-def create_recover_member_window() -> None:
-    global recover_member_window
-    recover_member_window = RecoverMemberWindow()
+    def closeEvent(self, event) -> None:
+        event.ignore()
+        result = w.window_manger.is_valid_member_window(recover_member_window=True)
+        if isinstance(result, str):
+            event.accept()
+        else:
+            w.window_manger.members_window = m_w.MembersWindow()
+            event.accept()
