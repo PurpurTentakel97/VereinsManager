@@ -10,12 +10,10 @@ from enum import Enum
 
 import transition
 from ui.base_window import BaseWindow
-from ui import recover_member_window
+from ui import window_manager as w, recover_member_window as r_m_w
 from config import config_sheet as c
 
 import debug
-
-members_window_: "MembersWindow"
 
 
 class LineEditType(Enum):
@@ -48,15 +46,12 @@ class MemberListItem(QListWidgetItem):
         self.birth_date: QDate = QDate()
         self.entry_date: QDate = QDate()
 
-        self.phone_numbers: dict[str, str] = dict()  # {type:number}
-        self.phone_member_ids: dict[str, int] = dict()  # {type:ID}
-        self.mail_addresses: dict[str, str] = dict()  # {type:mail}
-        self.mail_member_ids: dict[str, int] = dict()  # {type:ID}
+        self.phone_numbers: list[list[int, int, str, str]] = list()  # [ID, raw_id, Type, number]
+        self.mail_addresses: list[list[int, int, str, str]] = list()  # [ID, raw_id, Type, mail]
 
         self.membership_type: str | None = None
         self.special_member: bool = False
-        self.positions: list[list[PositionListItem, bool]] = list()
-        self.position_member_ids: dict[str, int] = dict()  # {position:ID}
+        self.positions: list[PositionListItem] = list()
 
         self.comment_text: str | None = None
 
@@ -77,11 +72,13 @@ class MemberListItem(QListWidgetItem):
 
 
 class PositionListItem(QListWidgetItem):
-    def __init__(self, name: str, id_: int):
+    def __init__(self, name: str, id_: int, raw_id: int):
         super().__init__()
         self.name: str = name
         self._set_name()
         self.ID: int = id_
+        self.raw_id: int = raw_id
+        self.active: bool = True
 
     def _set_name(self):
         self.setText(self.name)
@@ -497,11 +494,16 @@ class MembersWindow(BaseWindow):
             self._set_edit_mode()
 
     def _recover(self) -> None:
-        recover_member_window.create_recover_member_window()
-        if self._is_edit:
-            if self._save_permission():
-                self._save()
-        self.close()
+        result = w.window_manger.is_valid_recover_member_window(member_window=True)
+        if isinstance(result, str):
+            self.set_status_bar(massage=result)
+        else:
+            w.window_manger.recover_member_window = r_m_w.RecoverMemberWindow()
+            if self._is_edit:
+                if self._save_permission():
+                    self._save()
+            w.window_manger.members_window = None
+            self.close()
 
     @staticmethod
     def _save_permission() -> bool:
@@ -520,3 +522,11 @@ class MembersWindow(BaseWindow):
             self.set_status_bar(massage=result)
             return
         self._load_all_member_names()
+
+    def closeEvent(self, event) -> None:
+        event.ignore()
+        if self._is_edit:
+            if self._save_permission():
+                self._save()
+        w.window_manger.members_window = None
+        event.accept()

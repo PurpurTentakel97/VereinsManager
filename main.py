@@ -7,7 +7,7 @@ from config import config_sheet
 from sqlite import database, global_handler as g_h
 from logic import validation
 
-from ui import base_window, main_window
+from ui import base_window, main_window, window_manager
 
 
 def _test() -> None:
@@ -20,6 +20,7 @@ if __name__ == "__main__":
     config_sheet.create_config()
     validation.create_validation()
     g_h.create_global_handler()
+    window_manager.create_window_manager()
     _test()
     base_window.create_application()
     main_window.main_window_ = main_window.MainWindow()

@@ -5,9 +5,8 @@
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget
 
 from ui.base_window import BaseWindow
-from ui import members_window, types_window
-
-main_window_: "MainWindow" or None = None
+from ui import members_window as m_w, types_window as t_w
+from ui import window_manager as w
 
 
 class MainWindow(BaseWindow):
@@ -81,9 +80,12 @@ class MainWindow(BaseWindow):
         self.set_widget(widget)
         self.show()
 
-    @staticmethod
-    def _open_members() -> None:
-        members_window.members_window_ = members_window.MembersWindow()
+    def _open_members(self) -> None:
+        result = w.window_manger.is_valid_member_window()
+        if isinstance(result,str):
+            self.set_status_bar(massage=result)
+        else:
+            w.window_manger.members_window = m_w.MembersWindow()
 
     def _open_old_members(self) -> None:
         print("open old members")
@@ -97,9 +99,12 @@ class MainWindow(BaseWindow):
     def _open_performances(self) -> None:
         print("open performances")
 
-    @staticmethod
-    def _open_edit_types() -> None:
-        types_window.types_window_ = types_window.TypesWindow()
+    def _open_edit_types(self) -> None:
+        result=w.window_manger.is_valid_types_window()
+        if isinstance(result,str):
+            self.set_status_bar(massage=result)
+        else:
+            w.window_manger.types_window = t_w.TypesWindow()
 
     def _open_user_data(self):
         print("User Data opend")
