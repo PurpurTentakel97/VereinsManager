@@ -77,15 +77,16 @@ class PositionListItem(QListWidgetItem):
         self.name: str = name
         self.ID: int = id_
         self.raw_id: int = raw_id
-        self.active: bool = False
+        self.active: bool = bool()
 
         self._set_name()
-        self.set_background()
+        self.set_active()
 
     def _set_name(self):
         self.setText(self.name)
 
-    def set_background(self) -> None:
+    def set_active(self, active: bool = False) -> None:
+        self.active = active
         if self.active:
             self.setBackground(QColor("Grey"))
         else:
@@ -398,13 +399,29 @@ class MembersWindow(BaseWindow):
         pass
 
     def _set_phone_number_input(self) -> None:
-        pass
+        current_member: MemberListItem = self._members_list.currentItem()
+        if current_member is not None:
+            for item in current_member.phone_numbers:
+                _, _, Type, phone = item
+                if Type == self._phone_number_type_box.currentText():
+                    current_member.phone_numbers[current_member.phone_numbers.index(item)][3] = \
+                        self._phone_number_le.text().strip()
+                    print(current_member.phone_numbers)
+                    break
 
     def _set_mail_type(self) -> None:
         pass
 
     def _set_mail_input(self) -> None:
-        pass
+        current_member: MemberListItem = self._members_list.currentItem()
+        if current_member is not None:
+            for item in current_member.mail_addresses:
+                _, _, Type, mail = item
+                if Type == self._mail_address_type_box.currentText():
+                    current_member.mail_addresses[current_member.mail_addresses.index(item)][3] = \
+                        self._mail_address_le.text().strip()
+                    print(current_member.mail_addresses)
+                    break
 
     def _set_membership_type(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -419,7 +436,16 @@ class MembersWindow(BaseWindow):
         self._members_list.currentItem().special_member = self._special_member_cb.isChecked()
 
     def _set_position(self) -> None:
-        pass
+        current_position: PositionListItem = self._positions_list.currentItem()
+        current_member: MemberListItem = self._members_list.currentItem()
+        for _, _, item, _ in current_member.positions:
+            if current_position.name == item.name:
+                if item.active:
+                    item.set_active(active=False)
+                else:
+                    item.set_active(active=True)
+                break
+        self._positions_list.setCurrentItem(None)
 
     def _add_member(self) -> None:
         new_member: MemberListItem = MemberListItem()
@@ -445,15 +471,15 @@ class MembersWindow(BaseWindow):
             self._members_list.setCurrentItem(None)
             for ID, first_name, last_name in data:
                 new_member: MemberListItem = MemberListItem(id_=ID, first_name=first_name, last_name=last_name)
-                self.load_nexus_types(member=new_member, type_="phone")
-                self.load_nexus_types(member=new_member, type_="mail")
-                self.load_nexus_types(member=new_member, type_="position")
+                self._load_nexus_types(member=new_member, type_="phone")
+                self._load_nexus_types(member=new_member, type_="mail")
+                self._load_nexus_types(member=new_member, type_="position")
                 self._members_list.addItem(new_member)
                 self.member_counter += 1
             self._members_list.setCurrentRow(0)
             self._load_single_member()
 
-    def load_nexus_types(self, member: MemberListItem, type_: str) -> None:
+    def _load_nexus_types(self, member: MemberListItem, type_: str) -> None:
         dummy: list = list()
         member_dummy: list = list()
         match type_:
@@ -469,10 +495,7 @@ class MembersWindow(BaseWindow):
 
         member_dummy.clear()
         for ID, name_item in dummy:
-            member_dummy.append([None, ID, name_item, None])
-        print(member)
-        print(member_dummy)
-        print("+++++++++++++++++++++++++++++")
+            member_dummy.append([None, ID, name_item, ""])
 
     def _load_single_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
