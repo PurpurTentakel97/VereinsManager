@@ -50,3 +50,14 @@ def update_member_data(id_: int, data: dict) -> str | None:
 
 def update_member_activity(id_: int, active: bool) -> str | None:
     return u_h.update_handler.update_member_activity(id_=id_, active=active)
+
+
+# member nexus
+def get_member_nexus_by_id(id_: int, type_: str) -> tuple or str:
+    match type_:
+        case "phone":
+            return s_h.select_handler.get_phone_number_by_member_id(id_=id_)
+        case "mail":
+            return s_h.select_handler.get_mail_by_member_id(id_=id_)
+        case "position":
+            return s_h.select_handler.get_position_by_member_id(id_=id_)

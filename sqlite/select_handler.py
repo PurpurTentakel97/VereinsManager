@@ -157,6 +157,37 @@ class SelectHandler(Database):
                                                                                  f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedsdaten").message
 
+    # member nexus
+    def get_phone_number_by_member_id(self, id_: int) -> tuple or None:
+        sql_command: str = f"""SELECT ID,type_id,number FROM member_phone WHERE member_id is ? and type_id is ?;"""
+        try:
+            return self.cursor.execute(sql_command, (id_, 3)).fetchall()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="get_phone_number_by_member_id", message=f"load phone numbers failed\n"
+                                                                                    f"command = {sql_command}\n"
+                                                                                    f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Phone Number").message
+
+    def get_mail_by_member_id(self, id_: int) -> tuple or None:
+        sql_command: str = f"""SELECT * FROM member_mail WHERE ID is ? and type_id = ?;"""
+        try:
+            return self.cursor.execute(sql_command, (id_, 2)).fetchall()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="get_mail_by_member_id", message=f"load mails failed\n"
+                                                                            f"command = {sql_command}\n"
+                                                                            f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Phone Number").message
+
+    def get_position_by_member_id(self, id_: int) -> tuple or None:
+        sql_command: str = f"""SELECT * FROM member_position WHERE ID is ? and type_id = ?;"""
+        try:
+            return self.cursor.execute(sql_command, (id_, 4)).fetchall()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="get_position_by_member_id", message=f"load positions failed\n"
+                                                                                f"command = {sql_command}\n"
+                                                                                f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Phone Number").message
+
 
 def create_select_handler() -> None:
     global select_handler
