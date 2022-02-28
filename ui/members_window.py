@@ -88,7 +88,7 @@ class PositionListItem(QListWidgetItem):
     def set_active(self, active: bool = False) -> None:
         self.active = active
         if self.active:
-            self.setBackground(QColor("Grey"))
+            self.setBackground(QColor("Light Grey"))
         else:
             self.setBackground(QColor("White"))
 
@@ -108,8 +108,8 @@ class MembersWindow(BaseWindow):
         self._set_layout()
         self._set_types()
 
-        self._is_edit: bool = False
-        self._set_edit_mode()
+        self._is_edit: bool = bool()
+        self._set_edit_mode(active=False)
         self._load_all_member_names()
 
     def __str__(self) -> str:
@@ -328,7 +328,8 @@ class MembersWindow(BaseWindow):
             if len(self.membership_ids) == 0:
                 self._special_member_cb.setEnabled(False)
 
-    def _set_edit_mode(self) -> None:
+    def _set_edit_mode(self, active: bool) -> None:
+        self._is_edit = active
         invert_edit = not self._is_edit
 
         self._save_btn.setEnabled(self._is_edit)
@@ -337,6 +338,7 @@ class MembersWindow(BaseWindow):
         self._members_list.setEnabled(invert_edit)
         self._add_member_btn.setEnabled(invert_edit)
         self._remove_member_btn.setEnabled(invert_edit)
+        self._recover_member_btn.setEnabled(invert_edit)
 
     def _set_current_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -356,8 +358,7 @@ class MembersWindow(BaseWindow):
 
         self._special_member_cb.setChecked(current_member.special_member)
 
-        self._is_edit = False
-        self._set_edit_mode()
+        self._set_edit_mode(active=False)
 
     def _set_el_input(self, type_: LineEditType) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -379,9 +380,7 @@ class MembersWindow(BaseWindow):
             case LineEditType.COMMENT:
                 current_member.comment_text = self._comment_text.toPlainText().strip()
 
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
+        self._set_edit_mode(active=True)
 
     def _set_date(self, type_: DateType) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -391,12 +390,17 @@ class MembersWindow(BaseWindow):
             case DateType.ENTRY:
                 current_member.entry_date = self._entry_date.date()
 
-        if not self._is_edit:
-            self._is_edit = True
-            self._set_edit_mode()
+        self._set_edit_mode(active=True)
 
     def _set_phone_type(self) -> None:
-        pass
+        current_type: str = self._phone_number_type_box.currentText()
+        current_member: MemberListItem = self._members_list.currentItem()
+
+        if current_member:
+            for _, _, Type, phone in current_member.phone_numbers:
+                if current_type == Type:
+                    self._phone_number_le.setText(phone)
+                    break
 
     def _set_phone_number_input(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -409,8 +413,17 @@ class MembersWindow(BaseWindow):
                     print(current_member.phone_numbers)
                     break
 
+            self._set_edit_mode(active=True)
+
     def _set_mail_type(self) -> None:
-        pass
+        current_type: str = self._mail_address_type_box.currentText()
+        current_member: MemberListItem = self._members_list.currentItem()
+
+        if current_member:
+            for _, _, Type, mail in current_member.mail_addresses:
+                if current_type == Type:
+                    self._mail_address_le.setText(mail)
+                    break
 
     def _set_mail_input(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -423,14 +436,14 @@ class MembersWindow(BaseWindow):
                     print(current_member.mail_addresses)
                     break
 
+            self._set_edit_mode(active=True)
+
     def _set_membership_type(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         if current_member:
             current_member.membership_type = self._membership_type_box.currentText()
 
-            if not self._is_edit:
-                self._is_edit = True
-                self._set_edit_mode()
+            self._set_edit_mode(active=True)
 
     def _set_special_member(self) -> None:
         self._members_list.currentItem().special_member = self._special_member_cb.isChecked()
@@ -446,6 +459,7 @@ class MembersWindow(BaseWindow):
                     item.set_active(active=True)
                 break
         self._positions_list.setCurrentItem(None)
+        self._set_edit_mode(active=True)
 
     def _add_member(self) -> None:
         new_member: MemberListItem = MemberListItem()
@@ -456,8 +470,7 @@ class MembersWindow(BaseWindow):
         self._members_list.addItem(new_member)
         self._members_list.setCurrentItem(new_member)
         self._set_current_member()
-        self._is_edit = True
-        self._set_edit_mode()
+        self._set_edit_mode(active=True)
         self.member_counter += 1
 
     def _load_all_member_names(self) -> None:
@@ -568,8 +581,7 @@ class MembersWindow(BaseWindow):
             self.set_status_bar(massage=result)
         else:
             current_member.member_id_ = result
-            self._is_edit = False
-            self._set_edit_mode()
+            self._set_edit_mode(active=False)
 
     def _recover(self) -> None:
         result = w.window_manger.is_valid_recover_member_window(member_window=True)
