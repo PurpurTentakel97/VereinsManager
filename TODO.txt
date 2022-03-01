@@ -2,10 +2,8 @@
 # 21.01.2022
 # VereinsManager // TODO
 
+debug
+    edit debug messages
+
 sql database
     let unser coose database name
-
-ui
-    member_window
-        look if member_window
-        lock if recover_member_window
