@@ -119,6 +119,40 @@ class UpdateHandler(Database):
                                                                              f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
 
+    # member nexus
+    def update_member_nexus_phone(self, ID: int, number: str) -> str or None:
+        sql_command: str = f"""UPDATE member_phone SET number = ? WHERE ID is ?;"""
+        try:
+            self.cursor.execute(sql_command, (number, ID))
+            self.connection.commit()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="update_member_nexus", message=f"update member nexus failed\n"
+                                                                          f"command = {sql_command}\n"
+                                                                          f"error = {' '.join(error.args)}")
+            return e.ActiveSetFailed(info=number).message
+
+    def update_member_nexus_mail(self, ID: int, mail: str) -> str or None:
+        sql_command: str = f"""UPDATE member_mail SET mail = ? WHERE ID is ?;"""
+        try:
+            self.cursor.execute(sql_command, (mail, ID))
+            self.connection.commit()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="update_member_nexus", message=f"update member nexus failed\n"
+                                                                          f"command = {sql_command}\n"
+                                                                          f"error = {' '.join(error.args)}")
+            return e.ActiveSetFailed(info=mail).message
+
+    def update_member_nexus_position(self, ID: int, active: bool) -> str or None:
+        sql_command: str = f"""UPDATE member_position SET _active = ? WHERE ID is ?;"""
+        try:
+            self.cursor.execute(sql_command, (active, ID))
+            self.connection.commit()
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="update_member_nexus", message=f"update member nexus failed\n"
+                                                                          f"command = {sql_command}\n"
+                                                                          f"error = {' '.join(error.args)}")
+            return e.ActiveSetFailed(info=str(active)).message
+
 
 def crate_update_handler() -> None:
     global update_handler
