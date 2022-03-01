@@ -60,14 +60,16 @@ class GlobalHandler:
         if isinstance(result, str):
             return result
 
-        result = self._update_member_nexus(data=member_nexus_data, member_id=id_)
-        if isinstance(result, str):
-            return result
-        return id_
+        ids = self._update_member_nexus(data=member_nexus_data, member_id=id_)
+        if isinstance(ids, str):
+            return ids
 
+        ids["member_id"] = id_
+        return ids
+
+    # member nexus
     @staticmethod
     def _update_member_nexus(data: dict, member_id: int) -> str or int:
-        debug.debug(item=GlobalHandler, keyword="_update_member_nexus", message=data)
         try:
             v.validation.must_dict(data)
         except KeyError:
@@ -77,11 +79,11 @@ class GlobalHandler:
             phone = data["phone"]
             mail = data["mail"]
             position = data["position"]
-            debug.debug(item=GlobalHandler, keyword="_update_member_nexus", message=position)
         except ValueError:
             return e.NoDict(info="Member Nexus").message
 
         # phone
+        phone_ids: list = list()
         for ID, type_id, Type, phone_number in phone:
             try:
                 v.validation.update_member_nexus(data=[ID, type_id, Type, phone_number], type_="phone")
@@ -89,16 +91,19 @@ class GlobalHandler:
                 return error.message
             try:
                 v.validation.must_positive_int(ID)
-                result: str = u_h.update_handler.update_member_nexus_phone(ID=ID, number=phone_number)
+                result: str | None = u_h.update_handler.update_member_nexus_phone(ID=ID, number=phone_number)
                 if isinstance(result, str):
                     return result
+                phone_ids.append(result)
             except (e.NoPositiveInt, e.NoInt):
-                result: str = a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=phone_number,
-                                                                     member_id=member_id)
+                result: str | int = a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=phone_number,
+                                                                           member_id=member_id)
                 if isinstance(result, str):
                     return result
+                phone_ids.append(result)
 
         # mail
+        mail_ids: list = list()
         for ID, type_id, Type, mail_ in mail:
             try:
                 v.validation.update_member_nexus(data=[ID, type_id, Type, mail_], type_="mail")
@@ -106,31 +111,43 @@ class GlobalHandler:
                 return error.message
             try:
                 v.validation.must_positive_int(ID)
-                result = u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail_)
+                result: str | None = u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail_)
                 if isinstance(result, str):
                     return result
+                mail_ids.append(result)
             except (e.NoPositiveInt, e.NoInt):
-                result: str = a_h.add_handler.add_member_nexus_mail(type_id=type_id, value=mail_, member_id=member_id)
+                result: str | int = a_h.add_handler.add_member_nexus_mail(type_id=type_id, value=mail_,
+                                                                          member_id=member_id)
                 if isinstance(result, str):
                     return result
+                mail_ids.append(result)
 
         # position
+        position_ids: list = list()
         for ID, type_id, Type, active in position:
-            debug.debug(item="GlobalHandler",keyword="_update_member_nexus",message=f"{ID} // {type_id} // {Type} // {active}")
             try:
-                v.validation.update_member_nexus(data=[ID, type_id, Type, active], type_="mail")
+                v.validation.update_member_nexus(data=[ID, type_id, Type, active], type_="position")
             except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.NoBool) as error:
                 return error.message
             try:
                 v.validation.must_positive_int(ID)
-                result: str = u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
+                result: str | None = u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
                 if isinstance(result, str):
                     return result
+                position_ids.append(result)
             except (e.NoPositiveInt, e.NoInt):
-                result: str = a_h.add_handler.add_member_nexus_position(type_id=type_id, value=active,
-                                                                        member_id=member_id)
+                result: str | int = a_h.add_handler.add_member_nexus_position(type_id=type_id, value=active,
+                                                                              member_id=member_id)
                 if isinstance(result, str):
                     return result
+                position_ids.append(result)
+
+        # result
+        return {
+            "phone": phone_ids,
+            "mail": mail_ids,
+            "position": phone_ids,
+        }
 
 
 def create_global_handler() -> None:
