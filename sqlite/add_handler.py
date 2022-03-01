@@ -66,7 +66,6 @@ class AddHandler(Database):
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
-            debug.debug(item=self,keyword="add_member_nexus_mail",message=f"{type_id} // {value} // {member_id}")
             return self.cursor.lastrowid
         except self.OperationalError as error:
             debug.error(item=self, keyword="add_member_nexus_mail", message=f"add member nexus failed\n"
@@ -75,7 +74,7 @@ class AddHandler(Database):
             return e.AddFailed(info=value).message
 
     def add_member_nexus_position(self, type_id: int, value: bool, member_id: int) -> int or str:
-        sql_command: str = f"""INSERT INTO member_phone (member_id, type_id, _active) VALUES (?,?,?);"""
+        sql_command: str = f"""INSERT INTO member_position (member_id, type_id, _active) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()

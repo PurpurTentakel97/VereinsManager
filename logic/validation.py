@@ -95,7 +95,7 @@ class Validation:
     def update_member_nexus(cls, data: list, type_: str) -> None:
         cls.must_list(data)
         cls.must_length(4, data)
-        ID, type_id, Type, value = data
+        _, type_id, Type, value = data
         cls.must_positive_int(type_id)
         if Type is not None:
             cls.must_str(Type)

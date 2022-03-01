@@ -51,7 +51,7 @@ class MemberListItem(QListWidgetItem):
 
         self.membership_type: str | None = None
         self.special_member: bool = False
-        self.positions: list[[int, int, PositionListItem, None]] = list()
+        self.positions: list[[int, int, PositionListItem, None]] = list()  # [ID, raw_id, item, None]
 
         self.comment_text: str | None = None
 
@@ -99,10 +99,10 @@ class MembersWindow(BaseWindow):
         super().__init__()
         self.member_counter: int = int()
 
-        self.membership_ids: list[tuple[int, str]] = list()  # [ID, Name]
-        self.phone_number_ids: list[tuple[int, str]] = list()  # [ID, Name]
-        self.mail_ids: list[tuple[int, str]] = list()  # [ID, Name]
-        self.position_ids: list[tuple[int, PositionListItem]] = list()  # [ID, Name]
+        self.raw_membership_ids: list[tuple[int, str]] = list()  # [ID, Name]
+        self.raw_phone_number_ids: list[tuple[int, str]] = list()  # [ID, Name]
+        self.raw_mail_ids: list[tuple[int, str]] = list()  # [ID, Name]
+        self.raw_position_ids: list[tuple[int, PositionListItem]] = list()  # [ID, Name]
 
         self._set_ui()
         self._set_layout()
@@ -305,27 +305,27 @@ class MembersWindow(BaseWindow):
             for ID, name, type_id, type_name in data:
                 match type_id:
                     case 1:  # member_type
-                        self.membership_ids.append((ID, name))
+                        self.raw_membership_ids.append((ID, name))
                         self._membership_type_box.addItem(name)
 
                     case 2:  # mail
-                        self.mail_ids.append((ID, name))
+                        self.raw_mail_ids.append((ID, name))
                         self._mail_address_type_box.addItem(name)
 
                     case 3:  # phone
-                        self.phone_number_ids.append((ID, name))
+                        self.raw_phone_number_ids.append((ID, name))
                         self._phone_number_type_box.addItem(name)
 
                     case 4:  # position
                         new_position: PositionListItem = PositionListItem(name=name, raw_id=ID)
-                        self.position_ids.append((ID, new_position))
+                        self.raw_position_ids.append((ID, new_position))
                         self._positions_list.addItem(new_position)
 
-            if len(self.phone_number_ids) == 0:
+            if len(self.raw_phone_number_ids) == 0:
                 self._phone_number_le.setEnabled(False)
-            if len(self.mail_ids) == 0:
+            if len(self.raw_mail_ids) == 0:
                 self._mail_address_le.setEnabled(False)
-            if len(self.membership_ids) == 0:
+            if len(self.raw_membership_ids) == 0:
                 self._special_member_cb.setEnabled(False)
 
     def _set_edit_mode(self, active: bool) -> None:
@@ -496,13 +496,13 @@ class MembersWindow(BaseWindow):
         member_dummy: list = list()
         match type_:
             case "phone":
-                dummy = self.phone_number_ids
+                dummy = self.raw_phone_number_ids
                 member_dummy = member.phone_numbers
             case "mail":
-                dummy = self.mail_ids
+                dummy = self.raw_mail_ids
                 member_dummy = member.mail_addresses
             case "position":
-                dummy = self.position_ids
+                dummy = self.raw_position_ids
                 member_dummy = member.positions
 
         member_dummy.clear()
@@ -614,8 +614,36 @@ class MembersWindow(BaseWindow):
         if isinstance(result, str):
             self.set_status_bar(massage=result)
         else:
-            current_member.member_id_ = result
-            self._set_edit_mode(active=False)
+            self._set_save_ids(ids=result)
+
+    def _set_save_ids(self, ids: dict) -> None:
+        current_member: MemberListItem = self._members_list.currentItem()
+        debug.info(item=self, keyword="set_save_ids", message=ids)
+
+        new_member_id: int = ids["member_id"]
+        new_phone_ids: list = ids["phone"]
+        new_mail_ids: list = ids["mail"]
+        new_position_ids: list = ids["position"]
+
+        current_member.member_id_ = new_member_id
+
+        for id_ in new_phone_ids:
+            if id_ is None:
+                continue
+            current_member.phone_numbers[new_phone_ids.index(id_)][0] = id_
+
+        for id_ in new_mail_ids:
+            if id_ is None:
+                continue
+            current_member.mail_addresses[new_mail_ids.index(id_)][0] = id_
+
+        for id_ in new_position_ids:
+            if id_ is None:
+                continue
+            current_member.positions[new_position_ids.index(id_)][0] = id_
+            current_member.positions[new_position_ids.index(id_)][2].ID = id_
+
+        self._set_edit_mode(active=False)
 
     def _recover(self) -> None:
         result = w.window_manger.is_valid_recover_member_window(member_window=True)
