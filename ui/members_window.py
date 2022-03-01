@@ -535,7 +535,7 @@ class MembersWindow(BaseWindow):
         if isinstance(data, str):
             self.set_status_bar(massage=data)
         else:
-            debug.info(item=self, keyword="Phonenumbers", message=data)
+            debug.info(item="MEMBERS WINDOW", keyword="Phonenumbers", message=data)
 
         data = transition.get_member_nexus_by_id(id_=current_member.member_id_, type_="mail")
         if isinstance(data, str):
@@ -545,13 +545,13 @@ class MembersWindow(BaseWindow):
                 for ID, type_id, _, number in current_member.phone_numbers:
                     if type_id_n == type_id:
                         ID, number = ID_n, number_n
-            debug.info(item=self, keyword="Mails", message=data)
+            debug.info(item="MEMBERS WINDOW", keyword="Mails", message=data)
 
         data = transition.get_member_nexus_by_id(id_=current_member.member_id_, type_="position")
         if isinstance(data, str):
             self.set_status_bar(massage=data)
         else:
-            debug.info(item=self, keyword="Positions", message=data)
+            debug.info(item="MEMBERS WINDOW", keyword="Positions", message=data)
 
         self._set_current_member()
 
@@ -618,7 +618,7 @@ class MembersWindow(BaseWindow):
 
     def _set_save_ids(self, ids: dict) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
-        debug.info(item=self, keyword="set_save_ids", message=ids)
+        debug.info(item="MEMBERS WINDOW", keyword="set_save_ids", message=ids)
 
         new_member_id: int = ids["member_id"]
         new_phone_ids: list = ids["phone"]
