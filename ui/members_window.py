@@ -410,7 +410,6 @@ class MembersWindow(BaseWindow):
                 if Type == self._phone_number_type_box.currentText():
                     current_member.phone_numbers[current_member.phone_numbers.index(item)][3] = \
                         self._phone_number_le.text().strip()
-                    print(current_member.phone_numbers)
                     break
 
             self._set_edit_mode(active=True)
@@ -433,7 +432,6 @@ class MembersWindow(BaseWindow):
                 if Type == self._mail_address_type_box.currentText():
                     current_member.mail_addresses[current_member.mail_addresses.index(item)][3] = \
                         self._mail_address_le.text().strip()
-                    print(current_member.mail_addresses)
                     break
 
             self._set_edit_mode(active=True)
@@ -447,6 +445,7 @@ class MembersWindow(BaseWindow):
 
     def _set_special_member(self) -> None:
         self._members_list.currentItem().special_member = self._special_member_cb.isChecked()
+        self._set_edit_mode(active=True)
 
     def _set_position(self) -> None:
         current_position: PositionListItem = self._positions_list.currentItem()
@@ -572,8 +571,43 @@ class MembersWindow(BaseWindow):
             "comment_text": None if current_member.comment_text == "" else current_member.comment_text,
         }
 
+        phone_list: list = list()
+        for ID, type_id, Type, phone in current_member.phone_numbers:
+            phone_entry: list = [
+                ID,
+                type_id,
+                Type,
+                None if phone == "" else phone,
+            ]
+            phone_list.append(phone_entry)
+        mail_list: list = list()
+        for ID, type_id, Type, mail in current_member.mail_addresses:
+            mail_entry: list = [
+                ID,
+                type_id,
+                Type,
+                None if mail == "" else mail,
+            ]
+            mail_list.append(mail_entry)
+        position_list: list = list()
+        for ID, type_id, item, _ in current_member.positions:
+            position_entry: list = [
+                ID,
+                type_id,
+                item.name,
+                item.active,
+            ]
+            position_list.append(position_entry)
+
+        member_nexus_data: dict = {
+            "phone": phone_list,
+            "mail": mail_list,
+            "position": position_list,
+        }
+
         data: dict = {
             "member_data": member_data,
+            "member_nexus_data": member_nexus_data
         }
 
         result = transition.update_member_data(id_=current_member.member_id_, data=data)

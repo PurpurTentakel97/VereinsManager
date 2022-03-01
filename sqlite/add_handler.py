@@ -48,6 +48,44 @@ class AddHandler(Database):
                                                                  f"error = {' '.join(error.args)}")
             return e.AddFailed().message
 
+    # member nexus
+    def add_member_nexus_phone(self, type_id: int, value: str, member_id: int) -> int or str:
+        sql_command: str = f"""INSERT INTO member_phone (member_id, type_id, number) VALUES (?,?,?);"""
+        try:
+            self.cursor.execute(sql_command, (member_id, type_id, value))
+            self.connection.commit()
+            return self.cursor.lastrowid
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="add_member_nexus_phone", message=f"add member nexus failed\n"
+                                                                             f"command = {sql_command}\n"
+                                                                             f"error = {' '.join(error.args)}")
+            return e.AddFailed(info=value).message
+
+    def add_member_nexus_mail(self, type_id: int, value: str, member_id: int) -> int or str:
+        sql_command: str = f"""INSERT INTO member_mail (member_id, type_id, mail) VALUES (?,?,?);"""
+        try:
+            self.cursor.execute(sql_command, (member_id, type_id, value))
+            self.connection.commit()
+            debug.debug(item=self,keyword="add_member_nexus_mail",message=f"{type_id} // {value} // {member_id}")
+            return self.cursor.lastrowid
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="add_member_nexus_mail", message=f"add member nexus failed\n"
+                                                                            f"command = {sql_command}\n"
+                                                                            f"error = {' '.join(error.args)}")
+            return e.AddFailed(info=value).message
+
+    def add_member_nexus_position(self, type_id: int, value: bool, member_id: int) -> int or str:
+        sql_command: str = f"""INSERT INTO member_phone (member_id, type_id, _active) VALUES (?,?,?);"""
+        try:
+            self.cursor.execute(sql_command, (member_id, type_id, value))
+            self.connection.commit()
+            return self.cursor.lastrowid
+        except self.OperationalError as error:
+            debug.error(item=self, keyword="add_member_nexus_position", message=f"add member nexus failed\n"
+                                                                                f"command = {sql_command}\n"
+                                                                                f"error = {' '.join(error.args)}")
+            return e.AddFailed(info=str(value)).message
+
 
 def create_add_handler() -> None:
     global add_handler

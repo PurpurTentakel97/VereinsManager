@@ -1,7 +1,7 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Global Handler
-
+import debug
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h
 from logic import validation as v
 from config import error_code as e
@@ -35,14 +35,14 @@ class GlobalHandler:
 
         return data
 
-    @staticmethod
-    def update_member_data(id_: int, data: dict) -> str | int:
+    def update_member_data(self, id_: int, data: dict) -> str | int:
         try:
             v.validation.must_dict(dict_=data)
         except e.NoDict as error:
             return error.message
 
         member_data: dict = data["member_data"]
+        member_nexus_data: dict = data["member_nexus_data"]
 
         try:
             v.validation.update_member(data=member_data)
@@ -59,7 +59,78 @@ class GlobalHandler:
         result = u_h.update_handler.update_member(id_=id_, data=member_data)
         if isinstance(result, str):
             return result
+
+        result = self._update_member_nexus(data=member_nexus_data, member_id=id_)
+        if isinstance(result, str):
+            return result
         return id_
+
+    @staticmethod
+    def _update_member_nexus(data: dict, member_id: int) -> str or int:
+        debug.debug(item=GlobalHandler, keyword="_update_member_nexus", message=data)
+        try:
+            v.validation.must_dict(data)
+        except KeyError:
+            return e.NoDict(info="Member Nexus").message
+
+        try:
+            phone = data["phone"]
+            mail = data["mail"]
+            position = data["position"]
+            debug.debug(item=GlobalHandler, keyword="_update_member_nexus", message=position)
+        except ValueError:
+            return e.NoDict(info="Member Nexus").message
+
+        # phone
+        for ID, type_id, Type, phone_number in phone:
+            try:
+                v.validation.update_member_nexus(data=[ID, type_id, Type, phone_number], type_="phone")
+            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr) as error:
+                return error.message
+            try:
+                v.validation.must_positive_int(ID)
+                result: str = u_h.update_handler.update_member_nexus_phone(ID=ID, number=phone_number)
+                if isinstance(result, str):
+                    return result
+            except (e.NoPositiveInt, e.NoInt):
+                result: str = a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=phone_number,
+                                                                     member_id=member_id)
+                if isinstance(result, str):
+                    return result
+
+        # mail
+        for ID, type_id, Type, mail_ in mail:
+            try:
+                v.validation.update_member_nexus(data=[ID, type_id, Type, mail_], type_="mail")
+            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr) as error:
+                return error.message
+            try:
+                v.validation.must_positive_int(ID)
+                result = u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail_)
+                if isinstance(result, str):
+                    return result
+            except (e.NoPositiveInt, e.NoInt):
+                result: str = a_h.add_handler.add_member_nexus_mail(type_id=type_id, value=mail_, member_id=member_id)
+                if isinstance(result, str):
+                    return result
+
+        # position
+        for ID, type_id, Type, active in position:
+            debug.debug(item="GlobalHandler",keyword="_update_member_nexus",message=f"{ID} // {type_id} // {Type} // {active}")
+            try:
+                v.validation.update_member_nexus(data=[ID, type_id, Type, active], type_="mail")
+            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.NoBool) as error:
+                return error.message
+            try:
+                v.validation.must_positive_int(ID)
+                result: str = u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
+                if isinstance(result, str):
+                    return result
+            except (e.NoPositiveInt, e.NoInt):
+                result: str = a_h.add_handler.add_member_nexus_position(type_id=type_id, value=active,
+                                                                        member_id=member_id)
+                if isinstance(result, str):
+                    return result
 
 
 def create_global_handler() -> None:

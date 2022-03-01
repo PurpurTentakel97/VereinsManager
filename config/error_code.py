@@ -72,6 +72,18 @@ class NoPositiveInt(Exception):
         self.message: str = str_ + "//" + info if info else str_
 
 
+class NoList(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Keine Liste"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class WrongLength(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Falsche Länge"
+        self.message: str = str_ + "//" + info if info else str_
+
+
 class NoChance(Exception):
     def __init__(self, info: str = ""):
         str_ = "Keine Änderung"
