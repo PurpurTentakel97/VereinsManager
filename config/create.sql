@@ -107,7 +107,7 @@ CREATE TRIGGER IF NOT EXISTS "trigger_log_member_phone_first"
     AFTER INSERT ON "member_phone"
 BEGIN
     INSERT INTO "log" (_target_table,_target_id,_target_column,old_data,new_data) VALUES
-    ("member_phone",NEW.ID,"number",'NULL', NEW.number);
+    ("member_phone",NEW.ID,"number",NULL, NEW.number);
 END;
 
 /* MEMBER MAIL */
@@ -140,7 +140,7 @@ CREATE TRIGGER IF NOT EXISTS "trigger_log_member_mail_first"
     AFTER INSERT ON "member_mail"
 BEGIN
     INSERT INTO "log" (_target_table,_target_id,_target_column,old_data,new_data) VALUES
-    ("member_mail",NEW.ID,"mail",'NULL', NEW.mail);
+    ("member_mail",NEW.ID,"mail",NULL, NEW.mail);
 END;
 
 /* MEMBER POSITION */
@@ -173,7 +173,7 @@ CREATE TRIGGER IF NOT EXISTS "trigger_log_member_position_first"
     AFTER INSERT ON "member_position"
 BEGIN
     INSERT INTO "log" (_target_table,_target_id,_target_column,old_data,new_data) VALUES
-    ("member_position",NEW.ID,"position",'NULL', NEW._active);
+    ("member_position",NEW.ID,"position",NULL, NEW._active);
 END;
 
 /* MEMBER */
