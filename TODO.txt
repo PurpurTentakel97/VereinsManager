@@ -10,4 +10,4 @@ sql database
 
 UI
     member window
-        implement zurücksetzten
+        block from recover_member_window

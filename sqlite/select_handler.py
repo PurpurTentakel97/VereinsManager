@@ -118,7 +118,7 @@ class SelectHandler(Database):
         try:
             v.validation.must_positive_int(int_=id_)
             v.validation.must_bool(bool_=active)
-        except (e.NoPositiveInt, e.NoBool) as error:
+        except (e.NoInt,e.NoPositiveInt, e.NoBool) as error:
             return error.message
 
         table: str = "v_active_member" if active else "v_inactive_member"
@@ -184,14 +184,14 @@ class SelectHandler(Database):
     def get_position_by_member_id(self, id_: int) -> tuple or None:
         sql_command: str = f"""SELECT ID,type_id,_active FROM member_position WHERE member_id is ?;"""
         try:
-            data: list = list(self.cursor.execute(sql_command, (id_,)).fetchall())
+            data: list = (self.cursor.execute(sql_command, (id_,)).fetchall())
             for i in range(len(data)):
                 data[i] = list(data[i])
             for i in data:
                 data[data.index(i)][2] = data[data.index(i)][2] == 1
             for i in range(len(data)):
                 data[i] = tuple(data[i])
-            return tuple(data)
+            return data
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_position_by_member_id", message=f"load positions failed\n"
                                                                                      f"command = {sql_command}\n"
