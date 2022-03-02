@@ -7,7 +7,3 @@ debug
 
 sql database
     let unser coose database name
-
-UI
-    member window
-        block from recover_member_window
