@@ -529,28 +529,18 @@ class MembersWindow(BaseWindow):
             current_member.special_member = True if member_data["special_member"] else False
             current_member.comment_text = "" if member_data["comment_text"] is None else member_data["comment_text"]
 
-        # member nexus
-        data = transition.get_member_nexus_by_id(id_=current_member.member_id_, type_="phone")
-        if isinstance(data, str):
-            self.set_status_bar(massage=data)
-        else:
-            debug.info(item="MEMBERS WINDOW", keyword="Phonenumbers", message=data)
+            # member nexus
+            # phone
+            phone_data: tuple = data["phone"]
+            debug.info(item="Member Window", keyword="_load_single_member", message=f"phone = {phone_data}")
 
-        data = transition.get_member_nexus_by_id(id_=current_member.member_id_, type_="mail")
-        if isinstance(data, str):
-            self.set_status_bar(massage=data)
-        else:
-            for ID_n, type_id_n, number_n in data:
-                for ID, type_id, _, number in current_member.phone_numbers:
-                    if type_id_n == type_id:
-                        ID, number = ID_n, number_n
-            debug.info(item="MEMBERS WINDOW", keyword="Mails", message=data)
+            # mail
+            mail_data: tuple = data["mail"]
+            debug.info(item="Member Window", keyword="_load_single_member", message=f"mail = {mail_data}")
 
-        data = transition.get_member_nexus_by_id(id_=current_member.member_id_, type_="position")
-        if isinstance(data, str):
-            self.set_status_bar(massage=data)
-        else:
-            debug.info(item="MEMBERS WINDOW", keyword="Positions", message=data)
+            # position
+            position_data: tuple = data["position"]
+            debug.info(item="Member Window", keyword="_load_single_member", message=f"position = {position_data}")
 
         self._set_current_member()
 

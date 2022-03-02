@@ -29,8 +29,24 @@ class GlobalHandler:
         member_data: dict = s_h.select_handler.get_member_data_by_id(id_=id_, active=active)
         if isinstance(member_data, str):
             return member_data
+
+        phone_data: tuple or None = s_h.select_handler.get_phone_number_by_member_id(id_=id_)
+        if isinstance(phone_data, str):
+            return phone_data
+
+        mail_data: tuple or None = s_h.select_handler.get_mail_by_member_id(id_=id_)
+        if isinstance(mail_data, str):
+            return mail_data
+
+        position_data: tuple or None = s_h.select_handler.get_position_by_member_id(id_=id_)
+        if isinstance(position_data, str):
+            return position_data
+
         data: dict = {
             "member_data": member_data,
+            "phone": phone_data,
+            "mail": mail_data,
+            "position": position_data,
         }
 
         return data
