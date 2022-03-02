@@ -303,23 +303,22 @@ class MembersWindow(BaseWindow):
             self.set_status_bar(massage=data)
         else:
             for ID, name, type_id, type_name in data:
-                match type_id:
-                    case 1:  # member_type
-                        self.raw_membership_ids.append((ID, name))
-                        self._membership_type_box.addItem(name)
+                if type_id == c.config.raw_type_id["membership"]:
+                    self.raw_membership_ids.append((ID, name))
+                    self._membership_type_box.addItem(name)
 
-                    case 2:  # mail
-                        self.raw_mail_ids.append((ID, name))
-                        self._mail_address_type_box.addItem(name)
+                elif type_id == c.config.raw_type_id["mail"]:
+                    self.raw_mail_ids.append((ID, name))
+                    self._mail_address_type_box.addItem(name)
 
-                    case 3:  # phone
-                        self.raw_phone_number_ids.append((ID, name))
-                        self._phone_number_type_box.addItem(name)
+                elif type_id == c.config.raw_type_id["phone"]:
+                    self.raw_phone_number_ids.append((ID, name))
+                    self._phone_number_type_box.addItem(name)
 
-                    case 4:  # position
-                        new_position: PositionListItem = PositionListItem(name=name, raw_id=ID)
-                        self.raw_position_ids.append((ID, new_position))
-                        self._positions_list.addItem(new_position)
+                elif type_id == c.config.raw_type_id["position"]:
+                    new_position: PositionListItem = PositionListItem(name=name, raw_id=ID)
+                    self.raw_position_ids.append((ID, new_position))
+                    self._positions_list.addItem(new_position)
 
             if len(self.raw_phone_number_ids) == 0:
                 self._phone_number_le.setEnabled(False)

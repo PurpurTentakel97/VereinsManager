@@ -16,6 +16,7 @@ class Config:
         self.config: dict = dict()
 
         self.date_format: dict = dict()
+        self.raw_type_id:dict = dict()
         self.special_user: dict = dict()
 
         self.load_config()
@@ -30,6 +31,7 @@ class Config:
         self.config: dict = json_data
 
         self.date_format: dict = json_data["date_formats"]
+        self.raw_type_id:dict = json_data["raw_type_id"]
         self.special_user: dict = json_data["special_user"]
 
 
