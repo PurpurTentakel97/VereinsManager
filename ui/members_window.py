@@ -15,6 +15,8 @@ from config import config_sheet as c
 
 import debug
 
+debug_str: str = "MembersWindow"
+
 
 class LineEditType(Enum):
     FIRSTNAME = 0
@@ -46,12 +48,12 @@ class MemberListItem(QListWidgetItem):
         self.birth_date: QDate = QDate()
         self.entry_date: QDate = QDate()
 
-        self.phone_numbers: list[list[int, int, str, str]] = list()  # [ID, raw_id, Type, number]
-        self.mail_addresses: list[list[int, int, str, str]] = list()  # [ID, raw_id, Type, mail]
+        self.phone_numbers: list[list[int, int, str, str]] = list()  # [ID, type_id, Type, number]
+        self.mail_addresses: list[list[int, int, str, str]] = list()  # [ID, type_id, Type, mail]
 
         self.membership_type: str | None = None
         self.special_member: bool = False
-        self.positions: list[[int, int, PositionListItem, None]] = list()  # [ID, raw_id, item, None]
+        self.positions: list[[int, int, PositionListItem, None]] = list()  # [ID, type_id, item, None]
 
         self.comment_text: str | None = None
 
@@ -357,6 +359,9 @@ class MembersWindow(BaseWindow):
 
         self._special_member_cb.setChecked(current_member.special_member)
 
+        self._set_phone_type()
+        self._set_mail_type()
+
         self._set_edit_mode(active=False)
 
     def _set_el_input(self, type_: LineEditType) -> None:
@@ -532,15 +537,37 @@ class MembersWindow(BaseWindow):
             # member nexus
             # phone
             phone_data: tuple = data["phone"]
-            debug.info(item="Member Window", keyword="_load_single_member", message=f"phone = {phone_data}")
+            for ID, new_type_id, new_phone in phone_data:
+                for entry in current_member.phone_numbers:
+                    _, old_type_id, old_type, old_phone = entry
+                    if old_type_id == new_type_id:
+                        if ID is not None:
+                            current_member.phone_numbers[current_member.phone_numbers.index(entry)][0] = ID
+                        current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = \
+                            "" if new_phone is None else new_phone
 
             # mail
             mail_data: tuple = data["mail"]
-            debug.info(item="Member Window", keyword="_load_single_member", message=f"mail = {mail_data}")
+            for ID, new_type_id, new_mail in mail_data:
+                for entry in current_member.mail_addresses:
+                    _, old_type_id, old_type, old_mail = entry
+                    if old_type_id == new_type_id:
+                        if ID is not None:
+                            current_member.mail_addresses[current_member.mail_addresses.index(entry)][0] = ID
+                        current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = \
+                            "" if new_mail is None else new_mail
 
             # position
             position_data: tuple = data["position"]
-            debug.info(item="Member Window", keyword="_load_single_member", message=f"position = {position_data}")
+            for ID, new_type_id, new_active in position_data:
+                for item in current_member.positions:
+                    _, old_type_id, position, _ = item
+                    if old_type_id == new_type_id:
+                        if ID is not None:
+                            current_member.positions[current_member.positions.index(item)][0] = ID
+                            current_member.positions[current_member.positions.index(item)][2].ID = ID
+                            current_member.positions[current_member.positions.index(item)][2].set_active(
+                                active=new_active)
 
         self._set_current_member()
 
@@ -607,7 +634,6 @@ class MembersWindow(BaseWindow):
 
     def _set_save_ids(self, ids: dict) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
-        debug.info(item="MEMBERS WINDOW", keyword="set_save_ids", message=ids)
 
         new_member_id: int = ids["member_id"]
         new_phone_ids: list = ids["phone"]

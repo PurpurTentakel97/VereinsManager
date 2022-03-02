@@ -6,7 +6,8 @@ from sqlite.database import Database
 from config import error_code as e
 from logic import validation as v
 import debug
-debug_str:str = "SelectHandler"
+
+debug_str: str = "SelectHandler"
 from config import config_sheet as c
 
 select_handler: "SelectHandler"
@@ -26,8 +27,8 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_raw_types", message=f"load raw types failed\n"
-                                                                    f"command = {sql_command}\n"
-                                                                    f"error = {' '.join(error.args)}")
+                                                                         f"command = {sql_command}\n"
+                                                                         f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Raw Types").message
 
     def get_all_single_type(self) -> tuple | str:
@@ -36,8 +37,8 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_all_single_type", message=f"load all types failed\n"
-                                                                          f"command = {sql_command}\n"
-                                                                          f"error = {' '.join(error.args)}")
+                                                                               f"command = {sql_command}\n"
+                                                                               f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Alle Typen").message
 
     def get_single_type(self, raw_type_id: int, active: bool = True) -> tuple | str:
@@ -54,8 +55,8 @@ class SelectHandler(Database):
 
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_single_type", message=f"load types failed\n"
-                                                                      f"command = {sql_command}\n"
-                                                                      f"error = {' '.join(error.args)}")
+                                                                           f"command = {sql_command}\n"
+                                                                           f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Typen").message
 
     def get_active_member_type(self) -> tuple | str:
@@ -64,8 +65,8 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_raw_types", message=f"load raw types failed\n"
-                                                                    f"command = {sql_command}\n"
-                                                                    f"error = {' '.join(error.args)}")
+                                                                         f"command = {sql_command}\n"
+                                                                         f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Active Member Type").message
 
     def get_type_name_by_id(self, id_: int) -> tuple | str:
@@ -79,8 +80,8 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command, (id_,)).fetchone()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_type_name_by_id", message=f"load single type failed\n"
-                                                                          f"command = {sql_command}\n"
-                                                                          f"error = {' '.join(error.args)}")
+                                                                               f"command = {sql_command}\n"
+                                                                               f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Typ ID").message
 
     def get_id_by_type_name(self, raw_id: int, name: str) -> tuple | str:
@@ -92,8 +93,8 @@ class SelectHandler(Database):
             )).fetchone()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_id_by_type_name", message=f"load single type failed\n"
-                                                                          f"command = {sql_command}\n"
-                                                                          f"error = {' '.join(error.args)}")
+                                                                               f"command = {sql_command}\n"
+                                                                               f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Typ Name").message
 
     # member
@@ -109,8 +110,8 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_names_of_member", message=f"load member names failed\n"
-                                                                          f"command = {sql_command}\n"
-                                                                          f"error = {' '.join(error.args)}")
+                                                                               f"command = {sql_command}\n"
+                                                                               f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedernamen").message
 
     def get_member_data_by_id(self, id_: int, active: bool = True) -> dict | str:
@@ -153,9 +154,10 @@ class SelectHandler(Database):
             return data_
 
         except self.OperationalError as error:
-            debug.error(item=debug_str, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
-                                                                                 f"command = {sql_command}\n"
-                                                                                 f"error = {' '.join(error.args)}")
+            debug.error(item=debug_str, keyword="get_data_from_member_by_id",
+                        message=f"load single member data failed\n"
+                                f"command = {sql_command}\n"
+                                f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedsdaten").message
 
     # member nexus
@@ -165,28 +167,35 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command, (id_,)).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"load phone numbers failed\n"
-                                                                                    f"command = {sql_command}\n"
-                                                                                    f"error = {' '.join(error.args)}")
+                                                                                         f"command = {sql_command}\n"
+                                                                                         f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message
 
     def get_mail_by_member_id(self, id_: int) -> tuple or None:
-        sql_command: str = f"""SELECT ID,type_id,mail FROM member_mail WHERE ID is ?;"""
+        sql_command: str = f"""SELECT ID,type_id,mail FROM member_mail WHERE member_id is ?;"""
         try:
             return self.cursor.execute(sql_command, (id_,)).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_mail_by_member_id", message=f"load mails failed\n"
-                                                                            f"command = {sql_command}\n"
-                                                                            f"error = {' '.join(error.args)}")
+                                                                                 f"command = {sql_command}\n"
+                                                                                 f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message
 
     def get_position_by_member_id(self, id_: int) -> tuple or None:
-        sql_command: str = f"""SELECT ID,type_id,_active FROM member_position WHERE ID is ?;"""
+        sql_command: str = f"""SELECT ID,type_id,_active FROM member_position WHERE member_id is ?;"""
         try:
-            return self.cursor.execute(sql_command, (id_,)).fetchall()
+            data: list = list(self.cursor.execute(sql_command, (id_,)).fetchall())
+            for i in range(len(data)):
+                data[i] = list(data[i])
+            for i in data:
+                data[data.index(i)][2] = data[data.index(i)][2] == 1
+            for i in range(len(data)):
+                data[i] = tuple(data[i])
+            return tuple(data)
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_position_by_member_id", message=f"load positions failed\n"
-                                                                                f"command = {sql_command}\n"
-                                                                                f"error = {' '.join(error.args)}")
+                                                                                     f"command = {sql_command}\n"
+                                                                                     f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message
 
 
