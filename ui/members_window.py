@@ -138,6 +138,7 @@ class MembersWindow(BaseWindow):
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
         self._break_btn.setEnabled(False)
+        self._break_btn.clicked.connect(self._load_single_member)
         self._save_btn: QPushButton = QPushButton()
         self._save_btn.setText("Speichern")
         self._save_btn.setEnabled(False)
@@ -537,37 +538,51 @@ class MembersWindow(BaseWindow):
             # member nexus
             # phone
             phone_data: tuple = data["phone"]
-            for ID, new_type_id, new_phone in phone_data:
+            if len(phone_data) == 0:
                 for entry in current_member.phone_numbers:
-                    _, old_type_id, old_type, old_phone = entry
-                    if old_type_id == new_type_id:
-                        if ID is not None:
-                            current_member.phone_numbers[current_member.phone_numbers.index(entry)][0] = ID
-                        current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = \
-                            "" if new_phone is None else new_phone
+                    _, _, _, old_phone = entry
+                    current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = ""
+            else:
+                for ID, new_type_id, new_phone in phone_data:
+                    for entry in current_member.phone_numbers:
+                        _, old_type_id, old_type, old_phone = entry
+                        if old_type_id == new_type_id:
+                            if ID is not None:
+                                current_member.phone_numbers[current_member.phone_numbers.index(entry)][0] = ID
+                            current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = \
+                                "" if new_phone is None else new_phone
 
             # mail
             mail_data: tuple = data["mail"]
-            for ID, new_type_id, new_mail in mail_data:
+            if len(mail_data) == 0:
                 for entry in current_member.mail_addresses:
-                    _, old_type_id, old_type, old_mail = entry
-                    if old_type_id == new_type_id:
-                        if ID is not None:
-                            current_member.mail_addresses[current_member.mail_addresses.index(entry)][0] = ID
-                        current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = \
-                            "" if new_mail is None else new_mail
+                    _, _, _, old_phone = entry
+                    current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = ""
+            else:
+                for ID, new_type_id, new_mail in mail_data:
+                    for entry in current_member.mail_addresses:
+                        _, old_type_id, old_type, old_mail = entry
+                        if old_type_id == new_type_id:
+                            if ID is not None:
+                                current_member.mail_addresses[current_member.mail_addresses.index(entry)][0] = ID
+                            current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = \
+                                "" if new_mail is None else new_mail
 
             # position
             position_data: tuple = data["position"]
-            for ID, new_type_id, new_active in position_data:
-                for item in current_member.positions:
-                    _, old_type_id, position, _ = item
-                    if old_type_id == new_type_id:
-                        if ID is not None:
-                            current_member.positions[current_member.positions.index(item)][0] = ID
-                            current_member.positions[current_member.positions.index(item)][2].ID = ID
-                            current_member.positions[current_member.positions.index(item)][2].set_active(
-                                active=new_active)
+            if len(position_data) == 0:
+                for _, _, item, _ in current_member.positions:
+                    item.set_active(active=False)
+            else:
+                for ID, new_type_id, new_active in position_data:
+                    for item in current_member.positions:
+                        _, old_type_id, position, _ = item
+                        if old_type_id == new_type_id:
+                            if ID is not None:
+                                current_member.positions[current_member.positions.index(item)][0] = ID
+                                current_member.positions[current_member.positions.index(item)][2].ID = ID
+                                current_member.positions[current_member.positions.index(item)][2].set_active(
+                                    active=new_active)
 
         self._set_current_member()
 
