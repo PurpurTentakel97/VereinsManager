@@ -96,7 +96,9 @@ class RecoverMemberWindow(BaseWindow):
         event.ignore()
         result = w.window_manger.is_valid_member_window(recover_member_window=True)
         if isinstance(result, str):
+            w.window_manger.recover_member_window = None
             event.accept()
         else:
+            w.window_manger.recover_member_window = None
             w.window_manger.members_window = m_w.MembersWindow()
             event.accept()
