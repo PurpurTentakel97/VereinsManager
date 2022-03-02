@@ -2,6 +2,8 @@
 # 13.02.2022
 # VereinsManager / Global Handler
 import debug
+
+debug_str: str = "GlobalHandler"
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h
 from logic import validation as v
 from config import error_code as e
@@ -85,7 +87,7 @@ class GlobalHandler:
 
     # member nexus
     @staticmethod
-    def _update_member_nexus(data: dict, member_id: int) -> str or int:
+    def _update_member_nexus(data: dict, member_id: int) -> str | int:
         try:
             v.validation.must_dict(data)
         except KeyError:
@@ -162,7 +164,7 @@ class GlobalHandler:
         return {
             "phone": phone_ids,
             "mail": mail_ids,
-            "position": phone_ids,
+            "position": position_ids,
         }
 
 

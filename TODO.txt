@@ -7,3 +7,7 @@ debug
 
 sql database
     let unser coose database name
+
+UI
+    member window
+        implement zurücksetzten
