@@ -5,6 +5,7 @@
 import sqlite3
 
 import debug
+debug_str:str = "Database"
 
 database: "Database"
 
@@ -27,7 +28,7 @@ class Database:
             try:
                 self.cursor.executescript(create_file.read())
             except self.OperationalError as error:
-                debug.error(item=self, keyword="_create_tables", message=f"create tables failed\n"
+                debug.error(item=debug_str, keyword="_create_tables", message=f"create tables failed\n"
                                                                          f"error = {' '.join(error.args)}")
 
         self.connection.commit()

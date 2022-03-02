@@ -7,6 +7,7 @@ from logic import validation as v
 from config import error_code as e
 from sqlite import select_handler as s_h
 import debug
+debug_str:str = "UpdateHandler"
 from config import config_sheet as c
 
 update_handler: "UpdateHandler"
@@ -32,7 +33,7 @@ class UpdateHandler(Database):
             self.connection.commit()
             return
         except self.OperationalError as error:
-            debug.error(item=self, keyword="update_type", message=f"update type failed\n"
+            debug.error(item=debug_str, keyword="update_type", message=f"update type failed\n"
                                                                   f"command = {sql_command}\n"
                                                                   f"error = {' '.join(error.args)}")
             return e.UpdateFailed(info=name).message
@@ -50,7 +51,7 @@ class UpdateHandler(Database):
             return
 
         except self.OperationalError as error:
-            debug.error(item=self, keyword="update_type_activity", message=f"update type failed\n"
+            debug.error(item=debug_str, keyword="update_type_activity", message=f"update type failed\n"
                                                                            f"command = {sql_command}\n"
                                                                            f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
@@ -93,7 +94,7 @@ class UpdateHandler(Database):
             self.connection.commit()
             return
         except self.OperationalError as error:
-            debug.error(item=self, keyword="update_member", message=f"update member failed\n"
+            debug.error(item=debug_str, keyword="update_member", message=f"update member failed\n"
                                                                     f"command = {sql_command}\n"
                                                                     f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
@@ -114,7 +115,7 @@ class UpdateHandler(Database):
             self.connection.commit()
             return
         except self.OperationalError as error:
-            debug.error(item=self, keyword="update_member_activity", message=f"update member activity failed\n"
+            debug.error(item=debug_str, keyword="update_member_activity", message=f"update member activity failed\n"
                                                                              f"command = {sql_command}\n"
                                                                              f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
@@ -126,7 +127,7 @@ class UpdateHandler(Database):
             self.cursor.execute(sql_command, (number, ID))
             self.connection.commit()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="update_member_nexus", message=f"update member nexus failed\n"
+            debug.error(item=debug_str, keyword="update_member_nexus", message=f"update member nexus failed\n"
                                                                           f"command = {sql_command}\n"
                                                                           f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed(info=number).message
@@ -137,7 +138,7 @@ class UpdateHandler(Database):
             self.cursor.execute(sql_command, (mail, ID))
             self.connection.commit()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="update_member_nexus", message=f"update member nexus failed\n"
+            debug.error(item=debug_str, keyword="update_member_nexus", message=f"update member nexus failed\n"
                                                                           f"command = {sql_command}\n"
                                                                           f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed(info=mail).message
@@ -148,7 +149,7 @@ class UpdateHandler(Database):
             self.cursor.execute(sql_command, (active, ID))
             self.connection.commit()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="update_member_nexus", message=f"update member nexus failed\n"
+            debug.error(item=debug_str, keyword="update_member_nexus", message=f"update member nexus failed\n"
                                                                           f"command = {sql_command}\n"
                                                                           f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed(info=str(active)).message

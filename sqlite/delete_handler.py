@@ -6,6 +6,7 @@ from sqlite.database import Database
 from config import error_code as e
 from logic import validation as v
 import debug
+debug_str:str = "DeleteHandler"
 
 delete_handler: "DeleteHandler"
 
@@ -21,7 +22,7 @@ class DeleteHandler(Database):
     def delete_type(self, id_: int) -> str | None:
         try:
             v.validation.must_positive_int(id_)
-        except e.NoId as error:
+        except e.NoPositiveInt as error:
             return error.message
 
         sql_command: str = """DELETE FROM type WHERE ID is ?;"""
@@ -31,13 +32,13 @@ class DeleteHandler(Database):
             return
 
         except self.OperationalError as error:
-            debug.error(item=self, keyword="delete_type", message=f"delete type failed\n"
+            debug.error(item=debug_str, keyword="delete_type", message=f"delete type failed\n"
                                                                   f"command = {sql_command}\n"
                                                                   f"error = {' '.join(error.args)}")
             return e.DeleteFailed(info="Typ").message
 
         except self.IntegrityError as error:
-            debug.error(item=self, keyword="delete_type", message=f"delete type still used\n"
+            debug.error(item=debug_str, keyword="delete_type", message=f"delete type still used\n"
                                                                   f"command = {sql_command}\n"
                                                                   f"error = {' '.join(error.args)}")
             self.connection.commit()

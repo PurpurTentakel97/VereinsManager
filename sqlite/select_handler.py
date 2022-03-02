@@ -6,6 +6,7 @@ from sqlite.database import Database
 from config import error_code as e
 from logic import validation as v
 import debug
+debug_str:str = "SelectHandler"
 from config import config_sheet as c
 
 select_handler: "SelectHandler"
@@ -24,7 +25,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_raw_types", message=f"load raw types failed\n"
+            debug.error(item=debug_str, keyword="get_raw_types", message=f"load raw types failed\n"
                                                                     f"command = {sql_command}\n"
                                                                     f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Raw Types").message
@@ -34,7 +35,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_all_single_type", message=f"load all types failed\n"
+            debug.error(item=debug_str, keyword="get_all_single_type", message=f"load all types failed\n"
                                                                           f"command = {sql_command}\n"
                                                                           f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Alle Typen").message
@@ -52,7 +53,7 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command, (raw_type_id,)).fetchall()
 
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_single_type", message=f"load types failed\n"
+            debug.error(item=debug_str, keyword="get_single_type", message=f"load types failed\n"
                                                                       f"command = {sql_command}\n"
                                                                       f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Typen").message
@@ -62,7 +63,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_raw_types", message=f"load raw types failed\n"
+            debug.error(item=debug_str, keyword="get_raw_types", message=f"load raw types failed\n"
                                                                     f"command = {sql_command}\n"
                                                                     f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Active Member Type").message
@@ -77,7 +78,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command, (id_,)).fetchone()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_type_name_by_id", message=f"load single type failed\n"
+            debug.error(item=debug_str, keyword="get_type_name_by_id", message=f"load single type failed\n"
                                                                           f"command = {sql_command}\n"
                                                                           f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Typ ID").message
@@ -90,7 +91,7 @@ class SelectHandler(Database):
                 name,
             )).fetchone()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_id_by_type_name", message=f"load single type failed\n"
+            debug.error(item=debug_str, keyword="get_id_by_type_name", message=f"load single type failed\n"
                                                                           f"command = {sql_command}\n"
                                                                           f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Typ Name").message
@@ -107,7 +108,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_names_of_member", message=f"load member names failed\n"
+            debug.error(item=debug_str, keyword="get_names_of_member", message=f"load member names failed\n"
                                                                           f"command = {sql_command}\n"
                                                                           f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedernamen").message
@@ -152,7 +153,7 @@ class SelectHandler(Database):
             return data_
 
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
+            debug.error(item=debug_str, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
                                                                                  f"command = {sql_command}\n"
                                                                                  f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedsdaten").message
@@ -163,7 +164,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command, (id_,)).fetchall()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_phone_number_by_member_id", message=f"load phone numbers failed\n"
+            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"load phone numbers failed\n"
                                                                                     f"command = {sql_command}\n"
                                                                                     f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message
@@ -173,7 +174,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command, (id_,)).fetchall()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_mail_by_member_id", message=f"load mails failed\n"
+            debug.error(item=debug_str, keyword="get_mail_by_member_id", message=f"load mails failed\n"
                                                                             f"command = {sql_command}\n"
                                                                             f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message
@@ -183,7 +184,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command, (id_,)).fetchall()
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_position_by_member_id", message=f"load positions failed\n"
+            debug.error(item=debug_str, keyword="get_position_by_member_id", message=f"load positions failed\n"
                                                                                 f"command = {sql_command}\n"
                                                                                 f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message

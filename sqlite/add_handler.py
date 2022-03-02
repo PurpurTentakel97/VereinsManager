@@ -6,7 +6,7 @@ from sqlite.database import Database
 from config import error_code as e
 from logic import validation
 import debug
-
+debug_str:str = "AddHandler"
 add_handler: "AddHandler"
 
 
@@ -30,7 +30,7 @@ class AddHandler(Database):
             self.connection.commit()
             return
         except self.OperationalError as error:
-            debug.error(item=self, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
+            debug.error(item=debug_str, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
                                                                                  f"command = {sql_command}\n"
                                                                                  f"error = {' '.join(error.args)}")
             return e.AddFailed(info=type_name).message
@@ -43,7 +43,7 @@ class AddHandler(Database):
             self.connection.commit()
             return self.cursor.lastrowid
         except self.OperationalError as error:
-            debug.error(item=self, keyword="add_member", message=f"add member failed\n"
+            debug.error(item=debug_str, keyword="add_member", message=f"add member failed\n"
                                                                  f"command = {sql_command}\n"
                                                                  f"error = {' '.join(error.args)}")
             return e.AddFailed().message
@@ -56,7 +56,7 @@ class AddHandler(Database):
             self.connection.commit()
             return self.cursor.lastrowid
         except self.OperationalError as error:
-            debug.error(item=self, keyword="add_member_nexus_phone", message=f"add member nexus failed\n"
+            debug.error(item=debug_str, keyword="add_member_nexus_phone", message=f"add member nexus failed\n"
                                                                              f"command = {sql_command}\n"
                                                                              f"error = {' '.join(error.args)}")
             return e.AddFailed(info=value).message
@@ -68,7 +68,7 @@ class AddHandler(Database):
             self.connection.commit()
             return self.cursor.lastrowid
         except self.OperationalError as error:
-            debug.error(item=self, keyword="add_member_nexus_mail", message=f"add member nexus failed\n"
+            debug.error(item=debug_str, keyword="add_member_nexus_mail", message=f"add member nexus failed\n"
                                                                             f"command = {sql_command}\n"
                                                                             f"error = {' '.join(error.args)}")
             return e.AddFailed(info=value).message
@@ -80,7 +80,7 @@ class AddHandler(Database):
             self.connection.commit()
             return self.cursor.lastrowid
         except self.OperationalError as error:
-            debug.error(item=self, keyword="add_member_nexus_position", message=f"add member nexus failed\n"
+            debug.error(item=debug_str, keyword="add_member_nexus_position", message=f"add member nexus failed\n"
                                                                                 f"command = {sql_command}\n"
                                                                                 f"error = {' '.join(error.args)}")
             return e.AddFailed(info=str(value)).message
