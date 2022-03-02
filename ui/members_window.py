@@ -363,6 +363,10 @@ class MembersWindow(BaseWindow):
         self._set_phone_type()
         self._set_mail_type()
 
+        if current_member.member_id_ is None:
+            for _, _, item, _ in current_member.positions:
+                item.set_active(active=False)
+
         self._set_edit_mode(active=False)
 
     def _set_el_input(self, type_: LineEditType) -> None:
@@ -471,6 +475,9 @@ class MembersWindow(BaseWindow):
         new_member.birth_date = QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date()
         new_member.entry_date = QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date()
         new_member.membership_type = self._membership_type_box.currentText()
+        self._load_nexus_types(member=new_member, type_="phone")
+        self._load_nexus_types(member=new_member, type_="mail")
+        self._load_nexus_types(member=new_member, type_="position")
         self._members_list.addItem(new_member)
         self._members_list.setCurrentItem(new_member)
         self._set_current_member()
