@@ -32,7 +32,7 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Raw Types").message
 
     def get_all_single_type(self) -> tuple | str:
-        sql_command: str = f"""SELECT ID,name,type_id,_active FROM type ORDER BY name ASC;"""
+        sql_command: str = f"""SELECT ID,name,type_id,active FROM type ORDER BY name ASC;"""
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
@@ -64,7 +64,7 @@ class SelectHandler(Database):
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
-            debug.error(item=debug_str, keyword="get_raw_types", message=f"load raw types failed\n"
+            debug.error(item=debug_str, keyword="get_active_member_type", message=f"load raw types failed\n"
                                                                          f"command = {sql_command}\n"
                                                                          f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Active Member Type").message
@@ -118,7 +118,7 @@ class SelectHandler(Database):
         try:
             v.validation.must_positive_int(int_=id_)
             v.validation.must_bool(bool_=active)
-        except (e.NoInt,e.NoPositiveInt, e.NoBool) as error:
+        except (e.NoInt, e.NoPositiveInt, e.NoBool) as error:
             return error.message
 
         table: str = "v_active_member" if active else "v_inactive_member"
@@ -182,7 +182,7 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Phone Number").message
 
     def get_position_by_member_id(self, id_: int) -> tuple or None:
-        sql_command: str = f"""SELECT ID,type_id,_active FROM member_position WHERE member_id is ?;"""
+        sql_command: str = f"""SELECT ID,type_id,active FROM member_position WHERE member_id is ?;"""
         try:
             data: list = (self.cursor.execute(sql_command, (id_,)).fetchall())
             for i in range(len(data)):

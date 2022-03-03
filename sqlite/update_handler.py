@@ -7,7 +7,8 @@ from logic import validation as v
 from config import error_code as e
 from sqlite import select_handler as s_h
 import debug
-debug_str:str = "UpdateHandler"
+
+debug_str: str = "UpdateHandler"
 from config import config_sheet as c
 
 update_handler: "UpdateHandler"
@@ -34,8 +35,8 @@ class UpdateHandler(Database):
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_type", message=f"update type failed\n"
-                                                                  f"command = {sql_command}\n"
-                                                                  f"error = {' '.join(error.args)}")
+                                                                       f"command = {sql_command}\n"
+                                                                       f"error = {' '.join(error.args)}")
             return e.UpdateFailed(info=name).message
 
     def update_type_activity(self, id_: int, active: bool) -> str | None:
@@ -44,7 +45,7 @@ class UpdateHandler(Database):
         except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
             return error.message
 
-        sql_command: str = """UPDATE type SET _active = ? WHERE ID is ?;"""
+        sql_command: str = """UPDATE type SET active = ? WHERE ID is ?;"""
         try:
             self.cursor.execute(sql_command, (active, id_))
             self.connection.commit()
@@ -52,8 +53,8 @@ class UpdateHandler(Database):
 
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_type_activity", message=f"update type failed\n"
-                                                                           f"command = {sql_command}\n"
-                                                                           f"error = {' '.join(error.args)}")
+                                                                                f"command = {sql_command}\n"
+                                                                                f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
 
     # member
@@ -95,8 +96,8 @@ class UpdateHandler(Database):
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_member", message=f"update member failed\n"
-                                                                    f"command = {sql_command}\n"
-                                                                    f"error = {' '.join(error.args)}")
+                                                                         f"command = {sql_command}\n"
+                                                                         f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
 
     def update_member_activity(self, id_: int, active: bool) -> str | None:
@@ -116,8 +117,8 @@ class UpdateHandler(Database):
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_member_activity", message=f"update member activity failed\n"
-                                                                             f"command = {sql_command}\n"
-                                                                             f"error = {' '.join(error.args)}")
+                                                                                  f"command = {sql_command}\n"
+                                                                                  f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
 
     # member nexus
@@ -128,8 +129,8 @@ class UpdateHandler(Database):
             self.connection.commit()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_member_nexus", message=f"update member nexus failed\n"
-                                                                          f"command = {sql_command}\n"
-                                                                          f"error = {' '.join(error.args)}")
+                                                                               f"command = {sql_command}\n"
+                                                                               f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed(info=number).message
 
     def update_member_nexus_mail(self, ID: int, mail: str) -> str or None:
@@ -139,19 +140,19 @@ class UpdateHandler(Database):
             self.connection.commit()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_member_nexus", message=f"update member nexus failed\n"
-                                                                          f"command = {sql_command}\n"
-                                                                          f"error = {' '.join(error.args)}")
+                                                                               f"command = {sql_command}\n"
+                                                                               f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed(info=mail).message
 
     def update_member_nexus_position(self, ID: int, active: bool) -> str or None:
-        sql_command: str = f"""UPDATE member_position SET _active = ? WHERE ID is ?;"""
+        sql_command: str = f"""UPDATE member_position SET active = ? WHERE ID is ?;"""
         try:
             self.cursor.execute(sql_command, (active, ID))
             self.connection.commit()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_member_nexus", message=f"update member nexus failed\n"
-                                                                          f"command = {sql_command}\n"
-                                                                          f"error = {' '.join(error.args)}")
+                                                                               f"command = {sql_command}\n"
+                                                                               f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed(info=str(active)).message
 
 

@@ -4,7 +4,8 @@
 import debug
 
 debug_str: str = "GlobalHandler"
-from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h
+from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
+    log_handler as l_h
 from logic import validation as v
 from config import error_code as e
 
@@ -24,6 +25,7 @@ class GlobalHandler:
         a_h.create_add_handler()
         u_h.crate_update_handler()
         d_h.create_delete_handler()
+        l_h.create_log_handler()
 
     # member
     @staticmethod
