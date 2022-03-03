@@ -60,7 +60,6 @@ class UpdateHandler(Database):
     # member
     def update_member(self, id_: int | None, data: dict) -> str | None:
         # validation in global handler
-
         result = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
         if isinstance(result, str):
             return result
