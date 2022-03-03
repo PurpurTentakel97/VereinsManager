@@ -3,13 +3,16 @@
 # VereinsManager / Database
 
 import sqlite3
+import os
 
 import debug
-debug_str:str = "Database"
+
+debug_str: str = "Database"
 
 database: "Database"
 
-database_path: str = "saves/test.vm"
+dir_path:str = "saves"
+database_path: str = "test.vm"
 
 
 class Database:
@@ -29,12 +32,15 @@ class Database:
                 self.cursor.executescript(create_file.read())
             except self.OperationalError as error:
                 debug.error(item=debug_str, keyword="_create_tables", message=f"create tables failed\n"
-                                                                         f"error = {' '.join(error.args)}")
+                                                                              f"error = {' '.join(error.args)}")
+
 
         self.connection.commit()
 
     def create_cursor_connection(self) -> None:
-        self.connection = sqlite3.connect(database_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        self.connection = sqlite3.connect(f"{dir_path}/{database_path}", detect_types=sqlite3.PARSE_DECLTYPES)
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.cursor = self.connection.cursor()
 
