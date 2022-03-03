@@ -6,7 +6,8 @@ from sqlite.database import Database
 from config import error_code as e
 from logic import validation
 import debug
-debug_str:str = "AddHandler"
+
+debug_str: str = "AddHandler"
 add_handler: "AddHandler"
 
 
@@ -30,9 +31,10 @@ class AddHandler(Database):
             self.connection.commit()
             return
         except self.OperationalError as error:
-            debug.error(item=debug_str, keyword="get_data_from_member_by_id", message=f"load single member data failed\n"
-                                                                                 f"command = {sql_command}\n"
-                                                                                 f"error = {' '.join(error.args)}")
+            debug.error(item=debug_str, keyword="get_data_from_member_by_id",
+                        message=f"load single member data failed\n"
+                                f"command = {sql_command}\n"
+                                f"error = {' '.join(error.args)}")
             return e.AddFailed(info=type_name).message
 
     # member
@@ -44,8 +46,8 @@ class AddHandler(Database):
             return self.cursor.lastrowid
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_member", message=f"add member failed\n"
-                                                                 f"command = {sql_command}\n"
-                                                                 f"error = {' '.join(error.args)}")
+                                                                      f"command = {sql_command}\n"
+                                                                      f"error = {' '.join(error.args)}")
             return e.AddFailed().message
 
     # member nexus
@@ -57,8 +59,8 @@ class AddHandler(Database):
             return self.cursor.lastrowid
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_member_nexus_phone", message=f"add member nexus failed\n"
-                                                                             f"command = {sql_command}\n"
-                                                                             f"error = {' '.join(error.args)}")
+                                                                                  f"command = {sql_command}\n"
+                                                                                  f"error = {' '.join(error.args)}")
             return e.AddFailed(info=value).message
 
     def add_member_nexus_mail(self, type_id: int, value: str, member_id: int) -> int or str:
@@ -69,20 +71,20 @@ class AddHandler(Database):
             return self.cursor.lastrowid
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_member_nexus_mail", message=f"add member nexus failed\n"
-                                                                            f"command = {sql_command}\n"
-                                                                            f"error = {' '.join(error.args)}")
+                                                                                 f"command = {sql_command}\n"
+                                                                                 f"error = {' '.join(error.args)}")
             return e.AddFailed(info=value).message
 
     def add_member_nexus_position(self, type_id: int, value: bool, member_id: int) -> int or str:
-        sql_command: str = f"""INSERT INTO member_position (member_id, type_id, _active) VALUES (?,?,?);"""
+        sql_command: str = f"""INSERT INTO member_position (member_id, type_id, active) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
             return self.cursor.lastrowid
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_member_nexus_position", message=f"add member nexus failed\n"
-                                                                                f"command = {sql_command}\n"
-                                                                                f"error = {' '.join(error.args)}")
+                                                                                     f"command = {sql_command}\n"
+                                                                                     f"error = {' '.join(error.args)}")
             return e.AddFailed(info=str(value)).message
 
 
