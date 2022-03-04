@@ -176,7 +176,7 @@ class TypesWindow(BaseWindow):
         error: str = transition.add_type(type_name=self._edit.text(),
                                          raw_type_id=self._get_raw_id_from_name(
                                              type_name=self._types_box.currentText()))
-        if error:
+        if isinstance(error,str):
             self.set_error_bar(message=error)
         else:
             self.set_info_bar(message="saved")
