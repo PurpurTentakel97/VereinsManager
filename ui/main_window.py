@@ -8,6 +8,10 @@ from ui.base_window import BaseWindow
 from ui import members_window as m_w, types_window as t_w
 from ui import window_manager as w
 
+import debug
+
+debug_str: str = "Main Window"
+
 
 class MainWindow(BaseWindow):
     def __init__(self):
@@ -92,16 +96,16 @@ class MainWindow(BaseWindow):
             w.window_manger.members_window = m_w.MembersWindow()
 
     def _open_old_members(self) -> None:
-        print("open old members")
+        debug.info(item=debug_str, keyword="_open_old_members", message=f"old member clicked")
 
     def _open_my_jobs(self) -> None:
-        print("open my jobs")
+        debug.info(item=debug_str, keyword="_open_my_jobs", message=f"my jobs open")
 
     def _open_jobs(self) -> None:
-        print("open jobs")
+        debug.info(item=debug_str, keyword="_open_jobs", message=f"open jobs")
 
     def _open_performances(self) -> None:
-        print("open performances")
+        debug.info(item=debug_str, keyword="_open_performances", message=f"performances open")
 
     def _open_edit_types(self) -> None:
         result = w.window_manger.is_valid_types_window()
@@ -111,13 +115,13 @@ class MainWindow(BaseWindow):
             w.window_manger.types_window = t_w.TypesWindow()
 
     def _open_user_data(self):
-        print("User Data opend")
+        debug.info(item=debug_str, keyword="_open_user_data", message=f"user data open")
 
     def _open_export_pdf(self):
-        print("PDF export opend")
+        debug.info(item=debug_str, keyword="_open_export_pdf", message=f"pdf open")
 
     def _open_chance_user(self):
-        print("User chanced")
+        debug.info(item=debug_str, keyword="_open_chance_user", message=f"chance user")
 
     def _open_chance_organization(self):
-        print("Organisation chanced")
+        debug.info(item=debug_str, keyword="_open_chance_organization", message=f"chance database")
