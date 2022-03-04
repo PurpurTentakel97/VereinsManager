@@ -8,9 +8,13 @@ debug
 sql database
     let unser coose database name
     save at (user date)
+    log initial member
+    log updat member
+    log initial nexus
+    log update nexus
+    log initial types
+    log update types
 
 UI
     Base Window
         set Icon
-    Every Window
-        show "saved"

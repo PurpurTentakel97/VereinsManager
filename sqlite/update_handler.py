@@ -5,7 +5,7 @@
 from sqlite.database import Database
 from logic import validation as v
 from config import error_code as e
-from sqlite import select_handler as s_h
+from sqlite import select_handler as s_h, log_handler as l_h
 import debug
 
 debug_str: str = "UpdateHandler"
@@ -25,13 +25,17 @@ class UpdateHandler(Database):
     def update_type(self, id_: int, name: str) -> str | None:
         try:
             v.validation.edit_type(new_id=id_, new_name=name)
-        except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
+        except (e.NoStr, e.NoInt, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
             return error.message
 
         sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
         try:
+            reference_data: tuple = s_h.select_handler.get_type_name_by_id(ID=id_)
             self.cursor.execute(sql_command, (name.strip().title(), id_))
             self.connection.commit()
+            debug.info(item=debug_str, keyword="update_type", message=f"reference_data = {reference_data}")
+            l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=reference_data,
+                                     new_data=name)  # TODO reference data
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_type", message=f"update type failed\n"
@@ -47,8 +51,10 @@ class UpdateHandler(Database):
 
         sql_command: str = """UPDATE type SET active = ? WHERE ID is ?;"""
         try:
+            reference_data: tuple = s_h.select_handler.get_type_active_by_id(ID=id_)
             self.cursor.execute(sql_command, (active, id_))
             self.connection.commit()
+            l_h.log_handler.log_type(target_id=id_, target_column="active", old_data=reference_data, new_data=active)
             return
 
         except self.OperationalError as error:

@@ -65,23 +65,38 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_active_member_type", message=f"load raw types failed\n"
-                                                                         f"command = {sql_command}\n"
-                                                                         f"error = {' '.join(error.args)}")
+                                                                                  f"command = {sql_command}\n"
+                                                                                  f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Active Member Type").message
 
-    def get_type_name_by_id(self, id_: int) -> tuple | str:
+    def get_type_name_by_id(self, ID: int) -> tuple | str:
         try:
-            v.validation.must_positive_int(int_=id_)
+            v.validation.must_positive_int(int_=ID)
         except e.NoPositiveInt as error:
             return error.message
 
         sql_command: str = f"""SELECT name FROM type WHERE ID is ?;"""
         try:
-            return self.cursor.execute(sql_command, (id_,)).fetchone()
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
         except self.OperationalError as error:
-            debug.error(item=debug_str, keyword="get_type_name_by_id", message=f"load single type failed\n"
+            debug.error(item=debug_str, keyword="get_type_name_by_id", message=f"load single type name failed\n"
                                                                                f"command = {sql_command}\n"
                                                                                f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Typ ID").message
+
+    def get_type_active_by_id(self, ID: int) -> tuple or str:
+        try:
+            v.validation.must_positive_int(int_=ID)
+        except e.NoPositiveInt as error:
+            return error.message
+
+        sql_command: str = f"""SELECT active FROM type WHERE ID is ?;"""
+        try:
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="get_type_active_by_id", message=f"load single type active failed\n"
+                                                                                 f"command = {sql_command}\n"
+                                                                                 f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Typ ID").message
 
     def get_id_by_type_name(self, raw_id: int, name: str) -> tuple | str:
