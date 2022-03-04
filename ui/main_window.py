@@ -2,11 +2,11 @@
 # 21.01.2022
 # VereinsManager / Main Window
 
-from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget
+from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMessageBox
 
 from ui.base_window import BaseWindow
 from ui import members_window as m_w, types_window as t_w
-from ui import window_manager as w
+from ui import window_manager as w_m
 
 import debug
 
@@ -89,11 +89,11 @@ class MainWindow(BaseWindow):
         self.show()
 
     def _open_members(self) -> None:
-        result = w.window_manger.is_valid_member_window()
+        result = w_m.window_manger.is_valid_member_window()
         if isinstance(result, str):
             self.set_info_bar(message=result)
         else:
-            w.window_manger.members_window = m_w.MembersWindow()
+            w_m.window_manger.members_window = m_w.MembersWindow()
 
     def _open_old_members(self) -> None:
         debug.info(item=debug_str, keyword="_open_old_members", message=f"old member clicked")
@@ -108,11 +108,11 @@ class MainWindow(BaseWindow):
         debug.info(item=debug_str, keyword="_open_performances", message=f"performances open")
 
     def _open_edit_types(self) -> None:
-        result = w.window_manger.is_valid_types_window()
+        result = w_m.window_manger.is_valid_types_window()
         if isinstance(result, str):
             self.set_info_bar(message=result)
         else:
-            w.window_manger.types_window = t_w.TypesWindow()
+            w_m.window_manger.types_window = t_w.TypesWindow()
 
     def _open_user_data(self):
         debug.info(item=debug_str, keyword="_open_user_data", message=f"user data open")
@@ -125,3 +125,23 @@ class MainWindow(BaseWindow):
 
     def _open_chance_organization(self):
         debug.info(item=debug_str, keyword="_open_chance_organization", message=f"chance database")
+
+    def closeEvent(self, event) -> None:
+        event.ignore()
+        if not w_m.window_manger.is_valid_close_main_window():
+            if self._get_close_permission():
+                w_m.window_manger.close_all_window()
+                event.accept()
+        else:
+            w_m.window_manger.close_all_window()
+            event.accept()
+
+    @staticmethod
+    def _get_close_permission() -> bool:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Alle Fenster Schließen?")
+        msg.setInformativeText("Du hast möglicherweise ungespeicherte Daten. Die Daten können verloren gehen.")
+        msg.setWindowTitle("Trotzdem Schließen?")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        return msg.exec_() == QMessageBox.Yes
