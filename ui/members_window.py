@@ -653,6 +653,7 @@ class MembersWindow(BaseWindow):
         if isinstance(result, str):
             self.set_status_bar(massage=result)
         else:
+            self.set_status_bar("saved")
             self._set_save_ids(ids=result)
 
     def _set_save_ids(self, ids: dict) -> None:
@@ -712,6 +713,7 @@ class MembersWindow(BaseWindow):
             self.set_status_bar(massage=result)
             return
         self._load_all_member_names()
+        self.set_status_bar("saved")
 
     def closeEvent(self, event) -> None:
         event.ignore()

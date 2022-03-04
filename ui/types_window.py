@@ -179,6 +179,7 @@ class TypesWindow(BaseWindow):
         if error:
             self.set_status_bar(massage=error)
         else:
+            self.set_status_bar("saved")
             self._set_current_type()
 
     def _edit_type(self) -> None:
@@ -189,6 +190,7 @@ class TypesWindow(BaseWindow):
             self.set_status_bar(massage=error)
             self._set_current_type()
         else:
+            self.set_status_bar("saved")
             self._set_current_type()
 
     def _set_type_activity(self) -> None:
@@ -198,6 +200,7 @@ class TypesWindow(BaseWindow):
         if error:
             self.set_status_bar(massage=error)
         else:
+            self.set_status_bar("saved")
             self._set_current_type()
 
     def _remove_type(self) -> None:
@@ -206,6 +209,7 @@ class TypesWindow(BaseWindow):
         if error:
             self.set_status_bar(massage=error)
         else:
+            self.set_status_bar("saved")
             self._set_current_type()
 
     def closeEvent(self, event) -> None:

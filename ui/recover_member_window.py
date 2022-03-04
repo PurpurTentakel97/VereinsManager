@@ -92,6 +92,7 @@ class RecoverMemberWindow(BaseWindow):
             self.set_status_bar(massage=result)
             return
         self._load_member_names()
+        self.set_status_bar("saved")
 
     def closeEvent(self, event) -> None:
         event.ignore()
