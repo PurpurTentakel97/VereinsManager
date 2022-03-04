@@ -3,7 +3,8 @@
 # VereinsManager / Add Handler
 
 from sqlite.database import Database
-from config import error_code as e
+from sqlite import select_handler as s_h
+from config import error_code as e, config_sheet as c
 from logic import validation
 import debug
 
@@ -38,10 +39,40 @@ class AddHandler(Database):
             return e.AddFailed(info=type_name).message
 
     # member
-    def add_member(self) -> int | str:
-        sql_command: str = f"""INSERT INTO member (first_name) VALUES (?);"""
+    def add_member(self, data: dict) -> int | str:
+        # validation in global handler
+        result = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
+        if isinstance(result, str):
+            return result
+        else:
+            if result:
+                data["membership_type"] = result[0]
+            else:
+                data["membership_type"] = result
+
+        if data["birth_date"] == c.config.date_format["None_date"]:
+            data["birth_date"] = None
+        if data["entry_date"] == c.config.date_format["None_date"]:
+            data["entry_date"] = None
+
+        sql_command: str = f"""INSERT INTO member 
+        (first_name,last_name,street,number,zip_code,city,b_day,entry_day,membership_type,special_member,comment) 
+        VALUES (?,?,?,?,?,?,?,?,?,?,?);"""
+
         try:
-            self.cursor.execute(sql_command, (None,))
+            self.cursor.execute(sql_command, (
+                data["first_name"],
+                data["last_name"],
+                data["street"],
+                data["number"],
+                data["zip_code"],
+                data["city"],
+                data["birth_date"],
+                data["entry_date"],
+                data["membership_type"],
+                data["special_member"],
+                data["comment_text"],
+            ))
             self.connection.commit()
             return self.cursor.lastrowid
         except self.OperationalError as error:
