@@ -20,6 +20,12 @@ class WindowManager:
     def is_valid_main_window() -> bool | str:
         return True
 
+    def is_valid_close_main_window(self) -> bool:
+        if self.members_window:
+            return False
+        else:
+            return True
+
     # Types
     def is_valid_types_window(self) -> bool | str:
         if self.members_window:
@@ -42,6 +48,15 @@ class WindowManager:
             return "Es können eine Ehmaligen Mitglider berabeitet werden, währen das Mitglieder-Fenster geöffnet ist."
 
         return True
+
+    # close window
+    def close_all_window(self) -> None:
+        self.types_window.close() if self.types_window else None
+        self.types_window = None
+        self.recover_member_window.close() if self.recover_member_window else None
+        self.recover_member_window = None
+        self.members_window.close() if self.members_window else None
+        self.members_window = None
 
 
 def create_window_manager() -> None:
