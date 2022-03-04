@@ -21,6 +21,7 @@ class AddHandler(Database):
 
     # type
     def add_type(self, type_name: str, raw_type_id: int) -> str | int:
+        type_name = type_name.strip().title()
         try:
             validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
         except (e.NoStr, e.NoInt, e.NoPositiveInt, e.AlreadyExists) as error:
@@ -29,7 +30,7 @@ class AddHandler(Database):
 
         sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
         try:
-            self.cursor.execute(sql_command, (type_name.strip().title(), raw_type_id))
+            self.cursor.execute(sql_command, (type_name, raw_type_id))
             self.connection.commit()
             ID: int = self.cursor.lastrowid
             result = l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=None, new_data=type_name)

@@ -23,6 +23,7 @@ class UpdateHandler(Database):
 
     # types
     def update_type(self, id_: int, name: str) -> str | None:
+        name = name.strip().title()
         try:
             v.validation.update_type(new_id=id_, new_name=name)
         except (e.NoStr, e.NoInt, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
@@ -32,11 +33,9 @@ class UpdateHandler(Database):
         sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
         try:
             reference_data: tuple = s_h.select_handler.get_type_name_by_id(ID=id_)
-            self.cursor.execute(sql_command, (name.strip().title(), id_))
+            self.cursor.execute(sql_command, (name, id_))
             self.connection.commit()
-            debug.info(item=debug_str, keyword="update_type", message=f"reference_data = {reference_data}")
-            l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=reference_data,
-                                     new_data=name)  # TODO reference data
+            l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=reference_data[0],new_data=name)
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_type", message=f"update type failed\n"
@@ -56,7 +55,7 @@ class UpdateHandler(Database):
             reference_data: tuple = s_h.select_handler.get_type_active_by_id(ID=id_)
             self.cursor.execute(sql_command, (active, id_))
             self.connection.commit()
-            l_h.log_handler.log_type(target_id=id_, target_column="active", old_data=reference_data, new_data=active)
+            l_h.log_handler.log_type(target_id=id_, target_column="active", old_data=reference_data[0], new_data=active)
             return
 
         except self.OperationalError as error:
