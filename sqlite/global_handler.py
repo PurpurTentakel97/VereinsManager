@@ -70,15 +70,16 @@ class GlobalHandler:
             return error.message
 
         if id_ is None:
-            id_: int = a_h.add_handler.add_member()
+            id_: int = a_h.add_handler.add_member(data=member_data)
         try:
             v.validation.must_positive_int(int_=id_)
         except e.NoPositiveInt as error:
             return error.message
 
-        result = u_h.update_handler.update_member(id_=id_, data=member_data)
-        if isinstance(result, str):
-            return result
+        if id_ is not None:
+            result = u_h.update_handler.update_member(id_=id_, data=member_data)
+            if isinstance(result, str):
+                return result
 
         ids = self._update_member_nexus(data=member_nexus_data, member_id=id_)
         if isinstance(ids, str):
