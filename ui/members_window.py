@@ -304,7 +304,7 @@ class MembersWindow(BaseWindow):
     def _set_types(self) -> None:
         data = transition.get_active_member_type()
         if isinstance(data, str):
-            self.set_status_bar(massage=data)
+            self.set_error_bar(message=data)
         else:
             for ID, name, type_id, type_name in data:
                 if type_id == c.config.raw_type_id["membership"]:
@@ -489,7 +489,7 @@ class MembersWindow(BaseWindow):
         data = transition.get_all_member_name()
         self._members_list.clear()
         if isinstance(data, str):
-            self.set_status_bar(massage=data)
+            self.set_error_bar(message=data)
         elif len(data) == 0:
             self._add_member()
         else:
@@ -528,7 +528,7 @@ class MembersWindow(BaseWindow):
         # member
         data = transition.get_member_data_by_id(id_=current_member.member_id_)
         if isinstance(data, str):
-            self.set_status_bar(massage=data)
+            self.set_error_bar(message=data)
         else:
             member_data = data["member_data"]
             current_member.first_name = "" if member_data["first_name"] is None else member_data["first_name"]
@@ -651,9 +651,9 @@ class MembersWindow(BaseWindow):
 
         result = transition.update_member_data(id_=current_member.member_id_, data=data)
         if isinstance(result, str):
-            self.set_status_bar(massage=result)
+            self.set_error_bar(message=result)
         else:
-            self.set_status_bar("saved")
+            self.set_info_bar(message="saved")
             self._set_save_ids(ids=result)
 
     def _set_save_ids(self, ids: dict) -> None:
@@ -687,7 +687,7 @@ class MembersWindow(BaseWindow):
     def _recover(self) -> None:
         result = w.window_manger.is_valid_recover_member_window(member_window=True)
         if isinstance(result, str):
-            self.set_status_bar(massage=result)
+            self.set_error_bar(message=result)
         else:
             w.window_manger.recover_member_window = r_m_w.RecoverMemberWindow()
             if self._is_edit:
@@ -710,10 +710,10 @@ class MembersWindow(BaseWindow):
         current_member: MemberListItem = self._members_list.currentItem()
         result = transition.update_member_activity(id_=current_member.member_id_, active=False)
         if isinstance(result, str):
-            self.set_status_bar(massage=result)
+            self.set_error_bar(message=result)
             return
         self._load_all_member_names()
-        self.set_status_bar("saved")
+        self.set_info_bar(message="saved")
 
     def closeEvent(self, event) -> None:
         event.ignore()

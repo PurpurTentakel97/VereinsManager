@@ -95,7 +95,7 @@ class TypesWindow(BaseWindow):
         self._types_list_items.clear()
         data = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()))
         if isinstance(data, str):
-            self.set_status_bar(massage=data)
+            self.set_error_bar(message=data)
         else:
             for type_ in data:
                 new_type: TypesListEntry = TypesListEntry(type_=type_)
@@ -105,7 +105,7 @@ class TypesWindow(BaseWindow):
         data = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
                                           active=False)
         if isinstance(data, str):
-            self.set_status_bar(massage=data)
+            self.set_error_bar(message=data)
         else:
             for type_ in data:
                 new_type: TypesListEntry = TypesListEntry(type_=type_, active=False)
@@ -120,7 +120,7 @@ class TypesWindow(BaseWindow):
     def _set_types(self) -> None:
         data = transition.get_raw_types()
         if isinstance(data, str):
-            self.set_status_bar(massage=data)
+            self.set_error_bar(message=data)
         else:
             self._raw_types = data
             self._types_box.clear()
@@ -177,9 +177,9 @@ class TypesWindow(BaseWindow):
                                          raw_type_id=self._get_raw_id_from_name(
                                              type_name=self._types_box.currentText()))
         if error:
-            self.set_status_bar(massage=error)
+            self.set_error_bar(message=error)
         else:
-            self.set_status_bar("saved")
+            self.set_info_bar(message="saved")
             self._set_current_type()
 
     def _edit_type(self) -> None:
@@ -187,10 +187,10 @@ class TypesWindow(BaseWindow):
         text: str = self._edit.text().strip().title()
         error: str = transition.update_type(id_=current_item.id_, name=text)
         if error:
-            self.set_status_bar(massage=error)
+            self.set_error_bar(message=error)
             self._set_current_type()
         else:
-            self.set_status_bar("saved")
+            self.set_info_bar(message="saved")
             self._set_current_type()
 
     def _set_type_activity(self) -> None:
@@ -198,18 +198,18 @@ class TypesWindow(BaseWindow):
         error: str = transition.update_type_activity(id_=current_item.id_,
                                                      active=False if current_item.active else True)
         if error:
-            self.set_status_bar(massage=error)
+            self.set_error_bar(message=error)
         else:
-            self.set_status_bar("saved")
+            self.set_info_bar(message="saved")
             self._set_current_type()
 
     def _remove_type(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
         error: str = transition.delete_type(id_=current_item.id_)
         if error:
-            self.set_status_bar(massage=error)
+            self.set_error_bar(message=error)
         else:
-            self.set_status_bar("saved")
+            self.set_info_bar(message="saved")
             self._set_current_type()
 
     def closeEvent(self, event) -> None:
