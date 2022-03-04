@@ -22,9 +22,9 @@ class LogHandler(Database):
     def log_type(self, target_id: int, target_column: str, old_data, new_data) -> str or None:
         log_date: int = int(time.time())
         try:
-            v.validation.must_positive_int(target_id)
+            v.validation.must_positive_int(target_id, max_length=None)
             v.validation.must_str(target_column)
-        except (e.NoInt, e.NoPositiveInt, e.NoStr) as error:
+        except (e.NoInt, e.NoPositiveInt, e.NoStr, e.ToLong) as error:
             debug.error(item=debug_str, keyword="log_type", message=f"Error = {error.message}")
 
         return self._log(target_table="type", target_id=target_id, target_column=target_column, old_data=old_data,

@@ -2,6 +2,8 @@
 # 18.02.2022
 # VereinsManager / Error Code
 
+import debug
+
 
 # Operational Error
 class LoadingFailed(Exception):
@@ -94,6 +96,14 @@ class AlreadyExists(Exception):
     def __init__(self, info: str = ""):
         str_ = "Bereits vorhanden"
         self.message: str = str_ + "//" + info if info else str_
+
+
+class ToLong(Exception):
+    def __init__(self, max_length: int, text):
+        text = str(text)
+        if len(text) > 15:
+            text = f"{text[:15]}..."
+        self.message: str = f"Länge von {max_length} Zeichen überschritten // {text}"
 
 
 # General

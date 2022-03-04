@@ -26,7 +26,7 @@ class UpdateHandler(Database):
         name = name.strip().title()
         try:
             v.validation.update_type(new_id=id_, new_name=name)
-        except (e.NoStr, e.NoInt, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
+        except (e.NoStr, e.NoInt, e.NoPositiveInt, e.NoChance, e.NotFound, e.ToLong) as error:
             debug.error(item=debug_str, keyword="update_type", message=f"Error 0 {error.message}")
             return error.message
 
@@ -35,7 +35,7 @@ class UpdateHandler(Database):
             reference_data: tuple = s_h.select_handler.get_type_name_by_id(ID=id_)
             self.cursor.execute(sql_command, (name, id_))
             self.connection.commit()
-            l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=reference_data[0],new_data=name)
+            l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=reference_data[0], new_data=name)
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_type", message=f"update type failed\n"
@@ -46,7 +46,7 @@ class UpdateHandler(Database):
     def update_type_activity(self, id_: int, active: bool) -> str | None:
         try:
             v.validation.update_type_activity(id_=id_, active=active)
-        except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
+        except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound, e.ToLong) as error:
             debug.error(item=debug_str, keyword="update_type_activity", message=f"Error = {error.message}")
             return error.message
 
@@ -108,7 +108,7 @@ class UpdateHandler(Database):
 
     def update_member_activity(self, id_: int, active: bool) -> str | None:
         try:
-            v.validation.must_positive_int(int_=id_)
+            v.validation.must_positive_int(int_=id_, max_length=None)
             v.validation.must_bool(bool_=active)
         except (e.NoPositiveInt, e.NoBool) as error:
             debug.error(item=debug_str, keyword="update_member_activity", message=f"Error = {error.message}")
@@ -130,6 +130,7 @@ class UpdateHandler(Database):
 
     # member nexus
     def update_member_nexus_phone(self, ID: int, number: str) -> str or None:
+        # validation in global handler
         sql_command: str = f"""UPDATE member_phone SET number = ? WHERE ID is ?;"""
         try:
             self.cursor.execute(sql_command, (number, ID))
@@ -141,6 +142,7 @@ class UpdateHandler(Database):
             return e.ActiveSetFailed(info=number).message
 
     def update_member_nexus_mail(self, ID: int, mail: str) -> str or None:
+        # validation in global handler
         sql_command: str = f"""UPDATE member_mail SET mail = ? WHERE ID is ?;"""
         try:
             self.cursor.execute(sql_command, (mail, ID))
@@ -152,6 +154,7 @@ class UpdateHandler(Database):
             return e.ActiveSetFailed(info=mail).message
 
     def update_member_nexus_position(self, ID: int, active: bool) -> str or None:
+        # validation in global handler
         sql_command: str = f"""UPDATE member_position SET active = ? WHERE ID is ?;"""
         try:
             self.cursor.execute(sql_command, (active, ID))
