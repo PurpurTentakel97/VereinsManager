@@ -28,7 +28,7 @@ class Validation:
                 raise e.AlreadyExists()
 
     @classmethod
-    def edit_type(cls, new_id: int, new_name: str) -> None:
+    def update_type(cls, new_id: int, new_name: str) -> None:
         cls.must_str(new_name)
         cls.must_positive_int(new_id)
 
@@ -45,7 +45,7 @@ class Validation:
             raise e.NotFound(info=new_name)
 
     @classmethod
-    def edit_type_activity(cls, id_: int, active: bool) -> None:
+    def update_type_activity(cls, id_: int, active: bool) -> None:
         cls.must_positive_int(int_=id_)
         cls.must_bool(bool_=active)
 

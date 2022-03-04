@@ -23,6 +23,7 @@ class DeleteHandler(Database):
         try:
             v.validation.must_positive_int(id_)
         except e.NoPositiveInt as error:
+            debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
             return error.message
 
         sql_command: str = """DELETE FROM type WHERE ID is ?;"""
