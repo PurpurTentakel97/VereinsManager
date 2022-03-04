@@ -5,7 +5,6 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
-
 app: QApplication | None = None
 
 
@@ -24,8 +23,11 @@ class BaseWindow(QMainWindow):
     def set_widget(self, widget) -> None:
         self.setCentralWidget(widget)
 
-    def set_status_bar(self, massage: str) -> None:
-        self.statusBar().showMessage("Info: " + massage, 5000)
+    def set_error_bar(self, message: str) -> None:
+        self.statusBar().showMessage("ERROR: " + message, 10000)
+
+    def set_info_bar(self, message: str) -> None:
+        self.statusBar().showMessage("Info: " + message, 2000)
 
 
 def create_application():

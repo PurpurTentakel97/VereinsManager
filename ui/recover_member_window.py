@@ -78,7 +78,7 @@ class RecoverMemberWindow(BaseWindow):
         self.member_list.clear()
         data = transition.get_all_member_name(active=False)
         if isinstance(data, str):
-            self.set_status_bar(data)
+            self.set_error_bar(data)
         for ID, first_name, last_name in data:
             new_member: MemberListItem = MemberListItem(id_=ID, first_name=first_name, last_name=last_name)
             self.member_list.addItem(new_member)
@@ -89,10 +89,10 @@ class RecoverMemberWindow(BaseWindow):
         current_member: MemberListItem = self.member_list.currentItem()
         result = transition.update_member_activity(id_=current_member.id_, active=True)
         if isinstance(result, str):
-            self.set_status_bar(massage=result)
+            self.set_error_bar(message=result)
             return
         self._load_member_names()
-        self.set_status_bar("saved")
+        self.set_info_bar(message="saved")
 
     def closeEvent(self, event) -> None:
         event.ignore()
