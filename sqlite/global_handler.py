@@ -71,15 +71,17 @@ class GlobalHandler:
             debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
             return error.message
 
+        id_bool = True
         if id_ is None:
             id_: int = a_h.add_handler.add_member(data=member_data)
+            id_bool = False
         try:
             v.validation.must_positive_int(int_=id_)
         except e.NoPositiveInt as error:
             debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
             return error.message
 
-        if id_ is not None:
+        if id_bool:
             result = u_h.update_handler.update_member(id_=id_, data=member_data)
             if isinstance(result, str):
                 return result
