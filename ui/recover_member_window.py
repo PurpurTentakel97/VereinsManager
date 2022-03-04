@@ -36,13 +36,14 @@ class RecoverMemberWindow(BaseWindow):
     def __init__(self) -> None:
         super().__init__()
 
+        self._set_window_inforation()
         self._set_ui()
         self._set_layout()
 
         self._load_member_names()
 
-    def __str__(self) -> str:
-        return "RecoverMemberWindow(BaseWindow)"
+    def _set_window_inforation(self) -> None:
+        self.setWindowTitle("ehmalige Mitglieder - Vereinsmanager")
 
     def _set_ui(self) -> None:
         self.member_list: QListWidget = QListWidget()

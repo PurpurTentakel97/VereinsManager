@@ -8,3 +8,9 @@ debug
 sql database
     let unser coose database name
     save at (user date)
+
+UI
+    Base Window
+        set Icon
+    Every Window
+        show "saved"

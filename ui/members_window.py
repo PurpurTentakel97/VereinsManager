@@ -106,6 +106,7 @@ class MembersWindow(BaseWindow):
         self.raw_mail_ids: list[tuple[int, str]] = list()  # [ID, Name]
         self.raw_position_ids: list[tuple[int, PositionListItem]] = list()  # [ID, Name]
 
+        self._set_window_information()
         self._set_ui()
         self._set_layout()
         self._set_types()
@@ -114,8 +115,8 @@ class MembersWindow(BaseWindow):
         self._set_edit_mode(active=False)
         self._load_all_member_names()
 
-    def __str__(self) -> str:
-        return "MEMBERS WINDOW"
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Mitglieder - Vereinsmanager")
 
     def _set_ui(self) -> None:
         # Left
