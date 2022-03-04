@@ -24,6 +24,7 @@ class AddHandler(Database):
         try:
             validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
         except (e.NoStr, e.NoInt, e.NoPositiveInt, e.AlreadyExists) as error:
+            debug.error(item=debug_str, keyword="add_type", message=f"Error = {error.message}")
             return error.message
 
         sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""

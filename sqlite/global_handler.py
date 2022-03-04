@@ -59,6 +59,7 @@ class GlobalHandler:
         try:
             v.validation.must_dict(dict_=data)
         except e.NoDict as error:
+            debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
             return error.message
 
         member_data: dict = data["member_data"]
@@ -67,6 +68,7 @@ class GlobalHandler:
         try:
             v.validation.update_member(data=member_data)
         except (e.NoDict, e.NoStr, e.NoPositiveInt, e.NoBool) as error:
+            debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
             return error.message
 
         if id_ is None:
@@ -74,6 +76,7 @@ class GlobalHandler:
         try:
             v.validation.must_positive_int(int_=id_)
         except e.NoPositiveInt as error:
+            debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
             return error.message
 
         if id_ is not None:
@@ -90,17 +93,19 @@ class GlobalHandler:
 
     # member nexus
     @staticmethod
-    def _update_member_nexus(data: dict, member_id: int) -> str | int:
+    def _update_member_nexus(data: dict, member_id: int) -> str | dict:
         try:
             v.validation.must_dict(data)
-        except KeyError:
-            return e.NoDict(info="Member Nexus").message
+        except e.NoDict as error:
+            debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
+            return error.message
 
         try:
             phone = data["phone"]
             mail = data["mail"]
             position = data["position"]
-        except ValueError:
+        except KeyError:
+            debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = KeyError")
             return e.NoDict(info="Member Nexus").message
 
         # phone
@@ -109,6 +114,7 @@ class GlobalHandler:
             try:
                 v.validation.update_member_nexus(data=[ID, type_id, Type, phone_number], type_="phone")
             except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr) as error:
+                debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
                 return error.message
             try:
                 v.validation.must_positive_int(ID)
@@ -129,6 +135,7 @@ class GlobalHandler:
             try:
                 v.validation.update_member_nexus(data=[ID, type_id, Type, mail_], type_="mail")
             except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr) as error:
+                debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
                 return error.message
             try:
                 v.validation.must_positive_int(ID)
@@ -149,6 +156,7 @@ class GlobalHandler:
             try:
                 v.validation.update_member_nexus(data=[ID, type_id, Type, active], type_="position")
             except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.NoBool) as error:
+                debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
                 return error.message
             try:
                 v.validation.must_positive_int(ID)

@@ -24,8 +24,9 @@ class UpdateHandler(Database):
     # types
     def update_type(self, id_: int, name: str) -> str | None:
         try:
-            v.validation.edit_type(new_id=id_, new_name=name)
+            v.validation.update_type(new_id=id_, new_name=name)
         except (e.NoStr, e.NoInt, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
+            debug.error(item=debug_str, keyword="update_type", message=f"Error 0 {error.message}")
             return error.message
 
         sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
@@ -45,8 +46,9 @@ class UpdateHandler(Database):
 
     def update_type_activity(self, id_: int, active: bool) -> str | None:
         try:
-            v.validation.edit_type_activity(id_=id_, active=active)
+            v.validation.update_type_activity(id_=id_, active=active)
         except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound) as error:
+            debug.error(item=debug_str, keyword="update_type_activity", message=f"Error = {error.message}")
             return error.message
 
         sql_command: str = """UPDATE type SET active = ? WHERE ID is ?;"""
@@ -110,6 +112,7 @@ class UpdateHandler(Database):
             v.validation.must_positive_int(int_=id_)
             v.validation.must_bool(bool_=active)
         except (e.NoPositiveInt, e.NoBool) as error:
+            debug.error(item=debug_str, keyword="update_member_activity", message=f"Error = {error.message}")
             return error.message
 
         sql_command: str = f"""UPDATE member SET active = ? WHERE ID is ?;"""
