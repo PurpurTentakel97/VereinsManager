@@ -53,7 +53,7 @@ class Validation:
         exists: bool = False
         for old_id, old_name, old_type_id, old_active in data:
             if old_id == id_:
-                if old_active != active:
+                if old_active == active:
                     raise e.NoChance(info="Type Aktivität")
                 exists = True
                 break
