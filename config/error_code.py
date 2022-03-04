@@ -101,9 +101,10 @@ class AlreadyExists(Exception):
 class ToLong(Exception):
     def __init__(self, max_length: int, text):
         text = str(text)
-        if len(text) > 15:
-            text = f"{text[:15]}..."
-        self.message: str = f"Länge von {max_length} Zeichen überschritten // {text}"
+        text_len = str(len(text))
+        if len(text) > 25:
+            text = f"{text[:25]}..."
+        self.message: str = f"Länge von {max_length} Zeichen überschritten // {text} ({text_len} Zeichen)"
 
 
 # General
