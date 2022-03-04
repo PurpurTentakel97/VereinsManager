@@ -78,6 +78,9 @@ class Validation:
             if data[key] is not None:
                 cls.must_str(text=data[key])
 
+        if data["comment_text"] is not None:
+            cls.must_str(text=data["comment_text"], length=1000)
+
         keys: list = [
             "zip_code",
             "birth_date",
