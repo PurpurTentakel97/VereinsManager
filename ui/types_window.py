@@ -33,14 +33,15 @@ class TypesWindow(BaseWindow):
         self._types_list_items: list = list()
         self._raw_types: tuple = tuple()
 
+        self._set_window_information()
         self._create_ui()
         self._create_layout()
         self._set_window_information()
 
         self._set_types()
 
-    def __str__(self) -> str:
-        return "TypesWindow(BaseWindow)"
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Typen - Vereinsmanager")
 
     def _create_ui(self) -> None:
         self._types_box: QComboBox = QComboBox()
@@ -87,9 +88,6 @@ class TypesWindow(BaseWindow):
         widget.setLayout(grid)
         self.set_widget(widget=widget)
         self.show()
-
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Typen bearbeiten")
 
     def _set_current_type(self) -> None:
         self._edit.clear()
