@@ -67,7 +67,7 @@ class GlobalHandler:
 
         try:
             v.validation.update_member(data=member_data)
-        except (e.NoDict, e.NoStr, e.NoPositiveInt, e.NoBool) as error:
+        except (e.NoDict, e.NoStr, e.NoPositiveInt, e.NoBool, e.ToLong) as error:
             debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
             return error.message
 
@@ -76,8 +76,8 @@ class GlobalHandler:
             id_: int = a_h.add_handler.add_member(data=member_data)
             id_bool = False
         try:
-            v.validation.must_positive_int(int_=id_)
-        except e.NoPositiveInt as error:
+            v.validation.must_positive_int(int_=id_, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
             debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
             return error.message
 
@@ -115,16 +115,16 @@ class GlobalHandler:
         for ID, type_id, Type, phone_number in phone:
             try:
                 v.validation.update_member_nexus(data=[ID, type_id, Type, phone_number], type_="phone")
-            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr) as error:
+            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.ToLong) as error:
                 debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
                 return error.message
             try:
-                v.validation.must_positive_int(ID)
+                v.validation.must_positive_int(ID, max_length=None)
                 result: str | None = u_h.update_handler.update_member_nexus_phone(ID=ID, number=phone_number)
                 if isinstance(result, str):
                     return result
                 phone_ids.append(result)
-            except (e.NoPositiveInt, e.NoInt):
+            except (e.NoPositiveInt, e.NoInt, e.ToLong):
                 result: str | int = a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=phone_number,
                                                                            member_id=member_id)
                 if isinstance(result, str):
@@ -136,16 +136,16 @@ class GlobalHandler:
         for ID, type_id, Type, mail_ in mail:
             try:
                 v.validation.update_member_nexus(data=[ID, type_id, Type, mail_], type_="mail")
-            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr) as error:
+            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.ToLong) as error:
                 debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
                 return error.message
             try:
-                v.validation.must_positive_int(ID)
+                v.validation.must_positive_int(ID, max_length=None)
                 result: str | None = u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail_)
                 if isinstance(result, str):
                     return result
                 mail_ids.append(result)
-            except (e.NoPositiveInt, e.NoInt):
+            except (e.NoPositiveInt, e.NoInt, e.ToLong):
                 result: str | int = a_h.add_handler.add_member_nexus_mail(type_id=type_id, value=mail_,
                                                                           member_id=member_id)
                 if isinstance(result, str):
@@ -157,16 +157,16 @@ class GlobalHandler:
         for ID, type_id, Type, active in position:
             try:
                 v.validation.update_member_nexus(data=[ID, type_id, Type, active], type_="position")
-            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.NoBool) as error:
+            except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.NoBool, e.ToLong) as error:
                 debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
                 return error.message
             try:
-                v.validation.must_positive_int(ID)
+                v.validation.must_positive_int(ID, max_length=None)
                 result: str | None = u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
                 if isinstance(result, str):
                     return result
                 position_ids.append(result)
-            except (e.NoPositiveInt, e.NoInt):
+            except (e.NoPositiveInt, e.NoInt, e.ToLong):
                 result: str | int = a_h.add_handler.add_member_nexus_position(type_id=type_id, value=active,
                                                                               member_id=member_id)
                 if isinstance(result, str):

@@ -23,8 +23,8 @@ class DeleteHandler(Database):
     # type
     def delete_type(self, id_: int) -> str | None:
         try:
-            v.validation.must_positive_int(id_)
-        except e.NoPositiveInt as error:
+            v.validation.must_positive_int(id_, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
             debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
             return error.message
 

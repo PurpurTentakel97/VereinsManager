@@ -19,7 +19,7 @@ class Validation:
     @classmethod
     def add_type(cls, type_name: str, raw_type_id: int) -> None:
         cls.must_str(text=type_name)
-        cls.must_positive_int(int_=raw_type_id)
+        cls.must_positive_int(int_=raw_type_id, max_length=None)
 
         data = s_h.select_handler.get_all_single_type()
         type_name = type_name.strip().title()
@@ -30,7 +30,7 @@ class Validation:
     @classmethod
     def update_type(cls, new_id: int, new_name: str) -> None:
         cls.must_str(new_name)
-        cls.must_positive_int(new_id)
+        cls.must_positive_int(new_id, max_length=None)
 
         data = s_h.select_handler.get_all_single_type()
         exists: bool = False
@@ -46,7 +46,7 @@ class Validation:
 
     @classmethod
     def update_type_activity(cls, id_: int, active: bool) -> None:
-        cls.must_positive_int(int_=id_)
+        cls.must_positive_int(int_=id_, max_length=None)
         cls.must_bool(bool_=active)
 
         data = s_h.select_handler.get_all_single_type()
@@ -72,7 +72,6 @@ class Validation:
             "number",
             "city",
             "membership_type",
-            "comment_text",
         ]
         for key in keys:
             if data[key] is not None:
@@ -99,7 +98,7 @@ class Validation:
         cls.must_list(data)
         cls.must_length(4, data)
         _, type_id, Type, value = data
-        cls.must_positive_int(type_id)
+        cls.must_positive_int(type_id, max_length=None)
         if Type is not None:
             cls.must_str(Type)
         match type_:
@@ -127,9 +126,11 @@ class Validation:
 
     # global
     @staticmethod
-    def must_str(text: str) -> None:
+    def must_str(text: str, length: int = 50) -> None:
         if not isinstance(text, str) or len(text.strip()) == 0:
             raise e.NoStr(info=text)
+        if len(text) > length:
+            raise e.ToLong(max_length=length, text=text)
 
     @staticmethod
     def must_bool(bool_: bool) -> None:
@@ -137,16 +138,20 @@ class Validation:
             raise e.NoBool(info=str(bool_))
 
     @staticmethod
-    def must_positive_int(int_: int) -> None:
+    def must_positive_int(int_: int, max_length: int | None = 15) -> None:
         if not isinstance(int_, int):
             raise e.NoInt(info=str(int_))
         if int_ <= 0:
             raise e.NoPositiveInt(info=str(int_))
+        if max_length is not None and len(str(int_)) > max_length:
+            raise e.ToLong(max_length=max_length, text=int_)
 
     @staticmethod
-    def must_int(int_: int) -> None:
+    def must_int(int_: int, max_length: int | None = 15) -> None:
         if not isinstance(int_, int):
             raise e.NoInt(info=str(int_))
+        if int_ is not None and len(str(int_)) > max_length:
+            raise e.ToLong(max_length=max_length, text=int_)
 
     @staticmethod
     def must_dict(dict_: dict) -> None:

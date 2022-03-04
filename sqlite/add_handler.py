@@ -24,7 +24,7 @@ class AddHandler(Database):
         type_name = type_name.strip().title()
         try:
             validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
-        except (e.NoStr, e.NoInt, e.NoPositiveInt, e.AlreadyExists) as error:
+        except (e.NoStr, e.NoInt, e.NoPositiveInt, e.ToLong, e.AlreadyExists) as error:
             debug.error(item=debug_str, keyword="add_type", message=f"Error = {error.message}")
             return error.message
 
@@ -89,6 +89,7 @@ class AddHandler(Database):
 
     # member nexus
     def add_member_nexus_phone(self, type_id: int, value: str, member_id: int) -> int or str:
+        # validation in global handler
         sql_command: str = f"""INSERT INTO member_phone (member_id, type_id, number) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
@@ -101,6 +102,7 @@ class AddHandler(Database):
             return e.AddFailed(info=value).message
 
     def add_member_nexus_mail(self, type_id: int, value: str, member_id: int) -> int or str:
+        # validation in global handler
         sql_command: str = f"""INSERT INTO member_mail (member_id, type_id, mail) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
@@ -113,6 +115,7 @@ class AddHandler(Database):
             return e.AddFailed(info=value).message
 
     def add_member_nexus_position(self, type_id: int, value: bool, member_id: int) -> int or str:
+        # validation in global handler
         sql_command: str = f"""INSERT INTO member_position (member_id, type_id, active) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))

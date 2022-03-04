@@ -71,8 +71,9 @@ class SelectHandler(Database):
 
     def get_type_name_by_id(self, ID: int) -> tuple | str:
         try:
-            v.validation.must_positive_int(int_=ID)
-        except e.NoPositiveInt as error:
+            v.validation.must_positive_int(int_=ID, max_length=None)
+        except (e.NoPositiveInt, e.NoInt, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_type_name_by_id", message=f"Error = {error.message}")
             return error.message
 
         sql_command: str = f"""SELECT name FROM type WHERE ID is ?;"""
@@ -86,8 +87,9 @@ class SelectHandler(Database):
 
     def get_type_active_by_id(self, ID: int) -> tuple or str:
         try:
-            v.validation.must_positive_int(int_=ID)
-        except e.NoPositiveInt as error:
+            v.validation.must_positive_int(int_=ID, max_length=None)
+        except (e.NoPositiveInt, e.NoInt, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_type_active_by_id", message=f"Error = {error.message}")
             return error.message
 
         sql_command: str = f"""SELECT active FROM type WHERE ID is ?;"""
@@ -100,6 +102,13 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Typ ID").message
 
     def get_id_by_type_name(self, raw_id: int, name: str) -> tuple | str:
+        try:
+            v.validation.must_positive_int(int_=raw_id, max_length=None)
+            v.validation.must_str(text=name)
+        except (e.NoInt, e.NoPositiveInt, e.NoStr, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_id_by_type_name", message=f"Error = {error.message}")
+            return error.message
+
         sql_command: str = f"""SELECT ID FROM type WHERE type_id = ? and name = ?;"""
         try:
             return self.cursor.execute(sql_command, (
@@ -131,9 +140,10 @@ class SelectHandler(Database):
 
     def get_member_data_by_id(self, id_: int, active: bool = True) -> dict | str:
         try:
-            v.validation.must_positive_int(int_=id_)
+            v.validation.must_positive_int(int_=id_, max_length=None)
             v.validation.must_bool(bool_=active)
-        except (e.NoInt, e.NoPositiveInt, e.NoBool) as error:
+        except (e.NoInt, e.NoPositiveInt, e.NoBool, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_member_data_by_id", message=f"Error = {error.message}")
             return error.message
 
         table: str = "v_active_member" if active else "v_inactive_member"
@@ -177,6 +187,11 @@ class SelectHandler(Database):
 
     # member nexus
     def get_phone_number_by_member_id(self, id_: int) -> tuple or None:
+        try:
+            v.validation.must_positive_int(int_=id_, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
+
         sql_command: str = f"""SELECT ID,type_id,number FROM member_phone WHERE member_id is ?;"""
         try:
             return self.cursor.execute(sql_command, (id_,)).fetchall()
@@ -187,6 +202,11 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Phone Number").message
 
     def get_mail_by_member_id(self, id_: int) -> tuple or None:
+        try:
+            v.validation.must_positive_int(int_=id_, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
+
         sql_command: str = f"""SELECT ID,type_id,mail FROM member_mail WHERE member_id is ?;"""
         try:
             return self.cursor.execute(sql_command, (id_,)).fetchall()
@@ -197,6 +217,11 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Phone Number").message
 
     def get_position_by_member_id(self, id_: int) -> tuple or None:
+        try:
+            v.validation.must_positive_int(int_=id_, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
+
         sql_command: str = f"""SELECT ID,type_id,active FROM member_position WHERE member_id is ?;"""
         try:
             data: list = (self.cursor.execute(sql_command, (id_,)).fetchall())
