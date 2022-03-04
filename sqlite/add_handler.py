@@ -3,7 +3,7 @@
 # VereinsManager / Add Handler
 
 from sqlite.database import Database
-from sqlite import select_handler as s_h
+from sqlite import select_handler as s_h, log_handler as l_h
 from config import error_code as e, config_sheet as c
 from logic import validation
 import debug
@@ -20,17 +20,21 @@ class AddHandler(Database):
         return "AddHandler(Database)"
 
     # type
-    def add_type(self, type_name: str, raw_type_id: int) -> str | None:
+    def add_type(self, type_name: str, raw_type_id: int) -> str | int:
         try:
             validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
-        except (e.NoStr, e.NoPositiveInt, e.AlreadyExists) as error:
+        except (e.NoStr, e.NoInt, e.NoPositiveInt, e.AlreadyExists) as error:
             return error.message
 
         sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
         try:
             self.cursor.execute(sql_command, (type_name.strip().title(), raw_type_id))
             self.connection.commit()
-            return
+            ID: int = self.cursor.lastrowid
+            result = l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=None, new_data=type_name)
+            if isinstance(result, str):
+                return result
+            return ID
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_data_from_member_by_id",
                         message=f"load single member data failed\n"
