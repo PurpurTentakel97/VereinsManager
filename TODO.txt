@@ -16,5 +16,8 @@ sql database
     log update types
 
 UI
+    Global
+        window close automaticly even if not saved
     Base Window
         set Icon
+
