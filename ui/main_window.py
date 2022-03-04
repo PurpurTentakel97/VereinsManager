@@ -91,7 +91,7 @@ class MainWindow(BaseWindow):
     def _open_members(self) -> None:
         result = w.window_manger.is_valid_member_window()
         if isinstance(result, str):
-            self.set_status_bar(massage=result)
+            self.set_info_bar(message=result)
         else:
             w.window_manger.members_window = m_w.MembersWindow()
 
@@ -110,7 +110,7 @@ class MainWindow(BaseWindow):
     def _open_edit_types(self) -> None:
         result = w.window_manger.is_valid_types_window()
         if isinstance(result, str):
-            self.set_status_bar(massage=result)
+            self.set_info_bar(message=result)
         else:
             w.window_manger.types_window = t_w.TypesWindow()
 
