@@ -2,8 +2,6 @@
 # 21.01.2022
 # VereinsManager // TODO
 
-debug
-    edit debug messages
 
 sql database
     let unser coose database name
@@ -12,8 +10,7 @@ sql database
     log updat member
     log initial nexus
     log update nexus
-    log initial types
-    log update types
+    error without types (membership_type)
 
 UI
     Global

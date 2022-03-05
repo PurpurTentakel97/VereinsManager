@@ -55,7 +55,7 @@ class GlobalHandler:
 
         return data
 
-    def update_member_data(self, id_: int, data: dict) -> str | int:
+    def update_member_data(self, id_: int, data: dict, log_date: int | None) -> str | int:
         try:
             v.validation.must_dict(dict_=data)
         except e.NoDict as error:
@@ -73,7 +73,9 @@ class GlobalHandler:
 
         id_bool = True
         if id_ is None:
-            id_: int = a_h.add_handler.add_member(data=member_data)
+            id_: int = a_h.add_handler.add_member(data=member_data, log_date=log_date)
+            if isinstance(id_, str):
+                return id_
             id_bool = False
         try:
             v.validation.must_positive_int(int_=id_, max_length=None)
