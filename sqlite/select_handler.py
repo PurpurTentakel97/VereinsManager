@@ -223,6 +223,21 @@ class SelectHandler(Database):
                                                                                          f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message
 
+    def get_phone_number_by_ID(self, ID: int) -> tuple | str:
+        try:
+            v.validation.must_positive_int(int_=ID, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
+
+        sql_command: str = f"""SELECT number FROM member_phone WHERE ID is ?;"""
+        try:
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="get_phone_number_by_ID", message=f"load phone number by ID failed\n"
+                                                                                  f"command = {sql_command}\n"
+                                                                                  f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Phone Number").message
+
     def get_mail_by_member_id(self, id_: int) -> tuple or None:
         try:
             v.validation.must_positive_int(int_=id_, max_length=None)

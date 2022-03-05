@@ -124,7 +124,8 @@ class GlobalHandler:
                 return error.message
             try:
                 v.validation.must_positive_int(ID, max_length=None)
-                result: str | None = u_h.update_handler.update_member_nexus_phone(ID=ID, number=phone_number)
+                result: str | None = u_h.update_handler.update_member_nexus_phone(ID=ID, number=phone_number,
+                                                                                  log_date=log_date)
                 if isinstance(result, str):
                     return result
                 phone_ids.append(result)
