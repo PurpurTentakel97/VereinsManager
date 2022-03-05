@@ -1,13 +1,15 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Global Handler
-import debug
 
-debug_str: str = "GlobalHandler"
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     log_handler as l_h
 from logic import validation as v
 from config import error_code as e
+
+import debug
+
+debug_str: str = "GlobalHandler"
 
 global_handler: "GlobalHandler"
 
@@ -55,7 +57,7 @@ class GlobalHandler:
 
         return data
 
-    def update_member_data(self, id_: int, data: dict, log_date: int | None) -> str | int:
+    def update_member_data(self, id_: int, data: dict, log_date: int | None) -> str | dict:
         try:
             v.validation.must_dict(dict_=data)
         except e.NoDict as error:
@@ -88,7 +90,7 @@ class GlobalHandler:
             if isinstance(result, str):
                 return result
 
-        ids = self._update_member_nexus(data=member_nexus_data, member_id=id_)
+        ids = self._update_member_nexus(data=member_nexus_data, member_id=id_, log_date=log_date)
         if isinstance(ids, str):
             return ids
 
@@ -97,7 +99,7 @@ class GlobalHandler:
 
     # member nexus
     @staticmethod
-    def _update_member_nexus(data: dict, member_id: int) -> str | dict:
+    def _update_member_nexus(data: dict, member_id: int, log_date: int | None) -> str | dict:
         try:
             v.validation.must_dict(data)
         except e.NoDict as error:
@@ -128,7 +130,7 @@ class GlobalHandler:
                 phone_ids.append(result)
             except (e.NoPositiveInt, e.NoInt, e.ToLong):
                 result: str | int = a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=phone_number,
-                                                                           member_id=member_id)
+                                                                           member_id=member_id, log_date=log_date)
                 if isinstance(result, str):
                     return result
                 phone_ids.append(result)
