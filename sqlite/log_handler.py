@@ -5,8 +5,9 @@
 import time
 
 from sqlite.database import Database
-from config import error_code as e
+from config import error_code as e, config_sheet as c
 from logic import validation as v
+from sqlite import select_handler as s_h
 
 import debug
 
@@ -16,11 +17,11 @@ log_handler: "LogHandler"
 
 
 class LogHandler(Database):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     # type
-    def log_type(self, target_id: int, target_column: str, old_data, new_data) -> str or None:
+    def log_type(self, target_id: int, target_column: str, old_data, new_data) -> str | None:
         log_date: int = int(time.time())
         try:
             v.validation.must_positive_int(target_id, max_length=None)
@@ -32,7 +33,7 @@ class LogHandler(Database):
                          new_data=new_data, log_date=log_date)
 
     # member
-    def log_member(self, ID: int, old_data: tuple | None, new_data: dict, log_date: int | None):
+    def log_member(self, ID: int, old_data: dict | None, new_data: dict, log_date: int | None) -> str | None:
         if not log_date:
             log_date = int(time.time())
         try:
@@ -46,10 +47,45 @@ class LogHandler(Database):
         else:
             return self._log_initial_member(ID=ID, new_data=new_data, log_date=log_date)
 
-    def _log_member(self, ID: int, old_data: tuple, new_data: dict, log_date: int):
-        pass
+    def _log_member(self, ID: int, old_data: dict, new_data: dict, log_date: int) -> str | None:
+        # transform none date to none
+        if old_data["birth_date"] == c.config.date_format["None_date"]:
+            old_data["birth_date"] = None
+        if old_data["entry_date"] == c.config.date_format["None_date"]:
+            old_data["entry_date"] = None
 
-    def _log_initial_member(self, ID: int, new_data: dict, log_date: int):
+        # transform membership to ID
+        result = s_h.select_handler.get_id_by_type_name(raw_id=1, name=old_data["membership_type"])
+        if isinstance(result, str):
+            return result
+        else:
+            if result:
+                old_data["membership_type"] = result[0]
+            else:
+                old_data["membership_type"] = result
+
+        keys: tuple = (
+            "first_name",
+            "last_name",
+            "street",
+            "number",
+            "zip_code",
+            "birth_date",
+            "entry_date",
+            "city",
+            "membership_type",
+            "special_member",
+            "comment_text",
+        )
+
+        for key in keys:
+            if old_data[key] != new_data[key]:
+                result = self._log(target_table="member", target_id=ID, target_column=key,
+                                   old_data=old_data[key], new_data=new_data[key], log_date=log_date)
+                if isinstance(result, str):
+                    return result
+
+    def _log_initial_member(self, ID: int, new_data: dict, log_date: int) -> str | None:
         result = self._log(target_table="member", target_id=ID, target_column="active", old_data=None, new_data=True,
                            log_date=log_date)
         if isinstance(result, str):

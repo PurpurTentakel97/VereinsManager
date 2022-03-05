@@ -65,7 +65,7 @@ class UpdateHandler(Database):
             return e.ActiveSetFailed().message
 
     # member
-    def update_member(self, id_: int | None, data: dict) -> str | None:
+    def update_member(self, id_: int | None, data: dict, log_date: int) -> str | None:
         # validation in global handler
         result = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
         if isinstance(result, str):
@@ -84,6 +84,7 @@ class UpdateHandler(Database):
         sql_command: str = f"""Update member SET first_name = ?, last_name = ?, street = ?,number = ?,zip_code = ?,
         city = ?,b_day = ?,entry_day = ?, membership_type = ?,special_member = ?,comment = ? WHERE ID is ?;"""
         try:
+            reference_data: dict = s_h.select_handler.get_member_data_by_id(id_=id_, active=True)
             self.cursor.execute(sql_command, (
                 data["first_name"],
                 data["last_name"],
@@ -99,6 +100,7 @@ class UpdateHandler(Database):
                 id_
             ))
             self.connection.commit()
+            l_h.log_handler.log_member(ID=id_, old_data=reference_data, new_data=data, log_date=log_date)
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_member", message=f"update member failed\n"
