@@ -12,7 +12,7 @@ def get_raw_types() -> tuple | str:
 
 
 def get_single_type(raw_type_id: int, active: bool = True) -> tuple | str:
-    return s_h.select_handler.get_single_type(raw_type_id=raw_type_id, active=active)
+    return s_h.select_handler.get_single_raw_type_types(raw_type_id=raw_type_id, active=active)
 
 
 def get_active_member_type() -> tuple | str:
@@ -24,15 +24,15 @@ def add_type(type_name: str, raw_type_id: int) -> str | None:
 
 
 def update_type(id_: int, name: str) -> str | None:
-    return u_h.update_handler.update_type(id_=id_, name=name)
+    return u_h.update_handler.update_type(ID=id_, name=name)
 
 
 def update_type_activity(id_: int, active: bool) -> str | None:
-    return u_h.update_handler.update_type_activity(id_=id_, active=active)
+    return u_h.update_handler.update_type_activity(ID=id_, active=active)
 
 
 def delete_type(id_: int) -> str | None:
-    return d_h.delete_handler.delete_type(id_=id_)
+    return d_h.delete_handler.delete_type(ID=id_)
 
 
 # member
@@ -41,12 +41,12 @@ def get_all_member_name(active: bool = True) -> tuple | str:
 
 
 def get_member_data_by_id(id_: int, active: bool = True) -> dict | str:
-    return g_h.global_handler.get_member_data(id_=id_, active=active)
+    return g_h.global_handler.get_member_data(ID=id_, active=active)
 
 
 def update_member_data(id_: int, data: dict, log_date: int | None = None) -> str | dict:
-    return g_h.global_handler.update_member_data(id_=id_, data=data, log_date=log_date)
+    return g_h.global_handler.update_member_data(ID=id_, data=data, log_date=log_date)
 
 
 def update_member_activity(id_: int, active: bool, log_date: int | None = None) -> str | None:
-    return u_h.update_handler.update_member_activity(id_=id_, active=active, log_date=log_date)
+    return u_h.update_handler.update_member_activity(ID=id_, active=active, log_date=log_date)

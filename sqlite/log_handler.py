@@ -33,7 +33,7 @@ class LogHandler(Database):
                          new_data=new_data, log_date=log_date)
 
     # member
-    def log_member(self, ID: int, old_data: dict | None, new_data: dict, log_date: int | None) -> str | None:
+    def log_member(self, target_id: int, old_data: dict | None, new_data: dict, log_date: int | None) -> str | None:
         log_date = self.transform_log_none_date(none_date=log_date)
         try:
             v.validation.must_int(int_=log_date)
@@ -42,11 +42,11 @@ class LogHandler(Database):
             return error.message
 
         if old_data:
-            return self._log_member(ID=ID, old_data=old_data, new_data=new_data, log_date=log_date)
+            return self._log_member(target_id=target_id, old_data=old_data, new_data=new_data, log_date=log_date)
         else:
-            return self._log_initial_member(ID=ID, new_data=new_data, log_date=log_date)
+            return self._log_initial_member(target_id=target_id, new_data=new_data, log_date=log_date)
 
-    def _log_member(self, ID: int, old_data: dict, new_data: dict, log_date: int) -> str | None:
+    def _log_member(self, target_id: int, old_data: dict, new_data: dict, log_date: int) -> str | None:
         # transform none date to none
         if old_data["birth_date"] == c.config.date_format["None_date"]:
             old_data["birth_date"] = None
@@ -79,13 +79,14 @@ class LogHandler(Database):
 
         for key in keys:
             if old_data[key] != new_data[key]:
-                result = self._log(target_table="member", target_id=ID, target_column=key,
+                result = self._log(target_table="member", target_id=target_id, target_column=key,
                                    old_data=old_data[key], new_data=new_data[key], log_date=log_date)
                 if isinstance(result, str):
                     return result
 
-    def _log_initial_member(self, ID: int, new_data: dict, log_date: int) -> str | None:
-        result = self._log(target_table="member", target_id=ID, target_column="active", old_data=None, new_data=True,
+    def _log_initial_member(self, target_id: int, new_data: dict, log_date: int) -> str | None:
+        result = self._log(target_table="member", target_id=target_id, target_column="active", old_data=None,
+                           new_data=True,
                            log_date=log_date)
         if isinstance(result, str):
             return result
@@ -106,12 +107,12 @@ class LogHandler(Database):
 
         for key in keys:
             if new_data[key]:
-                result = self._log(target_table="member", target_id=ID, target_column=key, old_data=None,
+                result = self._log(target_table="member", target_id=target_id, target_column=key, old_data=None,
                                    new_data=new_data[key], log_date=log_date)
                 if isinstance(result, str):
                     return result
 
-    def log_member_activity(self, ID: int, old_activity: bool, new_activity: bool, log_date: int) -> str | None:
+    def log_member_activity(self, target_id: int, old_activity: bool, new_activity: bool, log_date: int) -> str | None:
         log_date = self.transform_log_none_date(none_date=log_date)
         try:
             v.validation.must_int(int_=log_date)
@@ -122,34 +123,36 @@ class LogHandler(Database):
         try:
             v.validation.must_bool(old_activity)
             v.validation.must_bool(new_activity)
-            v.validation.must_positive_int(int_=ID, max_length=None)
+            v.validation.must_positive_int(int_=target_id, max_length=None)
         except (e.NoInt, e.NoPositiveInt, e.ToLong, e.NoBool) as error:
             debug.error(item=debug_str, keyword="log_member_activity", message=f"Error = {error.message}")
             return error.message
 
         if old_activity != new_activity:
-            result = self._log(target_id=ID, target_table="member", target_column="active", old_data=old_activity,
+            result = self._log(target_id=target_id, target_table="member", target_column="active",
+                               old_data=old_activity,
                                new_data=new_activity, log_date=log_date)
             if isinstance(result, str):
                 return result
 
     # log member nexus
-    def log_member_nexus(self, ID: int, old_data: str | bool | None, new_data: str | int | None, log_date: int | None,
-                         type_: str) -> str | None:
+    def log_member_nexus(self, target_id: int, old_data: str | bool | None, new_data: str | int | None,
+                         log_date: int | None, type_: str) -> str | None:
         log_date = self.transform_log_none_date(none_date=log_date)
         match type_:
             case "phone":
                 if old_data != new_data:
-                    return self._log(target_table="member_phone", target_id=ID, target_column="number",
+                    return self._log(target_table="member_phone", target_id=target_id, target_column="number",
                                      old_data=old_data,
                                      new_data=new_data, log_date=log_date)
             case "mail":
                 if old_data != new_data:
-                    return self._log(target_table="member_mail", target_id=ID, target_column="mail", old_data=old_data,
+                    return self._log(target_table="member_mail", target_id=target_id, target_column="mail",
+                                     old_data=old_data,
                                      new_data=new_data, log_date=log_date)
             case "position":
                 if old_data != new_data:
-                    return self._log(target_table="member_position", target_id=ID, target_column="position",
+                    return self._log(target_table="member_position", target_id=target_id, target_column="position",
                                      old_data=old_data, new_data=new_data, log_date=log_date)
 
     # log

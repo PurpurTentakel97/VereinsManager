@@ -18,7 +18,7 @@ class Validation:
     # type
     @classmethod
     def add_type(cls, type_name: str, raw_type_id: int) -> None:
-        cls.must_str(text=type_name)
+        cls.must_str(str_=type_name)
         cls.must_positive_int(int_=raw_type_id, max_length=None)
 
         data = s_h.select_handler.get_all_single_type()
@@ -28,14 +28,14 @@ class Validation:
                 raise e.AlreadyExists()
 
     @classmethod
-    def update_type(cls, new_id: int, new_name: str) -> None:
+    def update_type(cls, ID: int, new_name: str) -> None:
         cls.must_str(new_name)
-        cls.must_positive_int(new_id, max_length=None)
+        cls.must_positive_int(ID, max_length=None)
 
         data = s_h.select_handler.get_all_single_type()
         exists: bool = False
         for old_id, old_name, *_ in data:
-            if new_id == old_id:
+            if ID == old_id:
                 if new_name == old_name:
                     raise e.NoChance(info=new_name)
                 exists = True
@@ -45,14 +45,14 @@ class Validation:
             raise e.NotFound(info=new_name)
 
     @classmethod
-    def update_type_activity(cls, id_: int, active: bool) -> None:
-        cls.must_positive_int(int_=id_, max_length=None)
+    def update_type_activity(cls, ID: int, active: bool) -> None:
+        cls.must_positive_int(int_=ID, max_length=None)
         cls.must_bool(bool_=active)
 
         data = s_h.select_handler.get_all_single_type()
         exists: bool = False
         for old_id, old_name, old_type_id, old_active in data:
-            if old_id == id_:
+            if old_id == ID:
                 if old_active == active:
                     raise e.NoChance(info="Type Aktivität")
                 exists = True
@@ -75,10 +75,10 @@ class Validation:
         ]
         for key in keys:
             if data[key] is not None:
-                cls.must_str(text=data[key])
+                cls.must_str(str_=data[key])
 
         if data["comment_text"] is not None:
-            cls.must_str(text=data["comment_text"], length=2000)
+            cls.must_str(str_=data["comment_text"], length=2000)
 
         keys: list = [
             "zip_code",
@@ -126,11 +126,11 @@ class Validation:
 
     # global
     @staticmethod
-    def must_str(text: str, length: int = 50) -> None:
-        if not isinstance(text, str) or len(text.strip()) == 0:
-            raise e.NoStr(info=text)
-        if len(text) > length:
-            raise e.ToLong(max_length=length, text=text)
+    def must_str(str_: str, length: int = 50) -> None:
+        if not isinstance(str_, str) or len(str_.strip()) == 0:
+            raise e.NoStr(info=str_)
+        if len(str_) > length:
+            raise e.ToLong(max_length=length, text=str_)
 
     @staticmethod
     def must_bool(bool_: bool) -> None:

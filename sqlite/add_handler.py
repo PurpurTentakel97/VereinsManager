@@ -80,11 +80,11 @@ class AddHandler(Database):
                 data["comment_text"],
             ))
             self.connection.commit()
-            id_ = self.cursor.lastrowid
-            result = l_h.log_handler.log_member(ID=id_, old_data=None, new_data=data, log_date=log_date)
+            ID = self.cursor.lastrowid
+            result = l_h.log_handler.log_member(target_id=ID, old_data=None, new_data=data, log_date=log_date)
             if isinstance(result, str):
                 return result
-            return id_
+            return ID
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_member", message=f"add member failed\n"
                                                                       f"command = {sql_command}\n"

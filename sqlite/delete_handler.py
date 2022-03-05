@@ -21,19 +21,19 @@ class DeleteHandler(Database):
         return "DeleteHandler(Database)"
 
     # type
-    def delete_type(self, id_: int) -> str | None:
+    def delete_type(self, ID: int) -> str | None:
         try:
-            v.validation.must_positive_int(id_, max_length=None)
+            v.validation.must_positive_int(ID, max_length=None)
         except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
             debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
             return error.message
 
         sql_command: str = """DELETE FROM type WHERE ID is ?;"""
         try:
-            name: str = s_h.select_handler.get_type_name_by_id(ID=id_)
-            self.cursor.execute(sql_command, (id_,))
+            name: str = s_h.select_handler.get_type_name_by_id(ID=ID)
+            self.cursor.execute(sql_command, (ID,))
             self.connection.commit()
-            result = l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=name[0], new_data=None)
+            result = l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=name[0], new_data=None)
             if isinstance(result, str):
                 return result
             return

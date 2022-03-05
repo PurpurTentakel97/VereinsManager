@@ -31,20 +31,20 @@ class GlobalHandler:
 
     # member
     @staticmethod
-    def get_member_data(id_: int, active: bool = True) -> dict | str:
-        member_data: dict = s_h.select_handler.get_member_data_by_id(id_=id_, active=active)
+    def get_member_data(ID: int, active: bool = True) -> dict | str:
+        member_data: dict = s_h.select_handler.get_member_data_by_id(ID=ID, active=active)
         if isinstance(member_data, str):
             return member_data
 
-        phone_data: tuple or None = s_h.select_handler.get_phone_number_by_member_id(id_=id_)
+        phone_data: tuple or None = s_h.select_handler.get_phone_number_by_member_id(member_id=ID)
         if isinstance(phone_data, str):
             return phone_data
 
-        mail_data: tuple or None = s_h.select_handler.get_mail_by_member_id(id_=id_)
+        mail_data: tuple or None = s_h.select_handler.get_mail_by_member_id(member_id=ID)
         if isinstance(mail_data, str):
             return mail_data
 
-        position_data: tuple or None = s_h.select_handler.get_position_by_member_id(id_=id_)
+        position_data: tuple or None = s_h.select_handler.get_position_by_member_id(member_id=ID)
         if isinstance(position_data, str):
             return position_data
 
@@ -57,7 +57,7 @@ class GlobalHandler:
 
         return data
 
-    def update_member_data(self, id_: int, data: dict, log_date: int | None) -> str | dict:
+    def update_member_data(self, ID: int, data: dict, log_date: int | None) -> str | dict:
         try:
             v.validation.must_dict(dict_=data)
         except e.NoDict as error:
@@ -74,27 +74,27 @@ class GlobalHandler:
             return error.message
 
         id_bool = True
-        if id_ is None:
-            id_: int = a_h.add_handler.add_member(data=member_data, log_date=log_date)
-            if isinstance(id_, str):
-                return id_
+        if ID is None:
+            ID: int = a_h.add_handler.add_member(data=member_data, log_date=log_date)
+            if isinstance(ID, str):
+                return ID
             id_bool = False
         try:
-            v.validation.must_positive_int(int_=id_, max_length=None)
+            v.validation.must_positive_int(int_=ID, max_length=None)
         except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
             debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
             return error.message
 
         if id_bool:
-            result = u_h.update_handler.update_member(id_=id_, data=member_data, log_date=log_date)
+            result = u_h.update_handler.update_member(ID=ID, data=member_data, log_date=log_date)
             if isinstance(result, str):
                 return result
 
-        ids = self._update_member_nexus(data=member_nexus_data, member_id=id_, log_date=log_date)
+        ids = self._update_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
         if isinstance(ids, str):
             return ids
 
-        ids["member_id"] = id_
+        ids["member_id"] = ID
         return ids
 
     # member nexus
@@ -167,7 +167,8 @@ class GlobalHandler:
                 return error.message
             try:
                 v.validation.must_positive_int(ID, max_length=None)
-                result: str | None = u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
+                result: str | None = u_h.update_handler.update_member_nexus_position(ID=ID, active=active,
+                                                                                     log_date=log_date)
                 if isinstance(result, str):
                     return result
                 position_ids.append(result)
