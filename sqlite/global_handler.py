@@ -151,7 +151,7 @@ class GlobalHandler:
                 mail_ids.append(result)
             except (e.NoPositiveInt, e.NoInt, e.ToLong):
                 result: str | int = a_h.add_handler.add_member_nexus_mail(type_id=type_id, value=mail_,
-                                                                          member_id=member_id)
+                                                                          member_id=member_id, log_date=log_date)
                 if isinstance(result, str):
                     return result
                 mail_ids.append(result)
