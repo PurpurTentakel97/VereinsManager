@@ -146,7 +146,7 @@ class GlobalHandler:
                 return error.message
             try:
                 v.validation.must_positive_int(ID, max_length=None)
-                result: str | None = u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail_)
+                result: str | None = u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail_,log_date=log_date)
                 if isinstance(result, str):
                     return result
                 mail_ids.append(result)

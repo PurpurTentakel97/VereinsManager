@@ -139,43 +139,18 @@ class LogHandler(Database):
         log_date = self.transform_log_none_date(none_date=log_date)
         match type_:
             case "phone":
-                if old_data:
-                    return self._log_phone(ID=ID, old_data=old_data, new_data=new_data, log_date=log_date)
-                else:
-                    return self._log_initial_phone(ID=ID, new_data=new_data, log_date=log_date)
+                if old_data != new_data:
+                    return self._log(target_table="member_phone", target_id=ID, target_column="number",
+                                     old_data=old_data,
+                                     new_data=new_data, log_date=log_date)
             case "mail":
-                if old_data:
-                    pass
-                else:
-                    return self._log_initial_mail(ID=ID, new_data=new_data, log_date=log_date)
+                if old_data != new_data:
+                    return self._log(target_table="member_mail", target_id=ID, target_column="mail", old_data=old_data,
+                                     new_data=new_data, log_date=log_date)
             case "position":
-                if old_data:
-                    pass
-                else:
-                    return self._log_initial_position(ID=ID, new_data=new_data, log_date=log_date)
-
-        debug.info(item=debug_str, keyword="log_member_nexus_phone", message=f"old data = {old_data}")
-        debug.info(item=debug_str, keyword="log_member_nexus_phone", message=f"new data = {new_data}")
-
-    def _log_phone(self, ID: int, old_data: str | None, new_data: str | None, log_date: int) -> str | None:
-        if old_data != new_data:
-            return self._log(target_table="member_phone", target_id=ID, target_column="number", old_data=old_data,
-                             new_data=new_data, log_date=log_date)
-
-    def _log_initial_phone(self, ID: int, new_data: str | None, log_date: int):
-        if new_data:
-            return self._log(target_table="member_phone", target_id=ID, target_column="number", old_data=None,
-                             new_data=new_data, log_date=log_date)
-
-    def _log_initial_mail(self, ID: int, new_data: str | None, log_date: int):
-        if new_data:
-            return self._log(target_table="member_mail", target_id=ID, target_column="mail", old_data=None,
-                             new_data=new_data, log_date=log_date)
-
-    def _log_initial_position(self, ID: int, new_data: bool | None, log_date: int):
-        if new_data:
-            return self._log(target_table="member_position", target_id=ID, target_column="position", old_data=None,
-                             new_data=new_data, log_date=log_date)
+                if old_data != new_data:
+                    return self._log(target_table="member_position", target_id=ID, target_column="position",
+                                     old_data=old_data, new_data=new_data, log_date=log_date)
 
     # log
     def _log(self, target_table: str, target_id: int, target_column: str, old_data, new_data,
