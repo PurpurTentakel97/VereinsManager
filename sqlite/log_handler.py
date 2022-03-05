@@ -22,7 +22,7 @@ class LogHandler(Database):
 
     # type
     def log_type(self, target_id: int, target_column: str, old_data, new_data) -> str | None:
-        log_date: int = int(time.time())
+        log_date = self.transform_log_none_date(none_date=None)
         try:
             v.validation.must_positive_int(target_id, max_length=None)
             v.validation.must_str(target_column)
@@ -34,8 +34,7 @@ class LogHandler(Database):
 
     # member
     def log_member(self, ID: int, old_data: dict | None, new_data: dict, log_date: int | None) -> str | None:
-        if not log_date:
-            log_date = int(time.time())
+        log_date = self.transform_log_none_date(none_date=log_date)
         try:
             v.validation.must_int(int_=log_date)
         except (e.NoInt, e.ToLong) as error:
@@ -113,8 +112,7 @@ class LogHandler(Database):
                     return result
 
     def log_member_activity(self, ID: int, old_activity: bool, new_activity: bool, log_date: int) -> str | None:
-        if not log_date:
-            log_date = int(time.time())
+        log_date = self.transform_log_none_date(none_date=log_date)
         try:
             v.validation.must_int(int_=log_date)
         except (e.NoInt, e.ToLong) as error:
@@ -135,6 +133,45 @@ class LogHandler(Database):
             if isinstance(result, str):
                 return result
 
+    # log member nexus
+    def log_member_nexus(self, ID: int, old_data: str | bool | None, new_data: str | int | None, log_date: int | None,
+                         type_: str) -> str | None:
+        log_date = self.transform_log_none_date(none_date=log_date)
+        match type_:
+            case "phone":
+                if old_data:
+                    pass
+                else:
+                    return self._log_initial_phone(ID=ID, new_data=new_data, log_date=log_date)
+            case "mail":
+                if old_data:
+                    pass
+                else:
+                    return self._log_initial_mail(ID=ID, new_data=new_data, log_date=log_date)
+            case "position":
+                if old_data:
+                    pass
+                else:
+                    return self._log_initial_position(ID=ID, new_data=new_data, log_date=log_date)
+
+        debug.info(item=debug_str, keyword="log_member_nexus_phone", message=f"old data = {old_data}")
+        debug.info(item=debug_str, keyword="log_member_nexus_phone", message=f"new data = {new_data}")
+
+    def _log_initial_phone(self, ID: int, new_data: str | None, log_date: int):
+        if new_data:
+            return self._log(target_table="member_phone", target_id=ID, target_column="number", old_data=None,
+                             new_data=new_data, log_date=log_date)
+
+    def _log_initial_mail(self, ID: int, new_data: str | None, log_date: int):
+        if new_data:
+            return self._log(target_table="member_mail", target_id=ID, target_column="mail", old_data=None,
+                             new_data=new_data, log_date=log_date)
+
+    def _log_initial_position(self, ID: int, new_data: bool | None, log_date: int):
+        if new_data:
+            return self._log(target_table="member_position", target_id=ID, target_column="position", old_data=None,
+                             new_data=new_data, log_date=log_date)
+
     # log
     def _log(self, target_table: str, target_id: int, target_column: str, old_data, new_data,
              log_date: int) -> str | None:
@@ -148,6 +185,13 @@ class LogHandler(Database):
                                                                          f"command = {sql_command}\n"
                                                                          f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
+
+    # generel
+    @staticmethod
+    def transform_log_none_date(none_date: int | None) -> int:
+        if not none_date:
+            none_date = int(time.time())
+        return none_date
 
 
 def create_log_handler() -> None:
