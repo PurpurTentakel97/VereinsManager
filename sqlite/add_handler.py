@@ -45,7 +45,7 @@ class AddHandler(Database):
             return e.AddFailed(info=type_name).message
 
     # member
-    def add_member(self, data: dict) -> int | str:
+    def add_member(self, data: dict, log_date: int | None) -> int | str:
         # validation in global handler
         result = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
         if isinstance(result, str):
@@ -80,7 +80,11 @@ class AddHandler(Database):
                 data["comment_text"],
             ))
             self.connection.commit()
-            return self.cursor.lastrowid
+            id_ = self.cursor.lastrowid
+            result = l_h.log_handler.log_member(ID=id_, old_data=None, new_data=data, log_date=log_date)
+            if isinstance(result, str):
+                return result
+            return id_
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_member", message=f"add member failed\n"
                                                                       f"command = {sql_command}\n"
