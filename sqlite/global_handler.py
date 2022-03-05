@@ -84,7 +84,7 @@ class GlobalHandler:
             return error.message
 
         if id_bool:
-            result = u_h.update_handler.update_member(id_=id_, data=member_data)
+            result = u_h.update_handler.update_member(id_=id_, data=member_data, log_date=log_date)
             if isinstance(result, str):
                 return result
 
