@@ -33,9 +33,14 @@ class UpdateHandler(Database):
         sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
         try:
             reference_data: tuple = s_h.select_handler.get_type_name_by_id(ID=id_)
+            if isinstance(reference_data, str):
+                return reference_data
             self.cursor.execute(sql_command, (name, id_))
             self.connection.commit()
-            l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=reference_data[0], new_data=name)
+            result = l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=reference_data[0],
+                                              new_data=name)
+            if isinstance(result, str):
+                return result
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_type", message=f"update type failed\n"
@@ -53,9 +58,14 @@ class UpdateHandler(Database):
         sql_command: str = """UPDATE type SET active = ? WHERE ID is ?;"""
         try:
             reference_data: tuple = s_h.select_handler.get_type_active_by_id(ID=id_)
+            if isinstance(reference_data, str):
+                return reference_data
             self.cursor.execute(sql_command, (active, id_))
             self.connection.commit()
-            l_h.log_handler.log_type(target_id=id_, target_column="active", old_data=reference_data[0], new_data=active)
+            result = l_h.log_handler.log_type(target_id=id_, target_column="active", old_data=reference_data[0],
+                                              new_data=active)
+            if isinstance(result, str):
+                return result
             return
 
         except self.OperationalError as error:
@@ -65,7 +75,7 @@ class UpdateHandler(Database):
             return e.ActiveSetFailed().message
 
     # member
-    def update_member(self, id_: int | None, data: dict, log_date: int) -> str | None:
+    def update_member(self, id_: int | None, data: dict, log_date: int | None) -> str | None:
         # validation in global handler
         result = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
         if isinstance(result, str):
@@ -84,7 +94,9 @@ class UpdateHandler(Database):
         sql_command: str = f"""Update member SET first_name = ?, last_name = ?, street = ?,number = ?,zip_code = ?,
         city = ?,b_day = ?,entry_day = ?, membership_type = ?,special_member = ?,comment = ? WHERE ID is ?;"""
         try:
-            reference_data: dict = s_h.select_handler.get_member_data_by_id(id_=id_, active=True)
+            reference_data: dict = s_h.select_handler.get_member_data_by_id(id_=id_)
+            if isinstance(reference_data, str):
+                return reference_data
             self.cursor.execute(sql_command, (
                 data["first_name"],
                 data["last_name"],
@@ -108,7 +120,7 @@ class UpdateHandler(Database):
                                                                          f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
 
-    def update_member_activity(self, id_: int, active: bool) -> str | None:
+    def update_member_activity(self, id_: int, active: bool, log_date: int | None) -> str | None:
         try:
             v.validation.must_positive_int(int_=id_, max_length=None)
             v.validation.must_bool(bool_=active)
@@ -118,11 +130,18 @@ class UpdateHandler(Database):
 
         sql_command: str = f"""UPDATE member SET active = ? WHERE ID is ?;"""
         try:
+            reference_data = s_h.select_handler.get_member_activity_from_id(ID=id_)
+            if isinstance(reference_data, str):
+                return reference_data
             self.cursor.execute(sql_command, (
                 active,
                 id_,
             ))
             self.connection.commit()
+            result = l_h.log_handler.log_member_activity(ID=id_, old_activity=reference_data, new_activity=active,
+                                                         log_date=log_date)
+            if isinstance(result, str):
+                return result
             return
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_member_activity", message=f"update member activity failed\n"

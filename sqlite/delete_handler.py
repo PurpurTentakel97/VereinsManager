@@ -33,7 +33,9 @@ class DeleteHandler(Database):
             name: str = s_h.select_handler.get_type_name_by_id(ID=id_)
             self.cursor.execute(sql_command, (id_,))
             self.connection.commit()
-            l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=name[0], new_data=None)
+            result = l_h.log_handler.log_type(target_id=id_, target_column="name", old_data=name[0], new_data=None)
+            if isinstance(result, str):
+                return result
             return
 
         except self.OperationalError as error:

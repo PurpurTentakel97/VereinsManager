@@ -185,6 +185,28 @@ class SelectHandler(Database):
                                 f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedsdaten").message
 
+    def get_member_activity_from_id(self, ID: int) -> bool | str:
+        try:
+            v.validation.must_positive_int(int_=ID, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.NoBool, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_member_data_by_id", message=f"Error = {error.message}")
+            return error.message
+
+        sql_command: str = f"""SELECT active FROM "member" WHERE ID = ?;"""
+
+        try:
+            data = self.cursor.execute(sql_command, (ID,)).fetchone()
+            if isinstance(data[0], int):
+                data = data[0] == 1
+            return data
+
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="get_member_activity_from_id",
+                        message=f"load single member activity failed\n"
+                                f"command = {sql_command}\n"
+                                f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Mitgliedsdatensaktivität").message
+
     # member nexus
     def get_phone_number_by_member_id(self, id_: int) -> tuple or None:
         try:

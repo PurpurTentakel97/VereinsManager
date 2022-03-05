@@ -112,6 +112,29 @@ class LogHandler(Database):
                 if isinstance(result, str):
                     return result
 
+    def log_member_activity(self, ID: int, old_activity: bool, new_activity: bool, log_date: int) -> str | None:
+        if not log_date:
+            log_date = int(time.time())
+        try:
+            v.validation.must_int(int_=log_date)
+        except (e.NoInt, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="log_member", message=f"Error = {error.message}")
+            return error.message
+
+        try:
+            v.validation.must_bool(old_activity)
+            v.validation.must_bool(new_activity)
+            v.validation.must_positive_int(int_=ID, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong, e.NoBool) as error:
+            debug.error(item=debug_str, keyword="log_member_activity", message=f"Error = {error.message}")
+            return error.message
+
+        if old_activity != new_activity:
+            result = self._log(target_id=ID, target_table="member", target_column="active", old_data=old_activity,
+                               new_data=new_activity, log_date=log_date)
+            if isinstance(result, str):
+                return result
+
     # log
     def _log(self, target_table: str, target_id: int, target_column: str, old_data, new_data,
              log_date: int) -> str | None:
