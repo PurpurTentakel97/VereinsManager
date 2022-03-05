@@ -172,7 +172,7 @@ class GlobalHandler:
                 position_ids.append(result)
             except (e.NoPositiveInt, e.NoInt, e.ToLong):
                 result: str | int = a_h.add_handler.add_member_nexus_position(type_id=type_id, value=active,
-                                                                              member_id=member_id)
+                                                                              member_id=member_id, log_date=log_date)
                 if isinstance(result, str):
                     return result
                 position_ids.append(result)
