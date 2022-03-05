@@ -169,12 +169,19 @@ class UpdateHandler(Database):
                                                                                f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed(info=number).message
 
-    def update_member_nexus_mail(self, ID: int, mail: str) -> str or None:
+    def update_member_nexus_mail(self, ID: int, mail: str, log_date: int) -> str or None:
         # validation in global handler
         sql_command: str = f"""UPDATE member_mail SET mail = ? WHERE ID is ?;"""
         try:
+            reference_data = s_h.select_handler.get_mail_member_by_ID(ID=ID)
+            if isinstance(reference_data, str):
+                return reference_data
             self.cursor.execute(sql_command, (mail, ID))
             self.connection.commit()
+            result = l_h.log_handler.log_member_nexus(ID=ID, old_data=reference_data[0], new_data=mail,
+                                                      log_date=log_date, type_="mail")
+            if isinstance(result, str):
+                return result
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="update_member_nexus", message=f"update member nexus failed\n"
                                                                                f"command = {sql_command}\n"

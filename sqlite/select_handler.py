@@ -227,7 +227,7 @@ class SelectHandler(Database):
         try:
             v.validation.must_positive_int(int_=ID, max_length=None)
         except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
+            debug.error(item=debug_str, keyword="get_phone_number_by_ID", message=f"Error = {error.message}")
 
         sql_command: str = f"""SELECT number FROM member_phone WHERE ID is ?;"""
         try:
@@ -249,6 +249,21 @@ class SelectHandler(Database):
             return self.cursor.execute(sql_command, (id_,)).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_mail_by_member_id", message=f"load mails failed\n"
+                                                                                 f"command = {sql_command}\n"
+                                                                                 f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Phone Number").message
+
+    def get_mail_member_by_ID(self, ID: int) -> tuple | str:
+        try:
+            v.validation.must_positive_int(int_=ID, max_length=None)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="get_mail_member_by_ID", message=f"Error = {error.message}")
+
+        sql_command: str = f"""SELECT mail FROM member_mail WHERE ID is ?;"""
+        try:
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="get_mail_member_by_ID", message=f"load mail number by ID failed\n"
                                                                                  f"command = {sql_command}\n"
                                                                                  f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message
