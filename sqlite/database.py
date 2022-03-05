@@ -11,7 +11,7 @@ debug_str: str = "Database"
 
 database: "Database"
 
-dir_path:str = "saves"
+dir_path: str = "saves"
 database_path: str = "test.vm"
 
 
@@ -33,7 +33,6 @@ class Database:
             except self.OperationalError as error:
                 debug.error(item=debug_str, keyword="_create_tables", message=f"create tables failed\n"
                                                                               f"error = {' '.join(error.args)}")
-
 
         self.connection.commit()
 

@@ -6,6 +6,8 @@ from enum import Enum
 import json
 import debug
 
+debug_str: str = "Config"
+
 config: "Config"
 
 sqlit_path: str = "saves/text.vm"
@@ -16,13 +18,10 @@ class Config:
         self.config: dict = dict()
 
         self.date_format: dict = dict()
-        self.raw_type_id:dict = dict()
+        self.raw_type_id: dict = dict()
         self.special_user: dict = dict()
 
         self.load_config()
-
-    def __str__(self) -> str:
-        return "Config"
 
     def load_config(self) -> None:
         with open("config/config.json") as json_file:
@@ -31,7 +30,7 @@ class Config:
         self.config: dict = json_data
 
         self.date_format: dict = json_data["date_formats"]
-        self.raw_type_id:dict = json_data["raw_type_id"]
+        self.raw_type_id: dict = json_data["raw_type_id"]
         self.special_user: dict = json_data["special_user"]
 
 

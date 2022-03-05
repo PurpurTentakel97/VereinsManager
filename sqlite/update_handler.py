@@ -6,10 +6,10 @@ from sqlite.database import Database
 from logic import validation as v
 from config import error_code as e
 from sqlite import select_handler as s_h, log_handler as l_h
+from config import config_sheet as c
 import debug
 
 debug_str: str = "UpdateHandler"
-from config import config_sheet as c
 
 update_handler: "UpdateHandler"
 

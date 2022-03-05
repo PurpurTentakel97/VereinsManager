@@ -166,7 +166,7 @@ class LogHandler(Database):
                                                                          f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
 
-    # generel
+    # general
     @staticmethod
     def transform_log_none_date(none_date: int | None) -> int:
         if not none_date:

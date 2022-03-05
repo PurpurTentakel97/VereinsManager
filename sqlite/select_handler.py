@@ -5,11 +5,10 @@
 from sqlite.database import Database
 from config import error_code as e
 from logic import validation as v
+from config import config_sheet as c
 import debug
 
 debug_str: str = "SelectHandler"
-from config import config_sheet as c
-
 select_handler: "SelectHandler"
 
 

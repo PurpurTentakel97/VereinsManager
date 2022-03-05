@@ -36,13 +36,13 @@ class RecoverMemberWindow(BaseWindow):
     def __init__(self) -> None:
         super().__init__()
 
-        self._set_window_inforation()
+        self._set_window_information()
         self._set_ui()
         self._set_layout()
 
         self._load_member_names()
 
-    def _set_window_inforation(self) -> None:
+    def _set_window_information(self) -> None:
         self.setWindowTitle("ehmalige Mitglieder - Vereinsmanager")
 
     def _set_ui(self) -> None:

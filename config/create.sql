@@ -11,12 +11,6 @@ INSERT OR IGNORE INTO raw_type (type_name) VALUES ("E-Mail");
 INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Telefon");
 INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Position");
 INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Job");
-/* date */
-CREATE TRIGGER IF NOT EXISTS "trigger_update_raw_type"
-    AFTER UPDATE ON "raw_type"
-BEGIN
-    UPDATE "raw_type" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
-END;
 
 /* TYPE */
 CREATE TABLE IF NOT EXISTS "main"."type" (
