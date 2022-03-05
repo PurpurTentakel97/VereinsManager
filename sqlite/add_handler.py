@@ -116,7 +116,7 @@ class AddHandler(Database):
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
-            ID = self.cursor.lastrowid
+            ID: int = self.cursor.lastrowid
             result = l_h.log_handler.log_member_nexus(ID=ID, old_data=None, new_data=value, log_date=log_date,
                                                       type_="mail")
             if isinstance(result, str):
@@ -128,13 +128,18 @@ class AddHandler(Database):
                                                                                  f"error = {' '.join(error.args)}")
             return e.AddFailed(info=value).message
 
-    def add_member_nexus_position(self, type_id: int, value: bool, member_id: int) -> int or str:
+    def add_member_nexus_position(self, type_id: int, value: bool, member_id: int, log_date: int | None) -> int or str:
         # validation in global handler
         sql_command: str = f"""INSERT INTO member_position (member_id, type_id, active) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
-            return self.cursor.lastrowid
+            ID: int = self.cursor.lastrowid
+            result = l_h.log_handler.log_member_nexus(ID=ID, old_data=None, new_data=value, log_date=log_date,
+                                                      type_="position")
+            if isinstance(result, str):
+                return result
+            return ID
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_member_nexus_position", message=f"add member nexus failed\n"
                                                                                      f"command = {sql_command}\n"
