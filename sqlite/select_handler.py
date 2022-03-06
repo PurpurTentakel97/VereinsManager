@@ -147,9 +147,9 @@ class SelectHandler(Database):
             return error.message
 
         table: str = "v_active_member" if active else "v_inactive_member"
-        sql_command: str = f"""SELECT * FROM {table} WHERE membership_type is ?;"""
+        sql_command: str = f"""SELECT * FROM {table} WHERE membership_type is ? ORDER BY last_name ASC,first_name ASC;"""
         try:
-            return self.cursor.execute(sql_command)
+            return self.cursor.execute(sql_command, (membership_type_id,)).fetchall()
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_data_from_member_by_membership_type_id",
                         message=f"load all member data failed\n"

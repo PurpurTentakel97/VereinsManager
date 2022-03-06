@@ -4,6 +4,7 @@
 
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     global_handler as g_h
+from logic import table_data_handler
 
 
 # type
@@ -42,6 +43,10 @@ def get_all_member_name(active: bool = True) -> tuple | str:
 
 def get_member_data_by_id(id_: int, active: bool = True) -> dict | str:
     return g_h.global_handler.get_member_data(ID=id_, active=active)
+
+
+def get_member_data_for_table(active: bool = True) -> dict | str:
+    return table_data_handler.get_member_table_data(active=active)
 
 
 def update_member_data(id_: int, data: dict, log_date: int | None = None) -> str | dict:
