@@ -96,11 +96,11 @@ class RecoverMemberWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        result = w.window_manger.is_valid_member_window(recover_member_window=True)
+        result = w.window_manger.is_valid_member_window(active_recover_member_window=True)
         if isinstance(result, str):
             w.window_manger.recover_member_window = None
             event.accept()
         else:
-            w.window_manger.recover_member_window = None
             w.window_manger.members_window = m_w.MembersWindow()
+            w.window_manger.recover_member_window = None
             event.accept()

@@ -137,6 +137,26 @@ class SelectHandler(Database):
                                                                                f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedernamen").message
 
+    def get_data_from_member_by_membership_type_id(self, active: bool, membership_type_id: int) -> tuple | str:
+        try:
+            v.validation.must_positive_int(int_=membership_type_id, max_length=None)
+            v.validation.must_bool(bool_=active)
+        except (e.NoInt, e.NoPositiveInt, e.ToLong, e.NoBool) as error:
+            debug.error(item=debug_str, keyword="get_data_from_member_by_membership_type_id",
+                        message=f"Error = {error.message}")
+            return error.message
+
+        table: str = "v_active_member" if active else "v_inactive_member"
+        sql_command: str = f"""SELECT * FROM {table} WHERE membership_type is ?;"""
+        try:
+            return self.cursor.execute(sql_command)
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="get_data_from_member_by_membership_type_id",
+                        message=f"load all member data failed\n"
+                                f"command = {sql_command}\n"
+                                f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Alle Mitglieder Daten").message
+
     def get_member_data_by_id(self, ID: int, active: bool = True) -> dict | str:
         try:
             v.validation.must_positive_int(int_=ID, max_length=None)
@@ -184,7 +204,7 @@ class SelectHandler(Database):
                                 f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedsdaten").message
 
-    def get_member_activity_from_id(self, ID: int) -> bool | str:
+    def get_member_activity_by_id(self, ID: int) -> bool | str:
         try:
             v.validation.must_positive_int(int_=ID, max_length=None)
         except (e.NoInt, e.NoPositiveInt, e.NoBool, e.ToLong) as error:

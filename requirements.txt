@@ -3,3 +3,4 @@
 # VereinsManager // requirements
 
 PyQt5
+fpdf

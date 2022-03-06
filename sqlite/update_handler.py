@@ -130,7 +130,7 @@ class UpdateHandler(Database):
 
         sql_command: str = f"""UPDATE member SET active = ? WHERE ID is ?;"""
         try:
-            reference_data = s_h.select_handler.get_member_activity_from_id(ID=ID)
+            reference_data = s_h.select_handler.get_member_activity_by_id(ID=ID)
             if isinstance(reference_data, str):
                 return reference_data
             self.cursor.execute(sql_command, (

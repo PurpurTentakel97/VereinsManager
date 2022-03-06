@@ -14,6 +14,7 @@ class WindowManager:
         # Member
         self.members_window = None
         self.recover_member_window = None
+        self.member_table_window = None
 
     # Main
     @staticmethod
@@ -29,23 +30,45 @@ class WindowManager:
     # Types
     def is_valid_types_window(self) -> bool | str:
         if self.members_window:
-            return "Es können eine Typen berabeitet werden, währen das Mitglieder-Fenster geöffnet ist."
+            return "Es können keine Typen berabeitet werden, währen das Mitglieder-Fenster geöffnet ist."
+
+        elif self.member_table_window:
+            return "Es können keine Typen berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist."
 
         return True
 
     # Member
-    def is_valid_member_window(self, recover_member_window: bool = False) -> bool | str:
+    def is_valid_member_window(self, active_recover_member_window: bool = False,
+                               active_member_table_window: bool = False) -> bool | str:
         if self.types_window:
-            return "Es können eine Mitglieder berabeitet werden, währen das Typ-Fenster geöffnet ist."
+            return "Es können keine Mitglieder berabeitet werden, währen das Typ-Fenster geöffnet ist."
 
-        elif self.recover_member_window and not recover_member_window:
-            return "Es können eine Mitglieder berabeitet werden, währen das Ehmalige-Mitglieder-Fenster geöffnet ist."
+        elif self.recover_member_window and not active_recover_member_window:
+            return "Es können keine Mitglieder berabeitet werden, währen das Ehmalige-Mitglieder-Fenster geöffnet ist."
+
+        elif self.member_table_window and not active_member_table_window:
+            return "Es können keine Mitglieder berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist."
 
         return True
 
-    def is_valid_recover_member_window(self, member_window: bool = False) -> bool | str:
-        if self.members_window and not member_window:
-            return "Es können eine Ehmaligen Mitglider berabeitet werden, währen das Mitglieder-Fenster geöffnet ist."
+    def is_valid_recover_member_window(self, active_member_window: bool = False) -> bool | str:
+        if self.members_window and not active_member_window:
+            return "Es können keine Ehmaligen Mitglider berabeitet werden, währen das Mitglieder-Fenster geöffnet ist."
+
+        elif self.member_table_window:
+            return "Es können keine Ehmaligen Mitglider berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist."
+
+        return True
+
+    def is_valid_member_table_window(self, active_member_window: bool = False) -> bool | str:
+        if self.members_window and not active_member_window:
+            return "Die Tabelle kann nicht angezeigt werden, während das Mitglieder-Fenster geöffnet ist."
+
+        elif self.recover_member_window:
+            return "Die Tabelle kann nicht angezeigt werden, während das Ehmalige-Mitglieder-Fenster geöffnet ist."
+
+        elif self.types_window:
+            return "Die Tabelle kann nicht angezeigt werden, während das Typen-Fenster geöffnet ist."
 
         return True
 
@@ -53,6 +76,8 @@ class WindowManager:
     def close_all_window(self) -> None:
         self.types_window.close() if self.types_window else None
         self.types_window = None
+        self.member_table_window.close() if self.member_table_window else None
+        self.member_table_window = None
         self.recover_member_window.close() if self.recover_member_window else None
         self.recover_member_window = None
         self.members_window.close() if self.members_window else None
