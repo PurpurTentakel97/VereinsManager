@@ -18,11 +18,11 @@ info_keyword: str = "Phonenumbers"
 def debug(item, keyword, message) -> None:
     if is_debug:
         if is_debug_item and item == debug_item:
-            print(f"+++++ Info.LOG // {item} // {keyword} // {message} +++++")
+            print(f"+++++ Debug.LOG // {item} // {keyword} // {message} +++++")
         elif is_debug_keyword and keyword == debug_keyword:
-            print(f"+++++ Info.LOG // {item} // {keyword} // {message} +++++")
+            print(f"+++++ Debug.LOG // {item} // {keyword} // {message} +++++")
         elif not is_debug_keyword and not is_debug_item:
-            print(f"+++++ Info.LOG // {item} // {keyword} // {message} +++++")
+            print(f"+++++ Debug.LOG // {item} // {keyword} // {message} +++++")
 
 
 def info(item, keyword, message) -> None:

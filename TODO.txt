@@ -12,9 +12,15 @@ sql database
     log update nexus
     error without types (membership_type)
 
+logic
+    table_data_handler
+        refatctor member table data
+
 UI
     Global
         window close automaticly even if not saved
+    Member Table Window
+        set window dimentions
     Base Window
         set Icon
 

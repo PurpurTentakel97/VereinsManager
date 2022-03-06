@@ -99,7 +99,7 @@ class AddHandler(Database):
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
             ID: int = self.cursor.lastrowid
-            result = l_h.log_handler.log_member_nexus(ID=ID, old_data=None, new_data=value, log_date=log_date,
+            result = l_h.log_handler.log_member_nexus(target_id=ID, old_data=None, new_data=value, log_date=log_date,
                                                       type_="phone")
             if isinstance(result, str):
                 return result
@@ -117,7 +117,7 @@ class AddHandler(Database):
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
             ID: int = self.cursor.lastrowid
-            result = l_h.log_handler.log_member_nexus(ID=ID, old_data=None, new_data=value, log_date=log_date,
+            result = l_h.log_handler.log_member_nexus(target_id=ID, old_data=None, new_data=value, log_date=log_date,
                                                       type_="mail")
             if isinstance(result, str):
                 return str
@@ -135,7 +135,7 @@ class AddHandler(Database):
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
             ID: int = self.cursor.lastrowid
-            result = l_h.log_handler.log_member_nexus(ID=ID, old_data=None, new_data=value, log_date=log_date,
+            result = l_h.log_handler.log_member_nexus(target_id=ID, old_data=None, new_data=value, log_date=log_date,
                                                       type_="position")
             if isinstance(result, str):
                 return result

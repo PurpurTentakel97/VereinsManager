@@ -20,6 +20,10 @@ def get_active_member_type() -> tuple | str:
     return s_h.select_handler.get_active_member_type()
 
 
+def get_type_name_by_ID(ID: int) -> tuple | str:
+    return s_h.select_handler.get_type_name_by_id(ID=ID)
+
+
 def add_type(type_name: str, raw_type_id: int) -> str | None:
     return a_h.add_handler.add_type(type_name=type_name, raw_type_id=raw_type_id)
 
