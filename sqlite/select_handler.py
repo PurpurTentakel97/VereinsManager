@@ -68,7 +68,7 @@ class SelectHandler(Database):
                                                                                   f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Active Member Type").message
 
-    def get_type_name_by_id(self, ID: int) -> tuple | str:
+    def get_type_name_by_ID(self, ID: int) -> tuple | str:
         try:
             v.validation.must_positive_int(int_=ID, max_length=None)
         except (e.NoPositiveInt, e.NoInt, e.ToLong) as error:
@@ -184,7 +184,7 @@ class SelectHandler(Database):
                 "comment_text": data[11],
             }
             if isinstance(data_["membership_type"], int):
-                data = self.get_type_name_by_id(data_["membership_type"])
+                data = self.get_type_name_by_ID(data_["membership_type"])
                 if isinstance(data, str):
                     return data
                 else:

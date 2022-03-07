@@ -30,7 +30,7 @@ class DeleteHandler(Database):
 
         sql_command: str = """DELETE FROM type WHERE ID is ?;"""
         try:
-            name: str = s_h.select_handler.get_type_name_by_id(ID=ID)
+            name: str = s_h.select_handler.get_type_name_by_ID(ID=ID)
             self.cursor.execute(sql_command, (ID,))
             self.connection.commit()
             result = l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=name[0], new_data=None)

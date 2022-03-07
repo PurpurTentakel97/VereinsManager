@@ -51,6 +51,7 @@ class MemberTableWindow(BaseWindow):
             self._tabs_widget.addTab(widget, name)
 
     def _set_tables(self) -> None:
+        debug.info(item=debug_str, keyword="_set_tables", message=f"data = {self._data}")
         # table
         for table_id, (_, data) in enumerate(self._data.items()):
             new_table: QTableWidget = QTableWidget()

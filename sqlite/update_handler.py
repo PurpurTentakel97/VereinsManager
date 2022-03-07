@@ -32,7 +32,7 @@ class UpdateHandler(Database):
 
         sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
         try:
-            reference_data: tuple = s_h.select_handler.get_type_name_by_id(ID=ID)
+            reference_data: tuple = s_h.select_handler.get_type_name_by_ID(ID=ID)
             if isinstance(reference_data, str):
                 return reference_data
             self.cursor.execute(sql_command, (name, ID))
