@@ -2,7 +2,7 @@
 # 06.03.2022
 # VereinsManager / Member Table Window
 
-from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QWidget, QTableWidgetItem, QTableWidget
+from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableWidget, QPushButton
 
 from ui.base_window import BaseWindow
 from ui import window_manager as w, members_window as m_w
@@ -32,17 +32,25 @@ class MemberTableWindow(BaseWindow):
         self.setWindowTitle("Mitglieder Tabelle - Vereinsmanager")
 
     def _set_ui(self) -> None:
+        self._export_btn: QPushButton = QPushButton()
+        self._export_btn.setText("Exportieren")
+        self._export_btn.clicked.connect(self._export)
         self._tabs_widget: QTabWidget = QTabWidget()
 
     def _set_layout(self) -> None:
         hbox: QHBoxLayout = QHBoxLayout()
-        hbox.addWidget(self._tabs_widget)
+        hbox.addStretch()
+        hbox.addWidget(self._export_btn)
+
+        vbox: QVBoxLayout = QVBoxLayout()
+        vbox.addLayout(hbox)
+        vbox.addWidget(self._tabs_widget)
 
         widget: QWidget = QWidget()
-        widget.setLayout(hbox)
+        widget.setLayout(vbox)
         self.set_widget(widget=widget)
 
-        self.show()
+        self.showMaximized()
 
     def _set_tabs(self) -> None:
         for ID, name in self._type_id_name:
@@ -51,7 +59,6 @@ class MemberTableWindow(BaseWindow):
             self._tabs_widget.addTab(widget, name)
 
     def _set_tables(self) -> None:
-        debug.info(item=debug_str, keyword="_set_tables", message=f"data = {self._data}")
         # table
         for table_id, (_, data) in enumerate(self._data.items()):
             new_table: QTableWidget = QTableWidget()
@@ -121,6 +128,9 @@ class MemberTableWindow(BaseWindow):
                 self.set_error_bar(message=result)
             else:
                 self._type_id_name.append([ID, result[0]])
+
+    def _export(self) -> None:
+        debug.info(item=debug_str, keyword="_export", message=f"Export PDF")
 
     def closeEvent(self, event) -> None:
         event.ignore()
