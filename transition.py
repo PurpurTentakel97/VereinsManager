@@ -5,6 +5,7 @@
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     global_handler as g_h
 from logic import table_data_handler
+from pdf_handler import member_pdf
 
 
 # type
@@ -59,3 +60,8 @@ def update_member_data(id_: int, data: dict, log_date: int | None = None) -> str
 
 def update_member_activity(id_: int, active: bool, log_date: int | None = None) -> str | None:
     return u_h.update_handler.update_member_activity(ID=id_, active=active, log_date=log_date)
+
+
+# pdf_handler
+def get_member_pdf(path: str, active: bool = True) -> None | str:
+    return member_pdf.member_pdf(path=path, active=active)

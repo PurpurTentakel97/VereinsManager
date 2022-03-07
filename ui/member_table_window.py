@@ -50,7 +50,7 @@ class MemberTableWindow(BaseWindow):
         widget.setLayout(vbox)
         self.set_widget(widget=widget)
 
-        self.showMaximized()
+        self.show()
 
     def _set_tabs(self) -> None:
         for ID, name in self._type_id_name:
@@ -130,7 +130,9 @@ class MemberTableWindow(BaseWindow):
                 self._type_id_name.append([ID, result[0]])
 
     def _export(self) -> None:
-        debug.info(item=debug_str, keyword="_export", message=f"Export PDF")
+        result = transition.get_member_pdf("PDF/Mitglieder.pdf")  # TODO Path from User
+        if isinstance(result, str):
+            self.set_error_bar(message=result)
 
     def closeEvent(self, event) -> None:
         event.ignore()
