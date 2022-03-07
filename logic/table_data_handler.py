@@ -74,7 +74,7 @@ def transform_member_data(member: list) -> tuple:
     member_dict["street"] = _transform_street_and_number(street=member_dict["street"],
                                                          number=member_dict["number"])
     del member_dict["number"]
-    member_dict["zip_code"] = str(member_dict["zip_code"]) if not None else None
+    member_dict["zip_code"] = None if not member_dict["zip_code"] else str(member_dict["zip_code"])
     member_dict["b_date"] = _transform_timestamp_to_datetime(member_dict["b_date"])
     member_dict["entry_date"] = _transform_timestamp_to_datetime(member_dict["entry_date"])
     member_dict["age"] = _get_years_from_date_to_now(member_dict["b_date"])
