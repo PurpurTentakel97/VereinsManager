@@ -35,7 +35,7 @@ def get_member_table_data(active: bool) -> dict | str:
             if isinstance(phone_data, str):
                 return phone_data
 
-            mail_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
+            mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_dict["ID"])
             if isinstance(mail_data, str):
                 return mail_data
 
