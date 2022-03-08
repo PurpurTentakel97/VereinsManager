@@ -7,6 +7,7 @@ from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit, QMessageBox
 from enum import Enum
+import webbrowser
 
 import transition
 from ui.base_window import BaseWindow
@@ -114,6 +115,7 @@ class MembersWindow(BaseWindow):
         self._is_edit: bool = bool()
         self._set_edit_mode(active=False)
         self._load_all_member_names()
+        self._maps_btn.setEnabled(self._is_maps())
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Mitglieder - Vereinsmanager")
@@ -175,6 +177,9 @@ class MembersWindow(BaseWindow):
         self._city_le: QLineEdit = QLineEdit()
         self._city_le.setPlaceholderText("Stadt")
         self._city_le.textChanged.connect(lambda: self._set_el_input(LineEditType.CITY))
+        self._maps_btn: QPushButton = QPushButton()
+        self._maps_btn.setText("Google Maps")
+        self._maps_btn.clicked.connect(self._open_maps)
 
         self._birth_lb: QLabel = QLabel()
         self._birth_lb.setText("Geburtstag:")
@@ -251,6 +256,7 @@ class MembersWindow(BaseWindow):
         row += 1
         grid.addWidget(self._zip_code_le, row, 1)
         grid.addWidget(self._city_le, row, 2)
+        grid.addWidget(self._maps_btn, row, 3)
 
         row += 1
         grid.addWidget(self._birth_lb, row, 0)
@@ -385,12 +391,16 @@ class MembersWindow(BaseWindow):
                 current_member.set_name()
             case LineEditType.STREET:
                 current_member.street = self._street_le.text().strip().title()
+                self._maps_btn.setEnabled(self._is_maps())
             case LineEditType.NUMBER:
                 current_member.number = self._number_le.text().strip()
+                self._maps_btn.setEnabled(self._is_maps())
             case LineEditType.ZIP_CODE:
                 current_member.zip_code = self._zip_code_le.text().strip()
+                self._maps_btn.setEnabled(self._is_maps())
             case LineEditType.CITY:
                 current_member.city = self._city_le.text().strip().title()
+                self._maps_btn.setEnabled(self._is_maps())
             case LineEditType.COMMENT:
                 current_member.comment_text = self._comment_text.toPlainText().strip()
 
@@ -712,7 +722,6 @@ class MembersWindow(BaseWindow):
             w.window_manger.members_window = None
             self.close()
 
-
     @staticmethod
     def _save_permission() -> bool:
         msg = QMessageBox()
@@ -731,6 +740,20 @@ class MembersWindow(BaseWindow):
             return
         self._load_all_member_names()
         self.set_info_bar(message="saved")
+
+    def _is_maps(self) -> bool:
+        if self._street_le.text().strip() or \
+                self._number_le.text().strip() or \
+                self._zip_code_le.text().strip() or \
+                self._city_le.text().strip():
+            return True
+        else:
+            return False
+
+    def _open_maps(self) -> None:
+        webbrowser.open(
+            f"""http://www.google.de/maps/place/{self._street_le.text().strip()}+{self._number_le.text().strip()}
+            ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}""")
 
     def closeEvent(self, event) -> None:
         event.ignore()
