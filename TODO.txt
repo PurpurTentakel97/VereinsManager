@@ -22,7 +22,7 @@ UI
     Member window
         doppelte Speicherfrage
     Member Table Window
-        set window dimentions
+        add save path window
     Base Window
         set Icon
 
