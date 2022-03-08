@@ -2,7 +2,8 @@
 # 06.03.2022
 # VereinsManager / Member Table Window
 
-from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableWidget, QPushButton
+from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableWidget, QPushButton, \
+    QFileDialog
 
 from ui.base_window import BaseWindow
 from ui import window_manager as w, members_window as m_w
@@ -130,11 +131,16 @@ class MemberTableWindow(BaseWindow):
                 self._type_id_name.append([ID, result[0]])
 
     def _export(self) -> None:
-        result = transition.get_member_pdf("PDF/Mitglieder.pdf")  # TODO Path from User
-        if isinstance(result, str):
-            self.set_error_bar(message=result)
+        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren", "PDF",
+                                                  "PDF (*.pdf);;All Files (*)")
+        if check:
+            result = transition.get_member_pdf(file)
+            if isinstance(result, str):
+                self.set_error_bar(message=result)
+            else:
+                self.set_info_bar(message="Export abgeschlossen")
         else:
-            self.set_info_bar(message="exported")
+            self.set_info_bar(message="Export abgebrochen")
 
     def closeEvent(self, event) -> None:
         event.ignore()
