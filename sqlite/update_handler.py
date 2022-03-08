@@ -92,7 +92,7 @@ class UpdateHandler(Database):
             data["entry_date"] = None
 
         sql_command: str = f"""Update member SET first_name = ?, last_name = ?, street = ?,number = ?,zip_code = ?,
-        city = ?,b_day = ?,entry_day = ?, membership_type = ?,special_member = ?,comment = ? WHERE ID is ?;"""
+        city = ?,maps = ?,b_day = ?,entry_day = ?, membership_type = ?,special_member = ?,comment = ? WHERE ID is ?;"""
         try:
             reference_data: dict = s_h.select_handler.get_member_data_by_id(ID=ID)
             if isinstance(reference_data, str):
@@ -104,6 +104,7 @@ class UpdateHandler(Database):
                 data["number"],
                 data["zip_code"],
                 data["city"],
+                data["maps"],
                 data["birth_date"],
                 data["entry_date"],
                 data["membership_type"],

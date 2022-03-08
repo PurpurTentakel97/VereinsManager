@@ -177,11 +177,12 @@ class SelectHandler(Database):
                 "number": data[4],
                 "zip_code": data[5],
                 "city": data[6],
-                "birth_date": data[7],
-                "entry_date": data[8],
-                "membership_type": data[9],
-                "special_member": data[10],
-                "comment_text": data[11],
+                "maps": data[7],
+                "birth_date": data[8],
+                "entry_date": data[9],
+                "membership_type": data[10],
+                "special_member": data[11],
+                "comment_text": data[12],
             }
             if isinstance(data_["membership_type"], int):
                 data = self.get_type_name_by_ID(data_["membership_type"])

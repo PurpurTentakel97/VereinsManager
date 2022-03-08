@@ -120,6 +120,7 @@ CREATE TABLE IF NOT EXISTS "main"."member" (
 "number" VARCHAR(10),
 "zip_code" INTEGER(10),
 "city" VARCHAR(10),
+"maps" VARCHAR(50),
 "b_day" INTEGER,
 "entry_day" INTEGER,
 "membership_type" INTEGER(1),
@@ -131,13 +132,13 @@ FOREIGN KEY ("membership_type") REFERENCES "type"
 );
 /* Active Member */
 CREATE VIEW IF NOT EXISTS "main"."v_active_member" AS
-SELECT ID,first_name,last_name,street,number,zip_code,city,b_day,entry_day,membership_type,special_member,comment
+SELECT ID,first_name,last_name,street,number,zip_code,city,maps,b_day,entry_day,membership_type,special_member,comment
 FROM member
 WHERE active = 1;
 
 /* Inactive Member */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_member" AS
-SELECT ID,first_name,last_name,street,number,zip_code,city,b_day,entry_day,membership_type,special_member,comment
+SELECT ID,first_name,last_name,street,number,zip_code,city,maps,b_day,entry_day,membership_type,special_member,comment
 FROM member
 WHERE active = 0;
 

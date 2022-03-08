@@ -28,10 +28,6 @@ class MainWindow(BaseWindow):
         self._members_btn.setText("Mitglieder")
         self._members_btn.clicked.connect(self._open_members)
 
-        self._old_members_btn: QPushButton = QPushButton()
-        self._old_members_btn.setText("Ehmalige Mitglieder")
-        self._old_members_btn.clicked.connect(self._open_old_members)
-
         self._performance_btn: QPushButton = QPushButton()
         self._performance_btn.setText("Auftritte")
         self._performance_btn.clicked.connect(self._open_performances)
@@ -53,7 +49,7 @@ class MainWindow(BaseWindow):
         self._user_data_btn.clicked.connect(self._open_user_data)
 
         self._export_pdf_btn: QPushButton = QPushButton()
-        self._export_pdf_btn.setText("Schreiben exportieren")
+        self._export_pdf_btn.setText("PDF Export")
         self._export_pdf_btn.clicked.connect(self._open_export_pdf)
 
         self._chance_user_btn: QPushButton = QPushButton()
@@ -68,7 +64,6 @@ class MainWindow(BaseWindow):
         row: int = 0
         grid: QGridLayout = QGridLayout()
         grid.addWidget(self._members_btn, row, 0)
-        grid.addWidget(self._old_members_btn, row, 1)
         row += 1
         grid.addWidget(self._my_job_btn, row, 0)
         grid.addWidget(self._job_btn, row, 1)
@@ -94,9 +89,6 @@ class MainWindow(BaseWindow):
             self.set_info_bar(message=result)
         else:
             w_m.window_manger.members_window = m_w.MembersWindow()
-
-    def _open_old_members(self) -> None:
-        debug.info(item=debug_str, keyword="_open_old_members", message=f"old member clicked")
 
     def _open_my_jobs(self) -> None:
         debug.info(item=debug_str, keyword="_open_my_jobs", message=f"my jobs open")

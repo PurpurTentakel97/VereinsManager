@@ -27,6 +27,7 @@ class LineEditType(Enum):
     ZIP_CODE = 4
     CITY = 5
     COMMENT = 6
+    MAPS = 7
 
 
 class DateType(Enum):
@@ -45,6 +46,8 @@ class MemberListItem(QListWidgetItem):
         self.number: str | None = None
         self.zip_code: str = ""
         self.city: str | None = None
+
+        self.maps_url: str = str()
 
         self.birth_date: QDate = QDate()
         self.entry_date: QDate = QDate()
@@ -177,6 +180,10 @@ class MembersWindow(BaseWindow):
         self._city_le: QLineEdit = QLineEdit()
         self._city_le.setPlaceholderText("Stadt")
         self._city_le.textChanged.connect(lambda: self._set_el_input(LineEditType.CITY))
+
+        self._maps_le: QLineEdit = QLineEdit()
+        self._maps_le.setPlaceholderText("Google Maps URL (falls nötig // nicht empfolen)")
+        self._maps_le.textChanged.connect(lambda: self._set_el_input(LineEditType.MAPS))
         self._maps_btn: QPushButton = QPushButton()
         self._maps_btn.setText("Google Maps")
         self._maps_btn.clicked.connect(self._open_maps)
@@ -256,6 +263,8 @@ class MembersWindow(BaseWindow):
         row += 1
         grid.addWidget(self._zip_code_le, row, 1)
         grid.addWidget(self._city_le, row, 2)
+        row += 1
+        grid.addWidget(self._maps_le, row, 1, 1, 2)
         grid.addWidget(self._maps_btn, row, 3)
 
         row += 1
@@ -362,6 +371,7 @@ class MembersWindow(BaseWindow):
         self._number_le.setText(current_member.number)
         self._zip_code_le.setText(current_member.zip_code)
         self._city_le.setText(current_member.city)
+        self._maps_le.setText(current_member.maps_url)
         self._comment_text.setText(current_member.comment_text)
 
         self._b_day_date.setDate(current_member.birth_date)
@@ -400,6 +410,9 @@ class MembersWindow(BaseWindow):
                 self._maps_btn.setEnabled(self._is_maps())
             case LineEditType.CITY:
                 current_member.city = self._city_le.text().strip().title()
+                self._maps_btn.setEnabled(self._is_maps())
+            case LineEditType.MAPS:
+                current_member.maps_url = self._maps_le.text().strip()
                 self._maps_btn.setEnabled(self._is_maps())
             case LineEditType.COMMENT:
                 current_member.comment_text = self._comment_text.toPlainText().strip()
@@ -556,6 +569,7 @@ class MembersWindow(BaseWindow):
             current_member.membership_type = member_data["membership_type"]
             current_member.special_member = True if member_data["special_member"] else False
             current_member.comment_text = "" if member_data["comment_text"] is None else member_data["comment_text"]
+            current_member.maps_url = "" if member_data["maps"] is None else member_data["maps"]
 
             # member nexus
             # phone
@@ -622,6 +636,7 @@ class MembersWindow(BaseWindow):
             "membership_type": None if current_member.membership_type == "" else current_member.membership_type,
             "special_member": current_member.special_member,
             "comment_text": None if current_member.comment_text == "" else current_member.comment_text,
+            "maps": None if current_member.maps_url == "" else current_member.maps_url,
         }
 
         phone_list: list = list()
@@ -742,8 +757,9 @@ class MembersWindow(BaseWindow):
         self.set_info_bar(message="saved")
 
     def _is_maps(self) -> bool:
-        if self._street_le.text().strip() or \
-                self._number_le.text().strip() or \
+        if self._maps_le.text().strip():
+            return True
+        elif self._street_le.text().strip() or \
                 self._zip_code_le.text().strip() or \
                 self._city_le.text().strip():
             return True
@@ -751,9 +767,13 @@ class MembersWindow(BaseWindow):
             return False
 
     def _open_maps(self) -> None:
-        webbrowser.open(
-            f"""http://www.google.de/maps/place/{self._street_le.text().strip()}+{self._number_le.text().strip()}
-            ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}""")
+        if self._is_maps():
+            if self._maps_le.text().strip():
+                webbrowser.open(self._maps_le.text().strip())
+            else:
+                webbrowser.open(
+                    f"""http://www.google.de/maps/place/{self._street_le.text().strip()}+{self._number_le.text().strip()}
+                    ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}""")
 
     def closeEvent(self, event) -> None:
         event.ignore()

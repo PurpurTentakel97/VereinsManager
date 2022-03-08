@@ -71,6 +71,7 @@ class Validation:
             "street",
             "number",
             "city",
+            "maps",
             "membership_type",
         ]
         for key in keys:

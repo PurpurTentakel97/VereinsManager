@@ -66,9 +66,10 @@ def transform_member_data(member: list) -> tuple:
         "number": member[4],
         "zip_code": member[5],
         "city": member[6],
-        "b_date": member[7],
-        "entry_date": member[8],
-        "special_member": member[10],
+        "maps":member[7],
+        "b_date": member[8],
+        "entry_date": member[9],
+        "special_member": member[11],
     }
 
     member_dict["street"] = _transform_street_and_number(street=member_dict["street"],
