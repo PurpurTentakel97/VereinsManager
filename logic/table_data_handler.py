@@ -2,7 +2,7 @@
 # 06.03.2022
 # VereinsManager / Table Data Handler
 
-from datetime import datetime
+import datetime
 
 from config import config_sheet as c
 from sqlite import select_handler as s_h
@@ -66,7 +66,7 @@ def transform_member_data(member: list) -> tuple:
         "number": member[4],
         "zip_code": member[5],
         "city": member[6],
-        "maps":member[7],
+        "maps": member[7],
         "b_date": member[8],
         "entry_date": member[9],
         "special_member": member[11],
@@ -120,16 +120,19 @@ def transform_nexus_data(nexus_data: list) -> str or list:
     return nexus_list
 
 
-def _transform_timestamp_to_datetime(timestamp: int) -> datetime | None:
+def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
     if timestamp:
-        return datetime.fromtimestamp(timestamp)
+        if timestamp > 0:
+            return datetime.datetime.fromtimestamp(timestamp)
+        else:
+            return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
 
 
 def _get_years_from_date_to_now(date: datetime) -> str | None:
     if not date:
         return None
     else:
-        now = datetime.now()
+        now = datetime.datetime.now()
         years = now.year - date.year
         if now.month > date.month or (now.month == date.month and now.day > date.day):
             years -= 1
