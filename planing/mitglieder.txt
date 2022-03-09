@@ -1,34 +1,7 @@
-member
-	vorname
-	nachname
-	
-	straße
-	nummer
-	ecke
-	plz
-	
-	geburtstag
-	eintritt
-	
-	telephone
-	handy
-	mail
-	
-	mitgliedsart
-	Ehrenmitglied
-	position
-	instrument
-	
-	zusatztextfeld
-	
-export list_types(enum) to dpf
-
-add member
-
-remove member (nur verschieben)
-
-Allert for b-day and anniversary 
-
-save
-
-- Änderungslog
+member:
+    Allert for b-day and anniversary
+    export schreiben
+        Änderung der Mtigliedsart
+        Member card
+        Eintritt
+        Autritt
