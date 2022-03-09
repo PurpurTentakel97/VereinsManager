@@ -106,7 +106,7 @@ def _transform_path(path: str):
     if path:
         dir_name, file_name = os.path.split(path)
     else:
-        dir_name = "pdf"
+        dir_name = f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}"
         file_name = "Mitglieder_pdf"
 
 

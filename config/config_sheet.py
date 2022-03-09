@@ -10,8 +10,6 @@ debug_str: str = "Config"
 
 config: "Config"
 
-sqlit_path: str = "saves/text.vm"
-
 
 class Config:
     def __init__(self) -> None:
@@ -20,6 +18,12 @@ class Config:
         self.date_format: dict = dict()
         self.raw_type_id: dict = dict()
         self.special_user: dict = dict()
+
+        self.save_dir: str = "saves"
+        self.organisation_dir: str = "default_organisation"
+        self.export_dir: str = "export"
+
+        self.database_name: str = f"default_database.vm"
 
         self.load_config()
 

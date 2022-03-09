@@ -5,14 +5,14 @@
 import sqlite3
 import os
 
+from config import config_sheet as c
 import debug
 
 debug_str: str = "Database"
 
 database: "Database"
 
-dir_path: str = "saves"
-database_path: str = "test.vm"
+#dir_path:str = f"{c.config.save_dir}/{c.config.organisation_dir}"
 
 
 class Database:
@@ -37,9 +37,9 @@ class Database:
         self.connection.commit()
 
     def create_cursor_connection(self) -> None:
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
-        self.connection = sqlite3.connect(f"{dir_path}/{database_path}", detect_types=sqlite3.PARSE_DECLTYPES)
+        if not os.path.exists(f"{c.config.save_dir}/{c.config.organisation_dir}"):
+            os.makedirs(f"{c.config.save_dir}/{c.config.organisation_dir}")
+        self.connection = sqlite3.connect(f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.database_name}", detect_types=sqlite3.PARSE_DECLTYPES)
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.cursor = self.connection.cursor()
 

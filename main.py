@@ -16,8 +16,8 @@ def _test() -> None:
 
 # main
 if __name__ == "__main__":
-    database.crate_database()
     config_sheet.create_config()
+    database.crate_database()
     validation.create_validation()
     g_h.create_global_handler()
     window_manager.create_window_manager()

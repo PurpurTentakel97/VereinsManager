@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTabl
 
 from ui.base_window import BaseWindow
 from ui import window_manager as w, members_window as m_w
+from config import config_sheet as c
 import transition
 
 import debug
@@ -131,7 +132,9 @@ class MemberTableWindow(BaseWindow):
                 self._type_id_name.append([ID, result[0]])
 
     def _export(self) -> None:
-        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren", "PDF",
+        transition.create_default_dir("export")
+        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
+                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/Mitglieder.pdf",
                                                   "PDF (*.pdf);;All Files (*)")
         if check:
             result = transition.get_member_pdf(file)

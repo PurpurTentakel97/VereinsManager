@@ -4,8 +4,13 @@
 
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     global_handler as g_h
-from logic import table_data_handler
+from logic import table_data_handler, path_handler
 from pdf_handler import member_pdf
+
+
+# global
+def create_default_dir(type_) -> None:
+    path_handler.create_default_path(type_)
 
 
 # type
