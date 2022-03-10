@@ -128,13 +128,13 @@ def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
             return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
 
 
-def _get_years_from_date_to_now(date: datetime) -> str | None:
+def _get_years_from_date_to_now(date: datetime.datetime) -> str | None:
     if not date:
         return None
     else:
         now = datetime.datetime.now()
         years = now.year - date.year
-        if now.month > date.month or (now.month == date.month and now.day > date.day):
+        if now.month < date.month or (now.month == date.month and now.day < date.day):
             years -= 1
         return str(years)
 

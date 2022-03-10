@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 06.03.2022
 # VereinsManager / PDF / Member Table
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import inch, A4
 from reportlab.platypus import Paragraph, Table, SimpleDocTemplate
