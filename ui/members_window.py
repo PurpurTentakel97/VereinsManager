@@ -730,9 +730,7 @@ class MembersWindow(BaseWindow):
         if isinstance(result, str):
             self.set_info_bar(message=result)
         elif result:
-            if self._is_edit:
-                if self._save_permission():
-                    self._save()
+            self.close()
             w.window_manger.member_table_window = m_t_w.MemberTableWindow()
             w.window_manger.members_window = None
             self.close()

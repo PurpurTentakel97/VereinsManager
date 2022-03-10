@@ -19,8 +19,6 @@ logic
 UI
     Global
         window close automaticly even if not saved
-    Member window
-        doppelte Speicherfrage
     Member Table Window
         add save path window
     Base Window
