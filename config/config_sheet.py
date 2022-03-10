@@ -1,8 +1,7 @@
 # Purpur Tentakel
 # 21.01.2022
-# VereinsManager / ENUM
+# VereinsManager / Config
 
-from enum import Enum
 import json
 import debug
 

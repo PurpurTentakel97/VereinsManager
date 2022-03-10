@@ -90,7 +90,7 @@ def member_pdf(path: str, active: bool):
 
             if member_data[9]:
                 style_data.append(("BACKGROUND", (0, index), (0, index), colors.lightgrey))
-            if member_data[6] is not None and int(member_data[6]) % 5 == 0:
+            if member_data[6] is not None and (int(member_data[6]) % 10 == 0 or int(member_data[6]) == 18):
                 style_data.append(("BACKGROUND", (3, index), (3, index), colors.lightgrey))
             if member_data[8] is not None and int(member_data[8]) % 5 == 0:
                 style_data.append(("BACKGROUND", (4, index), (4, index), colors.lightgrey))
