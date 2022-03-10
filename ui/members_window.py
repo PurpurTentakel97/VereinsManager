@@ -11,7 +11,8 @@ import webbrowser
 
 import transition
 from ui.base_window import BaseWindow
-from ui import window_manager as w, recover_member_window as r_m_w, member_table_window as m_t_w
+from ui import window_manager as w, recover_member_window as r_m_w, member_table_window as m_t_w, \
+    member_anniversary_window as m_a_w
 from config import config_sheet as c
 
 import debug
@@ -130,6 +131,9 @@ class MembersWindow(BaseWindow):
         self._table_btn: QPushButton = QPushButton()
         self._table_btn.setText("Tabelle")
         self._table_btn.clicked.connect(self._table)
+        self._anniversary_btn: QPushButton = QPushButton()
+        self._anniversary_btn.setText("Jubiläen")
+        self._anniversary_btn.clicked.connect(self._anniversary)
 
         self._members_list: QListWidget = QListWidget()
         self._members_list.itemClicked.connect(self._load_single_member)
@@ -235,6 +239,7 @@ class MembersWindow(BaseWindow):
         label_members_hbox: QHBoxLayout = QHBoxLayout()
         label_members_hbox.addWidget(self._members_lb)
         label_members_hbox.addStretch()
+        label_members_hbox.addWidget(self._anniversary_btn)
         label_members_hbox.addWidget(self._table_btn)
 
         button_members_hbox: QHBoxLayout = QHBoxLayout()
@@ -732,8 +737,14 @@ class MembersWindow(BaseWindow):
         elif result:
             self.close()
             w.window_manger.member_table_window = m_t_w.MemberTableWindow()
-            w.window_manger.members_window = None
+
+    def _anniversary(self) -> None:
+        result = w.window_manger.is_valid_member_anniversary_window(active_member_window=True)
+        if isinstance(result, str):
+            self.set_info_bar(message=result)
+        elif result:
             self.close()
+            w.window_manger.member_anniversary_window = m_a_w.MemberAnniversaryWindow()
 
     @staticmethod
     def _save_permission() -> bool:

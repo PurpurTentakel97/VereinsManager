@@ -137,6 +137,22 @@ class SelectHandler(Database):
                                                                                f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedernamen").message
 
+    def get_name_and_dates_from_member(self, active: bool = True) -> tuple | str:
+        try:
+            v.validation.must_bool(bool_=active)
+        except e.NoBool as error:
+            return error.message
+
+        table: str = "v_active_member" if active else "v_inactive_member"
+        sql_command: str = f"""SELECT ID,first_name,last_name,b_day,entry_day FROM {table};"""
+        try:
+            return self.cursor.execute(sql_command).fetchall()
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="get_names_of_member", message=f"load member names failed\n"
+                                                                               f"command = {sql_command}\n"
+                                                                               f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Mitgliedernamen").message
+
     def get_data_from_member_by_membership_type_id(self, active: bool, membership_type_id: int) -> tuple | str:
         try:
             v.validation.must_positive_int(int_=membership_type_id, max_length=None)
