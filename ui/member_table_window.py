@@ -2,8 +2,8 @@
 # 06.03.2022
 # VereinsManager / Member Table Window
 
-from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableWidget, QPushButton, \
-    QFileDialog
+from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableWidget, \
+    QPushButton, QFileDialog
 
 from ui.base_window import BaseWindow
 from ui import window_manager as w, members_window as m_w

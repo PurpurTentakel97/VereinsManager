@@ -22,14 +22,14 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> dict
             inner: dict = {
                 "firstname": firstname,
                 "lastname": lastname,
-                "b_day": _transform_timestamp_to_datetime(b_day),
+                "date": _transform_timestamp_to_datetime(b_day),
             }
             b_day_data.append(inner)
         if entry_day:
             inner: dict = {
                 "firstname": firstname,
                 "lastname": lastname,
-                "entry_day": _transform_timestamp_to_datetime(entry_day),
+                "date": _transform_timestamp_to_datetime(entry_day),
             }
             entry_day_data.append(inner)
 
@@ -48,44 +48,46 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
     current_b_day: list = list()
     for entry in b_day:
         if current_date.day <= break_day:
-            if entry["b_day"].month == current_date.month:
+            if entry["date"].month == current_date.month:
                 current_b_day.append(entry)
         else:
-            if entry["b_day"].month == current_date.month and entry["b_day"].day > break_day:
+            if entry["date"].month == current_date.month and entry["date"].day > break_day:
                 current_b_day.append(entry)
-            elif entry["b_day"].month == current_date.month + 1 and entry["b_day"].day < break_day:
+            elif entry["date"].month == current_date.month + 1 and entry["date"].day < break_day:
                 current_b_day.append(entry)
 
     final_b_day_data: list = list()
     for entry in current_b_day:
-        entry["age"] = _get_years_from_date(entry["b_day"])
+        entry["age"] = _get_years_from_date(entry["date"])
         if entry["age"] % 10 == 0 or entry["age"] == 18:
-            entry["b_day"] = entry["b_day"].strftime(c.config.date_format["short"])[:-4]
+            entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
             final_b_day_data.append(entry)
 
     current_entry_day: list = list()
     for entry in entry_day:
         if current_date.day <= break_day:
-            if entry["entry_day"].month == current_date.month:
+            if entry["date"].month == current_date.month:
                 current_entry_day.append(entry)
         else:
-            if entry["entry_day"].month == current_date.month and entry["entry_day"].day > break_day:
+            if entry["date"].month == current_date.month and entry["date"].day > break_day:
                 current_entry_day.append(entry)
-            elif entry["entry_day"].month == current_date.month + 1 and entry["entry_day"].day < break_day:
+            elif entry["date"].month == current_date.month + 1 and entry["date"].day < break_day:
                 current_entry_day.append(entry)
 
     final_entry_date_data: list = list()
     for entry in current_entry_day:
-        entry["membership_years"] = _get_years_from_date(entry["entry_day"])
+        entry["membership_years"] = _get_years_from_date(entry["date"])
         if entry["membership_years"] % 5 == 0:
-            entry["entry_day"] = entry["entry_day"].strftime(c.config.date_format["short"])[:-4]
+            entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
             final_entry_date_data.append(entry)
+
+    final_b_day_data = sorted(final_b_day_data, key=lambda x: x["date"])
+    final_entry_date_data = sorted(final_entry_date_data, key=lambda x: x["date"])
 
     data: dict = {
         "b_day": final_b_day_data,
         "entry_day": final_entry_date_data,
     }
-
     return data
 
 
