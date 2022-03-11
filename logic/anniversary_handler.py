@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Anniversary Handler
+
 import datetime
 
 from sqlite import select_handler as s_h
@@ -58,8 +59,8 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
 
     final_b_day_data: list = list()
     for entry in current_b_day:
-        entry["age"] = _get_years_from_date(entry["date"])
-        if entry["age"] % 10 == 0 or entry["age"] == 18:
+        entry["year"] = _get_years_from_date(entry["date"])
+        if entry["year"] % 10 == 0 or entry["year"] == 18:
             entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
             final_b_day_data.append(entry)
 
@@ -76,8 +77,8 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
 
     final_entry_date_data: list = list()
     for entry in current_entry_day:
-        entry["membership_years"] = _get_years_from_date(entry["date"])
-        if entry["membership_years"] % 5 == 0:
+        entry["year"] = _get_years_from_date(entry["date"])
+        if entry["year"] % 5 == 0:
             entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
             final_entry_date_data.append(entry)
 

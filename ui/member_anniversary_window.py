@@ -3,6 +3,7 @@
 # VereinsManager / Member Anniversary Window
 
 import datetime
+from enum import Enum
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QTableWidget, QTableWidgetItem, \
     QPushButton, QLineEdit, QLabel
@@ -15,13 +16,18 @@ import debug
 debug_str: str = "Member Anniversary Window"
 
 
+class DataType(Enum):
+    CURRENT = 1
+    OTHER = 2
+
+
 class MemberAnniversaryWindow(BaseWindow):
     def __init__(self) -> None:
         super().__init__()
         self._current_b_day_data: list = list()
-        self._current_entry_data: list = list()
+        self._current_entry_day_data: list = list()
         self._other_b_day_data: list = list()
-        self._other_entry_data: list = list()
+        self._other_entry_day_data: list = list()
 
         self._set_window_information()
         self._set_ui()
@@ -29,21 +35,21 @@ class MemberAnniversaryWindow(BaseWindow):
 
         self._other_year_le.setText(str(datetime.datetime.now().year))
         self._get_current_data()
-        self._set_current_table()
         self._get_other_data()
-        self._set_other_table()
+        self._set_table(DataType.CURRENT)
+        self._set_table(DataType.OTHER)
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Jubiläen")
 
     def _set_ui(self) -> None:
-        b_day_lb:str = "Geburtstage:"
+        b_day_lb: str = "Geburtstage:"
         self._current_b_day_lb: QLabel = QLabel()
         self._current_b_day_lb.setText(b_day_lb)
         self._other_b_day_lb: QLabel = QLabel()
         self._other_b_day_lb.setText(b_day_lb)
 
-        entry_day_lb:str = "Mitgliedsjahre:"
+        entry_day_lb: str = "Mitgliedsjahre:"
         self._current_entry_lb: QLabel = QLabel()
         self._current_entry_lb.setText(entry_day_lb)
         self._other_entry_lb: QLabel = QLabel()
@@ -147,54 +153,63 @@ class MemberAnniversaryWindow(BaseWindow):
         self.set_widget(widget)
         self.show()
 
-    def _set_current_table(self) -> None:
-        debug.info(item=debug_str, keyword="_set_current_layout", message=f"current_b_day = {self._current_b_day_data}")
-        debug.info(item=debug_str, keyword="_set_current_layout",
-                   message=f"current_entry_day = {self._current_entry_data}")
-        self._current_b_day_table.clear()
-        self._current_entry_day_table.clear()
-        self._current_entry_data = list()
-        self._current_b_day_data = list()
+    def _set_table(self, data_type: DataType) -> None:
+        dummy_b_day_table: QTableWidget = QTableWidget()
+        dummy_b_day_data: list = list()
+        dummy_entry_day_table: QTableWidget = QTableWidget()
+        dummy_entry_day_data: list = list()
 
-        if not self._current_b_day_data:
-            self._current_b_day_table.setRowCount(1)
-            self._current_b_day_table.setColumnCount(1)
-            item: QTableWidgetItem = QTableWidgetItem("Keine Jubiläen vorhanden")
-            self._current_b_day_table.setItem(0, 0, item)
-            self._current_b_day_table.update()
-        else:
-            pass
+        match data_type:
+            case DataType.CURRENT:
+                dummy_b_day_table = self._current_b_day_table
+                dummy_b_day_data = self._current_b_day_data
 
-        if not self._current_entry_data:
-            self._current_entry_day_table.setRowCount(1)
-            self._current_entry_day_table.setColumnCount(1)
-            item: QTableWidgetItem = QTableWidgetItem("Keine Jubiläen vorhanden")
-            self._current_entry_day_table.setItem(0, 0, item)
-            self._current_entry_day_table.update()
-        else:
-            pass
+                dummy_entry_day_table = self._current_entry_day_table
+                dummy_entry_day_data = self._current_entry_day_data
 
-    def _set_other_table(self) -> None:
-        self._other_b_day_table.clear()
-        self._other_entry_day_table.clear()
+                debug.info(item=debug_str, keyword="_set_table", message=f"current_b_day = {self._current_b_day_data}")
+                debug.info(item=debug_str, keyword="_set_table",
+                           message=f"current_entry_day = {self._current_entry_day_data}")
 
-        if not self._other_b_day_data:
-            self._other_b_day_table.setRowCount(1)
-            self._other_b_day_table.setColumnCount(1)
-            item: QTableWidgetItem = QTableWidgetItem("Keine Jubiläen vorhanden")
-            self._other_b_day_table.setItem(0, 0, item)
-            self._other_b_day_table.update()
-        else:
-            pass
+            case DataType.OTHER:
+                dummy_b_day_table = self._other_b_day_table
+                dummy_b_day_data = self._other_b_day_data
 
-        if not self._other_entry_data:
-            self._other_entry_day_table.setRowCount(1)
-            self._other_entry_day_table.setColumnCount(1)
-            item: QTableWidgetItem = QTableWidgetItem("Keine Jubiläen vorhanden")
-            self._other_entry_day_table.setItem(0, 0, item)
-            self._other_entry_day_table.update()
-        else:
-            pass
+                dummy_entry_day_table = self._other_entry_day_table
+                dummy_entry_day_data = self._other_entry_day_data
+
+                debug.info(item=debug_str, keyword="_set_table", message=f"other_b_day = {self._other_b_day_data}")
+                debug.info(item=debug_str, keyword="_set_table",
+                           message=f"other_entry_day = {self._other_entry_day_data}")
+
+        dummys: list = [
+            [dummy_b_day_data, dummy_b_day_table, ["Name", "Datum", "Alter"]],
+            [dummy_entry_day_data, dummy_entry_day_table, ["Name", "Datum", "Jubiläum"]],
+        ]
+        # dummy_b_day_table.setItem()
+
+        for data, table, headers in dummys:
+            table.clear()
+            if not data:
+                table.setRowCount(1)
+                table.setColumnCount(1)
+                item: QTableWidgetItem = QTableWidgetItem("Keine Einträge vorhanden")
+                table.setItem(0, 0, item)
+                table.update()
+            else:
+                table.setRowCount(len(data) + 1)
+                table.setColumnCount(3)
+                for entry in headers:
+                    item: QTableWidgetItem = QTableWidgetItem(entry)
+                    table.setItem(0, headers.index(entry), item)
+                for index, entry in enumerate(data, start=1):
+                    item: QTableWidgetItem = QTableWidgetItem(
+                        self._transform_member_name(entry["firstname"], entry["lastname"]))
+                    table.setItem(index, 0, item)
+                    item: QTableWidgetItem = QTableWidgetItem(entry['date'])
+                    table.setItem(index, 1, item)
+                    item: QTableWidgetItem = QTableWidgetItem(str(entry['year']))
+                    table.setItem(index, 2, item)
 
     def _set_year_btn_enabled(self) -> None:
         self._set_year_btn.setEnabled(self._is_year())
@@ -205,10 +220,21 @@ class MemberAnniversaryWindow(BaseWindow):
             self.set_error_bar(message=data)
 
         self._current_b_day_data = data["b_day"]
-        self._current_entry_data = data["entry_day"]
+        self._current_entry_day_data = data["entry_day"]
 
     def _get_other_data(self) -> None:
         debug.info(item=debug_str, keyword="_get_other_data", message=f"clicked")
+
+    @staticmethod
+    def _transform_member_name(firstname: str, lastname: str) -> str:
+        if firstname and lastname:
+            return f"{firstname} {lastname}"
+        elif firstname:
+            return f"{firstname} // Nachname"
+        elif lastname:
+            return f"Vorname // {lastname}"
+        else:
+            return "Vorname // Nachname"
 
     def _is_year(self) -> bool:
         return self._other_year_le.text().strip() != ""
