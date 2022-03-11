@@ -5,7 +5,7 @@
 import datetime
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QTableWidget, QTableWidgetItem, \
-    QPushButton, QLineEdit
+    QPushButton, QLineEdit, QLabel
 
 from ui.base_window import BaseWindow
 from ui import window_manager as w, members_window as m_w
@@ -37,6 +37,18 @@ class MemberAnniversaryWindow(BaseWindow):
         self.setWindowTitle("Jubiläen")
 
     def _set_ui(self) -> None:
+        b_day_lb:str = "Geburtstage:"
+        self._current_b_day_lb: QLabel = QLabel()
+        self._current_b_day_lb.setText(b_day_lb)
+        self._other_b_day_lb: QLabel = QLabel()
+        self._other_b_day_lb.setText(b_day_lb)
+
+        entry_day_lb:str = "Mitgliedsjahre:"
+        self._current_entry_lb: QLabel = QLabel()
+        self._current_entry_lb.setText(entry_day_lb)
+        self._other_entry_lb: QLabel = QLabel()
+        self._other_entry_lb.setText(entry_day_lb)
+
         self._export_btn: QPushButton = QPushButton()
         self._export_btn.setText("Exportieren")
         self._export_btn.clicked.connect(self._export)
@@ -67,34 +79,70 @@ class MemberAnniversaryWindow(BaseWindow):
         self._set_year_btn.clicked.connect(self._get_other_data)
 
     def _set_layout(self) -> None:
-        h_box: QHBoxLayout = QHBoxLayout()
-        h_box.addWidget(self._current_b_day_table)
-        h_box.addWidget(self._current_entry_day_table)
-        self._current_widget.setLayout(h_box)
+        # Label
+        current_b_day_lb_hbox: QHBoxLayout = QHBoxLayout()
+        current_b_day_lb_hbox.addWidget(self._current_b_day_lb)
+        current_b_day_lb_hbox.addStretch()
 
-        h_box_1: QHBoxLayout = QHBoxLayout()
-        h_box_1.addWidget(self._other_year_le)
-        h_box_1.addWidget(self._set_year_btn)
+        other_b_day_lb_hbox: QHBoxLayout = QHBoxLayout()
+        other_b_day_lb_hbox.addWidget(self._other_b_day_lb)
+        other_b_day_lb_hbox.addStretch()
 
-        h_box: QHBoxLayout = QHBoxLayout()
-        h_box.addWidget(self._other_b_day_table)
-        h_box.addWidget(self._other_entry_day_table)
+        current_entry_day_lb_hbox: QHBoxLayout = QHBoxLayout()
+        current_entry_day_lb_hbox.addWidget(self._current_entry_lb)
+        current_entry_day_lb_hbox.addStretch()
 
-        v_box: QVBoxLayout = QVBoxLayout()
-        v_box.addLayout(h_box_1)
-        v_box.addLayout(h_box)
-        self._other_widget.setLayout(v_box)
+        other_entry_day_lb_hbox: QHBoxLayout = QHBoxLayout()
+        other_entry_day_lb_hbox.addWidget(self._other_entry_lb)
+        other_entry_day_lb_hbox.addStretch()
 
-        h_box: QHBoxLayout = QHBoxLayout()
-        h_box.addStretch()
-        h_box.addWidget(self._export_btn)
+        # current widget
+        b_day_vbox: QVBoxLayout = QVBoxLayout()
+        b_day_vbox.addLayout(current_b_day_lb_hbox)
+        b_day_vbox.addWidget(self._current_b_day_table)
 
-        v_box: QVBoxLayout = QVBoxLayout()
-        v_box.addLayout(h_box)
-        v_box.addWidget(self._tabs)
+        entry_day_vbox: QVBoxLayout = QVBoxLayout()
+        entry_day_vbox.addLayout(current_entry_day_lb_hbox)
+        entry_day_vbox.addWidget(self._current_entry_day_table)
+
+        current_h_box: QHBoxLayout = QHBoxLayout()
+        current_h_box.addLayout(b_day_vbox)
+        current_h_box.addLayout(entry_day_vbox)
+        self._current_widget.setLayout(current_h_box)
+
+        # other widget
+        year_hbox: QHBoxLayout = QHBoxLayout()
+        year_hbox.addWidget(self._other_year_le)
+        year_hbox.addWidget(self._set_year_btn)
+
+        b_day_vbox: QVBoxLayout = QVBoxLayout()
+        b_day_vbox.addLayout(other_b_day_lb_hbox)
+        b_day_vbox.addWidget(self._other_b_day_table)
+
+        entry_day_vbox: QVBoxLayout = QVBoxLayout()
+        entry_day_vbox.addLayout(other_entry_day_lb_hbox)
+        entry_day_vbox.addWidget(self._other_entry_day_table)
+
+        other_h_box: QHBoxLayout = QHBoxLayout()
+        other_h_box.addLayout(b_day_vbox)
+        other_h_box.addLayout(entry_day_vbox)
+
+        other_v_box: QVBoxLayout = QVBoxLayout()
+        other_v_box.addLayout(year_hbox)
+        other_v_box.addLayout(other_h_box)
+        self._other_widget.setLayout(other_v_box)
+
+        # global widget
+        global_h_box: QHBoxLayout = QHBoxLayout()
+        global_h_box.addStretch()
+        global_h_box.addWidget(self._export_btn)
+
+        global_v_box: QVBoxLayout = QVBoxLayout()
+        global_v_box.addLayout(global_h_box)
+        global_v_box.addWidget(self._tabs)
 
         widget: QWidget = QWidget()
-        widget.setLayout(v_box)
+        widget.setLayout(global_v_box)
 
         self.set_widget(widget)
         self.show()
