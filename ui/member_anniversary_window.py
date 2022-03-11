@@ -36,8 +36,6 @@ class MemberAnniversaryWindow(BaseWindow):
         self._other_year_le.setText(str(datetime.datetime.now().year))
         self._get_current_data()
         self._get_other_data()
-        self._set_table(DataType.CURRENT)
-        self._set_table(DataType.OTHER)
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Jubiläen")
@@ -167,10 +165,6 @@ class MemberAnniversaryWindow(BaseWindow):
                 dummy_entry_day_table = self._current_entry_day_table
                 dummy_entry_day_data = self._current_entry_day_data
 
-                debug.info(item=debug_str, keyword="_set_table", message=f"current_b_day = {self._current_b_day_data}")
-                debug.info(item=debug_str, keyword="_set_table",
-                           message=f"current_entry_day = {self._current_entry_day_data}")
-
             case DataType.OTHER:
                 dummy_b_day_table = self._other_b_day_table
                 dummy_b_day_data = self._other_b_day_data
@@ -178,17 +172,12 @@ class MemberAnniversaryWindow(BaseWindow):
                 dummy_entry_day_table = self._other_entry_day_table
                 dummy_entry_day_data = self._other_entry_day_data
 
-                debug.info(item=debug_str, keyword="_set_table", message=f"other_b_day = {self._other_b_day_data}")
-                debug.info(item=debug_str, keyword="_set_table",
-                           message=f"other_entry_day = {self._other_entry_day_data}")
-
-        dummys: list = [
+        dummies: list = [
             [dummy_b_day_data, dummy_b_day_table, ["Name", "Datum", "Alter"]],
             [dummy_entry_day_data, dummy_entry_day_table, ["Name", "Datum", "Jubiläum"]],
         ]
-        # dummy_b_day_table.setItem()
 
-        for data, table, headers in dummys:
+        for data, table, headers in dummies:
             table.clear()
             if not data:
                 table.setRowCount(1)
@@ -218,12 +207,25 @@ class MemberAnniversaryWindow(BaseWindow):
         data = transition.get_anniversary_member_data(type_="current")
         if isinstance(data, str):
             self.set_error_bar(message=data)
-
-        self._current_b_day_data = data["b_day"]
-        self._current_entry_day_data = data["entry_day"]
+        else:
+            self._current_b_day_data = data["b_day"]
+            self._current_entry_day_data = data["entry_day"]
+            self._set_table(DataType.CURRENT)
 
     def _get_other_data(self) -> None:
-        debug.info(item=debug_str, keyword="_get_other_data", message=f"clicked")
+        try:
+            year: int = int(self._other_year_le.text().strip())
+        except ValueError:
+            self.set_error_bar(message=" Keine Zahl eingegeben")
+            return
+
+        data = transition.get_anniversary_member_data(type_="other", year=year)
+        if isinstance(data, str):
+            self.set_error_bar(message=data)
+        else:
+            self._other_b_day_data = data["b_day"]
+            self._other_entry_day_data = data["entry_day"]
+            self._set_table(DataType.OTHER)
 
     @staticmethod
     def _transform_member_name(firstname: str, lastname: str) -> str:
