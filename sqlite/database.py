@@ -12,8 +12,6 @@ debug_str: str = "Database"
 
 database: "Database"
 
-#dir_path:str = f"{c.config.save_dir}/{c.config.organisation_dir}"
-
 
 class Database:
     def __init__(self) -> None:
@@ -22,9 +20,6 @@ class Database:
 
         self.create_cursor_connection()
         self._create_tables()
-
-    def __str__(self) -> str:
-        return "Database"
 
     def _create_tables(self) -> None:
         with open("config/create.sql") as create_file:
@@ -39,7 +34,8 @@ class Database:
     def create_cursor_connection(self) -> None:
         if not os.path.exists(f"{c.config.save_dir}/{c.config.organisation_dir}"):
             os.makedirs(f"{c.config.save_dir}/{c.config.organisation_dir}")
-        self.connection = sqlite3.connect(f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.database_name}", detect_types=sqlite3.PARSE_DECLTYPES)
+        self.connection = sqlite3.connect(f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.database_name}",
+                                          detect_types=sqlite3.PARSE_DECLTYPES)
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.cursor = self.connection.cursor()
 
