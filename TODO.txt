@@ -11,6 +11,7 @@ sql database
     log initial nexus
     log update nexus
     error without types (membership_type)
+    add etrys if new mtype is added
 
 logic
     table_data_handler
