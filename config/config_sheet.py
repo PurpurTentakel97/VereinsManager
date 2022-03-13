@@ -21,6 +21,7 @@ class Config:
         self.save_dir: str = "saves"
         self.organisation_dir: str = "default_organisation"
         self.export_dir: str = "export"
+        self.member_dir: str = "member"
 
         self.database_name: str = f"default_database.vm"
 

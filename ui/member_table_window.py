@@ -134,7 +134,7 @@ class MemberTableWindow(BaseWindow):
     def _export(self) -> None:
         transition.create_default_dir("export")
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/Mitglieder.pdf",
+                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/Mitglieder.pdf",
                                                   "PDF (*.pdf);;All Files (*)")
         if check:
             result = transition.get_member_pdf(file)

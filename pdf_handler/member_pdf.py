@@ -69,9 +69,10 @@ def member_pdf(path: str, active: bool):
             "Mail",
         ]]
         style_data: list = [
-            ("GRID", (1, 1), (-1, -1), 1, colors.black),
-            ("GRID", (0, 0), (0, -1), 3, colors.black),
-            ("GRID", (0, 0), (-1, 0), 3, colors.black),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("BOX", (0, 0), (-1, -1), 2, colors.black),
+            ("LINEAFTER", (0, 0), (0, -1), 3, colors.black),
+            ("LINEBELOW", (0, 0), (-1, 0), 3, colors.black),
         ]
         for index, member in enumerate(all_members, start=1):
             member_data = member["member"]
@@ -95,7 +96,7 @@ def member_pdf(path: str, active: bool):
             if member_data[8] is not None and int(member_data[8]) % 5 == 0:
                 style_data.append(("BACKGROUND", (4, index), (4, index), colors.lightgrey))
 
-        table = Table(table_data, style=style_data)
+        table = Table(table_data, style=style_data, repeatRows=1)
         table._argW[3] = 1.5 * inch
         elements.append(table)
     doc.build(elements)
@@ -104,11 +105,20 @@ def member_pdf(path: str, active: bool):
 def _transform_path(path: str):
     global dir_name
     global file_name
+    now = datetime.now()
     if path:
         dir_name, file_name = os.path.split(path)
+        parts = file_name.split(".")
+        file_type = parts[-1]
+        name: str = str()
+        for _ in parts[:-1]:
+            name += _
+        file_name = f"{name}_{now.strftime(c.config.date_format['path'])}.{file_type}"
+        debug.info(item=debug_str, keyword="_transform_path", message=f"user = {file_name}")
     else:
-        dir_name = f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}"
-        file_name = "Mitglieder_pdf"
+        dir_name = f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.member_dir}/{c.config.export_dir}"
+        file_name = f"Mitglieder_{now.strftime(c.config.date_format['path'])}.pdf"
+        debug.info(item=debug_str, keyword="_transform_path", message=f"default = {file_name}")
 
 
 def _paragraph(value) -> Paragraph:
