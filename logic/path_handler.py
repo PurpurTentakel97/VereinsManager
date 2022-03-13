@@ -15,4 +15,4 @@ def create_default_path(type_: str) -> None:
 
     if path:
         if not os.path.exists(path):
-            os.mkdir(path)
+            os.makedirs(path)

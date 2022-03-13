@@ -4,13 +4,13 @@ CREATE TABLE IF NOT EXISTS "main"."raw_type"(
 "_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "type_name" Varchar(10) NOT NULL UNIQUE,
-PRIMARY KEY ("ID" AUTOINCREMENT)
+PRIMARY KEY ("ID")
 );
-INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Mitgliedsart");
-INSERT OR IGNORE INTO raw_type (type_name) VALUES ("E-Mail");
-INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Telefon");
-INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Position");
-INSERT OR IGNORE INTO raw_type (type_name) VALUES ("Job");
+INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (1,"Mitgliedsart");
+INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (2,"E-Mail");
+INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (3,"Telefon");
+INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (4,"Position");
+INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (5,"Job");
 
 /* TYPE */
 CREATE TABLE IF NOT EXISTS "main"."type" (
