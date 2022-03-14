@@ -5,7 +5,7 @@
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     global_handler as g_h
 from logic import table_data_handler, path_handler, anniversary_handler
-from pdf_handler import member_table_pdf as m_t_p
+from pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p
 
 
 # global
@@ -72,5 +72,9 @@ def update_member_activity(id_: int, active: bool, log_date: int | None = None) 
 
 
 # pdf_handler
-def get_member_pdf(path: str, active: bool = True) -> None | str:
-    return m_t_p.member_table_pdf.member_pdf(path=path, active=active)
+def get_member_table_pdf(path: str, active: bool = True) -> None | str:
+    return m_t_p.member_table_pdf.create_pdf(path=path, active=active)
+
+
+def get_member_anniversary_pdf(path: str, year: int or None = None, active: bool = True) -> None or str:
+    return m_a_p.member_anniversary_pdf.create_pdf(path=path, year=year, active=active)

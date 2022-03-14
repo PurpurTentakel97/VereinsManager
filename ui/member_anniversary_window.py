@@ -6,10 +6,11 @@ import datetime
 from enum import Enum
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QTableWidget, QTableWidgetItem, \
-    QPushButton, QLineEdit, QLabel
+    QPushButton, QLineEdit, QLabel, QFileDialog
 
 from ui.base_window import BaseWindow
 from ui import window_manager as w, members_window as m_w
+from config import config_sheet as c
 import transition
 import debug
 
@@ -24,6 +25,9 @@ class DataType(Enum):
 class MemberAnniversaryWindow(BaseWindow):
     def __init__(self) -> None:
         super().__init__()
+
+        self.other_year: int = int()
+
         self._current_b_day_data: list = list()
         self._current_entry_day_data: list = list()
         self._other_b_day_data: list = list()
@@ -223,6 +227,7 @@ class MemberAnniversaryWindow(BaseWindow):
         if isinstance(data, str):
             self.set_error_bar(message=data)
         else:
+            self.other_year = year
             self._other_b_day_data = data["b_day"]
             self._other_entry_day_data = data["entry_day"]
             self._set_table(DataType.OTHER)
@@ -242,7 +247,24 @@ class MemberAnniversaryWindow(BaseWindow):
         return self._other_year_le.text().strip() != ""
 
     def _export(self) -> None:
-        debug.info(item=debug_str, keyword="_export", message=f"export")
+        transition.create_default_dir("export")
+        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
+                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/Geburtstage-Jubilaen.pdf",
+                                                  "PDF (*.pdf);;All Files (*)")
+        if check:
+            result = 1
+            match self._tabs.currentIndex():
+                case 0:
+                    result = transition.get_member_anniversary_pdf(path=file)
+                case 1:
+                    result = transition.get_member_anniversary_pdf(path=file, year=self.other_year)
+
+            if isinstance(result, str):
+                self.set_error_bar(message=result)
+            else:
+                self.set_info_bar(message="Export abgeschlossen")
+        else:
+            self.set_info_bar(message="Export abgebrochen")
 
     def closeEvent(self, event) -> None:
         event.ignore()

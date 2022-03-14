@@ -102,7 +102,6 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
 
     final_b_day_data: list = list()
     for entry in b_day:
-        difference = year - entry["date"].year
         if (year - entry["date"].year) % 10 == 0 or year - entry["date"].year == 18:
             entry["year"] = year - entry["date"].year
             if entry["year"] >= 0:
@@ -111,8 +110,6 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
 
     final_entry_day_data: list = list()
     for entry in entry_day:
-        difference = year - entry["date"].year
-        difference2 = (year - entry["date"].year) % 5
         if (year - entry["date"].year) % 5 == 0:
             entry["year"] = year - entry["date"].year
             if entry["year"] >= 0:

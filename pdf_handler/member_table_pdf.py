@@ -1,6 +1,6 @@
 # Purpur Tentakel
 # 06.03.2022
-# VereinsManager / PDF / Member Table
+# VereinsManager / Member Table PDF
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
@@ -25,14 +25,14 @@ class MemberTablePDF(BasePDF):
     def __init__(self):
         super().__init__()
 
-    def member_pdf(self, path: str, active: bool):
+    def create_pdf(self, path: str, active: bool):
         self.transform_path(path=path)
         self.create_dir()
 
         self.style_sheet = getSampleStyleSheet()
-        doc = SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=2 * cm,
-                                leftMargin=2 * cm,
-                                topMargin=2 * cm, bottomMargin=2 * cm)
+        doc = SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
+                                leftMargin=1.5 * cm,
+                                topMargin=1.5 * cm, bottomMargin=1.5 * cm)
         elements: list = [
             Paragraph("Mitglieder", self.style_sheet["Title"])
         ]
@@ -41,6 +41,9 @@ class MemberTablePDF(BasePDF):
         if isinstance(data, str):
             return data
         if not data:
+            elements.append(Paragraph(
+                f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+                self.style_sheet["BodyText"]))
             elements.append(Paragraph(
                 f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
             doc.build(elements)

@@ -137,7 +137,7 @@ class MemberTableWindow(BaseWindow):
                                                   f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/Mitglieder.pdf",
                                                   "PDF (*.pdf);;All Files (*)")
         if check:
-            result = transition.get_member_pdf(file)
+            result = transition.get_member_table_pdf(file)
             if isinstance(result, str):
                 self.set_error_bar(message=result)
             else:
