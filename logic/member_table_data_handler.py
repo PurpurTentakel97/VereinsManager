@@ -29,7 +29,7 @@ def get_member_table_data(active: bool) -> dict | str:
         final_members_list: list = list()
         # member
         for member in member_data:
-            member_dict = transform_member_data(member=member)
+            member_dict = _transform_member_data(member=member)
 
             phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
             if isinstance(phone_data, str):
@@ -39,11 +39,11 @@ def get_member_table_data(active: bool) -> dict | str:
             if isinstance(mail_data, str):
                 return mail_data
 
-            phone_list = transform_nexus_data(nexus_data=phone_data)
+            phone_list = _transform_nexus_data(nexus_data=phone_data)
             if isinstance(phone_list, str):
                 return phone_list
 
-            mail_list = transform_nexus_data(nexus_data=mail_data)
+            mail_list = _transform_nexus_data(nexus_data=mail_data)
             if isinstance(mail_list, str):
                 return mail_list
 
@@ -57,7 +57,7 @@ def get_member_table_data(active: bool) -> dict | str:
     return final_data
 
 
-def transform_member_data(member: list) -> dict:
+def _transform_member_data(member: list) -> dict:
     member_dict: dict = {
         "ID": member[0],
         "first_name": member[1],
@@ -87,7 +87,7 @@ def transform_member_data(member: list) -> dict:
     return member_dict
 
 
-def transform_nexus_data(nexus_data: list) -> str or list:
+def _transform_nexus_data(nexus_data: list) -> str | list:
     nexus_list: list = list()
     for data in nexus_data:
         nexus_dict: dict = {

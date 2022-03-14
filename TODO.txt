@@ -9,16 +9,12 @@ sql database
     let unser coose database name
     save at (user date)
     error without types (membership_type)
-
-logic
-    table_data_handler
-        refatctor member table data
+    substract inactve member time
 
 UI
     Global
         window close automaticly even if not saved
     Base Window
         set Icon
-    Members Window
-        remove editmode by drop down
-
+    remider_window
+        create
