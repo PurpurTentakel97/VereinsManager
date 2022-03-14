@@ -2,6 +2,9 @@
 # 21.01.2022
 # VereinsManager // TODO
 
+pdf
+    sort age/anniversary for other year
+    open after export?
 
 sql database
     let unser coose database name
@@ -19,8 +22,8 @@ logic
 UI
     Global
         window close automaticly even if not saved
-    Member Table Window
-        add save path window
+    member anniversary Window
+        resize
     Base Window
         set Icon
 

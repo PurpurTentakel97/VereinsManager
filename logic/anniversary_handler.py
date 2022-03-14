@@ -83,8 +83,8 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
             entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
             final_entry_date_data.append(entry)
 
-    final_b_day_data = sorted(final_b_day_data, key=lambda x: x["date"])
-    final_entry_date_data = sorted(final_entry_date_data, key=lambda x: x["date"])
+    final_b_day_data = sorted(final_b_day_data, key=lambda x: [x["date"][-3:-1], x["date"][:2]])
+    final_entry_date_data = sorted(final_entry_date_data, key=lambda x: [x["date"][-3:-1], x["date"][:2]])
 
     data: dict = {
         "b_day": final_b_day_data,
@@ -116,8 +116,8 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
                 entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
                 final_entry_day_data.append(entry)
 
-    final_b_day_data = sorted(final_b_day_data, key=lambda x: x["date"])
-    final_entry_day_data = sorted(final_entry_day_data, key=lambda x: x["date"])
+    final_b_day_data = sorted(final_b_day_data, key=lambda x: x["year"])
+    final_entry_day_data = sorted(final_entry_day_data, key=lambda x: x["year"])
 
     data: dict = {
         "b_day": final_b_day_data,

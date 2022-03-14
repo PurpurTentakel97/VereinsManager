@@ -135,8 +135,6 @@ class AddHandler(Database):
         # validation in global handler
         sql_command: str = f"""INSERT INTO member_mail (member_id, type_id, mail) VALUES (?,?,?);"""
         try:
-            debug.info(item=debug_str, keyword="add_member_nexus_mail",
-                       message=f"member_id = {member_id} // type_id = {type_id} // mail = {value}")
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
             ID: int = self.cursor.lastrowid
