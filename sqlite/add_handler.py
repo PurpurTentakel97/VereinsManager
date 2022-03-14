@@ -2,6 +2,8 @@
 # 13.02.2022
 # VereinsManager / Add Handler
 
+from sqlite3 import InterfaceError
+
 from sqlite.database import Database
 from sqlite import select_handler as s_h, log_handler as l_h
 from config import error_code as e, config_sheet as c
@@ -36,6 +38,24 @@ class AddHandler(Database):
             result = l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=None, new_data=type_name)
             if isinstance(result, str):
                 return result
+
+            member_ids = s_h.select_handler.get_all_IDs_from_member()
+            if isinstance(member_ids, str):
+                return member_ids
+            function_ = None
+            value = None
+            if raw_type_id == c.config.raw_type_id["phone"]:
+                function_ = self.add_member_nexus_phone
+            elif raw_type_id == c.config.raw_type_id["mail"]:
+                function_ = self.add_member_nexus_mail
+            elif raw_type_id == c.config.raw_type_id["position"]:
+                function_ = self.add_member_nexus_position
+                value = False
+            for member_id in member_ids:
+                member_id = member_id[0]
+                result = function_(type_id=ID, value=value, member_id=member_id, log_date=None)
+                if isinstance(result, str):
+                    return result
             return ID
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_data_from_member_by_id",
@@ -115,6 +135,8 @@ class AddHandler(Database):
         # validation in global handler
         sql_command: str = f"""INSERT INTO member_mail (member_id, type_id, mail) VALUES (?,?,?);"""
         try:
+            debug.info(item=debug_str, keyword="add_member_nexus_mail",
+                       message=f"member_id = {member_id} // type_id = {type_id} // mail = {value}")
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
             ID: int = self.cursor.lastrowid
@@ -123,7 +145,7 @@ class AddHandler(Database):
             if isinstance(result, str):
                 return str
             return ID
-        except self.OperationalError as error:
+        except (self.OperationalError, InterfaceError) as error:
             debug.error(item=debug_str, keyword="add_member_nexus_mail", message=f"add member nexus failed\n"
                                                                                  f"command = {sql_command}\n"
                                                                                  f"error = {' '.join(error.args)}")
