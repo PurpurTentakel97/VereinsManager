@@ -30,7 +30,7 @@ class MemberTablePDF(BasePDF):
         self.create_dir()
 
         self.style_sheet = getSampleStyleSheet()
-        doc = SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=[A4[1], A4[0]], rightMargin=2 * cm,
+        doc = SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=2 * cm,
                                 leftMargin=2 * cm,
                                 topMargin=2 * cm, bottomMargin=2 * cm)
         elements: list = [
@@ -42,8 +42,7 @@ class MemberTablePDF(BasePDF):
             return data
         if not data:
             elements.append(Paragraph(
-                f"Keine Mitglieder vorhanden // Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-                self.style_sheet["BodyText"]))
+                f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
             doc.build(elements)
             return
 
@@ -55,18 +54,18 @@ class MemberTablePDF(BasePDF):
         for type_id, type in type_ids:
             all_members: list = data[type_id]
             elements.append(Paragraph(type, self.style_sheet["Heading3"]))
+            elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+                                      self.style_sheet["BodyText"]))
             if not all_members:
                 elements.append(Paragraph(
-                    f"Keine Mitglieder vorhanden // Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+                    f"Keine Mitglieder vorhanden",
                     self.style_sheet["BodyText"]))
                 continue
 
             table_data: list = [[
-                f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-                "Name",
-                "Adresse",
-                "Alter",
-                "Eintritt",
+                "",
+                "Name / Adresse",
+                "Alter / Eintritt",
                 "Telefon",
                 "Mail",
             ]]
@@ -82,10 +81,10 @@ class MemberTablePDF(BasePDF):
                 mail_data = member["mail"]
                 row_data: list = [
                     str(index) if not member_data[9] else f"{str(index)} (E)",
-                    [self.paragraph(member_data[0]), self.paragraph(member_data[1])],
-                    [self.paragraph(member_data[2]), self.paragraph(member_data[3]), self.paragraph(member_data[4])],
-                    [self.paragraph(member_data[6]), self.paragraph(member_data[5])],
-                    [self.paragraph(member_data[8]), self.paragraph(member_data[7])],
+                    [Paragraph(f"{member_data[0]} {member_data[1]}"), self.paragraph(member_data[2]),
+                     self.paragraph(member_data[3]), self.paragraph(member_data[4])],
+                    [self.paragraph(member_data[6]), self.paragraph(member_data[5]), self.paragraph(member_data[8]),
+                     self.paragraph(member_data[7])],
                     [self.paragraph(x) for x in phone_data],
                     [self.paragraph(x) for x in mail_data],
                 ]
@@ -94,12 +93,13 @@ class MemberTablePDF(BasePDF):
                 if member_data[9]:
                     style_data.append(("BACKGROUND", (0, index), (0, index), colors.lightgrey))
                 if member_data[6] is not None and (int(member_data[6]) % 10 == 0 or int(member_data[6]) == 18):
-                    style_data.append(("BACKGROUND", (3, index), (3, index), colors.lightgrey))
+                    style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
                 if member_data[8] is not None and int(member_data[8]) % 5 == 0:
-                    style_data.append(("BACKGROUND", (4, index), (4, index), colors.lightgrey))
+                    style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
 
             table = Table(table_data, style=style_data, repeatRows=1)
             elements.append(table)
+            elements.append(Paragraph("(E) = Ehrenmitglied"))
         doc.build(elements)
 
 
