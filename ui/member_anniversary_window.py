@@ -154,6 +154,7 @@ class MemberAnniversaryWindow(BaseWindow):
 
         self.set_widget(widget)
         self.show()
+        self.resize(700, 500)
 
     def _set_table(self, data_type: DataType) -> None:
         dummy_b_day_table: QTableWidget = QTableWidget()

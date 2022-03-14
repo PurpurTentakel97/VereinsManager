@@ -3,16 +3,11 @@
 # VereinsManager // TODO
 
 pdf
-    sort age/anniversary for other year
     open after export?
 
 sql database
     let unser coose database name
     save at (user date)
-    log initial member
-    log updat member
-    log initial nexus
-    log update nexus
     error without types (membership_type)
 
 logic
@@ -22,8 +17,6 @@ logic
 UI
     Global
         window close automaticly even if not saved
-    member anniversary Window
-        resize
     Base Window
         set Icon
 
