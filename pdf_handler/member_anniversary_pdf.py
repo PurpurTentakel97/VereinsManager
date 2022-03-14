@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 06.03.2022
 # VereinsManager / Member Anniversary PDF
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
@@ -9,7 +10,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table
 
 from datetime import datetime
 
-import logic.anniversary_handler
+from logic import member_anniversary_data_handler
 from pdf_handler.base_pdf import BasePDF
 from config import config_sheet as c
 
@@ -34,9 +35,9 @@ class MemberAnniversaryPDF(BasePDF):
                                 topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
         if year:
-            data = logic.anniversary_handler.get_anniversary_member_data(type_="other", active=active, year=year)
+            data = member_anniversary_data_handler.get_anniversary_member_data(type_="other", active=active, year=year)
         else:
-            data = logic.anniversary_handler.get_anniversary_member_data(type_="current", active=active)
+            data = member_anniversary_data_handler.get_anniversary_member_data(type_="current", active=active)
         if isinstance(data, str):
             return data
 

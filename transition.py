@@ -4,7 +4,7 @@
 
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     global_handler as g_h
-from logic import table_data_handler, path_handler, anniversary_handler
+from logic import member_table_data_handler, path_handler, member_anniversary_data_handler
 from pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p
 
 
@@ -52,7 +52,7 @@ def get_all_member_name(active: bool = True) -> tuple | str:
 
 
 def get_anniversary_member_data(type_: str | int, active: bool = True, year: int = 0) -> dict | str:
-    return anniversary_handler.get_anniversary_member_data(active=active, type_=type_, year=year)
+    return member_anniversary_data_handler.get_anniversary_member_data(active=active, type_=type_, year=year)
 
 
 def get_member_data_by_id(id_: int, active: bool = True) -> dict | str:
@@ -60,7 +60,7 @@ def get_member_data_by_id(id_: int, active: bool = True) -> dict | str:
 
 
 def get_member_data_for_table(active: bool = True) -> dict | str:
-    return table_data_handler.get_member_table_data(active=active)
+    return member_table_data_handler.get_member_table_data(active=active)
 
 
 def update_member_data(id_: int, data: dict, log_date: int | None = None) -> str | dict:
