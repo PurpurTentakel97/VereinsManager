@@ -70,7 +70,7 @@ class MemberTableWindow(BaseWindow):
                 # headline
                 new_table.setRowCount(len(data))
                 first_member = data[0]
-                columns: int = len(first_member["member"]) + len(first_member["phone"]) + len(
+                columns: int = len(first_member["member"])-2 + len(first_member["phone"]) + len(
                     first_member["mail"])
                 new_table.setColumnCount(columns)
                 headers: list = [
@@ -92,10 +92,23 @@ class MemberTableWindow(BaseWindow):
                 # member
                 for row_id, row in enumerate(data):
                     column_id: int = 0
-                    member_data = row["member"]
-                    phone_data = row["phone"]
-                    mail_data = row["mail"]
-                    for entry in member_data:
+                    member_data: dict = row["member"]
+                    phone_data: list = row["phone"]
+                    mail_data: list = row["mail"]
+                    keys: list = [
+                        "first_name",
+                        "last_name",
+                        "street",
+                        "zip_code",
+                        "city",
+                        "b_date",
+                        "age",
+                        "entry_date",
+                        "membership_years",
+                        "special_member",
+                    ]
+                    for key in keys:
+                        entry = member_data[key]
                         new_item = QTableWidgetItem(entry if entry else "")
                         new_table.setItem(row_id, column_id, new_item)
                         column_id += 1

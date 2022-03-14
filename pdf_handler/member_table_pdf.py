@@ -10,7 +10,7 @@ from reportlab.lib.units import cm
 
 from datetime import datetime
 
-from logic import table_data_handler
+from logic import member_table_data_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
 from pdf_handler.base_pdf import BasePDF
@@ -37,7 +37,7 @@ class MemberTablePDF(BasePDF):
             Paragraph("Mitglieder", self.style_sheet["Title"])
         ]
 
-        data = table_data_handler.get_member_table_data(active=active)
+        data = member_table_data_handler.get_member_table_data(active=active)
         if isinstance(data, str):
             return data
         if not data:
@@ -54,9 +54,9 @@ class MemberTablePDF(BasePDF):
             return type_ids
         type_ids = [[x[0], x[1]] for x in type_ids]
 
-        for type_id, type in type_ids:
+        for type_id, type_ in type_ids:
             all_members: list = data[type_id]
-            elements.append(Paragraph(type, self.style_sheet["Heading3"]))
+            elements.append(Paragraph(type_, self.style_sheet["Heading3"]))
             elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
                                       self.style_sheet["BodyText"]))
             if not all_members:
@@ -82,22 +82,25 @@ class MemberTablePDF(BasePDF):
                 member_data = member["member"]
                 phone_data = member["phone"]
                 mail_data = member["mail"]
+                debug.debug(item=debug_str, keyword="create_pdf", message=f"street = {member_data['street']}")
                 row_data: list = [
-                    str(index) if not member_data[9] else f"{str(index)} (E)",
-                    [Paragraph(f"{member_data[0]} {member_data[1]}"), self.paragraph(member_data[2]),
-                     self.paragraph(member_data[3]), self.paragraph(member_data[4])],
-                    [self.paragraph(member_data[6]), self.paragraph(member_data[5]), self.paragraph(member_data[8]),
-                     self.paragraph(member_data[7])],
+                    str(index) if not member_data["special_member"] else f"{str(index)} (E)",
+                    [Paragraph(f"{member_data['first_name']} {member_data['last_name']}"),
+                     self.paragraph(member_data["street"]), self.paragraph(member_data["zip_code"]),
+                     self.paragraph(member_data["city"])],
+                    [self.paragraph(member_data["age"]), self.paragraph(member_data["b_date"]),
+                     self.paragraph(member_data["membership_years"]), self.paragraph(member_data["entry_date"])],
                     [self.paragraph(x) for x in phone_data],
                     [self.paragraph(x) for x in mail_data],
                 ]
                 table_data.append(row_data)
 
-                if member_data[9]:
+                if member_data["special_member"]:
                     style_data.append(("BACKGROUND", (0, index), (0, index), colors.lightgrey))
-                if member_data[6] is not None and (int(member_data[6]) % 10 == 0 or int(member_data[6]) == 18):
+                if member_data["age"] is not None and (
+                        int(member_data["age"]) % 10 == 0 or int(member_data["age"]) == 18):
                     style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
-                if member_data[8] is not None and int(member_data[8]) % 5 == 0:
+                if member_data["membership_years"] is not None and int(member_data["membership_years"]) % 5 == 0:
                     style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
 
             table = Table(table_data, style=style_data, repeatRows=1)

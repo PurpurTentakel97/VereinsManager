@@ -25,11 +25,11 @@ def get_member_table_data(active: bool) -> dict | str:
                                                                                     membership_type_id=type_id)
         if isinstance(member_data, str):
             return member_data
-        final_members_list: list = list()
 
+        final_members_list: list = list()
         # member
         for member in member_data:
-            member_list, member_dict = transform_member_data(member=member)
+            member_dict = transform_member_data(member=member)
 
             phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
             if isinstance(phone_data, str):
@@ -48,7 +48,7 @@ def get_member_table_data(active: bool) -> dict | str:
                 return mail_list
 
             single_member_data: dict = {
-                "member": member_list,
+                "member": member_dict,
                 "phone": phone_list,
                 "mail": mail_list,
             }
@@ -57,7 +57,7 @@ def get_member_table_data(active: bool) -> dict | str:
     return final_data
 
 
-def transform_member_data(member: list) -> tuple:
+def transform_member_data(member: list) -> dict:
     member_dict: dict = {
         "ID": member[0],
         "first_name": member[1],
@@ -84,19 +84,7 @@ def transform_member_data(member: list) -> tuple:
     member_dict["entry_date"] = _transform_date_to_str(member_dict["entry_date"])
     member_dict["special_member"] = "X" if member_dict["special_member"] else ""
 
-    member_list: list = [
-        member_dict["first_name"],
-        member_dict["last_name"],
-        member_dict["street"],
-        member_dict["zip_code"],
-        member_dict["city"],
-        member_dict["b_date"],
-        member_dict["age"],
-        member_dict["entry_date"],
-        member_dict["membership_years"],
-        member_dict["special_member"],
-    ]
-    return member_list, member_dict
+    return member_dict
 
 
 def transform_nexus_data(nexus_data: list) -> str or list:
