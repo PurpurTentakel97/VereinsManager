@@ -268,7 +268,7 @@ class SelectHandler(Database):
         except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
             debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
 
-        sql_command: str = f"""SELECT ID,type_id,number FROM member_phone WHERE member_id is ?;"""
+        sql_command: str = f"""SELECT ID,type_id,number FROM member_phone WHERE member_id is ? ORDER BY type_id ASC;"""
         try:
             return self.cursor.execute(sql_command, (member_id,)).fetchall()
         except self.OperationalError as error:
@@ -298,7 +298,7 @@ class SelectHandler(Database):
         except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
             debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
 
-        sql_command: str = f"""SELECT ID,type_id,mail FROM member_mail WHERE member_id is ?;"""
+        sql_command: str = f"""SELECT ID,type_id,mail FROM member_mail WHERE member_id is ? ORDER BY type_id ASC;"""
         try:
             return self.cursor.execute(sql_command, (member_id,)).fetchall()
         except self.OperationalError as error:
@@ -328,7 +328,7 @@ class SelectHandler(Database):
         except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
             debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
 
-        sql_command: str = f"""SELECT ID,type_id,active FROM member_position WHERE member_id is ?;"""
+        sql_command: str = f"""SELECT ID,type_id,active FROM member_position WHERE member_id is ? ORDER BY type_id ASC;"""
         try:
             data: list = (self.cursor.execute(sql_command, (member_id,)).fetchall())
             for i in range(len(data)):
