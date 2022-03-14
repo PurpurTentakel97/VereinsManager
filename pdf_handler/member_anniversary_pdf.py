@@ -25,10 +25,8 @@ class MemberAnniversaryPDF(BasePDF):
         super().__init__()
 
     def create_pdf(self, path: str, year: int, active: bool = True) -> None or str:
-        debug.info(item=debug_str, keyword="create_pdf", message=f"year = {year}")
         self.transform_path(path=path)
         self.create_dir()
-        self._set_names(year=year)
 
         self.style_sheet = getSampleStyleSheet()
         doc = SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
@@ -54,7 +52,6 @@ class MemberAnniversaryPDF(BasePDF):
                 f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
             doc.build(elements)
             return
-        debug.info(item=debug_str, keyword="create_pdf", message=f"data = {data}")
 
         keys: list = [
             "b_day",
@@ -104,12 +101,6 @@ class MemberAnniversaryPDF(BasePDF):
             table = Table(table_data, style=style_data, repeatRows=1)
             elements.append(table)
         doc.build(elements)
-
-    def _set_names(self, year: int) -> None:
-        if year:
-            pass
-        else:
-            pass
 
 
 def create_member_anniversary_pdf() -> None:
