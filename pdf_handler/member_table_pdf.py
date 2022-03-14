@@ -88,8 +88,9 @@ class MemberTablePDF(BasePDF):
                     [Paragraph(f"{member_data['first_name']} {member_data['last_name']}"),
                      self.paragraph(member_data["street"]), self.paragraph(member_data["zip_code"]),
                      self.paragraph(member_data["city"])],
-                    [self.paragraph(member_data["age"]), self.paragraph(member_data["b_date"]),
-                     self.paragraph(member_data["membership_years"]), self.paragraph(member_data["entry_date"])],
+                    [self.paragraph(["Alter", member_data["age"]]), self.paragraph(member_data["b_date"]),
+                     self.paragraph(["Eintritt", member_data["membership_years"]]),
+                     self.paragraph(member_data["entry_date"])],
                     [self.paragraph(x) for x in phone_data],
                     [self.paragraph(x) for x in mail_data],
                 ]
