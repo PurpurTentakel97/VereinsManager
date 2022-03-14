@@ -73,6 +73,7 @@ class MemberAnniversaryPDF(BasePDF):
                         "",
                         "Name",
                         "Geburtstag",
+                        "Jahre",
                     ]
                 case "entry_day":
                     elements.append(Paragraph("Jubiläen", self.style_sheet["Heading3"]))
@@ -80,6 +81,7 @@ class MemberAnniversaryPDF(BasePDF):
                         "",
                         "Name",
                         "Jubiläum",
+                        "Jahre",
                     ]
             elements.append(
                 Paragraph(
@@ -95,7 +97,8 @@ class MemberAnniversaryPDF(BasePDF):
                 row_data: list = [
                     str(index),
                     [Paragraph(f"{entry['firstname']} {entry['lastname']}")],
-                    [Paragraph(f"{entry['year']}. - {entry['date']}")],
+                    entry['date'],
+                    str(entry['year']),
                 ]
                 table_data.append(row_data)
             table = Table(table_data, style=style_data, repeatRows=1)
