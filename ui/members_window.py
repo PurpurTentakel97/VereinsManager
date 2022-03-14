@@ -231,7 +231,7 @@ class MembersWindow(BaseWindow):
         self._membership_type_box: QComboBox = QComboBox()
         self._membership_type_box.currentTextChanged.connect(self._set_membership_type)
         self._special_member_cb: QCheckBox = QCheckBox()
-        self._special_member_cb.setText("Ehrenmitglied")
+        self._special_member_cb.setText(c.config.easter_egg if c.config.easter_egg else "Ehrenmitglied")
         self._special_member_cb.toggled.connect(self._set_special_member)
         self._positions_lb: QLabel = QLabel()
         self._positions_lb.setText("Positionen:")
