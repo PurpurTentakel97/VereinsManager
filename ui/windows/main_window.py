@@ -11,6 +11,8 @@ import debug
 
 debug_str: str = "Main Window"
 
+main_window: "MainWindow"
+
 
 class MainWindow(BaseWindow):
     def __init__(self):
@@ -136,3 +138,8 @@ class MainWindow(BaseWindow):
         msg.setWindowTitle("Trotzdem Schließen?")
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         return msg.exec_() == QMessageBox.Yes
+
+
+def create_main_window() -> None:
+    global main_window
+    main_window = MainWindow()
