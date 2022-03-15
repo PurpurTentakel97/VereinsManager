@@ -116,8 +116,8 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
                 entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
                 final_entry_day_data.append(entry)
 
-    final_b_day_data = sorted(final_b_day_data, key=lambda x: x["year"])
-    final_entry_day_data = sorted(final_entry_day_data, key=lambda x: x["year"])
+    final_b_day_data = sorted(final_b_day_data, key=lambda x: [x["year"], x["date"][-3:-1], x["date"][:2]])
+    final_entry_day_data = sorted(final_entry_day_data, key=lambda x: [x["year"], x["date"][-3:-1], x["date"][:2]])
 
     data: dict = {
         "b_day": final_b_day_data,
