@@ -5,12 +5,10 @@
 from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableWidget, \
     QPushButton, QFileDialog
 
-from ui.base_window import BaseWindow
-from ui import window_manager as w, members_window as m_w
+from ui.windows.base_window import BaseWindow
+from ui.windows import members_window as m_w, window_manager as w
 from config import config_sheet as c
 import transition
-
-import debug
 
 debug_str: str = "MemberTableWindow"
 

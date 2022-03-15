@@ -4,9 +4,8 @@
 
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMessageBox
 
-from ui.base_window import BaseWindow
-from ui import members_window as m_w, types_window as t_w
-from ui import window_manager as w_m
+from ui.windows.base_window import BaseWindow
+from ui.windows import members_window as m_w, window_manager as w_m, types_window as t_w
 
 import debug
 

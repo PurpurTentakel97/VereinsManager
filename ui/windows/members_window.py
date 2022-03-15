@@ -10,12 +10,10 @@ from enum import Enum
 import webbrowser
 
 import transition
-from ui.base_window import BaseWindow
-from ui import window_manager as w, recover_member_window as r_m_w, member_table_window as m_t_w, \
+from ui.windows.base_window import BaseWindow
+from ui.windows import recover_member_window as r_m_w, member_table_window as m_t_w, window_manager as w, \
     member_anniversary_window as m_a_w
 from config import config_sheet as c
-
-import debug
 
 debug_str: str = "MembersWindow"
 

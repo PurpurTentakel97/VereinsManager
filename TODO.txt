@@ -4,6 +4,7 @@
 
 pdf
     open after export?
+    sort anniversary pfd years then date
 
 sql database
     let unser coose database name
