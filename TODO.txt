@@ -4,7 +4,7 @@
 
 pdf
     open after export?
-    sort anniversary pfd years then date
+    refactor break day in current anniversary
 
 sql database
     let unser coose database name
@@ -17,5 +17,9 @@ UI
         window close automaticly even if not saved
     Base Window
         set Icon
-    remider_window
-        create
+    Members Window
+        let user choose log date
+        plz to str
+
+    frame
+        set_error_bar Error

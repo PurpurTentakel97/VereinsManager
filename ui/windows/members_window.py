@@ -242,13 +242,14 @@ class MembersWindow(BaseWindow):
         self._comment_text.textChanged.connect(lambda: self._set_el_input(LineEditType.COMMENT))
 
     def _set_layout(self) -> None:
-        # Left
+        # Top
         label_members_hbox: QHBoxLayout = QHBoxLayout()
         label_members_hbox.addWidget(self._members_lb)
         label_members_hbox.addStretch()
         label_members_hbox.addWidget(self._anniversary_btn)
         label_members_hbox.addWidget(self._table_btn)
 
+        # Bottom
         button_members_hbox: QHBoxLayout = QHBoxLayout()
         button_members_hbox.addWidget(self._add_member_btn)
         button_members_hbox.addWidget(self._remove_member_btn)

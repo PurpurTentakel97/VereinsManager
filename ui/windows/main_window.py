@@ -5,7 +5,7 @@
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMessageBox
 
 from ui.windows.base_window import BaseWindow
-from ui.windows import members_window as m_w, window_manager as w_m, types_window as t_w
+from ui.windows import members_window as m_w, window_manager as w_m, types_window as t_w, user_window as u_w
 
 import debug
 
@@ -46,7 +46,7 @@ class MainWindow(BaseWindow):
         self._edit_types_btn.clicked.connect(self._open_edit_types)
 
         self._user_data_btn: QPushButton = QPushButton()
-        self._user_data_btn.setText("Deine Daten")
+        self._user_data_btn.setText("Benutzer Daten")
         self._user_data_btn.clicked.connect(self._open_user_data)
 
         self._export_pdf_btn: QPushButton = QPushButton()
@@ -108,7 +108,11 @@ class MainWindow(BaseWindow):
             w_m.window_manger.types_window = t_w.TypesWindow()
 
     def _open_user_data(self):
-        debug.info(item=debug_str, keyword="_open_user_data", message=f"user data open")
+        result = w_m.window_manger.is_valid_user_window()
+        if isinstance(result, str):
+            self.set_error_bar(message=result)
+        else:
+            w_m.window_manger.user_window = u_w.UserWindow()
 
     def _open_export_pdf(self):
         debug.info(item=debug_str, keyword="_open_export_pdf", message=f"pdf open")
