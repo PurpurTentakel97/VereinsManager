@@ -1,11 +1,14 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Global Handler
+import os
 
+import bcrypt
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     log_handler as l_h
 from logic import validation as v
 from config import error_code as e
+from helper import hasher
 
 import debug
 
@@ -185,6 +188,27 @@ class GlobalHandler:
             "mail": mail_ids,
             "position": position_ids,
         }
+
+    # User
+    @staticmethod
+    def save_update_user(data: dict) -> int | str | None:
+        try:
+            v.validation.save_update_user(data=data)
+        except (e.NoDict, e.NoStr, e.NoInt, e.NoPositiveInt, e.DifferentPassword, e.PasswordToShort,
+                e.PasswordHasSpace, e.LowPassword, e.VeryLowPassword, e.ToLong) as error:
+            debug.error(item=debug_str, keyword="save_update_user", message=f"Error = {error.message}")
+            return error.message
+
+        if data["ID"]:
+            result = u_h.xxx
+            if isinstance(result, str):
+                return result
+            if data["pasword_1"] is not None:
+                data["password_hashed"] = hasher.hash_password(data["password_1"])
+                return u_h.xxx
+        else:
+            data["password_hashed"] = hasher.hash_password(data["password_1"])
+            return a_h.add_handler.add_user(data=data)
 
 
 def create_global_handler() -> None:

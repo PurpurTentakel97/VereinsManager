@@ -167,6 +167,32 @@ class AddHandler(Database):
                                                                                      f"error = {' '.join(error.args)}")
             return e.AddFailed(info=str(value)).message
 
+    # user
+    def add_user(self, data: dict) -> int | str:
+        sql_command: str = """INSERT INTO user_ (first_name,last_name,street,number,zip_code,city,phone,mail,
+        position_,password) VALUES (?,?,?,?,?,?,?,?,?,?);"""
+
+        try:
+            self.cursor.execute(sql_command, (
+                data["firstname"],
+                data["lastname"],
+                data["street"],
+                data["number"],
+                data["zip_code"],
+                data["city"],
+                data["phone"],
+                data["mail"],
+                data["position"],
+                data["password_hashed"],
+            ))
+            self.connection.commit()
+            return self.cursor.lastrowid
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="add_user", message=f"add user failed\n"
+                                                                    f"command = {sql_command}\n"
+                                                                    f"error = {' '.join(error.args)}")
+            return e.AddFailed().message
+
 
 def create_add_handler() -> None:
     global add_handler

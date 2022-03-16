@@ -161,3 +161,38 @@ CREATE TABLE IF NOT EXISTS "main"."log" (
 "_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 PRIMARY KEY ("ID" AUTOINCREMENT)
 );
+
+/*USER*/
+CREATE TABLE IF NOT EXISTS "main"."user_" (
+"ID" INTEGER NOT NULL UNIQUE,
+"first_name" VARCHAR(10),
+"last_name" VARCHAR(10),
+"street" VARCHAR(20),
+"number" VARCHAR(10),
+"zip_code" VARCHAR(10),
+"city" VARCHAR(10),
+"phone" VARCHAR(10),
+"mail" VARCHAR(20),
+"position_" VARCHAR(20),
+"password" BLOB NOT NULL,
+"_active" INTEGER(1) DEFAULT 1,
+"_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
+PRIMARY KEY ("ID" AUTOINCREMENT)
+);
+/* Active User */
+CREATE VIEW IF NOT EXISTS "main"."v_active_user" AS
+SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position_
+FROM "user_"
+WHERE _active = 1;
+
+/* Active User Password */
+CREATE VIEW IF NOT EXISTS "main"."v_active_user_password" AS
+SELECT ID,first_name,last_name,password
+FROM "user_"
+WHERE _active = 1;
+
+/* Inactive User */
+CREATE VIEW IF NOT EXISTS "main"."v_inactive_user" AS
+SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position_
+FROM "user_"
+WHERE _active = 0;

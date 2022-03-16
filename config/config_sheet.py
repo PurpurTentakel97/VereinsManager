@@ -19,6 +19,9 @@ class Config:
         self.raw_type_id: dict = dict()
         self.special_user: dict = dict()
 
+        # hashes
+        self.hash_round = 12
+
         # easter egg
         self.user_name: str = "artimus83"
         self.easter_egg: str = str()
