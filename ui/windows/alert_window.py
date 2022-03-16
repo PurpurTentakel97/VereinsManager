@@ -18,8 +18,12 @@ class AlertWindow(BaseWindow):
     def __init__(self):
         super().__init__()
 
+        self._set_window_information()
         self._set_ui()
         self._set_layout()
+
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Aktuelles")
 
     def _set_ui(self) -> None:
         # Headline

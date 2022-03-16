@@ -16,6 +16,8 @@ class WindowManager:
         self.recover_member_window = None
         self.member_table_window = None
         self.member_anniversary_window = None
+        # User
+        self.user_window = None
 
     # Main
     @staticmethod
@@ -92,11 +94,14 @@ class WindowManager:
 
         return True
 
-    # close window
-    def close_all_window(self) -> None:
-        self.types_window.close() if self.types_window else None
-        self.types_window = None
+    # User
+    @staticmethod
+    def is_valid_user_window() -> bool:
+        return True
 
+    # close window
+
+    def close_all_window(self) -> None:
         self.member_table_window.close() if self.member_table_window else None
         self.member_table_window = None
 
@@ -108,6 +113,12 @@ class WindowManager:
 
         self.members_window.close() if self.members_window else None
         self.members_window = None
+
+        self.types_window.close() if self.types_window else None
+        self.types_window = None
+
+        self.user_window.close() if self.user_window else None
+        self.user_window = None
 
 
 def create_window_manager() -> None:
