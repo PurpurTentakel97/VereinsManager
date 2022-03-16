@@ -107,6 +107,37 @@ class ToLong(Exception):
         self.message: str = f"Länge von {max_length} Zeichen überschritten // {text} ({text_len} Zeichen)"
 
 
+# Password
+class PasswordHasSpace(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Passwort enthält Leerzeichen"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class VeryLowPassword(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Dein Passwort ist sehr unsicher"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class LowPassword(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Dein Passwort ist unsicher"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class PasswordToShort(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Dein Passwort ist zu kurz"
+        self.message: str = str_ + "//" + info if info else str_
+
+
+class DifferentPassword(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Deine Passwörter stimmen nicht überein"
+        self.message: str = str_ + "//" + info if info else str_
+
+
 # General
 class NotFound(Exception):
     def __init__(self, info: str = ""):

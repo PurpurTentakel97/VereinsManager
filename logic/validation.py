@@ -2,6 +2,8 @@
 # 18.02.2022
 # VereinsManager / Validation
 
+import math
+
 from sqlite import select_handler as s_h
 from config import error_code as e
 
@@ -125,6 +127,34 @@ class Validation:
         if active is not None:
             cls.must_bool(active)
 
+    # User
+    @classmethod
+    def save_update_user(cls, data: dict) -> None:
+        cls.must_dict(dict_=data)
+        if data["ID"] is not None:
+            cls.must_positive_int(int_=data["ID"], max_length=None)
+            if data["password_1"] is not None:
+                cls.must_password(password_1=data["password_1"], password_2=data["password_2"])
+        else:
+            cls.must_password(password_1=data["password_1"], password_2=data["password_2"])
+
+        keys: list = [
+            "firstname",
+            "lastname",
+            "street",
+            "number",
+            "city",
+            "phone",
+            "mail",
+            "position",
+            "zip_code",
+        ]
+
+        for key in keys:
+            entry = data[key]
+            if entry is not None:
+                cls.must_str(str_=entry)
+
     # global
     @staticmethod
     def must_str(str_: str, length: int = 50) -> None:
@@ -168,6 +198,48 @@ class Validation:
     def must_length(len_: int, data) -> None:
         if not len(data) == len_:
             raise e.WrongLength(str(len_) + "//" + str(data))
+
+    @classmethod
+    def must_password(cls, password_1: str, password_2: str) -> None:
+        cls.must_str(str_=password_1)
+        if password_1 != password_2:
+            raise e.DifferentPassword(info=f"{password_1}/{password_2}")
+
+        if len(password_1) < 10:
+            raise e.PasswordToShort(info=password_1)
+
+        if " " in password_1:
+            raise e.PasswordHasSpace(password_1)
+
+        digit: int = 0
+        capital_letter: int = 0
+        small_letter: int = 0
+        special_character: int = 0
+
+        count: int = 0
+        characters: list = list()
+        for character in password_1:
+            if character.islower():
+                small_letter = 26
+            elif character.isupper():
+                capital_letter = 26
+            elif character.isdigit():
+                digit = 10
+            elif character.isprintable():
+                special_character = 43
+            if character in characters:
+                count -= 1
+            characters.append(character)
+
+        count += (digit + capital_letter + small_letter + special_character)
+        if count <= 0:
+            raise e.VeryLowPassword(info=password_1)
+        bits = math.log(count ** len(password_1), 2)
+
+        if bits < 20:
+            raise e.VeryLowPassword(info=password_1)
+        elif bits < 40:
+            raise e.LowPassword(info=password_1)
 
 
 def create_validation() -> None:
