@@ -360,6 +360,23 @@ class SelectHandler(Database):
                                 f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Phone Number").message
 
+    # user
+    def get_names_of_user(self, active: bool) -> tuple | str:
+        try:
+            v.validation.must_bool(bool_=active)
+        except e.NoBool as error:
+            return error.message
+
+        table: str = "v_active_user" if active else "v_inactive_user"
+        sql_command: str = f"""SELECT ID,first_name,last_name FROM {table} ORDER BY last_name ASC,first_name ASC;"""
+        try:
+            return self.cursor.execute(sql_command).fetchall()
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="get_names_of_user", message=f"load user names failed\n"
+                                                                             f"command = {sql_command}\n"
+                                                                             f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Mitgliedernamen").message
+
 
 def create_select_handler() -> None:
     global select_handler

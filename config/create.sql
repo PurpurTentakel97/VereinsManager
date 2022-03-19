@@ -182,19 +182,13 @@ PRIMARY KEY ("ID" AUTOINCREMENT)
 );
 /* Active User */
 CREATE VIEW IF NOT EXISTS "main"."v_active_user" AS
-SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position_
-FROM "user"
-WHERE _active = 1;
-
-/* Active User Password */
-CREATE VIEW IF NOT EXISTS "main"."v_active_user_password" AS
-SELECT ID,first_name,last_name,password
+SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position
 FROM "user"
 WHERE _active = 1;
 
 /* Inactive User */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_user" AS
-SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position_
+SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position
 FROM "user"
 WHERE _active = 0;
 

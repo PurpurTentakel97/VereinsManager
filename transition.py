@@ -75,6 +75,11 @@ def update_member_activity(id_: int, active: bool, log_date: int | None = None) 
 def save_update_user(data: dict) -> str | int | None:
     return g_h.global_handler.save_update_user(data=data)
 
+
+def get_all_user_name(active: bool = True) -> str | dict:
+    return s_h.select_handler.get_names_of_user(active=active)
+
+
 # pdf_handler
 def get_member_table_pdf(path: str, active: bool = True) -> None | str:
     return m_t_p.member_table_pdf.create_pdf(path=path, active=active)

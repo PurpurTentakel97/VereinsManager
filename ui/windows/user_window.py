@@ -73,8 +73,7 @@ class UserWindow(BaseWindow):
 
         self._is_edit: bool = bool()
         self._set_edit_mode(active=False)
-        self._add_user()
-        # self._load_all_user_names()
+        self._load_user_names()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Benutzer bearbeiten")
@@ -278,6 +277,18 @@ class UserWindow(BaseWindow):
         self._user_list.addItem(new_user)
         self._user_list.setCurrentItem(new_user)
         self._set_edit_mode(True)
+
+    def _load_user_names(self) -> None:
+        data = transition.get_all_user_name()
+        if isinstance(data, str):
+            self.set_error_bar(message=data)
+        elif len(data) == 0:
+            self._add_user()
+        else:
+            for entry in data:
+                ID, first_name, last_name = entry
+                new_user: UserListItem = UserListItem(id_=ID, first_name=first_name, last_name=last_name)
+                self._user_list.addItem(new_user)
 
     def _save(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
