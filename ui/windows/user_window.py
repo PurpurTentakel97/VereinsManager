@@ -3,6 +3,7 @@
 # VereinsManager / User Window
 
 from enum import Enum
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QListWidgetItem, QLabel, QListWidget, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, \
     QGridLayout, QWidget
@@ -23,8 +24,9 @@ class LineEditType(Enum):
     CITY = 5
     PHONE = 6
     MAIL = 7
-    PASSWORD_1 = 8
-    PASSWORD_2 = 9
+    POSITION = 8
+    PASSWORD_1 = 9
+    PASSWORD_2 = 10
 
 
 class UserListItem(QListWidgetItem):
@@ -151,17 +153,21 @@ class UserWindow(BaseWindow):
         self._mail_le.setPlaceholderText("Mail")
         self._mail_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.MAIL))
         # self._mail_le.returnPressed.connect(self._save)
+        self._position_lb: QLabel = QLabel()
+        self._position_lb.setText("Position:")
+        self._position_le: QLineEdit = QLineEdit()
+        self._position_le.setPlaceholderText("Position")
+        self._position_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.POSITION))
+        # self._position_le.returnPressed.connect(self._save)
 
-        self._password_1_lb: QLabel = QLabel()
-        self._password_1_lb.setText("Neues Passwort")
+        self._password_lb: QLabel = QLabel()
+        self._password_lb.setText("Passwort:")
         self._password_1_le: QLineEdit = QLineEdit()
         self._password_1_le.setPlaceholderText("Neues Passwort")
         self._password_1_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.PASSWORD_1))
         # self._password_1_le.returnPressed.connect(self._save)
-        self._password_2_lb: QLabel = QLabel()
-        self._password_2_lb.setText("Neues Passwort")
         self._password_2_le: QLineEdit = QLineEdit()
-        self._password_2_le.setPlaceholderText("Neues Passwort")
+        self._password_2_le.setPlaceholderText("Passwort wiederholen")
         self._password_2_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.PASSWORD_2))
         # self._password_2_le.returnPressed.connect(self._save)
 
@@ -200,20 +206,21 @@ class UserWindow(BaseWindow):
         grid.addWidget(self._city_le, row, 2)
         row += 1
 
-        # Mail / Number
+        # Mail / Number / Position
         grid.addWidget(self._phone_number_lb, row, 0, 1, 1)
-        grid.addWidget(self._phone_number_le, row, 1, 1, -1)
+        grid.addWidget(self._phone_number_le, row, 1, 1, 1)
+        grid.addWidget(self._position_lb, row, 2, 1, 1, alignment=Qt.AlignRight)
+        grid.addWidget(self._position_le, row, 3, 1, 1)
         row += 1
         grid.addWidget(self._mail_lb, row, 0, 1, 1)
         grid.addWidget(self._mail_le, row, 1, 1, -1)
         row += 1
 
         # Password
-        grid.addWidget(self._password_1_lb, row, 0, 1, 1)
-        grid.addWidget(self._password_1_le, row, 1, 1, -1)
+        grid.addWidget(self._password_lb, row, 0, 1, 1)
         row += 1
-        grid.addWidget(self._password_2_lb, row, 0, 1, 1)
-        grid.addWidget(self._password_2_le, row, 1, 1, -1)
+        grid.addWidget(self._password_1_le, row, 0, 1, 2)
+        grid.addWidget(self._password_2_le, row, 2, 1, -1)
         row += 1
 
         # Global
@@ -265,6 +272,8 @@ class UserWindow(BaseWindow):
                 current_user.phone_number = self._phone_number_le.text().strip()
             case LineEditType.MAIL:
                 current_user.mail_address = self._mail_le.text().strip().lower()
+            case LineEditType.POSITION:
+                current_user.position = self._position_le.text().strip().title()
             case LineEditType.PASSWORD_1:
                 current_user.password_1 = self._password_1_le.text().strip()
             case LineEditType.PASSWORD_2:
@@ -282,7 +291,7 @@ class UserWindow(BaseWindow):
         self._city_le.setText(current_user.city)
         self._phone_number_le.setText(current_user.phone_number)
         self._mail_le.setText(current_user.mail_address)
-        #self.pos.setText(current_user.position)
+        self._position_le.setText(current_user.position)
 
         self._set_edit_mode(active=False)
 
