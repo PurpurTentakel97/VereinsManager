@@ -13,7 +13,7 @@ class WindowManager:
         self.types_window = None
         # Member
         self.members_window = None
-        self.recover_member_window = None
+        self.recover_window = None
         self.member_table_window = None
         self.member_anniversary_window = None
         # User
@@ -44,13 +44,13 @@ class WindowManager:
         return True
 
     # Member
-    def is_valid_member_window(self, active_recover_member_window: bool = False,
+    def is_valid_member_window(self, active_recover_window: bool = False,
                                active_member_table_window: bool = False,
                                active_member_anniversary_window: bool = False) -> bool | str:
         if self.types_window:
             return "Es können keine Mitglieder berabeitet werden, währen das Typ-Fenster geöffnet ist."
 
-        elif self.recover_member_window and not active_recover_member_window:
+        elif self.recover_window and not active_recover_window:
             return "Es können keine Mitglieder berabeitet werden, währen das Ehmalige-Mitglieder-Fenster geöffnet ist."
 
         elif self.member_table_window and not active_member_table_window:
@@ -61,20 +61,11 @@ class WindowManager:
 
         return True
 
-    def is_valid_recover_member_window(self, active_member_window: bool = False) -> bool | str:
-        if self.members_window and not active_member_window:
-            return "Es können keine Ehmaligen Mitglider berabeitet werden, währen das Mitglieder-Fenster geöffnet ist."
-
-        elif self.member_table_window:
-            return "Es können keine Ehmaligen Mitglider berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist."
-
-        return True
-
     def is_valid_member_table_window(self, active_member_window: bool = False) -> bool | str:
         if self.members_window and not active_member_window:
             return "Die Tabelle kann nicht angezeigt werden, während das Mitglieder-Fenster geöffnet ist."
 
-        elif self.recover_member_window:
+        elif self.recover_window:
             return "Die Tabelle kann nicht angezeigt werden, während das Ehmalige-Mitglieder-Fenster geöffnet ist."
 
         elif self.types_window:
@@ -86,7 +77,7 @@ class WindowManager:
         if self.members_window and not active_member_window:
             return "Die Tabelle kann nicht angezeigt werden, während das Mitglieder-Fenster geöffnet ist."
 
-        elif self.recover_member_window:
+        elif self.recover_window:
             return "Die Tabelle kann nicht angezeigt werden, während das Ehmalige-Mitglieder-Fenster geöffnet ist."
 
         elif self.types_window:
@@ -95,12 +86,28 @@ class WindowManager:
         return True
 
     # User
-    @staticmethod
-    def is_valid_user_window() -> bool:
+    def is_valid_user_window(self, active_recover_window: bool = False) -> str | bool:
+        if self.user_window and not active_recover_window:
+            return "Es können keine Benutzer berabeitet werden, während das benutzer-Wiederherstellen-Fenster geöffnet ist."
+
+        return True
+
+    # Global
+    def is_valid_recover_window(self, type_: str, active_member_window: bool = False,
+                                active_user_window: bool = False) -> bool | str:
+        match type_:
+            case "member":
+                if self.members_window and not active_member_window:
+                    return "Es können keine Ehmaligen Mitglider berabeitet werden, währen das Mitglieder-Fenster geöffnet ist."
+
+                elif self.member_table_window:
+                    return "Es können keine Ehmaligen Mitglider berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist."
+            case "user":
+                if self.user_window and not active_user_window:
+                    return "Es können keine Ehmaligen Benutzer berabeitet werden, währen das Benutzer-Fenster geöffnet ist."
         return True
 
     # close window
-
     def close_all_window(self) -> None:
         self.member_table_window.close() if self.member_table_window else None
         self.member_table_window = None
@@ -108,8 +115,8 @@ class WindowManager:
         self.member_anniversary_window.close() if self.member_anniversary_window else None
         self.member_anniversary_window = None
 
-        self.recover_member_window.close() if self.recover_member_window else None
-        self.recover_member_window = None
+        self.recover_window.close() if self.recover_window else None
+        self.recover_window = None
 
         self.members_window.close() if self.members_window else None
         self.members_window = None

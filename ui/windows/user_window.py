@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QListWidgetItem, QLabel, QListWidget, QPushButton, Q
     QGridLayout, QWidget
 
 from ui.windows.base_window import BaseWindow
+from ui.windows import window_manager as w_m, recover_window as r_w
 import transition
 import debug
 
@@ -93,10 +94,10 @@ class UserWindow(BaseWindow):
         self._add_user_btn.clicked.connect(self._add_user)
         self._remove_user_btn: QPushButton = QPushButton()
         self._remove_user_btn.setText("Benutzer löschen")
-        self._remove_user_btn.clicked.connect(self._delete_user)
+        self._remove_user_btn.clicked.connect(self._delete)
         self._recover_user_btn: QPushButton = QPushButton()
         self._recover_user_btn.setText("Benutzer wiederherstellen")
-        # self._recover_user_btn.clicked.connect()
+        self._recover_user_btn.clicked.connect(self._recover)
 
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
@@ -107,7 +108,7 @@ class UserWindow(BaseWindow):
         self._save_btn.setEnabled(False)
         self._save_btn.clicked.connect(self._save)
 
-        # Rhight
+        # Right
         self._first_name_lb: QLabel = QLabel()
         self._first_name_lb.setText("Vorname:")
         self._first_name_le: QLineEdit = QLineEdit()
@@ -220,7 +221,7 @@ class UserWindow(BaseWindow):
         grid.addWidget(self._password_2_le, row, 3, 1, -1)
         row += 1
 
-        grid_vbox:QVBoxLayout = QVBoxLayout()
+        grid_vbox: QVBoxLayout = QVBoxLayout()
         grid_vbox.addLayout(grid)
         grid_vbox.addStretch()
 
@@ -366,7 +367,16 @@ class UserWindow(BaseWindow):
                 self._set_current_user_id(user_id=result)
                 debug.debug(item=debug_str, keyword="_save", message=f" ID = {result} // {current_user.user_id_}")
 
-    def _delete_user(self) -> None:
+    def _recover(self) -> None:
+        result = w_m.window_manger.is_valid_recover_window(type_="user", active_user_window=True)
+        if isinstance(result, str):
+            self.set_error_bar(message=result)
+        else:
+            w_m.window_manger.recover_window = r_w.RecoverWindow(type_="user")
+            w_m.window_manger.user_window = None
+            self.close()
+
+    def _delete(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
         result = transition.update_user_activity(ID=current_user.user_id_, active=False)
         if isinstance(result, str):
@@ -378,3 +388,7 @@ class UserWindow(BaseWindow):
     def _set_current_user_id(self, user_id: int) -> None:
         current_user: UserListItem = self._user_list.currentItem()
         current_user.user_id_ = user_id
+
+    def closeEvent(self, event) -> None:
+        event.ignore()
+        event.accept()

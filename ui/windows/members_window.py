@@ -11,7 +11,7 @@ import webbrowser
 
 import transition
 from ui.windows.base_window import BaseWindow
-from ui.windows import recover_member_window as r_m_w, member_table_window as m_t_w, window_manager as w, \
+from ui.windows import recover_window as r_w, member_table_window as m_t_w, window_manager as w, \
     member_anniversary_window as m_a_w
 from config import config_sheet as c
 
@@ -727,14 +727,11 @@ class MembersWindow(BaseWindow):
         self._set_edit_mode(active=False)
 
     def _recover(self) -> None:
-        result = w.window_manger.is_valid_recover_member_window(active_member_window=True)
+        result = w.window_manger.is_valid_recover_window(type_="member", active_member_window=True)
         if isinstance(result, str):
             self.set_error_bar(message=result)
         elif result:
-            if self._is_edit:
-                if self._save_permission():
-                    self._save()
-            w.window_manger.recover_member_window = r_m_w.RecoverMemberWindow()
+            w.window_manger.recover_window = r_w.RecoverWindow(type_="member")
             w.window_manger.members_window = None
             self.close()
 

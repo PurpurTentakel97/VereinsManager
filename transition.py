@@ -67,8 +67,8 @@ def update_member_data(id_: int, data: dict, log_date: int | None = None) -> str
     return g_h.global_handler.update_member_data(ID=id_, data=data, log_date=log_date)
 
 
-def update_member_activity(id_: int, active: bool, log_date: int | None = None) -> str | None:
-    return u_h.update_handler.update_member_activity(ID=id_, active=active, log_date=log_date)
+def update_member_activity(ID: int, active: bool, log_date: int | None = None) -> str | None:
+    return u_h.update_handler.update_member_activity(ID=ID, active=active, log_date=log_date)
 
 
 # user
