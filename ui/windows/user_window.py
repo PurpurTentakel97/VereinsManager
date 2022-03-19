@@ -206,27 +206,28 @@ class UserWindow(BaseWindow):
         grid.addWidget(self._city_le, row, 2)
         row += 1
 
-        # Mail / Number / Position
-        grid.addWidget(self._phone_number_lb, row, 0, 1, 1)
-        grid.addWidget(self._phone_number_le, row, 1, 1, 1)
-        grid.addWidget(self._position_lb, row, 2, 1, 1, alignment=Qt.AlignRight)
-        grid.addWidget(self._position_le, row, 3, 1, 1)
-        row += 1
+        # Mail / Number / Position / Password
         grid.addWidget(self._mail_lb, row, 0, 1, 1)
         grid.addWidget(self._mail_le, row, 1, 1, -1)
         row += 1
+        grid.addWidget(self._phone_number_lb, row, 0, 1, 1)
+        grid.addWidget(self._phone_number_le, row, 1, 1, 1)
+        grid.addWidget(self._password_lb, row, 2, 1, 1, alignment=Qt.AlignRight)
+        grid.addWidget(self._password_1_le, row, 3, 1, 1)
+        row += 1
+        grid.addWidget(self._position_lb, row, 0, 1, 1)
+        grid.addWidget(self._position_le, row, 1, 1, 1)
+        grid.addWidget(self._password_2_le, row, 3, 1, -1)
+        row += 1
 
-        # Password
-        grid.addWidget(self._password_lb, row, 0, 1, 1)
-        row += 1
-        grid.addWidget(self._password_1_le, row, 0, 1, 2)
-        grid.addWidget(self._password_2_le, row, 2, 1, -1)
-        row += 1
+        grid_vbox:QVBoxLayout = QVBoxLayout()
+        grid_vbox.addLayout(grid)
+        grid_vbox.addStretch()
 
         # Global
         sub_global_hbox: QHBoxLayout = QHBoxLayout()
         sub_global_hbox.addWidget(self._user_list)
-        sub_global_hbox.addLayout(grid)
+        sub_global_hbox.addLayout(grid_vbox)
 
         global_vbox: QVBoxLayout = QVBoxLayout()
         global_vbox.addLayout(top_hbox)
