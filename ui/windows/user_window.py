@@ -273,7 +273,18 @@ class UserWindow(BaseWindow):
         self._set_edit_mode(True)
 
     def _set_current_user(self) -> None:
-        pass
+        current_user: UserListItem = self._user_list.currentItem()
+        self._first_name_le.setText(current_user.first_name)
+        self._last_name_le.setText(current_user.last_name)
+        self._street_le.setText(current_user.street)
+        self._number_le.setText(current_user.number)
+        self._zip_code_le.setText(current_user.zip_code)
+        self._city_le.setText(current_user.city)
+        self._phone_number_le.setText(current_user.phone_number)
+        self._mail_le.setText(current_user.mail_address)
+        #self.pos.setText(current_user.position)
+
+        self._set_edit_mode(active=False)
 
     def _add_user(self) -> None:
         new_user = UserListItem()
@@ -306,8 +317,8 @@ class UserWindow(BaseWindow):
             current_user.number = "" if data["number"] is None else data["number"]
             current_user.zip_code = "" if data["zip_code"] is None else data["zip_code"]
             current_user.city = "" if data["city"] is None else data["city"]
-            current_user.phone = "" if data["phone"] is None else data["phone"]
-            current_user.mail = "" if data["mail"] is None else data["mail"]
+            current_user.phone_number = "" if data["phone"] is None else data["phone"]
+            current_user.mail_address = "" if data["mail"] is None else data["mail"]
             current_user.position = "" if data["position"] is None else data["position"]
             self._set_current_user()
 
