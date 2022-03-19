@@ -349,6 +349,7 @@ class SelectHandler(Database):
             v.validation.must_positive_int(int_=ID, max_length=None)
         except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
             debug.error(item=debug_str, keyword="get_position_member_by_ID", message=f"Error = {error.message}")
+            return error.message
 
         sql_command: str = f"""SELECT active FROM member_position WHERE ID is ?;"""
         try:
@@ -365,6 +366,7 @@ class SelectHandler(Database):
         try:
             v.validation.must_bool(bool_=active)
         except e.NoBool as error:
+            debug.debug(item=debug_str, keyword="get_names_of_user", message=f"Error = {error.message}")
             return error.message
 
         table: str = "v_active_user" if active else "v_inactive_user"
@@ -375,7 +377,40 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword="get_names_of_user", message=f"load user names failed\n"
                                                                              f"command = {sql_command}\n"
                                                                              f"error = {' '.join(error.args)}")
-            return e.LoadingFailed(info="Mitgliedernamen").message
+            return e.LoadingFailed(info="Benutzernamen").message
+
+    def get_data_of_user_by_ID(self, ID: int, active: bool) -> dict | str:
+        try:
+            v.validation.must_positive_int(int_=ID)
+            v.validation.must_bool(bool_=active)
+        except (e.NoInt, e.NoPositiveInt, e.NoBool) as error:
+            debug.error(item=debug_str, keyword="get_data_of_user", message=f"Error = {error.message}")
+            return error.message
+
+        table: str = "v_active_user" if active else "v_inactive_user"
+        sql_command: str = f"""SELECT * FROM {table} WHERE ID is ?;"""
+
+        try:
+            data = self.cursor.execute(sql_command, (ID,)).fetchone()
+            debug.info(item=debug_str, keyword="get_data_of_user_by_ID", message=f"data = {data}")
+            data_: dict = {
+                "ID": data[0],
+                "firstname": data[1],
+                "lastname": data[2],
+                "street": data[3],
+                "number": data[4],
+                "zip_code": data[5],
+                "city": data[6],
+                "phone": data[7],
+                "mail": data[8],
+                "position": data[9],
+            }
+            return data_
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="get_data_of_user_by_ID", message=f"load user data failed\n"
+                                                                                  f"command = {sql_command}\n"
+                                                                                  f"error = {' '.join(error.args)}")
+            return e.LoadingFailed(info="Benutzerdaten").message
 
 
 def create_select_handler() -> None:

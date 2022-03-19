@@ -80,6 +80,10 @@ def get_all_user_name(active: bool = True) -> str | dict:
     return s_h.select_handler.get_names_of_user(active=active)
 
 
+def get_user_data_by_id(ID: int, active: bool = True) -> str | dict:
+    return s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
+
+
 # pdf_handler
 def get_member_table_pdf(path: str, active: bool = True) -> None | str:
     return m_t_p.member_table_pdf.create_pdf(path=path, active=active)

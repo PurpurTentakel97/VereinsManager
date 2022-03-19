@@ -289,6 +289,16 @@ class UserWindow(BaseWindow):
                 ID, first_name, last_name = entry
                 new_user: UserListItem = UserListItem(id_=ID, first_name=first_name, last_name=last_name)
                 self._user_list.addItem(new_user)
+            self._user_list.setCurrentRow(0)
+            self._load_member_data()
+
+    def _load_member_data(self) -> None:
+        current_user: UserListItem = self._user_list.currentItem()
+        data = transition.get_user_data_by_id(ID=current_user.user_id_)
+        if isinstance(data, str):
+            self.set_error_bar(message=data)
+        else:
+            debug.info(item=debug_str, keyword="_load_member_data", message=f"data = {data}")
 
     def _save(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()

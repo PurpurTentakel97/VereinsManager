@@ -186,6 +186,12 @@ SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position
 FROM "user"
 WHERE _active = 1;
 
+/* Active User Password */
+CREATE VIEW IF NOT EXISTS "main"."v_active_user_password" AS
+SELECT ID,password
+FROM "user"
+WHERE _active = 1;
+
 /* Inactive User */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_user" AS
 SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position
