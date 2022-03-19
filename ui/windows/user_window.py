@@ -272,6 +272,9 @@ class UserWindow(BaseWindow):
 
         self._set_edit_mode(True)
 
+    def _set_current_user(self) -> None:
+        pass
+
     def _add_user(self) -> None:
         new_user = UserListItem()
         self._user_list.addItem(new_user)
@@ -299,6 +302,14 @@ class UserWindow(BaseWindow):
             self.set_error_bar(message=data)
         else:
             debug.info(item=debug_str, keyword="_load_member_data", message=f"data = {data}")
+            current_user.street = "" if data["firstname"] is None else data["firstname"]
+            current_user.number = "" if data["number"] is None else data["number"]
+            current_user.zip_code = "" if data["zip_code"] is None else data["zip_code"]
+            current_user.city = "" if data["city"] is None else data["city"]
+            current_user.phone = "" if data["phone"] is None else data["phone"]
+            current_user.mail = "" if data["mail"] is None else data["mail"]
+            current_user.position = "" if data["position"] is None else data["position"]
+            self._set_current_user()
 
     def _save(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()

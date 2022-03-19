@@ -392,7 +392,6 @@ class SelectHandler(Database):
 
         try:
             data = self.cursor.execute(sql_command, (ID,)).fetchone()
-            debug.info(item=debug_str, keyword="get_data_of_user_by_ID", message=f"data = {data}")
             data_: dict = {
                 "ID": data[0],
                 "firstname": data[1],
