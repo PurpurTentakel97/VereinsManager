@@ -165,6 +165,8 @@ PRIMARY KEY ("ID" AUTOINCREMENT)
 /*USER*/
 CREATE TABLE IF NOT EXISTS "main"."user_" (
 "ID" INTEGER NOT NULL UNIQUE,
+"_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
+"_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "first_name" VARCHAR(10),
 "last_name" VARCHAR(10),
 "street" VARCHAR(20),
@@ -176,7 +178,6 @@ CREATE TABLE IF NOT EXISTS "main"."user_" (
 "position_" VARCHAR(20),
 "password" BLOB NOT NULL,
 "_active" INTEGER(1) DEFAULT 1,
-"_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 PRIMARY KEY ("ID" AUTOINCREMENT)
 );
 /* Active User */
@@ -196,3 +197,10 @@ CREATE VIEW IF NOT EXISTS "main"."v_inactive_user" AS
 SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position_
 FROM "user_"
 WHERE _active = 0;
+
+/* date */
+CREATE TRIGGER IF NOT EXISTS "trigger_update_user"
+    AFTER UPDATE ON "user_"
+BEGIN
+    UPDATE "user_" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+END;
