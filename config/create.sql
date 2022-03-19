@@ -163,7 +163,7 @@ PRIMARY KEY ("ID" AUTOINCREMENT)
 );
 
 /*USER*/
-CREATE TABLE IF NOT EXISTS "main"."user_" (
+CREATE TABLE IF NOT EXISTS "main"."user" (
 "ID" INTEGER NOT NULL UNIQUE,
 "_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS "main"."user_" (
 "city" VARCHAR(10),
 "phone" VARCHAR(10),
 "mail" VARCHAR(20),
-"position_" VARCHAR(20),
+"position" VARCHAR(20),
 "password" BLOB NOT NULL,
 "_active" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT)
@@ -183,24 +183,24 @@ PRIMARY KEY ("ID" AUTOINCREMENT)
 /* Active User */
 CREATE VIEW IF NOT EXISTS "main"."v_active_user" AS
 SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position_
-FROM "user_"
+FROM "user"
 WHERE _active = 1;
 
 /* Active User Password */
 CREATE VIEW IF NOT EXISTS "main"."v_active_user_password" AS
 SELECT ID,first_name,last_name,password
-FROM "user_"
+FROM "user"
 WHERE _active = 1;
 
 /* Inactive User */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_user" AS
 SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position_
-FROM "user_"
+FROM "user"
 WHERE _active = 0;
 
 /* date */
 CREATE TRIGGER IF NOT EXISTS "trigger_update_user"
-    AFTER UPDATE ON "user_"
+    AFTER UPDATE ON "user"
 BEGIN
-    UPDATE "user_" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+    UPDATE "user" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
 END;

@@ -200,12 +200,12 @@ class GlobalHandler:
             return error.message
 
         if data["ID"]:
-            result = u_h.xxx
+            result = u_h.update_handler.update_user(ID=data["ID"], data=data)
             if isinstance(result, str):
                 return result
-            if data["pasword_1"] is not None:
+            if data["password_1"] is not None:
                 data["password_hashed"] = hasher.hash_password(data["password_1"])
-                return u_h.xxx
+                return u_h.update_handler.update_user_password(ID=data["ID"], password=data["password_hashed"])
         else:
             data["password_hashed"] = hasher.hash_password(data["password_1"])
             return a_h.add_handler.add_user(data=data)
