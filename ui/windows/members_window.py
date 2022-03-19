@@ -751,16 +751,6 @@ class MembersWindow(BaseWindow):
             self.close()
             w.window_manger.member_anniversary_window = m_a_w.MemberAnniversaryWindow()
 
-    @staticmethod
-    def _save_permission() -> bool:
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Fenster wird geschlossen.")
-        msg.setInformativeText("Du hast ungespeicherte Daten. Möchtest du diese Daten vorher speichern?")
-        msg.setWindowTitle("Daten Speichern?")
-        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        return msg.exec_() == QMessageBox.Yes
-
     def _set_inactive(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
         result = transition.update_member_activity(id_=current_member.member_id_, active=False)
@@ -791,8 +781,7 @@ class MembersWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        if self._is_edit:
-            if self._save_permission():
-                self._save()
+        if self._is_edit and self.save_permission():
+            self._save()
         w.window_manger.members_window = None
         event.accept()

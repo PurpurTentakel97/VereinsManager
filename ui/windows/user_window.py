@@ -6,7 +6,7 @@ from enum import Enum
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QListWidgetItem, QLabel, QListWidget, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, \
-    QGridLayout, QWidget
+    QGridLayout, QWidget, QMessageBox
 
 from ui.windows.base_window import BaseWindow
 from ui.windows import window_manager as w_m, recover_window as r_w
@@ -391,4 +391,7 @@ class UserWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
+        if self._is_edit and self.save_permission():
+            self._save()
+        w_m.window_manger.user_window = None
         event.accept()

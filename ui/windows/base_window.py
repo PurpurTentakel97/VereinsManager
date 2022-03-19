@@ -3,7 +3,7 @@
 # VereinsManager / Base Window
 
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 app: QApplication | None = None
 
@@ -28,6 +28,16 @@ class BaseWindow(QMainWindow):
 
     def set_info_bar(self, message: str) -> None:
         self.statusBar().showMessage("Info: " + message, 2000)
+
+    @staticmethod
+    def save_permission() -> bool:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Fenster wird geschlossen.")
+        msg.setInformativeText("Du hast ungespeicherte Daten. Möchtest du diese Daten vorher speichern?")
+        msg.setWindowTitle("Daten Speichern?")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        return msg.exec_() == QMessageBox.Yes
 
 
 def create_application():
