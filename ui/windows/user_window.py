@@ -250,8 +250,10 @@ class UserWindow(BaseWindow):
         match type_:
             case LineEditType.FIRSTNAME:
                 current_user.first_name = self._first_name_le.text().strip().title()
+                current_user.set_name()
             case LineEditType.LASTNAME:
                 current_user.last_name = self._last_name_le.text().strip().title()
+                current_user.set_name()
             case LineEditType.STREET:
                 current_user.street = self._street_le.text().strip().title()
             case LineEditType.NUMBER:
