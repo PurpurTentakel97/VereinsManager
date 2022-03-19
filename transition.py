@@ -76,6 +76,10 @@ def save_update_user(data: dict) -> str | int | None:
     return g_h.global_handler.save_update_user(data=data)
 
 
+def update_user_activity(ID: int, active: bool) -> str | None:
+    return u_h.update_handler.update_user_activity(ID=ID, active=active)
+
+
 def get_all_user_name(active: bool = True) -> str | dict:
     return s_h.select_handler.get_names_of_user(active=active)
 

@@ -203,13 +203,13 @@ class Validation:
     def must_password(cls, password_1: str, password_2: str) -> None:
         cls.must_str(str_=password_1)
         if password_1 != password_2:
-            raise e.DifferentPassword(info=f"{password_1}/{password_2}")
+            raise e.DifferentPassword()
 
         if len(password_1) < 10:
-            raise e.PasswordToShort(info=password_1)
+            raise e.PasswordToShort()
 
         if " " in password_1:
-            raise e.PasswordHasSpace(password_1)
+            raise e.PasswordHasSpace()
 
         digit: int = 0
         capital_letter: int = 0
@@ -233,13 +233,13 @@ class Validation:
 
         count += (digit + capital_letter + small_letter + special_character)
         if count <= 0:
-            raise e.VeryLowPassword(info=password_1)
+            raise e.VeryLowPassword()
         bits = math.log(count ** len(password_1), 2)
 
         if bits < 20:
-            raise e.VeryLowPassword(info=password_1)
+            raise e.VeryLowPassword()
         elif bits < 40:
-            raise e.LowPassword(info=password_1)
+            raise e.LowPassword()
 
 
 def create_validation() -> None:

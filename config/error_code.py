@@ -109,33 +109,28 @@ class ToLong(Exception):
 
 # Password
 class PasswordHasSpace(Exception):
-    def __init__(self, info: str = ""):
-        str_ = "Passwort enthält Leerzeichen"
-        self.message: str = str_ + "//" + info if info else str_
+    def __init__(self):
+        self.message: str = "Passwort enthält Leerzeichen"
 
 
 class VeryLowPassword(Exception):
-    def __init__(self, info: str = ""):
-        str_ = "Dein Passwort ist sehr unsicher"
-        self.message: str = str_ + "//" + info if info else str_
+    def __init__(self):
+        self.message:str = "Dein Passwort ist sehr unsicher"
 
 
 class LowPassword(Exception):
-    def __init__(self, info: str = ""):
-        str_ = "Dein Passwort ist unsicher"
-        self.message: str = str_ + "//" + info if info else str_
+    def __init__(self):
+        self.message: str = "Dein Passwort ist unsicher"
 
 
 class PasswordToShort(Exception):
-    def __init__(self, info: str = ""):
-        str_ = "Dein Passwort ist zu kurz"
-        self.message: str = str_ + "//" + info if info else str_
+    def __init__(self):
+        self.message: str = "Dein Passwort ist zu kurz"
 
 
 class DifferentPassword(Exception):
-    def __init__(self, info: str = ""):
-        str_ = "Deine Passwörter stimmen nicht überein"
-        self.message: str = str_ + "//" + info if info else str_
+    def __init__(self):
+        self.message: str = "Deine Passwörter stimmen nicht überein"
 
 
 # General

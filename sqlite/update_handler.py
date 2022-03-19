@@ -250,6 +250,25 @@ class UpdateHandler(Database):
                                                                                 f"error = {' '.join(error.args)}")
             return e.ActiveSetFailed().message
 
+    def update_user_activity(self, ID: int, active: bool) -> str | None:
+        try:
+            v.validation.must_positive_int(int_=ID)
+            v.validation.must_bool(bool_=active)
+        except (e.NoInt, e.NoPositiveInt, e.NoBool) as error:
+            debug.error(item=debug_str, keyword="update_user_activity", message=f"Error = {error.message}")
+            return error.message
+
+        sql_command: str = """UPDATE user SET _active = ? WHERE ID IS ?;"""
+
+        try:
+            self.cursor.execute(sql_command, (active, ID))
+            self.connection.commit()
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="update_user_activity", message=f"update user activity failed\n"
+                                                                                f"command = {sql_command}\n"
+                                                                                f"error = {' '.join(error.args)}")
+            return e.ActiveSetFailed().message
+
 
 def crate_update_handler() -> None:
     global update_handler

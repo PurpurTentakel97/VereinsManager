@@ -86,14 +86,14 @@ class UserWindow(BaseWindow):
         self._user_lb.setText("Benutzer:")
 
         self._user_list: QListWidget = QListWidget()
-        # self._user_list.itemClicked.connect()
+        self._user_list.itemClicked.connect(self._load_user_data)
 
         self._add_user_btn: QPushButton = QPushButton()
         self._add_user_btn.setText("Benutzer hinzufügen")
         self._add_user_btn.clicked.connect(self._add_user)
         self._remove_user_btn: QPushButton = QPushButton()
         self._remove_user_btn.setText("Benutzer löschen")
-        # self._remove_user_btn.clicked.connect()
+        self._remove_user_btn.clicked.connect(self._delete_user)
         self._recover_user_btn: QPushButton = QPushButton()
         self._recover_user_btn.setText("Benutzer wiederherstellen")
         # self._recover_user_btn.clicked.connect()
@@ -101,7 +101,7 @@ class UserWindow(BaseWindow):
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
         self._break_btn.setEnabled(False)
-        # self._break_btn.clicked.connect()
+        self._break_btn.clicked.connect(self._load_user_data)
         self._save_btn: QPushButton = QPushButton()
         self._save_btn.setText("Speichern")
         self._save_btn.setEnabled(False)
@@ -113,63 +113,63 @@ class UserWindow(BaseWindow):
         self._first_name_le: QLineEdit = QLineEdit()
         self._first_name_le.setPlaceholderText("Vorname")
         self._first_name_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.FIRSTNAME))
-        # self._first_name_le.returnPressed.connect(self._save)
+        self._first_name_le.returnPressed.connect(self._save)
         self._last_name_lb: QLabel = QLabel()
         self._last_name_lb.setText("Nachname:")
         self._last_name_le: QLineEdit = QLineEdit()
         self._last_name_le.setPlaceholderText("Nachname")
         self._last_name_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.LASTNAME))
-        # self._last_name_le.returnPressed.connect(self._save)
+        self._last_name_le.returnPressed.connect(self._save)
 
         self._address_lb: QLabel = QLabel()
         self._address_lb.setText("Adresse:")
         self._street_le: QLineEdit = QLineEdit()
         self._street_le.setPlaceholderText("Straße")
         self._street_le.textChanged.connect(lambda: self._set_el_input(LineEditType.STREET))
-        # self._street_le.returnPressed.connect(self._save)
+        self._street_le.returnPressed.connect(self._save)
         self._number_le: QLineEdit = QLineEdit()
         self._number_le.setPlaceholderText("Hausnummer")
         self._number_le.textChanged.connect(lambda: self._set_el_input(LineEditType.NUMBER))
-        # self._number_le.returnPressed.connect(self._save)
+        self._number_le.returnPressed.connect(self._save)
         self._zip_code_le: QLineEdit = QLineEdit()
         self._zip_code_le.setPlaceholderText("PLZ")
         self._zip_code_le.setValidator(QIntValidator())
         self._zip_code_le.textChanged.connect(lambda: self._set_el_input(LineEditType.ZIP_CODE))
-        # self._zip_code_le.returnPressed.connect(self._save)
+        self._zip_code_le.returnPressed.connect(self._save)
         self._city_le: QLineEdit = QLineEdit()
         self._city_le.setPlaceholderText("Stadt")
         self._city_le.textChanged.connect(lambda: self._set_el_input(LineEditType.CITY))
-        # self._city_le.returnPressed.connect(self._save)
+        self._city_le.returnPressed.connect(self._save)
 
         self._phone_number_lb: QLabel = QLabel()
         self._phone_number_lb.setText("Telefon:")
         self._phone_number_le: QLineEdit = QLineEdit()
         self._phone_number_le.setPlaceholderText("Telefonnummer")
         self._phone_number_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.PHONE))
-        # self._phone_number_le.returnPressed.connect(self._save)
+        self._phone_number_le.returnPressed.connect(self._save)
         self._mail_lb: QLabel = QLabel()
         self._mail_lb.setText("Mail:")
         self._mail_le: QLineEdit = QLineEdit()
         self._mail_le.setPlaceholderText("Mail")
         self._mail_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.MAIL))
-        # self._mail_le.returnPressed.connect(self._save)
+        self._mail_le.returnPressed.connect(self._save)
         self._position_lb: QLabel = QLabel()
         self._position_lb.setText("Position:")
         self._position_le: QLineEdit = QLineEdit()
         self._position_le.setPlaceholderText("Position")
         self._position_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.POSITION))
-        # self._position_le.returnPressed.connect(self._save)
+        self._position_le.returnPressed.connect(self._save)
 
         self._password_lb: QLabel = QLabel()
         self._password_lb.setText("Passwort:")
         self._password_1_le: QLineEdit = QLineEdit()
         self._password_1_le.setPlaceholderText("Neues Passwort")
         self._password_1_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.PASSWORD_1))
-        # self._password_1_le.returnPressed.connect(self._save)
+        self._password_1_le.returnPressed.connect(self._save)
         self._password_2_le: QLineEdit = QLineEdit()
         self._password_2_le.setPlaceholderText("Passwort wiederholen")
         self._password_2_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.PASSWORD_2))
-        # self._password_2_le.returnPressed.connect(self._save)
+        self._password_2_le.returnPressed.connect(self._save)
 
     def _set_layout(self) -> None:
         # Top
@@ -292,6 +292,8 @@ class UserWindow(BaseWindow):
         self._phone_number_le.setText(current_user.phone_number)
         self._mail_le.setText(current_user.mail_address)
         self._position_le.setText(current_user.position)
+        self._password_1_le.setText("")
+        self._password_2_le.setText("")
 
         self._set_edit_mode(active=False)
 
@@ -303,6 +305,7 @@ class UserWindow(BaseWindow):
 
     def _load_user_names(self) -> None:
         data = transition.get_all_user_name()
+        self._user_list.clear()
         if isinstance(data, str):
             self.set_error_bar(message=data)
         elif len(data) == 0:
@@ -313,15 +316,14 @@ class UserWindow(BaseWindow):
                 new_user: UserListItem = UserListItem(id_=ID, first_name=first_name, last_name=last_name)
                 self._user_list.addItem(new_user)
             self._user_list.setCurrentRow(0)
-            self._load_member_data()
+            self._load_user_data()
 
-    def _load_member_data(self) -> None:
+    def _load_user_data(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
         data = transition.get_user_data_by_id(ID=current_user.user_id_)
         if isinstance(data, str):
             self.set_error_bar(message=data)
         else:
-            debug.info(item=debug_str, keyword="_load_member_data", message=f"data = {data}")
             current_user.street = "" if data["firstname"] is None else data["firstname"]
             current_user.number = "" if data["number"] is None else data["number"]
             current_user.zip_code = "" if data["zip_code"] is None else data["zip_code"]
@@ -362,6 +364,15 @@ class UserWindow(BaseWindow):
             if isinstance(result, int):
                 self._set_current_user_id(user_id=result)
                 debug.debug(item=debug_str, keyword="_save", message=f" ID = {result} // {current_user.user_id_}")
+
+    def _delete_user(self) -> None:
+        current_user: UserListItem = self._user_list.currentItem()
+        result = transition.update_user_activity(ID=current_user.user_id_, active=False)
+        if isinstance(result, str):
+            self.set_error_bar(message=result)
+        else:
+            self._load_user_names()
+            self.set_info_bar(message="gelöscht")
 
     def _set_current_user_id(self, user_id: int) -> None:
         current_user: UserListItem = self._user_list.currentItem()
