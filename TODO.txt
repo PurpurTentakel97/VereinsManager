@@ -5,9 +5,6 @@
 error
     add bool to massage
 
-password
-    disable delete active user
-
 pdf
     open after export?
     refactor break day in current anniversary
@@ -31,5 +28,6 @@ UI
         set_error_bar Error
 
 user
+    no edit current user
     no edit default
     add chanche user
