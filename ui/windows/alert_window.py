@@ -77,7 +77,7 @@ class AlertWindow(BaseWindow):
         self.show()
         self.resize(750, 400)
 
-    def closeEvent(self, event) -> None:
-        event.ignore()
-        main_window.create_main_window()
-        event.accept()
+
+def create_alert_window() -> None:
+    global alert_window
+    alert_window = AlertWindow()

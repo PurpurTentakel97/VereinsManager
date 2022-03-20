@@ -4,13 +4,17 @@
 
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     global_handler as g_h
-from logic import member_table_data_handler, path_handler, member_anniversary_data_handler
+from logic import member_table_data_handler, path_handler, member_anniversary_data_handler, password_validation
 from pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p
 
 
 # global
 def create_default_dir(type_) -> None:
     path_handler.create_default_path(type_)
+
+
+def compare_password(ID: int, password: str) -> str | bool:
+    return password_validation.check_password(ID=ID, password=password)
 
 
 # type

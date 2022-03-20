@@ -2,14 +2,37 @@
 # 16.03.2022
 # VereinsManager / User Verify Window
 
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QListWidget, QPushButton, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QListWidget, QPushButton, QHBoxLayout, QVBoxLayout, \
+    QListWidgetItem
 
+import transition
 from ui.windows.base_window import BaseWindow
+from ui.windows import alert_window
 import debug
 
 debug_str: str = "UserVerifyWindow"
 
 user_verify_window: "UserVerifyWindow"
+
+
+class UserListItem(QListWidgetItem):
+    def __init__(self, ID: int, first_name: str, last_name: str):
+        super().__init__()
+        self.ID: int = ID
+        self.first_name: str = first_name
+        self.last_name: str = last_name
+
+        self.set_name()
+
+    def set_name(self) -> None:
+        if self.first_name and self.last_name:
+            self.setText(self.first_name + " " + self.last_name)
+        elif self.first_name:
+            self.setText(self.first_name)
+        elif self.last_name:
+            self.setText(self.last_name)
+        else:
+            self.setText("Kein Name vorhanden")
 
 
 class UserVerifyWindow(BaseWindow):
@@ -19,6 +42,7 @@ class UserVerifyWindow(BaseWindow):
         self._set_window_information()
         self._set_ui()
         self._set_layout()
+        self._load_user_names()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Benutzer Identifikation")
@@ -29,9 +53,11 @@ class UserVerifyWindow(BaseWindow):
 
         self._password_le: QLineEdit = QLineEdit()
         self._password_le.setPlaceholderText("Passwort")
+        self._password_le.returnPressed.connect(self._verify)
 
         self._password_btn: QPushButton = QPushButton()
         self._password_btn.setText("Verifizieren")
+        self._password_btn.clicked.connect(self._verify)
 
         self._user_lb: QLabel = QLabel()
         self._user_lb.setText("Benutzer:")
@@ -60,6 +86,28 @@ class UserVerifyWindow(BaseWindow):
         widget.setLayout(global_vbox)
         self.set_widget(widget)
         self.show()
+
+    def _load_user_names(self) -> None:
+        data = transition.get_all_user_name()
+        if isinstance(data, str):
+            self.set_error_bar(message=data)
+        else:
+            for entry in data:
+                ID, firstname, lastname = entry
+                debug.info(item=debug_str, keyword="_load_user_names", message=f"data = {entry}")
+                new_item: UserListItem = UserListItem(ID=ID, first_name=firstname, last_name=lastname)
+                self._user_list.addItem(new_item)
+            self._user_list.setCurrentRow(0)
+
+    def _verify(self) -> None:
+        current_user: UserListItem = self._user_list.currentItem()
+        result = transition.compare_password(current_user.ID, self._password_le.text().strip())
+        if isinstance(result, str):
+            self.set_error_bar(message=result)
+        elif result:
+            self.close()
+        else:
+            self.set_info_bar(message="Falsches Passwort")
 
 
 def create_user_verify_window() -> None:
