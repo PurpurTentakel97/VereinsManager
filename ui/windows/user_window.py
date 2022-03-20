@@ -327,7 +327,7 @@ class UserWindow(BaseWindow):
         if isinstance(data, str):
             self.set_error_bar(message=data)
         else:
-            current_user.street = "" if data["firstname"] is None else data["firstname"]
+            current_user.street = "" if data["street"] is None else data["street"]
             current_user.number = "" if data["number"] is None else data["number"]
             current_user.zip_code = "" if data["zip_code"] is None else data["zip_code"]
             current_user.city = "" if data["city"] is None else data["city"]
