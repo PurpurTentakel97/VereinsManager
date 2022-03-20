@@ -303,6 +303,7 @@ class UserWindow(BaseWindow):
         new_user = UserListItem()
         self._user_list.addItem(new_user)
         self._user_list.setCurrentItem(new_user)
+        self._set_current_user()
         self._set_edit_mode(True)
 
     def _load_user_names(self) -> None:
@@ -358,14 +359,13 @@ class UserWindow(BaseWindow):
             self.set_error_bar(message=result)
         else:
             self.set_info_bar(message="saved")
-            self._set_edit_mode(False)
             self._password_1_le.clear()
             self._password_2_le.clear()
+            self._set_edit_mode(False)
             current_user.password_1 = str()
             current_user.password_2 = str()
             if isinstance(result, int):
                 self._set_current_user_id(user_id=result)
-                debug.debug(item=debug_str, keyword="_save", message=f" ID = {result} // {current_user.user_id_}")
 
     def _recover(self) -> None:
         result = w_m.window_manger.is_valid_recover_window(type_="user", active_user_window=True)

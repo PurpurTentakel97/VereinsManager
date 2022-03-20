@@ -411,15 +411,15 @@ class SelectHandler(Database):
                                                                                   f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Benutzerdaten").message
 
-    def get_hashed_password_by_ID(self, ID: int) -> bytes | str:
+    def get_hashed_password_by_ID(self, ID: int) -> [str | bool]:
         sql_command: str = """SELECT password FROM v_active_user_password WHERE ID IS ?;"""
         try:
-            return self.cursor.execute(sql_command, (ID,)).fetchone()[0]
+            return self.cursor.execute(sql_command, (ID,)).fetchone()[0], True
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_hashed_password_by_ID", message=f"load user password failed\n"
                                                                                      f"command = {sql_command}\n"
                                                                                      f"error = {' '.join(error.args)}")
-            return e.LoadingFailed(info="Benutzer Passwort").message
+            return e.LoadingFailed(info="Benutzer Passwort").message, False
 
 
 def create_select_handler() -> None:

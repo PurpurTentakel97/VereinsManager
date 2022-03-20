@@ -19,8 +19,8 @@ def check_password(ID: int, password: str) -> str | bool:
         debug.error(item=debug_str, keyword="check_password", message=f"Error = {error.message}")
         return error.message
 
-    hashed: bytes = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
-    if isinstance(hashed, str):
+    hashed, valid = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
+    if not valid:
         return hashed
 
     result: bool = hasher.compare_password(password=password, hashed=hashed)

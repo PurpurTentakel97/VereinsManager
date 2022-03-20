@@ -94,7 +94,6 @@ class UserVerifyWindow(BaseWindow):
         else:
             for entry in data:
                 ID, firstname, lastname = entry
-                debug.info(item=debug_str, keyword="_load_user_names", message=f"data = {entry}")
                 new_item: UserListItem = UserListItem(ID=ID, first_name=firstname, last_name=lastname)
                 self._user_list.addItem(new_item)
             self._user_list.setCurrentRow(0)

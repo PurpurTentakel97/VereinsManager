@@ -176,10 +176,11 @@ CREATE TABLE IF NOT EXISTS "main"."user" (
 "phone" VARCHAR(10),
 "mail" VARCHAR(20),
 "position" VARCHAR(20),
-"password" BLOB NOT NULL,
+"password" VARCHAR NOT NULL,
 "_active" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT)
 );
+INSERT OR IGNORE INTO user (ID,first_name, last_name, password) VALUES (1,"admin","admin","$2b$12$AcsY7HvbiflR5c076PGgMOWnMpT.FQEDegYqclWumW8MRMUlh1G46");
 /* Active User */
 CREATE VIEW IF NOT EXISTS "main"."v_active_user" AS
 SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position
