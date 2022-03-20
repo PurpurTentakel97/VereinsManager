@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS "main"."user" (
 "_active" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT)
 );
-INSERT OR IGNORE INTO user (ID,first_name, last_name, password) VALUES (1,"admin","admin","$2b$12$AcsY7HvbiflR5c076PGgMOWnMpT.FQEDegYqclWumW8MRMUlh1G46");
+INSERT OR IGNORE INTO user (ID,first_name, last_name, password) VALUES (1,"default","default","$2b$12$o1u7aISUrLVJmKKq3XcGDuA2rOhU25Bg5uFJR8Fpwld4z.gKCnQK2");
 /* Active User */
 CREATE VIEW IF NOT EXISTS "main"."v_active_user" AS
 SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position

@@ -2,6 +2,9 @@
 # 21.01.2022
 # VereinsManager // TODO
 
+error
+    add bool to massage
+
 password
     disable delete active user
 
@@ -26,3 +29,6 @@ UI
 
     frame
         set_error_bar Error
+
+user
+    no edit default
