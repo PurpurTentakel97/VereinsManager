@@ -3,8 +3,7 @@
 # VereinsManager // TODO
 
 password
-    close programm if all users are deleted
-    window for forst user // default user
+    disable delete active user
 
 pdf
     open after export?
