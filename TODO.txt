@@ -2,6 +2,10 @@
 # 21.01.2022
 # VereinsManager // TODO
 
+member hander
+    add
+        without validation ?
+
 password
     dots insted of letters
 

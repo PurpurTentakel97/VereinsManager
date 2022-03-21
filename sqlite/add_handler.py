@@ -2,12 +2,9 @@
 # 13.02.2022
 # VereinsManager / Add Handler
 
-from sqlite3 import InterfaceError
-
 from sqlite.database import Database
 from sqlite import select_handler as s_h, log_handler as l_h
-from config import error_code as e, config_sheet as c
-from logic import validation
+from config import exception_sheet as e, config_sheet as c
 import debug
 
 debug_str: str = "AddHandler"
@@ -33,7 +30,7 @@ class AddHandler(Database):
             if not valid:
                 return result, False
 
-            member_ids, valid = s_h.select_handler.get_all_IDs_from_member()
+            member_ids, valid = s_h.select_handler.get_all_IDs_from_member(active=True)
             if not valid:
                 return member_ids, False
             function_ = None
@@ -60,21 +57,6 @@ class AddHandler(Database):
 
     # member
     def add_member(self, data: dict, log_date: int | None) -> [int | str, bool]:
-        # validation in global handler
-        result, valid = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
-        if not valid:
-            return result, False
-        else:
-            if result:
-                data["membership_type"] = result[0]
-            else:
-                data["membership_type"] = result
-
-        if data["birth_date"] == c.config.date_format["None_date"]:
-            data["birth_date"] = None
-        if data["entry_date"] == c.config.date_format["None_date"]:
-            data["entry_date"] = None
-
         sql_command: str = f"""INSERT INTO member 
         (first_name,last_name,street,number,zip_code,city,maps,b_day,entry_day,membership_type,special_member,comment) 
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?);"""
@@ -109,7 +91,6 @@ class AddHandler(Database):
     # member nexus
     def add_member_nexus_phone(self, type_id: int, value: str, member_id: int, log_date: int | None) \
             -> [int or str, bool]:
-        # validation in global handler
         sql_command: str = f"""INSERT INTO member_phone (member_id, type_id, number) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
@@ -129,7 +110,6 @@ class AddHandler(Database):
 
     def add_member_nexus_mail(self, type_id: int, value: str, member_id: int, log_date: int | None) \
             -> [int or str, bool]:
-        # validation in global handler
         sql_command: str = f"""INSERT INTO member_mail (member_id, type_id, mail) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
@@ -141,7 +121,7 @@ class AddHandler(Database):
             if not valid:
                 return result, False
             return ID, True
-        except (self.OperationalError, InterfaceError) as error:
+        except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_member_nexus_mail", message=f"add member nexus failed\n"
                                                                                  f"command = {sql_command}\n"
                                                                                  f"error = {' '.join(error.args)}")
@@ -149,7 +129,6 @@ class AddHandler(Database):
 
     def add_member_nexus_position(self, type_id: int, value: bool, member_id: int, log_date: int | None) \
             -> [int or str, bool]:
-        # validation in global handler
         sql_command: str = f"""INSERT INTO member_position (member_id, type_id, active) VALUES (?,?,?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))

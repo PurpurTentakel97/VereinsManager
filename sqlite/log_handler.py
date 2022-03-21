@@ -1,11 +1,11 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Log Handler
-import sqlite3
+
 import time
 
 from sqlite.database import Database
-from config import error_code as e, config_sheet as c
+from config import exception_sheet as e, config_sheet as c
 from logic import validation as v
 from sqlite import select_handler as s_h
 

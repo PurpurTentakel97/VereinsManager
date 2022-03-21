@@ -4,8 +4,7 @@
 
 from sqlite.database import Database
 from sqlite import select_handler as s_h, log_handler as l_h
-from config import error_code as e
-from logic import validation as v
+from config import exception_sheet as e
 import debug
 
 debug_str: str = "DeleteHandler"

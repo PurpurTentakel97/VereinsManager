@@ -3,9 +3,7 @@
 # VereinsManager / Select Handler
 
 from sqlite.database import Database
-from config import error_code as e
-from logic import validation as v
-from config import config_sheet as c
+from config import exception_sheet as e
 import debug
 
 debug_str: str = "SelectHandler"
@@ -93,13 +91,7 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Typ Name").message, False
 
     # member
-    def get_names_of_member(self, active: bool = True) -> [tuple | str, bool]:
-        try:
-            v.validation.must_bool(bool_=active)
-        except e.NoBool as error:
-            debug.error(item=debug_str, keyword="get_names_of_member", message=f"Error = {error.message}")
-            return error.message, False
-
+    def get_names_of_member(self, active: bool) -> [tuple | str, bool]:
         table: str = "v_active_member" if active else "v_inactive_member"
         sql_command: str = f"""SELECT ID,first_name,last_name FROM {table} ORDER BY last_name ASC,first_name ASC;"""
         try:
@@ -110,13 +102,7 @@ class SelectHandler(Database):
                                                                                f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedernamen").message, False
 
-    def get_name_and_dates_from_member(self, active: bool = True) -> [tuple | str, bool]:
-        try:
-            v.validation.must_bool(bool_=active)
-        except e.NoBool as error:
-            debug.error(item=debug_str, keyword="get_name_and_dates_from_member", message=f"Error = {error.message}")
-            return error.message, False
-
+    def get_name_and_dates_from_member(self, active: bool) -> [tuple | str, bool]:
         table: str = "v_active_member" if active else "v_inactive_member"
         sql_command: str = f"""SELECT ID,first_name,last_name,b_day,entry_day FROM {table};"""
         try:
@@ -128,14 +114,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Mitgliedernamen").message, False
 
     def get_data_from_member_by_membership_type_id(self, active: bool, membership_type_id: int) -> [tuple | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=membership_type_id, max_length=None)
-            v.validation.must_bool(bool_=active)
-        except (e.NoInt, e.NoPositiveInt, e.ToLong, e.NoBool) as error:
-            debug.error(item=debug_str, keyword="get_data_from_member_by_membership_type_id",
-                        message=f"Error = {error.message}")
-            return error.message, False
-
         table: str = "v_active_member" if active else "v_inactive_member"
         sql_command: str = f"""SELECT * FROM {table} WHERE membership_type is ? ORDER BY last_name ASC,first_name ASC;"""
         try:
@@ -147,46 +125,11 @@ class SelectHandler(Database):
                                 f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Alle Mitglieder Daten").message, False
 
-    def get_member_data_by_id(self, ID: int, active: bool = True) -> [dict | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID, max_length=None)
-            v.validation.must_bool(bool_=active)
-        except (e.NoInt, e.NoPositiveInt, e.NoBool, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_member_data_by_id", message=f"Error = {error.message}")
-            return error.message, False
-
+    def get_member_data_by_id(self, ID: int, active: bool) -> [dict | str, bool]:
         table: str = "v_active_member" if active else "v_inactive_member"
         sql_command: str = f"""SELECT * FROM {table} WHERE ID = ?;"""
         try:
-            data = self.cursor.execute(sql_command, (ID,)).fetchone()
-            data_ = {
-                "ID": data[0],
-                "first_name": data[1],
-                "last_name": data[2],
-                "street": data[3],
-                "number": data[4],
-                "zip_code": data[5],
-                "city": data[6],
-                "maps": data[7],
-                "birth_date": data[8],
-                "entry_date": data[9],
-                "membership_type": data[10],
-                "special_member": data[11],
-                "comment_text": data[12],
-            }
-            if isinstance(data_["membership_type"], int):
-                data, valid = self.get_type_name_by_ID(data_["membership_type"])
-                if not valid:
-                    return data, False
-                else:
-                    data_["membership_type"] = data[0]
-
-            if data_["birth_date"] is None:
-                data_["birth_date"] = c.config.date_format["None_date"]
-            if data_["entry_date"] is None:
-                data_["entry_date"] = c.config.date_format["None_date"]
-
-            return data_, True
+            return self.cursor.execute(sql_command, (ID,)).fetchone(), True
 
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_data_from_member_by_id",
@@ -196,19 +139,10 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Mitgliedsdaten").message, False
 
     def get_member_activity_by_id(self, ID: int) -> [bool | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID, max_length=None)
-        except (e.NoInt, e.NoPositiveInt, e.NoBool, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_member_data_by_id", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT active FROM "member" WHERE ID = ?;"""
 
         try:
-            data = self.cursor.execute(sql_command, (ID,)).fetchone()
-            if isinstance(data[0], int):
-                data = data[0] == 1
-            return data, True
+            return self.cursor.execute(sql_command, (ID,)).fetchone(), True
 
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_member_activity_from_id",
@@ -217,13 +151,7 @@ class SelectHandler(Database):
                                 f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Mitgliedsdatensaktivität").message, False
 
-    def get_all_IDs_from_member(self, active: bool = True) -> [list or None, bool]:
-        try:
-            v.validation.must_bool(bool_=active)
-        except e.NoBool as error:
-            debug.error(item=debug_str, keyword="get_all_IDs_from_member", message=f"Error = {error.message}")
-            return error.message, False
-
+    def get_all_IDs_from_member(self, active: bool) -> [list or None, bool]:
         table: str = "v_active_member" if active else "v_inactive_member"
         sql_command: str = f"""SELECT ID FROM {table};"""
         try:
@@ -237,12 +165,6 @@ class SelectHandler(Database):
 
     # member nexus
     def get_phone_number_by_member_id(self, member_id: int) -> [tuple or None, bool]:
-        try:
-            v.validation.must_positive_int(int_=member_id, max_length=None)
-        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT ID,type_id,number FROM member_phone WHERE member_id is ? ORDER BY type_id ASC;"""
         try:
             return self.cursor.execute(sql_command, (member_id,)).fetchall(), True
@@ -253,12 +175,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Phone Number").message, False
 
     def get_phone_number_by_ID(self, ID: int) -> [tuple | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID, max_length=None)
-        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_phone_number_by_ID", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT number FROM member_phone WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone(), True
@@ -269,12 +185,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Phone Number").message, False
 
     def get_mail_by_member_id(self, member_id: int) -> [tuple or None, bool]:
-        try:
-            v.validation.must_positive_int(int_=member_id, max_length=None)
-        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT ID,type_id,mail FROM member_mail WHERE member_id is ? ORDER BY type_id ASC;"""
         try:
             return self.cursor.execute(sql_command, (member_id,)).fetchall(), True
@@ -285,12 +195,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Phone Number").message, False
 
     def get_mail_member_by_ID(self, ID: int) -> [tuple | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID, max_length=None)
-        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_mail_member_by_ID", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT mail FROM member_mail WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone(), True
@@ -301,22 +205,9 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Phone Number").message, False
 
     def get_position_by_member_id(self, member_id: int) -> [tuple or None, bool]:
-        try:
-            v.validation.must_positive_int(int_=member_id, max_length=None)
-        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_phone_number_by_member_id", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT ID,type_id,active FROM member_position WHERE member_id is ? ORDER BY type_id ASC;"""
         try:
-            data: list = (self.cursor.execute(sql_command, (member_id,)).fetchall())
-            for i in range(len(data)):
-                data[i] = list(data[i])
-            for i in data:
-                data[data.index(i)][2] = data[data.index(i)][2] == 1
-            for i in range(len(data)):
-                data[i] = tuple(data[i])
-            return data, True
+            return (self.cursor.execute(sql_command, (member_id,)).fetchall()), True
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="get_position_by_member_id", message=f"load positions failed\n"
                                                                                      f"command = {sql_command}\n"
@@ -324,12 +215,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Phone Number").message, False
 
     def get_position_member_by_ID(self, ID: int) -> [tuple | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID, max_length=None)
-        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_position_member_by_ID", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT active FROM member_position WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone(), True

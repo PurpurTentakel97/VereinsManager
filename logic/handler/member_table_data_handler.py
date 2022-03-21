@@ -13,7 +13,7 @@ debug_str: str = "table_data_handler"
 
 
 def get_member_table_data(active: bool) -> [dict | str, bool]:
-    types, valid = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"])
+    types, valid = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
     if not valid:
         return types, False
     type_ids: list = [x[0] for x in types]

@@ -5,7 +5,7 @@
 import json
 
 from logic import validation as v
-from config import error_code as e
+from config import exception_sheet as e
 from sqlite import select_handler as s_h
 import debug
 

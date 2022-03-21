@@ -327,7 +327,7 @@ class UserWindow(BaseWindow):
 
     def _load_user_data(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
-        data, valid = transition.get_user_data_by_id(ID=current_user.user_id_)
+        data, valid = transition.get_user_data_by_id(ID=current_user.user_id_, active=True)
         if not valid:
             self.set_error_bar(message=data)
             return

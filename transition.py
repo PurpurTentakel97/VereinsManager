@@ -2,10 +2,10 @@
 # 08.02.2022
 # VereinsManager / Transition
 
-from sqlite import select_handler as s_h,update_handler as u_h, global_handler as g_h
+from sqlite import select_handler as s_h, update_handler as u_h, global_handler as g_h
 from logic import password_validation
 from logic.handler import member_anniversary_data_handler, path_handler, member_table_data_handler, user_handler, \
-    type_handler
+    type_handler, member_handler
 from pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p
 
 
@@ -53,7 +53,7 @@ def delete_type(id_: int) -> [str | None, bool]:
 
 # member
 def get_all_member_name(active: bool = True) -> [tuple | str, bool]:
-    return s_h.select_handler.get_names_of_member(active=active)
+    return member_handler.get_names_of_member(active=active)
 
 
 def get_anniversary_member_data(type_: str | int, active: bool = True, year: int = 0) -> [dict | str, bool]:
@@ -61,7 +61,7 @@ def get_anniversary_member_data(type_: str | int, active: bool = True, year: int
 
 
 def get_member_data_by_id(id_: int, active: bool = True) -> [dict | str, bool]:
-    return g_h.global_handler.get_member_data(ID=id_, active=active)
+    return member_handler.get_member_data(ID=id_, active=active)
 
 
 def get_member_data_for_table(active: bool = True) -> [dict | str, bool]:
@@ -69,11 +69,11 @@ def get_member_data_for_table(active: bool = True) -> [dict | str, bool]:
 
 
 def update_member_data(id_: int, data: dict, log_date: int | None = None) -> [str | dict, bool]:
-    return g_h.global_handler.update_member_data(ID=id_, data=data, log_date=log_date)
+    return member_handler.update_member_data(ID=id_, data=data, log_date=log_date)
 
 
 def update_member_activity(ID: int, active: bool, log_date: int | None = None) -> [str | None, bool]:
-    return u_h.update_handler.update_member_activity(ID=ID, active=active, log_date=log_date)
+    return member_handler.update_member_activity(ID=ID, active=active, log_date=log_date)
 
 
 # user

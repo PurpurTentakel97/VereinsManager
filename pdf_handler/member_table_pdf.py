@@ -49,7 +49,7 @@ class MemberTablePDF(BasePDF):
             doc.build(elements)
             return None, True
 
-        type_ids, valid = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"])
+        type_ids, valid = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
         if not valid:
             return type_ids, False
         type_ids = [[x[0], x[1]] for x in type_ids]
@@ -82,7 +82,6 @@ class MemberTablePDF(BasePDF):
                 member_data = member["member"]
                 phone_data = member["phone"]
                 mail_data = member["mail"]
-                debug.debug(item=debug_str, keyword="create_pdf", message=f"street = {member_data['street']}")
                 row_data: list = [
                     str(index) if not member_data["special_member"] else f"{str(index)} (E)",
                     [Paragraph(f"{member_data['first_name']} {member_data['last_name']}"),

@@ -3,8 +3,9 @@
 # VereinsManager / Type Handler
 
 from logic import validation as v
-from config import error_code as e
-from sqlite import add_handler as a_h, delete_handler as d_h, select_handler as s_h, update_handler as u_h
+from config import exception_sheet as e
+from sqlite import add_handler as a_h, delete_handler as d_h, select_handler as s_h, update_handler as u_h, \
+    log_handler as l_h
 import debug
 
 debug_str: str = "Type Handler"
@@ -37,9 +38,6 @@ def get_single_raw_type_types(raw_type_id: int, active: bool = True) -> [tuple |
         v.validation.must_bool(bool_=active)
     except (e.NoBool, e.NoPositiveInt) as error:
         return error.message, False
-
-    if not valid:
-        return message,valid
 
     return s_h.select_handler.get_single_raw_type_types(raw_type_id=raw_type_id, active=active)
 
@@ -88,7 +86,20 @@ def update_type(ID: int, name: str) -> [str | None, bool]:
         debug.error(item=debug_str, keyword="update_type", message=f"Error 0 {error.message}")
         return error.message, False
 
-    return u_h.update_handler.update_type(ID=ID, name=name)
+    reference_data, valid = s_h.select_handler.get_type_name_by_ID(ID=ID)
+    if not valid:
+        return reference_data, False
+
+    result, valid = u_h.update_handler.update_type(ID=ID, name=name)
+    if not valid:
+        return result, False
+
+    result, valid = l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=reference_data[0],
+                                             new_data=name)
+    if not valid:
+        return result, False
+
+    return None, True
 
 
 def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
@@ -98,8 +109,20 @@ def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
         debug.error(item=debug_str, keyword="update_type_activity", message=f"Error = {error.message}")
         return error.message, False
 
-    return u_h.update_handler.update_type_activity(ID=ID, active=active)
+    reference_data, valid = s_h.select_handler.get_type_active_by_id(ID=ID)
+    if not valid:
+        return reference_data, False
 
+    result, valid = u_h.update_handler.update_type_activity(ID=ID, active=active)
+    if not valid:
+        return result, False
+
+    result, valid = l_h.log_handler.log_type(target_id=ID, target_column="active", old_data=reference_data[0],
+                                             new_data=active)
+    if not valid:
+        return result, False
+
+    return None,True
 
 # delete
 def delete_type(ID: int) -> [str | None, bool]:

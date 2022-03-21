@@ -4,7 +4,7 @@
 
 from helper import hasher
 from logic import validation as v
-from config import error_code as e
+from config import exception_sheet as e
 from sqlite import add_handler as a_h, update_handler as u_h, select_handler as s_h
 import debug
 
