@@ -2,10 +2,6 @@
 # 21.01.2022
 # VereinsManager // TODO
 
-member hander
-    add
-        without validation ?
-
 password
     dots insted of letters
 
@@ -27,7 +23,6 @@ UI
         add windowname in save premition
     Members Window
         let user choose log date
-        plz to str
 
     frame
         set_error_bar Error
