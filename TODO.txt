@@ -26,5 +26,4 @@ UI
         set_error_bar Error
 
 user
-    no edit current user
-    no edit default
+    only edit current user
