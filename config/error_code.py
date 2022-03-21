@@ -115,7 +115,7 @@ class PasswordHasSpace(Exception):
 
 class VeryLowPassword(Exception):
     def __init__(self):
-        self.message:str = "Dein Passwort ist sehr unsicher"
+        self.message: str = "Dein Passwort ist sehr unsicher"
 
 
 class LowPassword(Exception):
@@ -131,6 +131,13 @@ class PasswordToShort(Exception):
 class DifferentPassword(Exception):
     def __init__(self):
         self.message: str = "Deine Passwörter stimmen nicht überein"
+
+
+# User
+class CurrentUser(Exception):
+    def __init__(self, info: str = ""):
+        str_ = "Aktueller User kann nicht gelöscht werden"
+        self.message: str = str_ + "//" + info if info else str_
 
 
 # General

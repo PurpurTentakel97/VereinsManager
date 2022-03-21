@@ -21,6 +21,7 @@ class Config:
         # from config json
         self.date_format: dict = dict()
         self.raw_type_id: dict = dict()
+        self.default_user_id: dict = dict()
         self.special_user: dict = dict()
 
         # hashes
@@ -78,6 +79,7 @@ class Config:
 
         self.date_format: dict = json_data["date_formats"]
         self.raw_type_id: dict = json_data["raw_type_id"]
+        self.default_user_id: dict = json_data["default_user_id"]
         self.special_user: dict = json_data["special_user"]
 
     def _get_easter_egg_from_user_name(self) -> None:

@@ -12,6 +12,9 @@
     "position": 4,
     "job": 5
   },
+  "default_user_id": {
+    "default": 1
+  },
   "special_user": {
     "traijan__": "Ehrenmannmitglied",
     "necromenzer": "Ehren Todgeweihter",

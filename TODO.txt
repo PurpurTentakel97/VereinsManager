@@ -17,6 +17,7 @@ UI
         window close automaticly even if not saved
     Base Window
         set Icon
+        add windowname in save premition
     Members Window
         let user choose log date
         plz to str
