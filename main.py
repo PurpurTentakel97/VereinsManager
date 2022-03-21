@@ -15,9 +15,6 @@ def _test() -> None:
     pass
 
 
-
-
-
 # main
 if __name__ == "__main__":
     config_sheet.create_config()
@@ -27,4 +24,3 @@ if __name__ == "__main__":
     g_p_h.create_pdf_handler()
     window_handler.on_start()
     _test()
-
