@@ -2,6 +2,9 @@
 # 21.01.2022
 # VereinsManager // TODO
 
+password
+    dots insted of letters
+
 pdf
     open after export?
     refactor break day in current anniversary
@@ -28,3 +31,4 @@ UI
 user
     add user handler
     only edit current user
+    defalut user should not be able to edit data

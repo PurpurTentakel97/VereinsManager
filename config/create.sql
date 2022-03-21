@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS "main"."member" (
 "last_name" VARCHAR(10),
 "street" VARCHAR(20),
 "number" VARCHAR(10),
-"zip_code" INTEGER(10),
+"zip_code" VARCHAR(10),
 "city" VARCHAR(10),
 "maps" VARCHAR(50),
 "b_day" INTEGER,
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS "main"."user" (
 "_active" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT)
 );
-INSERT OR IGNORE INTO user (ID,first_name, last_name, password) VALUES (1,"default","default","$2b$12$o1u7aISUrLVJmKKq3XcGDuA2rOhU25Bg5uFJR8Fpwld4z.gKCnQK2");
+INSERT OR IGNORE INTO user (ID,first_name, last_name, password) VALUES (1,"Default","Default","$2b$12$o1u7aISUrLVJmKKq3XcGDuA2rOhU25Bg5uFJR8Fpwld4z.gKCnQK2");
 /* Active User */
 CREATE VIEW IF NOT EXISTS "main"."v_active_user" AS
 SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position

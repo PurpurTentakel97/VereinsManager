@@ -581,7 +581,7 @@ class MembersWindow(BaseWindow):
         current_member.last_name = "" if member_data["last_name"] is None else member_data["last_name"]
         current_member.street = "" if member_data["street"] is None else member_data["street"]
         current_member.number = "" if member_data["number"] is None else member_data["number"]
-        current_member.zip_code = "" if member_data["zip_code"] is None else str(member_data["zip_code"])
+        current_member.zip_code = "" if member_data["zip_code"] is None else member_data["zip_code"]
         current_member.city = "" if member_data["city"] is None else member_data["city"]
         current_member.birth_date = QDateTime().fromSecsSinceEpoch(member_data["birth_date"]).date()
         current_member.entry_date = QDateTime().fromSecsSinceEpoch(member_data["entry_date"]).date()
@@ -648,7 +648,7 @@ class MembersWindow(BaseWindow):
             "last_name": None if current_member.last_name == "" else current_member.last_name,
             "street": None if current_member.street == "" else current_member.street,
             "number": None if current_member.number == "" else current_member.number,
-            "zip_code": None if current_member.zip_code == "" else int(current_member.zip_code),
+            "zip_code": None if current_member.zip_code == "" else current_member.zip_code,
             "birth_date": QDateTime.toSecsSinceEpoch(QDateTime(current_member.birth_date)),
             "entry_date": QDateTime.toSecsSinceEpoch(QDateTime(current_member.entry_date)),
             "city": None if current_member.city == "" else current_member.city,

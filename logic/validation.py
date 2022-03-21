@@ -75,6 +75,7 @@ class Validation:
             "city",
             "maps",
             "membership_type",
+            "zip_code",
         ]
         for key in keys:
             if data[key] is not None:
@@ -84,7 +85,6 @@ class Validation:
             cls.must_str(str_=data["comment_text"], length=2000)
 
         keys: list = [
-            "zip_code",
             "birth_date",
             "entry_date",
         ]
