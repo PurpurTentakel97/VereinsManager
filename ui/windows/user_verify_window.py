@@ -62,6 +62,7 @@ class UserVerifyWindow(BaseWindow):
         self._user_lb: QLabel = QLabel()
         self._user_lb.setText("Benutzer:")
         self._user_list: QListWidget = QListWidget()
+        self._user_list.itemClicked.connect(self._set_focus)
 
     def _set_layout(self) -> None:
         password_lb_hbox: QHBoxLayout = QHBoxLayout()
@@ -86,6 +87,9 @@ class UserVerifyWindow(BaseWindow):
         widget.setLayout(global_vbox)
         self.set_widget(widget)
         self.show()
+
+    def _set_focus(self) -> None:
+        self._password_le.setFocus()
 
     def _load_user_names(self) -> None:
         data, valid = transition.get_all_user_name()

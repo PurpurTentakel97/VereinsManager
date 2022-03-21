@@ -26,4 +26,5 @@ UI
         set_error_bar Error
 
 user
+    add user handler
     only edit current user
