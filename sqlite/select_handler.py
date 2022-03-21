@@ -367,12 +367,6 @@ class SelectHandler(Database):
 
     # user
     def get_names_of_user(self, active: bool) -> [tuple | str, bool]:
-        try:
-            v.validation.must_bool(bool_=active)
-        except e.NoBool as error:
-            debug.debug(item=debug_str, keyword="get_names_of_user", message=f"Error = {error.message}")
-            return error.message, False
-
         table: str = "v_active_user" if active else "v_inactive_user"
         sql_command: str = f"""SELECT ID,first_name,last_name FROM {table} ORDER BY last_name ASC,first_name ASC;"""
         try:
@@ -384,13 +378,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Benutzernamen").message, False
 
     def get_data_of_user_by_ID(self, ID: int, active: bool) -> [dict | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID)
-            v.validation.must_bool(bool_=active)
-        except (e.NoInt, e.NoPositiveInt, e.NoBool) as error:
-            debug.error(item=debug_str, keyword="get_data_of_user", message=f"Error = {error.message}")
-            return error.message, False
-
         table: str = "v_active_user" if active else "v_inactive_user"
         sql_command: str = f"""SELECT * FROM {table} WHERE ID is ?;"""
 

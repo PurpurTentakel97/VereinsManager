@@ -8,7 +8,7 @@ from sqlite import database, global_handler as g_h
 from pdf_handler import global_pdf_handler as g_p_h
 from logic import validation
 
-from logic import window_handler
+from logic.handler import window_handler
 
 
 def _test() -> None:

@@ -175,7 +175,7 @@ class AddHandler(Database):
             return e.AddFailed(info=str(value)).message, False
 
     # user
-    def add_user(self, data: dict) -> [int | str,bool]:
+    def add_user(self, data: dict) -> [int | str, bool]:
         sql_command: str = """INSERT INTO user (first_name,last_name,street,number,zip_code,city,phone,mail,
         position,password) VALUES (?,?,?,?,?,?,?,?,?,?);"""
 
@@ -193,12 +193,12 @@ class AddHandler(Database):
                 data["password_hashed"],
             ))
             self.connection.commit()
-            return self.cursor.lastrowid,True
+            return self.cursor.lastrowid, True
         except self.OperationalError as error:
             debug.error(item=debug_str, keyword="add_user", message=f"add user failed\n"
                                                                     f"command = {sql_command}\n"
                                                                     f"error = {' '.join(error.args)}")
-            return e.AddFailed().message,False
+            return e.AddFailed().message, False
 
 
 def create_add_handler() -> None:

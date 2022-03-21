@@ -186,27 +186,6 @@ class GlobalHandler:
                    "position": position_ids,
                }, True
 
-    # User
-    @staticmethod
-    def save_update_user(data: dict) -> [int | str | None, bool]:
-        try:
-            v.validation.save_update_user(data=data)
-        except (e.NoDict, e.NoStr, e.NoInt, e.NoPositiveInt, e.DifferentPassword, e.PasswordToShort,
-                e.PasswordHasSpace, e.LowPassword, e.VeryLowPassword, e.ToLong, e.DefaultUserException) as error:
-            debug.error(item=debug_str, keyword="save_update_user", message=f"Error = {error.message}")
-            return error.message, False
-
-        if data["ID"]:
-            result, valid = u_h.update_handler.update_user(ID=data["ID"], data=data)
-            if not valid:
-                return result, False
-            if data["password_1"] is not None:
-                data["password_hashed"] = hasher.hash_password(data["password_1"])
-                return u_h.update_handler.update_user_password(ID=data["ID"], password=data["password_hashed"])
-        else:
-            data["password_hashed"] = hasher.hash_password(data["password_1"])
-            return a_h.add_handler.add_user(data=data)
-
 
 def create_global_handler() -> None:
     global global_handler

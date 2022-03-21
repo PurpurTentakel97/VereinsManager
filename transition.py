@@ -4,7 +4,8 @@
 
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
     global_handler as g_h
-from logic import member_table_data_handler, path_handler, member_anniversary_data_handler, password_validation
+from logic import password_validation
+from logic.handler import member_anniversary_data_handler, path_handler, member_table_data_handler, user_handler
 from pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p
 
 
@@ -77,15 +78,15 @@ def update_member_activity(ID: int, active: bool, log_date: int | None = None) -
 
 # user
 def save_update_user(data: dict) -> [str | int | None, bool]:
-    return g_h.global_handler.save_update_user(data=data)
+    return user_handler.add_update_user(data=data)
 
 
 def update_user_activity(ID: int, active: bool) -> [str | None, bool]:
-    return u_h.update_handler.update_user_activity(ID=ID, active=active)
+    return user_handler.update_user_activity(ID=ID, active=active)
 
 
 def get_all_user_name(active: bool = True) -> [str | dict, bool]:
-    return s_h.select_handler.get_names_of_user(active=active)
+    return user_handler.get_names_of_user(active=active)
 
 
 def get_user_data_by_id(ID: int, active: bool = True) -> [str | dict, bool]:

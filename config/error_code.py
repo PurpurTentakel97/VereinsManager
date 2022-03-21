@@ -136,7 +136,7 @@ class DifferentPassword(Exception):
 # User
 class CurrentUserException(Exception):
     def __init__(self, info: str = ""):
-        str_ = "Aktueller Benutzer kann nicht gelöscht werden"
+        str_ = "Dieser Benutzer kann nicht bearbeitet werden"
         self.message: str = str_ + "//" + info if info else str_
 
 

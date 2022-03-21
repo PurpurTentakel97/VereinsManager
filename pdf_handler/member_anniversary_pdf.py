@@ -10,11 +10,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table
 
 from datetime import datetime
 
-from logic import member_anniversary_data_handler
+from logic.handler import member_anniversary_data_handler
 from pdf_handler.base_pdf import BasePDF
 from config import config_sheet as c
-
-import debug
 
 debug_str: str = "MemberAnniversaryPDF"
 

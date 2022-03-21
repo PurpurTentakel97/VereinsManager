@@ -217,7 +217,6 @@ class UpdateHandler(Database):
 
     # user
     def update_user(self, ID: int, data: dict) -> [str | None, bool]:
-        # validation in global handler
         sql_command: str = """UPDATE user SET first_name = ?,last_name = ?,street = ?,number = ?,zip_code = ?,city = ?,
         phone = ?,mail = ?, position = ? WHERE ID is ?;"""
 
@@ -243,7 +242,6 @@ class UpdateHandler(Database):
             return e.ActiveSetFailed().message, False
 
     def update_user_password(self, ID: int, password: bytes) -> [str | None, bool]:
-        # validation in global handler
         sql_command: str = """UPDATE user SET password = ? WHERE ID is ?;"""
 
         try:
@@ -260,15 +258,6 @@ class UpdateHandler(Database):
             return e.ActiveSetFailed().message, False
 
     def update_user_activity(self, ID: int, active: bool) -> [str | None, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID)
-            v.validation.must_bool(bool_=active)
-            v.validation.must_not_current_user(ID=ID)
-            v.validation.must_not_default_user(ID=ID)
-        except (e.NoInt, e.NoPositiveInt, e.NoBool, e.CurrentUserException, e.DefaultUserException) as error:
-            debug.error(item=debug_str, keyword="update_user_activity", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = """UPDATE user SET _active = ? WHERE ID IS ?;"""
 
         try:

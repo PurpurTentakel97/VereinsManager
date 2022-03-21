@@ -2,7 +2,8 @@
 # 20.03.2022
 # VereinsManager / Password Validation
 
-from logic import validation as v, window_handler
+from logic import validation as v
+from logic.handler import window_handler
 from config import error_code as e, config_sheet as c
 from sqlite import select_handler as s_h
 from helper import hasher

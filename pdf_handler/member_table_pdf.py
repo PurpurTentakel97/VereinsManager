@@ -10,7 +10,7 @@ from reportlab.lib.units import cm
 
 from datetime import datetime
 
-from logic import member_table_data_handler
+from logic.handler import member_table_data_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
 from pdf_handler.base_pdf import BasePDF
