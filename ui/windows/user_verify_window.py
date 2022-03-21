@@ -53,6 +53,7 @@ class UserVerifyWindow(BaseWindow):
 
         self._password_le: QLineEdit = QLineEdit()
         self._password_le.setPlaceholderText("Passwort")
+        self._password_le.setEchoMode(QLineEdit.Password)
         self._password_le.returnPressed.connect(self._verify)
 
         self._password_btn: QPushButton = QPushButton()
