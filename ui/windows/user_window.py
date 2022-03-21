@@ -165,10 +165,12 @@ class UserWindow(BaseWindow):
         self._password_lb.setText("Passwort:")
         self._password_1_le: QLineEdit = QLineEdit()
         self._password_1_le.setPlaceholderText("Neues Passwort")
+        self._password_1_le.setEchoMode(QLineEdit.Password)
         self._password_1_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.PASSWORD_1))
         self._password_1_le.returnPressed.connect(self._save)
         self._password_2_le: QLineEdit = QLineEdit()
         self._password_2_le.setPlaceholderText("Passwort wiederholen")
+        self._password_2_le.setEchoMode(QLineEdit.Password)
         self._password_2_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.PASSWORD_2))
         self._password_2_le.returnPressed.connect(self._save)
 
