@@ -5,7 +5,8 @@
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMessageBox
 
 from ui.windows.base_window import BaseWindow
-from ui.windows import members_window as m_w, window_manager as w_m, types_window as t_w, user_window as u_w
+from ui.windows import members_window as m_w, window_manager as w_m, types_window as t_w, user_window as u_w, \
+    user_verify_window as u_v_w
 
 import debug
 
@@ -121,7 +122,8 @@ class MainWindow(BaseWindow):
         debug.info(item=debug_str, keyword="_open_export_pdf", message=f"pdf open")
 
     def _open_chance_user(self):
-        debug.info(item=debug_str, keyword="_open_chance_user", message=f"chance user")
+        u_v_w.create_user_verify_window()
+        self.close()
 
     def _open_chance_organization(self):
         debug.info(item=debug_str, keyword="_open_chance_organization", message=f"chance database")

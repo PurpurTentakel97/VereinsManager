@@ -27,4 +27,3 @@ UI
 user
     no edit current user
     no edit default
-    add chanche user
