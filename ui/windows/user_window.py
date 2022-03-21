@@ -307,34 +307,39 @@ class UserWindow(BaseWindow):
         self._set_edit_mode(True)
 
     def _load_user_names(self) -> None:
-        data = transition.get_all_user_name()
+        data, valid = transition.get_all_user_name()
         self._user_list.clear()
-        if isinstance(data, str):
+
+        if not valid:
             self.set_error_bar(message=data)
-        elif len(data) == 0:
+            return
+
+        if len(data) == 0:
             self._add_user()
-        else:
-            for entry in data:
-                ID, first_name, last_name = entry
-                new_user: UserListItem = UserListItem(id_=ID, first_name=first_name, last_name=last_name)
-                self._user_list.addItem(new_user)
-            self._user_list.setCurrentRow(0)
-            self._load_user_data()
+            return
+
+        for entry in data:
+            ID, first_name, last_name = entry
+            new_user: UserListItem = UserListItem(id_=ID, first_name=first_name, last_name=last_name)
+            self._user_list.addItem(new_user)
+        self._user_list.setCurrentRow(0)
+        self._load_user_data()
 
     def _load_user_data(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
-        data = transition.get_user_data_by_id(ID=current_user.user_id_)
-        if isinstance(data, str):
+        data, valid = transition.get_user_data_by_id(ID=current_user.user_id_)
+        if not valid:
             self.set_error_bar(message=data)
-        else:
-            current_user.street = "" if data["street"] is None else data["street"]
-            current_user.number = "" if data["number"] is None else data["number"]
-            current_user.zip_code = "" if data["zip_code"] is None else data["zip_code"]
-            current_user.city = "" if data["city"] is None else data["city"]
-            current_user.phone_number = "" if data["phone"] is None else data["phone"]
-            current_user.mail_address = "" if data["mail"] is None else data["mail"]
-            current_user.position = "" if data["position"] is None else data["position"]
-            self._set_current_user()
+            return
+
+        current_user.street = "" if data["street"] is None else data["street"]
+        current_user.number = "" if data["number"] is None else data["number"]
+        current_user.zip_code = "" if data["zip_code"] is None else data["zip_code"]
+        current_user.city = "" if data["city"] is None else data["city"]
+        current_user.phone_number = "" if data["phone"] is None else data["phone"]
+        current_user.mail_address = "" if data["mail"] is None else data["mail"]
+        current_user.position = "" if data["position"] is None else data["position"]
+        self._set_current_user()
 
     def _save(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
@@ -354,36 +359,39 @@ class UserWindow(BaseWindow):
             "password_2": None if current_user.password_2 == "" else current_user.password_2,
         }
 
-        result = transition.save_update_user(data=data)
-        if isinstance(result, str):
+        result, valid = transition.save_update_user(data=data)
+        if not valid:
             self.set_error_bar(message=result)
-        else:
-            self.set_info_bar(message="saved")
-            self._password_1_le.clear()
-            self._password_2_le.clear()
-            self._set_edit_mode(False)
-            current_user.password_1 = str()
-            current_user.password_2 = str()
-            if isinstance(result, int):
-                self._set_current_user_id(user_id=result)
+            return
+
+        self.set_info_bar(message="saved")
+        self._password_1_le.clear()
+        self._password_2_le.clear()
+        self._set_edit_mode(False)
+        current_user.password_1 = str()
+        current_user.password_2 = str()
+        if isinstance(result, int):
+            self._set_current_user_id(user_id=result)
 
     def _recover(self) -> None:
-        result = w_m.window_manger.is_valid_recover_window(type_="user", active_user_window=True)
-        if isinstance(result, str):
+        result, valid = w_m.window_manger.is_valid_recover_window(type_="user", active_user_window=True)
+        if not valid:
             self.set_error_bar(message=result)
-        else:
-            w_m.window_manger.recover_window = r_w.RecoverWindow(type_="user")
-            w_m.window_manger.user_window = None
-            self.close()
+            return
+
+        w_m.window_manger.recover_window = r_w.RecoverWindow(type_="user")
+        w_m.window_manger.user_window = None
+        self.close()
 
     def _delete(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
-        result = transition.update_user_activity(ID=current_user.user_id_, active=False)
-        if isinstance(result, str):
+        result, valid = transition.update_user_activity(ID=current_user.user_id_, active=False)
+        if not valid:
             self.set_error_bar(message=result)
-        else:
-            self._load_user_names()
-            self.set_info_bar(message="gelöscht")
+            return
+
+        self._load_user_names()
+        self.set_info_bar(message="gelöscht")
 
     def _set_current_user_id(self, user_id: int) -> None:
         current_user: UserListItem = self._user_list.currentItem()

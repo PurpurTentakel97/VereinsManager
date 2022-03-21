@@ -68,7 +68,7 @@ class MemberTableWindow(BaseWindow):
                 # headline
                 new_table.setRowCount(len(data))
                 first_member = data[0]
-                columns: int = len(first_member["member"])-2 + len(first_member["phone"]) + len(
+                columns: int = len(first_member["member"]) - 2 + len(first_member["phone"]) + len(
                     first_member["mail"])
                 new_table.setColumnCount(columns)
                 headers: list = [
@@ -128,16 +128,16 @@ class MemberTableWindow(BaseWindow):
             widget.setLayout(hbox)
 
     def _get_member_data(self) -> None:
-        result = transition.get_member_data_for_table()
-        if isinstance(result, str):
+        result, valid = transition.get_member_data_for_table()
+        if not valid:
             self.set_error_bar(message=result)
         else:
             self._data = result
 
     def _get_type_names(self) -> None:
         for ID, _ in self._data.items():
-            result = transition.get_type_name_by_ID(ID=ID)
-            if isinstance(result, str):
+            result, valid = transition.get_type_name_by_ID(ID=ID)
+            if not valid:
                 self.set_error_bar(message=result)
             else:
                 self._type_id_name.append([ID, result[0]])
@@ -147,22 +147,23 @@ class MemberTableWindow(BaseWindow):
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                                   f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/Mitglieder.pdf",
                                                   "PDF (*.pdf);;All Files (*)")
-        if check:
-            result = transition.get_member_table_pdf(file)
-            if isinstance(result, str):
-                self.set_error_bar(message=result)
-            else:
-                self.set_info_bar(message="Export abgeschlossen")
-        else:
+        if not check:
             self.set_info_bar(message="Export abgebrochen")
+            return
+        result, valid = transition.get_member_table_pdf(file)
+        if not valid:
+            self.set_error_bar(message=result)
+        else:
+            self.set_info_bar(message="Export abgeschlossen")
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        result = w.window_manger.is_valid_member_window(active_member_table_window=True)
-        if isinstance(result, str):
+        result, valid = w.window_manger.is_valid_member_window(active_member_table_window=True)
+        if not valid:
             w.window_manger.member_table_window = None
             event.accept()
-        elif result:
-            w.window_manger.members_window = m_w.MembersWindow()
-            w.window_manger.member_table_window = None
-            event.accept()
+            return
+
+        w.window_manger.members_window = m_w.MembersWindow()
+        w.window_manger.member_table_window = None
+        event.accept()

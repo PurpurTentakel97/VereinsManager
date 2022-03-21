@@ -88,8 +88,8 @@ class CurrentAnniversaryFrame(QFrame):
                     table.setItem(index, 2, item)
 
     def _get_current_data(self) -> None:
-        data = transition.get_anniversary_member_data(type_="current")
-        if isinstance(data, str):
+        data, valid = transition.get_anniversary_member_data(type_="current")
+        if not valid:
             self.set_error_bar(message=data)
         else:
             self._current_b_day_data = data["b_day"]

@@ -22,10 +22,10 @@ member_table_pdf: "MemberTablePDF"
 
 
 class MemberTablePDF(BasePDF):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def create_pdf(self, path: str, active: bool):
+    def create_pdf(self, path: str, active: bool) -> [None or str, bool]:
         self.transform_path(path=path)
         self.create_dir()
 
@@ -37,8 +37,8 @@ class MemberTablePDF(BasePDF):
             Paragraph("Mitglieder", self.style_sheet["Title"])
         ]
 
-        data = member_table_data_handler.get_member_table_data(active=active)
-        if isinstance(data, str):
+        data, valid = member_table_data_handler.get_member_table_data(active=active)
+        if not valid:
             return data
         if not data:
             elements.append(Paragraph(
@@ -47,11 +47,11 @@ class MemberTablePDF(BasePDF):
             elements.append(Paragraph(
                 f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
             doc.build(elements)
-            return
+            return None, True
 
-        type_ids = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"])
-        if isinstance(type_ids, str):
-            return type_ids
+        type_ids, valid = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"])
+        if not valid:
+            return type_ids, False
         type_ids = [[x[0], x[1]] for x in type_ids]
 
         for type_id, type_ in type_ids:
@@ -108,6 +108,7 @@ class MemberTablePDF(BasePDF):
             elements.append(table)
             elements.append(Paragraph("(E) = Ehrenmitglied"))
         doc.build(elements)
+        return None, True
 
 
 def create_member_table_pdf() -> None:

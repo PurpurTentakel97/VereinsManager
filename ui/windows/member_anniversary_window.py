@@ -92,8 +92,8 @@ class OtherAnniversaryFrame(QFrame):
             self.set_error_bar(message=" Keine Zahl eingegeben")
             return
 
-        data = transition.get_anniversary_member_data(type_="other", year=year)
-        if isinstance(data, str):
+        data, valid = transition.get_anniversary_member_data(type_="other", year=year)
+        if not valid:
             self.set_error_bar(message=data)
         else:
             self.other_year = year
@@ -195,28 +195,29 @@ class MemberAnniversaryWindow(BaseWindow):
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                                   f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/Geburtstage-Jubilaen.pdf",
                                                   "PDF (*.pdf);;All Files (*)")
-        if check:
-            result = 1
-            match self._tabs.currentIndex():
-                case 0:
-                    result = transition.get_member_anniversary_pdf(path=file)
-                case 1:
-                    result = transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
-
-            if isinstance(result, str):
-                self.set_error_bar(message=result)
-            else:
-                self.set_info_bar(message="Export abgeschlossen")
-        else:
+        if not check:
             self.set_info_bar(message="Export abgebrochen")
+            return
+        result, valid = 1, False
+        match self._tabs.currentIndex():
+            case 0:
+                result, valid = transition.get_member_anniversary_pdf(path=file)
+            case 1:
+                result, valid = transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
+
+        if not valid:
+            self.set_error_bar(message=result)
+        else:
+            self.set_info_bar(message="Export abgeschlossen")
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        result = w.window_manger.is_valid_member_window(active_member_anniversary_window=True)
-        if isinstance(result, str):
+        result, valid = w.window_manger.is_valid_member_window(active_member_anniversary_window=True)
+        if not valid:
             w.window_manger.member_anniversary_window = None
             event.accept()
-        elif result:
-            w.window_manger.members_window = m_w.MembersWindow()
-            w.window_manger.member_anniversary_window = None
-            event.accept()
+            return
+
+        w.window_manger.members_window = m_w.MembersWindow()
+        w.window_manger.member_anniversary_window = None
+        event.accept()

@@ -92,39 +92,42 @@ class TypesWindow(BaseWindow):
         self._edit.clear()
         self._types_list.clear()
         self._types_list_items.clear()
-        data = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()))
-        if isinstance(data, str):
+        data, valid = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()))
+        if not valid:
             self.set_error_bar(message=data)
-        else:
-            for type_ in data:
-                new_type: TypesListEntry = TypesListEntry(type_=type_)
-                self._types_list.addItem(new_type)
-                self._types_list_items.append(new_type)
+            return
 
-        data = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
-                                          active=False)
-        if isinstance(data, str):
+        for type_ in data:
+            new_type: TypesListEntry = TypesListEntry(type_=type_)
+            self._types_list.addItem(new_type)
+            self._types_list_items.append(new_type)
+
+        data, valid = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
+                                                 active=False)
+        if not valid:
             self.set_error_bar(message=data)
-        else:
-            for type_ in data:
-                new_type: TypesListEntry = TypesListEntry(type_=type_, active=False)
-                self._types_list.addItem(new_type)
-                self._types_list_items.append(new_type)
-            self._edit.setFocus()
-            self._types_list.setCurrentItem(None)
-            self._edit.clear()
+            return
 
-            self._set_btn()
+        for type_ in data:
+            new_type: TypesListEntry = TypesListEntry(type_=type_, active=False)
+            self._types_list.addItem(new_type)
+            self._types_list_items.append(new_type)
+        self._edit.setFocus()
+        self._types_list.setCurrentItem(None)
+        self._edit.clear()
+
+        self._set_btn()
 
     def _set_types(self) -> None:
-        data = transition.get_raw_types()
-        if isinstance(data, str):
+        data, valid = transition.get_raw_types()
+        if not valid:
             self.set_error_bar(message=data)
-        else:
-            self._raw_types = data
-            self._types_box.clear()
-            for ID, text in self._raw_types:
-                self._types_box.addItem(text)
+            return
+
+        self._raw_types = data
+        self._types_box.clear()
+        for ID, text in self._raw_types:
+            self._types_box.addItem(text)
 
     def _row_chanced(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
@@ -172,44 +175,48 @@ class TypesWindow(BaseWindow):
                 return ID
 
     def _add_type(self) -> None:
-        error: str = transition.add_type(type_name=self._edit.text(),
-                                         raw_type_id=self._get_raw_id_from_name(
-                                             type_name=self._types_box.currentText()))
-        if isinstance(error, str):
-            self.set_error_bar(message=error)
-        else:
-            self.set_info_bar(message="saved")
-            self._set_current_type()
+        result, valid = transition.add_type(type_name=self._edit.text(),
+                                            raw_type_id=self._get_raw_id_from_name(
+                                                type_name=self._types_box.currentText()))
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        self.set_info_bar(message="saved")
+        self._set_current_type()
 
     def _edit_type(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
         text: str = self._edit.text().strip().title()
-        error: str = transition.update_type(id_=current_item.id_, name=text)
-        if error:
-            self.set_error_bar(message=error)
+        result, valid = transition.update_type(id_=current_item.id_, name=text)
+        if not valid:
+            self.set_error_bar(message=result)
             self._set_current_type()
-        else:
-            self.set_info_bar(message="saved")
-            self._set_current_type()
+            return
+
+        self.set_info_bar(message="saved")
+        self._set_current_type()
 
     def _set_type_activity(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        error: str = transition.update_type_activity(id_=current_item.id_,
-                                                     active=False if current_item.active else True)
-        if error:
-            self.set_error_bar(message=error)
-        else:
-            self.set_info_bar(message="saved")
-            self._set_current_type()
+        result, valid = transition.update_type_activity(id_=current_item.id_,
+                                                        active=False if current_item.active else True)
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        self.set_info_bar(message="saved")
+        self._set_current_type()
 
     def _remove_type(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        error: str = transition.delete_type(id_=current_item.id_)
-        if error:
-            self.set_error_bar(message=error)
-        else:
-            self.set_info_bar(message="saved")
-            self._set_current_type()
+        result,valid = transition.delete_type(id_=current_item.id_)
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        self.set_info_bar(message="saved")
+        self._set_current_type()
 
     def closeEvent(self, event) -> None:
         event.ignore()

@@ -88,25 +88,29 @@ class UserVerifyWindow(BaseWindow):
         self.show()
 
     def _load_user_names(self) -> None:
-        data = transition.get_all_user_name()
-        if isinstance(data, str):
+        data, valid = transition.get_all_user_name()
+        if not valid:
             self.set_error_bar(message=data)
-        else:
-            for entry in data:
-                ID, firstname, lastname = entry
-                new_item: UserListItem = UserListItem(ID=ID, first_name=firstname, last_name=lastname)
-                self._user_list.addItem(new_item)
-            self._user_list.setCurrentRow(0)
+            return
+
+        for entry in data:
+            ID, firstname, lastname = entry
+            new_item: UserListItem = UserListItem(ID=ID, first_name=firstname, last_name=lastname)
+            self._user_list.addItem(new_item)
+        self._user_list.setCurrentRow(0)
 
     def _verify(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
-        result = transition.compare_password(current_user.ID, self._password_le.text().strip())
-        if isinstance(result, str):
+        result, valid = transition.compare_password(current_user.ID, self._password_le.text().strip())
+        if not valid:
             self.set_error_bar(message=result)
-        elif result:
-            self.close()
-        else:
+            return
+
+        if not result:
             self.set_info_bar(message="Falsches Passwort")
+            return
+
+        self.close()
 
 
 def create_user_verify_window() -> None:

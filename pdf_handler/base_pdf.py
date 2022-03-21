@@ -17,12 +17,12 @@ base_pdf: "BasePDF"
 
 
 class BasePDF:
-    def __init__(self):
+    def __init__(self) -> None:
         self.dir_name: str = str()
         self.file_name: str = str()
         self.style_sheet: StyleSheet1 = StyleSheet1()
 
-    def transform_path(self, path: str, ):
+    def transform_path(self, path: str) -> None:
         now = datetime.now()
         if path:
             self.dir_name, file_name = os.path.split(path)

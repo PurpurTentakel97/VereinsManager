@@ -13,12 +13,12 @@ import debug
 debug_str = "Anniversary Handler"
 
 
-def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> dict | str:
+def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [dict | str, bool]:
     b_day_data: list = list()
     entry_day_data: list = list()
-    member_data = s_h.select_handler.get_name_and_dates_from_member(active=active)
-    if isinstance(member_data, str):
-        return member_data
+    member_data, valid = s_h.select_handler.get_name_and_dates_from_member(active=active)
+    if not valid:
+        return member_data, valid
     for _, firstname, lastname, b_day, entry_day in member_data:
         if b_day:
             inner: dict = {
@@ -43,7 +43,7 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> dict
             return _transform_other_data(b_day=b_day_data, entry_day=entry_day_data, year=year)
 
 
-def _transform_current_data(b_day: list, entry_day: list) -> dict:
+def _transform_current_data(b_day: list, entry_day: list) -> [dict, bool]:
     break_day: int = 15
     current_date: datetime.datetime = datetime.datetime.now()
 
@@ -90,15 +90,15 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
         "b_day": final_b_day_data,
         "entry_day": final_entry_date_data,
     }
-    return data
+    return data, True
 
 
-def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
+def _transform_other_data(b_day: list, entry_day: list, year: int) -> [dict or str, bool]:
     try:
         v.validation.must_positive_int(year, max_length=4)
     except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
         debug.error(item=debug_str, keyword="_transform_other_data", message=f"Error = {error.message}")
-        return error.message
+        return error.message, False
 
     final_b_day_data: list = list()
     for entry in b_day:
@@ -124,7 +124,7 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
         "entry_day": final_entry_day_data,
     }
 
-    return data
+    return data,True
 
 
 def _transform_timestamp_to_datetime(timestamp: int) -> datetime:

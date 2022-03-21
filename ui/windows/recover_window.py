@@ -93,9 +93,10 @@ class RecoverWindow(BaseWindow):
 
     def _load_member_names(self) -> None:
         self.member_list.clear()
-        data = self._names_method(active=False)
-        if isinstance(data, str):
+        data, valid = self._names_method(active=False)
+        if not valid:
             self.set_error_bar(data)
+            return
         for ID, first_name, last_name in data:
             new_member: MemberListItem = MemberListItem(id_=ID, first_name=first_name, last_name=last_name)
             self.member_list.addItem(new_member)
@@ -104,8 +105,8 @@ class RecoverWindow(BaseWindow):
 
     def _recover(self) -> None:
         current_member: MemberListItem = self.member_list.currentItem()
-        result = self._update_activity_method(ID=current_member.id_, active=True)
-        if isinstance(result, str):
+        result,valid = self._update_activity_method(ID=current_member.id_, active=True)
+        if not valid:
             self.set_error_bar(message=result)
             return
         self._load_member_names()
@@ -113,8 +114,8 @@ class RecoverWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        result = self._valid_parent_window_method(active_recover_window=True)
-        if isinstance(result, str):
+        result,valid = self._valid_parent_window_method(active_recover_window=True)
+        if not valid:
             w.window_manger.recover_window = None
             event.accept()
         else:
@@ -125,4 +126,3 @@ class RecoverWindow(BaseWindow):
                     w.window_manger.user_window = u_w.UserWindow()
             w.window_manger.recover_window = None
             event.accept()
-

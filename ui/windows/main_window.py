@@ -85,11 +85,12 @@ class MainWindow(BaseWindow):
         self.show()
 
     def _open_members(self) -> None:
-        result = w_m.window_manger.is_valid_member_window()
-        if isinstance(result, str):
+        result, valid = w_m.window_manger.is_valid_member_window()
+        if not valid:
             self.set_info_bar(message=result)
-        else:
-            w_m.window_manger.members_window = m_w.MembersWindow()
+            return
+
+        w_m.window_manger.members_window = m_w.MembersWindow()
 
     def _open_my_jobs(self) -> None:
         debug.info(item=debug_str, keyword="_open_my_jobs", message=f"my jobs open")
@@ -101,18 +102,20 @@ class MainWindow(BaseWindow):
         debug.info(item=debug_str, keyword="_open_performances", message=f"performances open")
 
     def _open_edit_types(self) -> None:
-        result = w_m.window_manger.is_valid_types_window()
-        if isinstance(result, str):
+        result, valid = w_m.window_manger.is_valid_types_window()
+        if not valid:
             self.set_info_bar(message=result)
-        else:
-            w_m.window_manger.types_window = t_w.TypesWindow()
+            return
+
+        w_m.window_manger.types_window = t_w.TypesWindow()
 
     def _open_user_data(self):
-        result = w_m.window_manger.is_valid_user_window()
-        if isinstance(result, str):
+        result, valid = w_m.window_manger.is_valid_user_window()
+        if not valid:
             self.set_error_bar(message=result)
-        else:
-            w_m.window_manger.user_window = u_w.UserWindow()
+            return
+
+        w_m.window_manger.user_window = u_w.UserWindow()
 
     def _open_export_pdf(self):
         debug.info(item=debug_str, keyword="_open_export_pdf", message=f"pdf open")

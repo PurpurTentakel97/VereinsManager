@@ -12,40 +12,40 @@ import debug
 debug_str: str = "table_data_handler"
 
 
-def get_member_table_data(active: bool) -> dict | str:
-    types = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"])
-    if isinstance(types, str):
-        return types
+def get_member_table_data(active: bool) -> [dict | str, bool]:
+    types, valid = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"])
+    if not valid:
+        return types, False
     type_ids: list = [x[0] for x in types]
 
     final_data: dict = dict()
     for type_id in type_ids:
         # get data
-        member_data = s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
-                                                                                    membership_type_id=type_id)
-        if isinstance(member_data, str):
-            return member_data
+        member_data, valid = s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
+                                                                                           membership_type_id=type_id)
+        if not valid:
+            return member_data, False
 
         final_members_list: list = list()
         # member
         for member in member_data:
             member_dict = _transform_member_data(member=member)
 
-            phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
-            if isinstance(phone_data, str):
-                return phone_data
+            phone_data, valid = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
+            if not valid:
+                return phone_data, False
 
-            mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_dict["ID"])
-            if isinstance(mail_data, str):
-                return mail_data
+            mail_data, valid = s_h.select_handler.get_mail_by_member_id(member_id=member_dict["ID"])
+            if not valid:
+                return mail_data, False
 
-            phone_list = _transform_nexus_data(nexus_data=phone_data)
-            if isinstance(phone_list, str):
-                return phone_list
+            phone_list, valid = _transform_nexus_data(nexus_data=phone_data)
+            if not valid:
+                return phone_list, False
 
-            mail_list = _transform_nexus_data(nexus_data=mail_data)
-            if isinstance(mail_list, str):
-                return mail_list
+            mail_list, valid = _transform_nexus_data(nexus_data=mail_data)
+            if not valid:
+                return mail_list, False
 
             single_member_data: dict = {
                 "member": member_dict,
@@ -54,7 +54,7 @@ def get_member_table_data(active: bool) -> dict | str:
             }
             final_members_list.append(single_member_data)
         final_data[type_id] = final_members_list
-    return final_data
+    return final_data, True
 
 
 def _transform_member_data(member: list) -> dict:
@@ -87,7 +87,7 @@ def _transform_member_data(member: list) -> dict:
     return member_dict
 
 
-def _transform_nexus_data(nexus_data: list) -> str | list:
+def _transform_nexus_data(nexus_data: list) -> [str | list, bool]:
     nexus_list: list = list()
     for data in nexus_data:
         nexus_dict: dict = {
@@ -95,17 +95,17 @@ def _transform_nexus_data(nexus_data: list) -> str | list:
             "type": data[1],
             "number": data[2],
         }
-        result = s_h.select_handler.get_type_name_by_ID(ID=nexus_dict["type"])
-        if isinstance(result, str):
-            return result
+        type_name, valid = s_h.select_handler.get_type_name_by_ID(ID=nexus_dict["type"])
+        if not valid:
+            return type_name, False
 
-        nexus_dict["type"] = result[0]
+        nexus_dict["type"] = type_name[0]
         data: list = [
             nexus_dict["type"],
             nexus_dict["number"],
         ]
         nexus_list.append(data)
-    return nexus_list
+    return nexus_list, True
 
 
 def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
