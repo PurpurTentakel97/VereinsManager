@@ -192,7 +192,7 @@ class GlobalHandler:
         try:
             v.validation.save_update_user(data=data)
         except (e.NoDict, e.NoStr, e.NoInt, e.NoPositiveInt, e.DifferentPassword, e.PasswordToShort,
-                e.PasswordHasSpace, e.LowPassword, e.VeryLowPassword, e.ToLong) as error:
+                e.PasswordHasSpace, e.LowPassword, e.VeryLowPassword, e.ToLong,e.DefaultUserException) as error:
             debug.error(item=debug_str, keyword="save_update_user", message=f"Error = {error.message}")
             return error.message,False
 

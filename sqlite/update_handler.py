@@ -264,7 +264,8 @@ class UpdateHandler(Database):
             v.validation.must_positive_int(int_=ID)
             v.validation.must_bool(bool_=active)
             v.validation.must_not_current_user(ID=ID)
-        except (e.NoInt, e.NoPositiveInt, e.NoBool, e.CurrentUser) as error:
+            v.validation.must_not_current_user(ID=ID)
+        except (e.NoInt, e.NoPositiveInt, e.NoBool, e.CurrentUserException) as error:
             debug.error(item=debug_str, keyword="update_user_activity", message=f"Error = {error.message}")
             return error.message, False
 

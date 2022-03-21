@@ -133,6 +133,7 @@ class Validation:
         cls.must_dict(dict_=data)
         if data["ID"] is not None:
             cls.must_positive_int(int_=data["ID"], max_length=None)
+            cls.must_not_default_user(ID=data["ID"])
             if data["password_1"] is not None:
                 cls.must_password(password_1=data["password_1"], password_2=data["password_2"])
         else:
@@ -154,6 +155,16 @@ class Validation:
             entry = data[key]
             if entry is not None:
                 cls.must_str(str_=entry)
+
+    @staticmethod
+    def must_not_current_user(ID: int) -> None:
+        if ID == c.config.user_id:
+            raise e.CurrentUserException()
+
+    @staticmethod
+    def must_not_default_user(ID: int) -> None:
+        if ID == c.config.default_user_id["default"]:
+            raise e.DefaultUserException()
 
     # global
     @staticmethod
@@ -240,11 +251,6 @@ class Validation:
             raise e.VeryLowPassword()
         elif bits < 40:
             raise e.LowPassword()
-
-    @staticmethod
-    def must_not_current_user(ID: int) -> None:
-        if ID == c.config.user_id:
-            raise e.CurrentUser()
 
 
 def create_validation() -> None:
