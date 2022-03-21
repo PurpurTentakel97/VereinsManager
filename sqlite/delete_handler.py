@@ -22,12 +22,6 @@ class DeleteHandler(Database):
 
     # type
     def delete_type(self, ID: int) -> [str | None, bool]:
-        try:
-            v.validation.must_positive_int(ID, max_length=None)
-        except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = """DELETE FROM type WHERE ID is ?;"""
         try:
             name: str = s_h.select_handler.get_type_name_by_ID(ID=ID)
@@ -37,6 +31,7 @@ class DeleteHandler(Database):
                                                      new_data=None)
             if not valid:
                 return result, False
+
             return None, True
 
         except self.OperationalError as error:

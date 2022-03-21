@@ -37,13 +37,7 @@ class SelectHandler(Database):
                                                                                f"error = {' '.join(error.args)}")
             return e.LoadingFailed(info="Alle Typen").message, False
 
-    def get_single_raw_type_types(self, raw_type_id: int, active: bool = True) -> [tuple | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=raw_type_id)
-            v.validation.must_bool(bool_=active)
-        except (e.NoBool, e.NoPositiveInt) as error:
-            return error.message, False
-
+    def get_single_raw_type_types(self, raw_type_id: int, active: bool) -> [tuple | str, bool]:
         table: str = "v_active_type" if active else "v_inactive_type"
         sql_command: str = f"""SELECT * FROM {table} WHERE type_id is ? ORDER BY name ASC;"""
         try:
@@ -66,12 +60,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Active Member Type").message, False
 
     def get_type_name_by_ID(self, ID: int) -> [tuple | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID, max_length=None)
-        except (e.NoPositiveInt, e.NoInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_type_name_by_id", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT name FROM type WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone(), True
@@ -82,12 +70,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Typ ID").message, False
 
     def get_type_active_by_id(self, ID: int) -> [tuple or str, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID, max_length=None)
-        except (e.NoPositiveInt, e.NoInt, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_type_active_by_id", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT active FROM type WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone(), True
@@ -98,13 +80,6 @@ class SelectHandler(Database):
             return e.LoadingFailed(info="Typ ID").message, False
 
     def get_id_by_type_name(self, raw_id: int, name: str) -> [tuple | str, bool]:
-        try:
-            v.validation.must_positive_int(int_=raw_id, max_length=None)
-            v.validation.must_str(str_=name)
-        except (e.NoInt, e.NoPositiveInt, e.NoStr, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="get_id_by_type_name", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""SELECT ID FROM type WHERE type_id = ? and name = ?;"""
         try:
             return self.cursor.execute(sql_command, (

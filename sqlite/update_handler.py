@@ -23,13 +23,6 @@ class UpdateHandler(Database):
 
     # types
     def update_type(self, ID: int, name: str) -> [str | None, bool]:
-        name = name.strip().title()
-        try:
-            v.validation.update_type(ID=ID, new_name=name)
-        except (e.NoStr, e.NoInt, e.NoPositiveInt, e.NoChance, e.NotFound, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="update_type", message=f"Error 0 {error.message}")
-            return error.message, False
-
         sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
         try:
             reference_data, valid = s_h.select_handler.get_type_name_by_ID(ID=ID)
@@ -49,12 +42,6 @@ class UpdateHandler(Database):
             return e.UpdateFailed(info=name).message, False
 
     def update_type_activity(self, ID: int, active: bool) -> [str | None, bool]:
-        try:
-            v.validation.update_type_activity(ID=ID, active=active)
-        except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound, e.ToLong) as error:
-            debug.error(item=debug_str, keyword="update_type_activity", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = """UPDATE type SET active = ? WHERE ID is ?;"""
         try:
             reference_data, valid = s_h.select_handler.get_type_active_by_id(ID=ID)

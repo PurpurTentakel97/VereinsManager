@@ -2,10 +2,10 @@
 # 08.02.2022
 # VereinsManager / Transition
 
-from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
-    global_handler as g_h
+from sqlite import select_handler as s_h,update_handler as u_h, global_handler as g_h
 from logic import password_validation
-from logic.handler import member_anniversary_data_handler, path_handler, member_table_data_handler, user_handler
+from logic.handler import member_anniversary_data_handler, path_handler, member_table_data_handler, user_handler, \
+    type_handler
 from pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p
 
 
@@ -20,35 +20,35 @@ def compare_password(ID: int, password: str) -> [str | bool, bool]:
 
 # type
 def get_raw_types() -> [tuple | str, bool]:
-    return s_h.select_handler.get_raw_types()
+    return type_handler.get_raw_types()
 
 
-def get_single_type(raw_type_id: int, active: bool = True) -> [tuple | str, bool]:
-    return s_h.select_handler.get_single_raw_type_types(raw_type_id=raw_type_id, active=active)
+def get_single_type(raw_type_id: int, active: bool) -> [tuple | str, bool]:
+    return type_handler.get_single_raw_type_types(raw_type_id=raw_type_id, active=active)
 
 
 def get_active_member_type() -> [tuple | str, bool]:
-    return s_h.select_handler.get_active_member_type()
+    return type_handler.get_active_member_type()
 
 
 def get_type_name_by_ID(ID: int) -> [tuple | str, bool]:
-    return s_h.select_handler.get_type_name_by_ID(ID=ID)
+    return type_handler.get_type_name_by_ID(ID=ID)
 
 
 def add_type(type_name: str, raw_type_id: int) -> [str | None, bool]:
-    return a_h.add_handler.add_type(type_name=type_name, raw_type_id=raw_type_id)
+    return type_handler.add_type(type_name=type_name, raw_type_id=raw_type_id)
 
 
 def update_type(id_: int, name: str) -> [str | None, bool]:
-    return u_h.update_handler.update_type(ID=id_, name=name)
+    return type_handler.update_type(ID=id_, name=name)
 
 
 def update_type_activity(id_: int, active: bool) -> [str | None, bool]:
-    return u_h.update_handler.update_type_activity(ID=id_, active=active)
+    return type_handler.update_type_activity(ID=id_, active=active)
 
 
 def delete_type(id_: int) -> [str | None, bool]:
-    return d_h.delete_handler.delete_type(ID=id_)
+    return type_handler.delete_type(ID=id_)
 
 
 # member
@@ -89,7 +89,7 @@ def get_all_user_name(active: bool = True) -> [str | dict, bool]:
     return user_handler.get_names_of_user(active=active)
 
 
-def get_user_data_by_id(ID: int, active: bool = True) -> [str | dict, bool]:
+def get_user_data_by_id(ID: int, active: bool) -> [str | dict, bool]:
     return s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
 
 

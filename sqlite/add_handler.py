@@ -23,13 +23,6 @@ class AddHandler(Database):
 
     # type
     def add_type(self, type_name: str, raw_type_id: int) -> [str | int, bool]:
-        type_name = type_name.strip().title()
-        try:
-            validation.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
-        except (e.NoStr, e.NoInt, e.NoPositiveInt, e.ToLong, e.AlreadyExists) as error:
-            debug.error(item=debug_str, keyword="add_type", message=f"Error = {error.message}")
-            return error.message, False
-
         sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
         try:
             self.cursor.execute(sql_command, (type_name, raw_type_id))

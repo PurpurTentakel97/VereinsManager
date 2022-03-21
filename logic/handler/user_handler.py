@@ -11,6 +11,7 @@ import debug
 debug_str: str = "User Handler"
 
 
+# get
 def get_names_of_user(active: bool = True) -> [tuple | str, bool]:
     try:
         v.validation.must_bool(bool_=active)
@@ -32,6 +33,7 @@ def get_data_of_user_by_ID(ID: int, active: bool) -> [dict | str, bool]:
     return s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
 
 
+# add / update
 def add_update_user(data: dict) -> [int | str | None, bool]:
     try:
         v.validation.save_update_user(data=data)
@@ -56,6 +58,7 @@ def add_update_user(data: dict) -> [int | str | None, bool]:
     return None, True
 
 
+# update
 def update_user_activity(ID: int, active: bool) -> [str, bool]:
     try:
         v.validation.must_positive_int(int_=ID)

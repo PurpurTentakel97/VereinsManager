@@ -92,7 +92,8 @@ class TypesWindow(BaseWindow):
         self._edit.clear()
         self._types_list.clear()
         self._types_list_items.clear()
-        data, valid = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()))
+        data, valid = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
+                                                 active=True)
         if not valid:
             self.set_error_bar(message=data)
             return
@@ -210,7 +211,7 @@ class TypesWindow(BaseWindow):
 
     def _remove_type(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        result,valid = transition.delete_type(id_=current_item.id_)
+        result, valid = transition.delete_type(id_=current_item.id_)
         if not valid:
             self.set_error_bar(message=result)
             return

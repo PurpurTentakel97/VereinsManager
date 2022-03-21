@@ -5,7 +5,7 @@
 from PyQt5.QtCore import QDate, Qt, QDateTime
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
-    QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit, QMessageBox
+    QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
 from enum import Enum
 import webbrowser
 
