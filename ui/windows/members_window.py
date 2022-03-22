@@ -14,6 +14,7 @@ from ui.windows.base_window import BaseWindow
 from ui.windows import recover_window as r_w, member_table_window as m_t_w, window_manager as w, \
     member_anniversary_window as m_a_w
 from config import config_sheet as c
+import debug
 
 debug_str: str = "MembersWindow"
 

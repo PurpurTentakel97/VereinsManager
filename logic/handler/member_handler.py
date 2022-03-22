@@ -404,18 +404,14 @@ def _update_add_member_nexus_phone(phone: list, member_id: int, log_date: int) -
             debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
             return error.message, False
 
-        try:
-            v.validation.must_positive_int(ID, max_length=None)
+        if ID is None:
+            result, valid = _add_member_nexus_phone(type_id=type_id, value=phone_number, member_id=member_id,
+                                                    log_date=log_date)
+        else:
             result, valid = _update_member_nexus_phone(ID=ID, number=phone_number, log_date=log_date)
-            if not valid:
-                return result, False
-            phone_ids.append(result)
-        except (e.NoPositiveInt, e.NoInt, e.ToLong):
-            result, valid = _add_member_nexus_phone(type_id=type_id, value=phone_number,
-                                                    member_id=member_id, log_date=log_date)
-            if not valid:
-                return result, False
-            phone_ids.append(result)
+        if not valid:
+            return result, False
+        phone_ids.append(result)
 
     return phone_ids, True
 
@@ -429,20 +425,17 @@ def _update_add_member_nexus_mail(mail: list, member_id: int, log_date: int) -> 
             debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
             return error.message, False
 
-        try:
-            v.validation.must_positive_int(ID, max_length=None)
-            result, valid = _update_member_nexus_mail(ID=ID, mail=mail_, log_date=log_date)
-            if not valid:
-                return result, False
-            mail_ids.append(result)
-        except (e.NoPositiveInt, e.NoInt, e.ToLong):
+        if ID is None:
             result, valid = _add_member_nexus_mail(type_id=type_id, value=mail_,
                                                    member_id=member_id, log_date=log_date)
-            if not valid:
-                return result, False
-            mail_ids.append(result)
+        else:
+            result, valid = _update_member_nexus_mail(ID=ID, mail=mail_, log_date=log_date)
 
-    return member_id, True
+        if not valid:
+            return result, False
+        mail_ids.append(result)
+
+    return mail_ids, True
 
 
 def _update_add_member_nexus_position(position: list, member_id: int, log_date: int) -> [list or str, bool]:
@@ -454,18 +447,15 @@ def _update_add_member_nexus_position(position: list, member_id: int, log_date: 
             debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
             return error.message, False
 
-        try:
-            v.validation.must_positive_int(ID, max_length=None)
-            result, valid = _update_member_nexus_position(ID=ID, active=active, log_date=log_date)
-            if not valid:
-                return result, False
-            position_ids.append(result)
-        except (e.NoPositiveInt, e.NoInt, e.ToLong):
+        if ID is None:
             result, valid = _add_member_nexus_position(type_id=type_id, value=active,
                                                        member_id=member_id, log_date=log_date)
-            if not valid:
-                return result, False
-            position_ids.append(result)
+        else:
+            result, valid = _update_member_nexus_position(ID=ID, active=active, log_date=log_date)
+
+        if not valid:
+            return result, False
+        position_ids.append(result)
 
     return position_ids, True
 

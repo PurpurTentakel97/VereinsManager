@@ -95,8 +95,11 @@ class Validation:
         cls.must_list(data)
         cls.must_length(4, data)
 
-        _, type_id, Type, value = data
+        ID, type_id, Type, value = data
         cls.must_positive_int(type_id, max_length=None)
+
+        if ID is not None:
+            cls.must_positive_int(ID, max_length=None)
 
         if Type is not None:
             cls.must_str(Type)
