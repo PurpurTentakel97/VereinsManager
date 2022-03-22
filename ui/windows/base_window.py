@@ -30,10 +30,10 @@ class BaseWindow(QMainWindow):
         self.statusBar().showMessage("Info: " + message, 2000)
 
     @staticmethod
-    def save_permission() -> bool:
+    def save_permission(window_name:str) -> bool:
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
-        msg.setText("Fenster wird geschlossen.")
+        msg.setText(f"{window_name} wird geschlossen.")
         msg.setInformativeText("Du hast ungespeicherte Daten. Möchtest du diese Daten vorher speichern?")
         msg.setWindowTitle("Daten Speichern?")
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)

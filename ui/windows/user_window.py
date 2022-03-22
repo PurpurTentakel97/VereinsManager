@@ -401,7 +401,7 @@ class UserWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        if self._is_edit and self.save_permission():
+        if self._is_edit and self.save_permission(window_name="Benutzerfenster"):
             self._save()
         w_m.window_manger.user_window = None
         event.accept()

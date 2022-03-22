@@ -789,7 +789,7 @@ class MembersWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        if self._is_edit and self.save_permission():
+        if self._is_edit and self.save_permission(window_name="Mitgliederfenster"):
             self._save()
         w.window_manger.members_window = None
         event.accept()
