@@ -16,15 +16,9 @@ def _add_member(data: dict, log_date: int | None) -> [int | str, bool]:  # No Va
     result, valid = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
     if not valid:
         return result, False
-    if result:
-        data["membership_type"] = result[0]
-    else:
-        data["membership_type"] = result
 
-    if data["birth_date"] == c.config.date_format["None_date"]:
-        data["birth_date"] = None
-    if data["entry_date"] == c.config.date_format["None_date"]:
-        data["entry_date"] = None
+    data = _transform_membership_for_safe(data, result)
+    data = _transform_dates_for_save(data)
 
     return a_h.add_handler.add_member(data=data, log_date=log_date)
 
@@ -102,34 +96,13 @@ def get_member_data_by_id(ID: int, active: bool = True) -> [dict | str, bool]:
     if not valid:
         return data, False
 
-    data_ = {
-        "ID": data[0],
-        "first_name": data[1],
-        "last_name": data[2],
-        "street": data[3],
-        "number": data[4],
-        "zip_code": data[5],
-        "city": data[6],
-        "maps": data[7],
-        "birth_date": data[8],
-        "entry_date": data[9],
-        "membership_type": data[10],
-        "special_member": data[11],
-        "comment_text": data[12],
-    }
-    if isinstance(data_["membership_type"], int):
-        data, valid = s_h.select_handler.get_type_name_by_ID(data_["membership_type"])
-        if not valid:
-            return data, False
-        else:
-            data_["membership_type"] = data[0]
+    data = _transform_to_dict(data)
+    data, valid = _transform_membership_for_load(data=data)
+    if not valid:
+        return data, False
+    data = _transform_dates_for_load(data)
 
-    if data_["birth_date"] is None:
-        data_["birth_date"] = c.config.date_format["None_date"]
-    if data_["entry_date"] is None:
-        data_["entry_date"] = c.config.date_format["None_date"]
-
-    return data_, True
+    return data, True
 
 
 def get_member_activity_by_id(ID: int) -> [bool | str, bool]:
@@ -206,15 +179,8 @@ def _update_member(ID: int | None, data: dict, log_date: int | None) -> [str | N
     if not valid:
         return result, False
 
-    if result:
-        data["membership_type"] = result[0]
-    else:
-        data["membership_type"] = result
-
-    if data["birth_date"] == c.config.date_format["None_date"]:
-        data["birth_date"] = None
-    if data["entry_date"] == c.config.date_format["None_date"]:
-        data["entry_date"] = None
+    data = _transform_membership_for_safe(data=data, result=result)
+    data = _transform_dates_for_save(data=data)
 
     reference_data, valid = get_member_data_by_id(ID=ID, active=True)
     if not valid:
@@ -255,6 +221,58 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
         return result, False
 
     return None, True
+
+
+# helper
+def _transform_membership_for_safe(data, result) -> dict:
+    if result:
+        data["membership_type"] = result[0]
+    else:
+        data["membership_type"] = result
+    return data
+
+
+def _transform_membership_for_load(data: dict) -> [dict or str, bool]:
+    if isinstance(data["membership_type"], int):
+        data_, valid = s_h.select_handler.get_type_name_by_ID(data["membership_type"])
+        if not valid:
+            return data_, False
+        data["membership_type"] = data_[0]
+    return data, True
+
+
+def _transform_dates_for_save(data) -> dict:
+    if data["birth_date"] == c.config.date_format["None_date"]:
+        data["birth_date"] = None
+    if data["entry_date"] == c.config.date_format["None_date"]:
+        data["entry_date"] = None
+    return data
+
+
+def _transform_dates_for_load(data):
+    if data["birth_date"] is None:
+        data["birth_date"] = c.config.date_format["None_date"]
+    if data["entry_date"] is None:
+        data["entry_date"] = c.config.date_format["None_date"]
+    return data
+
+
+def _transform_to_dict(data):
+    return {
+        "ID": data[0],
+        "first_name": data[1],
+        "last_name": data[2],
+        "street": data[3],
+        "number": data[4],
+        "zip_code": data[5],
+        "city": data[6],
+        "maps": data[7],
+        "birth_date": data[8],
+        "entry_date": data[9],
+        "membership_type": data[10],
+        "special_member": data[11],
+        "comment_text": data[12],
+    }
 
 
 # member nexus

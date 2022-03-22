@@ -2,9 +2,6 @@
 # 21.01.2022
 # VereinsManager // TODO
 
-password
-    dots insted of letters
-
 pdf
     open after export?
     refactor break day in current anniversary

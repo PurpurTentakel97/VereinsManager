@@ -16,11 +16,14 @@ main_window: "MainWindow"
 
 
 class MainWindow(BaseWindow):
-    def __init__(self):
+    def __init__(self, default_user: bool):
         super().__init__()
+        self.default_user: bool = not default_user
+
         self._set_window_information()
         self._set_ui()
         self._set_layout()
+        self._set_default_user()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Hauptfenster - Vereinsmanager")
@@ -84,6 +87,14 @@ class MainWindow(BaseWindow):
 
         self.set_widget(widget)
         self.show()
+
+    def _set_default_user(self) -> None:
+        self._members_btn.setEnabled(self.default_user)
+        self._job_btn.setEnabled(self.default_user)
+        self._my_job_btn.setEnabled(self.default_user)
+        self._performance_btn.setEnabled(self.default_user)
+        self._edit_types_btn.setEnabled(self.default_user)
+        self._export_pdf_btn.setEnabled(self.default_user)
 
     def _open_members(self) -> None:
         result, valid = w_m.window_manger.is_valid_member_window()
@@ -149,6 +160,6 @@ class MainWindow(BaseWindow):
         return msg.exec_() == QMessageBox.Yes
 
 
-def create_main_window() -> None:
+def create_main_window(default_user: bool = False) -> None:
     global main_window
-    main_window = MainWindow()
+    main_window = MainWindow(default_user=default_user)
