@@ -570,7 +570,6 @@ class MembersWindow(BaseWindow):
     def _load_single_member(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
 
-        # member
         data, valid = transition.get_member_data_by_id(id_=current_member.member_id_)
         if not valid:
             self.set_error_bar(message=data)
@@ -590,56 +589,58 @@ class MembersWindow(BaseWindow):
         current_member.comment_text = "" if member_data["comment_text"] is None else member_data["comment_text"]
         current_member.maps_url = "" if member_data["maps"] is None else member_data["maps"]
 
-        # member nexus
-        # phone
-        phone_data: tuple = data["phone"]
+        self._load_phone_data(current_member, data["phone"])
+        self._load_mail_data(current_member, data["mail"])
+        self._load_position_data(current_member, data["position"])
+
+        self._set_current_member()
+
+    @staticmethod
+    def _load_phone_data(current_member, phone_data) -> None:
         if len(phone_data) == 0:
             for entry in current_member.phone_numbers:
-                _, _, _, old_phone = entry
                 current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = ""
-        else:
-            for ID, new_type_id, new_phone in phone_data:
-                for entry in current_member.phone_numbers:
-                    _, old_type_id, old_type, old_phone = entry
-                    if old_type_id == new_type_id:
-                        if ID is not None:
-                            current_member.phone_numbers[current_member.phone_numbers.index(entry)][0] = ID
-                        current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = \
-                            "" if new_phone is None else new_phone
+        for ID, new_type_id, new_phone in phone_data:
+            for entry in current_member.phone_numbers:
+                _, old_type_id, old_type, old_phone = entry
+                if old_type_id == new_type_id:
+                    if ID is not None:
+                        current_member.phone_numbers[current_member.phone_numbers.index(entry)][0] = ID
+                    current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = \
+                        "" if new_phone is None else new_phone
 
-        # mail
-        mail_data: tuple = data["mail"]
+    @staticmethod
+    def _load_mail_data(current_member, mail_data) -> None:
         if len(mail_data) == 0:
             for entry in current_member.mail_addresses:
-                _, _, _, old_phone = entry
                 current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = ""
-        else:
-            for ID, new_type_id, new_mail in mail_data:
-                for entry in current_member.mail_addresses:
-                    _, old_type_id, old_type, old_mail = entry
-                    if old_type_id == new_type_id:
-                        if ID is not None:
-                            current_member.mail_addresses[current_member.mail_addresses.index(entry)][0] = ID
-                        current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = \
-                            "" if new_mail is None else new_mail
+            return
 
-        # position
-        position_data: tuple = data["position"]
+        for ID, new_type_id, new_mail in mail_data:
+            for entry in current_member.mail_addresses:
+                _, old_type_id, old_type, old_mail = entry
+                if old_type_id == new_type_id:
+                    if ID is not None:
+                        current_member.mail_addresses[current_member.mail_addresses.index(entry)][0] = ID
+                    current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = \
+                        "" if new_mail is None else new_mail
+
+    @staticmethod
+    def _load_position_data(current_member, position_data) -> None:
         if len(position_data) == 0:
             for _, _, item, _ in current_member.positions:
                 item.set_active(active=False)
-        else:
-            for ID, new_type_id, new_active in position_data:
-                for item in current_member.positions:
-                    _, old_type_id, position, _ = item
-                    if old_type_id == new_type_id:
-                        if ID is not None:
-                            current_member.positions[current_member.positions.index(item)][0] = ID
-                            current_member.positions[current_member.positions.index(item)][2].ID = ID
-                            current_member.positions[current_member.positions.index(item)][2].set_active(
-                                active=new_active)
+            return
 
-        self._set_current_member()
+        for ID, new_type_id, new_active in position_data:
+            for item in current_member.positions:
+                _, old_type_id, position, _ = item
+                if old_type_id == new_type_id:
+                    if ID is not None:
+                        current_member.positions[current_member.positions.index(item)][0] = ID
+                        current_member.positions[current_member.positions.index(item)][2].ID = ID
+                        current_member.positions[current_member.positions.index(item)][2].set_active(
+                            active=new_active)
 
     def _save(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
@@ -734,7 +735,7 @@ class MembersWindow(BaseWindow):
         self._set_edit_mode(active=False)
 
     def _recover(self) -> None:
-        result,valid = w.window_manger.is_valid_recover_window(type_="member", active_member_window=True)
+        result, valid = w.window_manger.is_valid_recover_window(type_="member", active_member_window=True)
         if not valid:
             self.set_error_bar(message=result)
             return
