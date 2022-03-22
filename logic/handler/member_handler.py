@@ -167,7 +167,7 @@ def update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict
         if not valid:
             return result, False
 
-    ids, valid = _update_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
+    ids, valid = _update_add_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
     if not valid:
         return ids, False
 
@@ -204,7 +204,7 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
         v.validation.must_positive_int(int_=ID, max_length=None)
         v.validation.must_bool(bool_=active)
         v.validation.must_default_user(c.config.user_id, False)
-    except (e.NoPositiveInt, e.NoBool,e.DefaultUserException) as error:
+    except (e.NoPositiveInt, e.NoBool, e.DefaultUserException) as error:
         debug.error(item=debug_str, keyword="update_member_activity", message=f"Error = {error.message}")
         return error.message, False
 
@@ -368,22 +368,34 @@ def get_position_member_by_ID(ID: int) -> [tuple | str, bool]:
 
 
 # update
-def _update_member_nexus(data: dict, member_id: int, log_date: int | None) -> [str | dict, bool]:
+def _update_add_member_nexus(data: dict, member_id: int, log_date: int | None) -> [str | dict, bool]:
     try:
         v.validation.must_dict(data)
     except e.NoDict as error:
         debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
         return error.message, False
 
-    try:
-        phone = data["phone"]
-        mail = data["mail"]
-        position = data["position"]
-    except KeyError:
-        debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = KeyError")
-        return e.NoDict(info="Member Nexus").message, False
+    phone_ids, valid = _update_add_member_nexus_phone(phone=data["phone"], member_id=member_id, log_date=log_date)
+    if not valid:
+        return phone_ids, False
 
-    # phone
+    mail_ids, valid = _update_add_member_nexus_mail(mail=data["mail"], member_id=member_id, log_date=log_date)
+    if not valid:
+        return mail_ids, False
+
+    position_ids, valid = _update_add_member_nexus_position(position=data["position"], member_id=member_id,
+                                                            log_date=log_date)
+    if not valid:
+        return position_ids, False
+
+    return {
+               "phone": phone_ids,
+               "mail": mail_ids,
+               "position": position_ids,
+           }, True
+
+
+def _update_add_member_nexus_phone(phone: list, member_id: int, log_date: int) -> [list or str, bool]:
     phone_ids: list = list()
     for ID, type_id, Type, phone_number in phone:
         try:
@@ -391,6 +403,7 @@ def _update_member_nexus(data: dict, member_id: int, log_date: int | None) -> [s
         except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.ToLong) as error:
             debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
             return error.message, False
+
         try:
             v.validation.must_positive_int(ID, max_length=None)
             result, valid = _update_member_nexus_phone(ID=ID, number=phone_number, log_date=log_date)
@@ -404,7 +417,10 @@ def _update_member_nexus(data: dict, member_id: int, log_date: int | None) -> [s
                 return result, False
             phone_ids.append(result)
 
-    # mail
+    return phone_ids, True
+
+
+def _update_add_member_nexus_mail(mail: list, member_id: int, log_date: int) -> [list or str, bool]:
     mail_ids: list = list()
     for ID, type_id, Type, mail_ in mail:
         try:
@@ -412,6 +428,7 @@ def _update_member_nexus(data: dict, member_id: int, log_date: int | None) -> [s
         except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.ToLong) as error:
             debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
             return error.message, False
+
         try:
             v.validation.must_positive_int(ID, max_length=None)
             result, valid = _update_member_nexus_mail(ID=ID, mail=mail_, log_date=log_date)
@@ -425,7 +442,10 @@ def _update_member_nexus(data: dict, member_id: int, log_date: int | None) -> [s
                 return result, False
             mail_ids.append(result)
 
-    # position
+    return member_id, True
+
+
+def _update_add_member_nexus_position(position: list, member_id: int, log_date: int) -> [list or str, bool]:
     position_ids: list = list()
     for ID, type_id, Type, active in position:
         try:
@@ -433,6 +453,7 @@ def _update_member_nexus(data: dict, member_id: int, log_date: int | None) -> [s
         except (e.NoInt, e.NoPositiveInt, e.WrongLength, e.NoList, e.NoStr, e.NoBool, e.ToLong) as error:
             debug.error(item=debug_str, keyword="_update_member_nexus", message=f"Error = {error.message}")
             return error.message, False
+
         try:
             v.validation.must_positive_int(ID, max_length=None)
             result, valid = _update_member_nexus_position(ID=ID, active=active, log_date=log_date)
@@ -446,12 +467,7 @@ def _update_member_nexus(data: dict, member_id: int, log_date: int | None) -> [s
                 return result, False
             position_ids.append(result)
 
-    # result
-    return {
-               "phone": phone_ids,
-               "mail": mail_ids,
-               "position": position_ids,
-           }, True
+    return position_ids, True
 
 
 def _update_member_nexus_phone(ID: int, number: str, log_date: int) -> [str | None, bool]:  # no Validation

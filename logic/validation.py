@@ -97,6 +97,7 @@ class Validation:
 
         _, type_id, Type, value = data
         cls.must_positive_int(type_id, max_length=None)
+
         if Type is not None:
             cls.must_str(Type)
 
