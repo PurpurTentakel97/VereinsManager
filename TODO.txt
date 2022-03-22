@@ -23,6 +23,3 @@ UI
 
     frame
         set_error_bar Error
-
-user
-    defalut user should not be able to edit data
