@@ -14,9 +14,6 @@ class Validation:
     def __init__(self) -> None:
         pass
 
-    def __str__(self) -> str:
-        return "Validation"
-
     # type
     @classmethod
     def add_type(cls, type_name: str, raw_type_id: int) -> None:
@@ -67,7 +64,7 @@ class Validation:
     @classmethod
     def update_member(cls, data: dict) -> None:
         cls.must_dict(dict_=data)
-        keys: list = [
+        cls._must_multiple_str_in_dict([
             "first_name",
             "last_name",
             "street",
@@ -76,10 +73,7 @@ class Validation:
             "maps",
             "membership_type",
             "zip_code",
-        ]
-        for key in keys:
-            if data[key] is not None:
-                cls.must_str(str_=data[key])
+        ], data)
 
         if data["comment_text"] is not None:
             cls.must_str(str_=data["comment_text"], length=2000)
@@ -100,10 +94,12 @@ class Validation:
     def update_member_nexus(cls, data: list, type_: str) -> None:
         cls.must_list(data)
         cls.must_length(4, data)
+
         _, type_id, Type, value = data
         cls.must_positive_int(type_id, max_length=None)
         if Type is not None:
             cls.must_str(Type)
+
         match type_:
             case "phone":
                 cls._update_member_nexus_phone(phone=value)
@@ -135,12 +131,11 @@ class Validation:
             cls.must_positive_int(int_=data["ID"], max_length=None)
             cls.must_current_user(ID=data["ID"], same=True)
             cls.must_default_user(ID=data["ID"], same=False)
-            if data["password_1"] is not None:
-                cls.must_password(password_1=data["password_1"], password_2=data["password_2"])
-        else:
+
+        if data["ID"] is None or data["password_1"] is not None:
             cls.must_password(password_1=data["password_1"], password_2=data["password_2"])
 
-        keys: list = [
+        cls._must_multiple_str_in_dict([
             "firstname",
             "lastname",
             "street",
@@ -150,12 +145,7 @@ class Validation:
             "mail",
             "position",
             "zip_code",
-        ]
-
-        for key in keys:
-            entry = data[key]
-            if entry is not None:
-                cls.must_str(str_=entry)
+        ], data)
 
     @staticmethod
     def must_current_user(ID: int, same: bool) -> None:
@@ -174,6 +164,13 @@ class Validation:
             raise e.NoStr(info=str_)
         if len(str_) > length:
             raise e.ToLong(max_length=length, text=str_)
+
+    @classmethod
+    def _must_multiple_str_in_dict(cls, keys: list, data: dict) -> None:
+        for key in keys:
+            entry = data[key]
+            if entry is not None:
+                cls.must_str(str_=entry)
 
     @staticmethod
     def must_bool(bool_: bool) -> None:

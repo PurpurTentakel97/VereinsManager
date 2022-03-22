@@ -54,12 +54,14 @@ class Config:
         data, valid = s_h.select_handler.get_names_of_user(active=True)
         if not valid:
             return data, False
+
         self.user_id = ID
         for ID, firstname, lastname in data:
             if not ID == self.user_id:
                 continue
             self._set_user_name(firstname=firstname, lastname=lastname)
             break
+
         self._get_easter_egg_from_user_name()
         return None, True
 
