@@ -38,6 +38,7 @@ def get_single_raw_type_types(raw_type_id: int, active: bool = True) -> [tuple |
         v.validation.must_positive_int(int_=raw_type_id)
         v.validation.must_bool(bool_=active)
     except (e.NoBool, e.NoPositiveInt) as error:
+        debug.error(item=debug_str, keyword="get_single_raw_type_types", message=f"Error = {error.message}")
         return error.message, False
 
     return s_h.select_handler.get_single_raw_type_types(raw_type_id=raw_type_id, active=active)
