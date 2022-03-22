@@ -3,7 +3,7 @@
 # VereinsManager / Type Handler
 
 from logic import validation as v
-from config import exception_sheet as e
+from config import exception_sheet as e, config_sheet as c
 from sqlite import add_handler as a_h, delete_handler as d_h, select_handler as s_h, update_handler as u_h, \
     log_handler as l_h
 import debug
@@ -15,8 +15,9 @@ debug_str: str = "Type Handler"
 def add_type(type_name: str, raw_type_id: int) -> [str | int, bool]:
     try:
         v.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
+        v.validation.must_default_user(c.config.user_id, False)
         type_name = type_name.strip().title()
-    except (e.NoStr, e.NoInt, e.NoPositiveInt, e.ToLong, e.AlreadyExists) as error:
+    except (e.NoStr, e.NoInt, e.NoPositiveInt, e.ToLong, e.AlreadyExists, e.DefaultUserException) as error:
         debug.error(item=debug_str, keyword="add_type", message=f"Error = {error.message}")
         return error.message, False
 
@@ -81,9 +82,10 @@ def get_id_by_type_name(raw_id: int, name: str) -> [tuple | str, bool]:
 def update_type(ID: int, name: str) -> [str | None, bool]:
     try:
         v.validation.update_type(ID=ID, new_name=name)
+        v.validation.must_default_user(c.config.user_id, False)
         name = name.strip().title()
-    except (e.NoStr, e.NoInt, e.NoPositiveInt, e.NoChance, e.NotFound, e.ToLong) as error:
-        debug.error(item=debug_str, keyword="update_type", message=f"Error 0 {error.message}")
+    except (e.NoStr, e.NoInt, e.NoPositiveInt, e.NoChance, e.NotFound, e.ToLong, e.DefaultUserException) as error:
+        debug.error(item=debug_str, keyword="update_type", message=f"Error = {error.message}")
         return error.message, False
 
     reference_data, valid = s_h.select_handler.get_type_name_by_ID(ID=ID)
@@ -105,7 +107,8 @@ def update_type(ID: int, name: str) -> [str | None, bool]:
 def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
     try:
         v.validation.update_type_activity(ID=ID, active=active)
-    except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound, e.ToLong) as error:
+        v.validation.must_default_user(c.config.user_id, False)
+    except (e.NoStr, e.NoPositiveInt, e.NoChance, e.NotFound, e.ToLong, e.DefaultUserException) as error:
         debug.error(item=debug_str, keyword="update_type_activity", message=f"Error = {error.message}")
         return error.message, False
 
@@ -122,13 +125,15 @@ def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
     if not valid:
         return result, False
 
-    return None,True
+    return None, True
+
 
 # delete
 def delete_type(ID: int) -> [str | None, bool]:
     try:
         v.validation.must_positive_int(ID, max_length=None)
-    except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
+        v.validation.must_default_user(c.config.user_id, False)
+    except (e.NoInt, e.NoPositiveInt, e.ToLong, e.DefaultUserException) as error:
         debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
         return error.message, False
 

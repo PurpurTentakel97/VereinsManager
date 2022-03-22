@@ -3,6 +3,8 @@
 # VereinsManager / Window Handler
 
 from ui.windows import alert_window, base_window, window_manager, user_verify_window, main_window
+from logic import validation as v
+from config import config_sheet as c, exception_sheet as e
 
 
 def on_start() -> None:
@@ -13,5 +15,13 @@ def on_start() -> None:
 
 
 def create_main_window() -> None:
-    main_window.create_main_window()
+    main_window.create_main_window(_is_default_user())
     alert_window.create_alert_window()
+
+
+def _is_default_user() -> bool:
+    try:
+        v.validation.must_default_user(c.config.user_id, False)
+        return False
+    except e.DefaultUserException:
+        return True

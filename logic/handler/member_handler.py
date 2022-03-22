@@ -136,7 +136,8 @@ def get_all_IDs_from_member(active: bool = True) -> [list or None, bool]:
 def update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict, bool]:
     try:
         v.validation.must_dict(dict_=data)
-    except e.NoDict as error:
+        v.validation.must_default_user(c.config.user_id, False)
+    except (e.NoDict, e.DefaultUserException) as error:
         debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
         return error.message, False
 
@@ -202,11 +203,12 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
     try:
         v.validation.must_positive_int(int_=ID, max_length=None)
         v.validation.must_bool(bool_=active)
-    except (e.NoPositiveInt, e.NoBool) as error:
+        v.validation.must_default_user(c.config.user_id, False)
+    except (e.NoPositiveInt, e.NoBool,e.DefaultUserException) as error:
         debug.error(item=debug_str, keyword="update_member_activity", message=f"Error = {error.message}")
         return error.message, False
 
-    reference_data, valid = s_h.select_handler.get_member_activity_by_id(ID=ID)
+    reference_data, valid = get_member_activity_by_id(ID=ID)
     if not valid:
         return reference_data, False
 
