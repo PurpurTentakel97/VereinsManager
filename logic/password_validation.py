@@ -4,7 +4,7 @@
 
 from logic import validation as v
 from logic.handler import window_handler
-from config import exception_sheet as e, config_sheet as c
+from config import config_sheet as c
 from sqlite import select_handler as s_h
 from helper import hasher
 import debug
@@ -13,16 +13,10 @@ debug_str: str = "Password Validation"
 
 
 def check_password(ID: int, password: str) -> [str | bool, bool]:
-    try:
-        v.validation.must_positive_int(int_=ID)
-        v.validation.must_str(str_=password)
-    except (e.NoInt, e.NoPositiveInt, e.NoStr) as error:
-        debug.error(item=debug_str, keyword="check_password", message=f"Error = {error.message}")
-        return error.message, False
+    v.validation.must_positive_int(int_=ID)
+    v.validation.must_str(str_=password)
 
     hashed, valid = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
-    if not valid:
-        return hashed
 
     result: bool = hasher.compare_password(password=password, hashed=hashed)
     if result:

@@ -5,149 +5,169 @@
 import debug
 
 
-# Operational Error
-class LoadingFailed(Exception):
+class BaseException_(Exception):
+    def __init__(self) -> None:
+        self.message: str = str()
+
+    def set_message(self, message: str, info) -> None:
+        self.message: str = message + "//" + info if info else message
+
+
+#
+class OperationalError(BaseException_):
+    def __init__(self) -> None:
+        super().__init__()
+
+
+class LoadingFailed(OperationalError):
+    def __init__(self, info: str = "") -> None:
+        super().__init__()
+        self.set_message(message="Laden Fehlgeschlagen", info=info)
+
+
+class AddFailed(OperationalError):
     def __init__(self, info: str = ""):
-        str_ = "Laden Fehlgeschlagen"
-        self.message: str = str_ + "//" + info if info else str_
+        super().__init__()
+        self.set_message(message="Hinzufügen Fehlgeschlagen", info=info)
 
 
-class AddFailed(Exception):
+class UpdateFailed(OperationalError):
     def __init__(self, info: str = ""):
-        str_ = "Hinzufügen Fehlgeschlagen"
-        self.message: str = str_ + "//" + info if info else str_
+        super().__init__()
+        self.set_message(message="Update Fehlgeschlagen", info=info)
 
 
-class UpdateFailed(Exception):
+class ActiveSetFailed(OperationalError):
     def __init__(self, info: str = ""):
-        str_ = "Update Fehlgeschlagen"
-        self.message: str = str_ + "//" + info if info else str_
+        super().__init__()
+        self.set_message(message="Änderung der Aktivität Fehlgeschlagen", info=info)
 
 
-class ActiveSetFailed(Exception):
+class DeleteFailed(OperationalError):
     def __init__(self, info: str = ""):
-        str_ = "Änderung der Aktivität Fehlgeschlagen"
-        self.message: str = str_ + "//" + info if info else str_
+        super().__init__()
+        self.set_message(message="Löschen Fehlgeschlagen", info=info)
 
 
-class DeleteFailed(Exception):
+class ForeignKeyError(OperationalError):
     def __init__(self, info: str = ""):
-        str_ = "Löschen Fehlgeschlagen"
-        self.message: str = str_ + "//" + info if info else str_
+        super().__init__()
+        self.set_message(message="Datensatz noch in Benutzung", info=info)
 
 
-# Database
-class ForeignKeyError(Exception):
+#
+class InputError(BaseException_):
+    def __init__(self):
+        super().__init__()
+
+
+class NoStr(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Datensatz noch in Benutzung"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Keine Eingabe", info=info)
 
 
-# Input Error
-class NoStr(Exception):
+class NoBool(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Keine Eingabe"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Kein Bool-Wert", info=info)
 
 
-class NoBool(Exception):
+class NoDict(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Kein Bool-Wert"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Kein Dictionary", info=info)
 
 
-class NoDict(Exception):
+class NoInt(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Kein Dictionary"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Keine Ganzzahl", info=info)
 
 
-class NoInt(Exception):
+class NoPositiveInt(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Keine Ganzzahl"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Keine positive Ganzzahl", info=info)
 
 
-class NoPositiveInt(Exception):
+class NoList(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Keine positive Ganzzahl"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Keine Liste", info=info)
 
 
-class NoList(Exception):
+class WrongLength(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Keine Liste"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Falsche Länge", info=info)
 
 
-class WrongLength(Exception):
+class NoChance(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Falsche Länge"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Keine Änderung", info=info)
 
 
-class NoChance(Exception):
+class AlreadyExists(InputError):
     def __init__(self, info: str = ""):
-        str_ = "Keine Änderung"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Bereits vorhanden", info=info)
 
 
-class AlreadyExists(Exception):
-    def __init__(self, info: str = ""):
-        str_ = "Bereits vorhanden"
-        self.message: str = str_ + "//" + info if info else str_
-
-
-class ToLong(Exception):
+class ToLong(InputError):
     def __init__(self, max_length: int, text):
-        text = str(text)
-        text_len = str(len(text))
         if len(text) > 25:
-            text = f"{text[:25]}..."
-        self.message: str = f"Länge von {max_length} Zeichen überschritten // {text} ({text_len} Zeichen)"
+            text = f"{str(text)[:25]}..."
+
+        self.set_message(message=f"Länge von {max_length} Zeichen überschritten",
+                         info=f"{str(text)} ({str(len(text))} Zeichen")
 
 
-# Password
-class PasswordHasSpace(Exception):
+#
+class PasswordError(BaseException_):
     def __init__(self):
-        self.message: str = "Passwort enthält Leerzeichen"
+        super().__init__()
 
 
-class VeryLowPassword(Exception):
+class PasswordHasSpace(PasswordError):
     def __init__(self):
-        self.message: str = "Dein Passwort ist sehr unsicher"
+        self.set_message(message="Passwort enthält Leerzeichen", info=None)
 
 
-class LowPassword(Exception):
+class VeryLowPassword(PasswordError):
     def __init__(self):
-        self.message: str = "Dein Passwort ist unsicher"
+        self.set_message(message="Dein Passwort ist sehr unsicher", info=None)
 
 
-class PasswordToShort(Exception):
+class LowPassword(PasswordError):
     def __init__(self):
-        self.message: str = "Dein Passwort ist zu kurz"
+        self.set_message(message="Dein Passwort ist unsicher", info=None)
 
 
-class DifferentPassword(Exception):
+class PasswordToShort(PasswordError):
     def __init__(self):
-        self.message: str = "Deine Passwörter stimmen nicht überein"
+        self.set_message(message="Dein Passwort ist zu kurz", info=None)
 
 
-# User
-class CurrentUserException(Exception):
+class DifferentPassword(PasswordError):
+    def __init__(self):
+        self.set_message(message="Deine Passwörter stimmen nicht überein", info=None)
+
+
+#
+class UserError(BaseException_):
+    def __init__(self):
+        super().__init__()
+
+
+class CurrentUserException(UserError):
     def __init__(self, info: str = ""):
-        str_ = "Dieser Benutzer kann nicht bearbeitet werden"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Dieser Benutzer kann nicht bearbeitet werden", info=info)
 
 
-class DefaultUserException(Exception):
+class DefaultUserException(UserError):
     def __init__(self, info: str = ""):
-        str_ = "Default Benutzer kann nicht bearbeitet werden"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Default Benutzer kann nicht bearbeitet werden", info=info)
 
 
-# General
-class NotFound(Exception):
+#
+class GeneralError(BaseException_):
+    def __init__(self):
+        super().__init__()
+
+
+class NotFound(GeneralError):
     def __init__(self, info: str = ""):
-        str_ = "Nicht gefunden"
-        self.message: str = str_ + "//" + info if info else str_
+        self.set_message(message="Nicht gefunden", info=info)

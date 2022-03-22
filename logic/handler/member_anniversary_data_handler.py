@@ -5,7 +5,7 @@
 import datetime
 
 from sqlite import select_handler as s_h
-from config import config_sheet as c, exception_sheet as e
+from config import config_sheet as c
 from logic import validation as v
 
 import debug
@@ -16,9 +16,8 @@ debug_str = "Anniversary Handler"
 def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [dict | str, bool]:
     b_day_data: list = list()
     entry_day_data: list = list()
-    member_data, valid = s_h.select_handler.get_name_and_dates_from_member(active=active)
-    if not valid:
-        return member_data, valid
+    member_data = s_h.select_handler.get_name_and_dates_from_member(active=active)
+
     for _, firstname, lastname, b_day, entry_day in member_data:
         if b_day:
             inner: dict = {
@@ -90,15 +89,11 @@ def _transform_current_data(b_day: list, entry_day: list) -> [dict, bool]:
         "b_day": final_b_day_data,
         "entry_day": final_entry_date_data,
     }
-    return data, True
+    return data
 
 
 def _transform_other_data(b_day: list, entry_day: list, year: int) -> [dict or str, bool]:
-    try:
-        v.validation.must_positive_int(year, max_length=4)
-    except (e.NoInt, e.NoPositiveInt, e.ToLong) as error:
-        debug.error(item=debug_str, keyword="_transform_other_data", message=f"Error = {error.message}")
-        return error.message, False
+    v.validation.must_positive_int(year, max_length=4)
 
     final_b_day_data: list = list()
     for entry in b_day:
@@ -124,7 +119,7 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> [dict or s
         "entry_day": final_entry_day_data,
     }
 
-    return data,True
+    return data
 
 
 def _transform_timestamp_to_datetime(timestamp: int) -> datetime:

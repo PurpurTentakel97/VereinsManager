@@ -5,7 +5,6 @@
 import json
 
 from logic import validation as v
-from config import exception_sheet as e
 from sqlite import select_handler as s_h
 import debug
 
@@ -45,15 +44,8 @@ class Config:
         self._get_easter_egg_from_user_name()
 
     def set_user(self, ID: int) -> [str | None, bool]:
-        try:
-            v.validation.must_positive_int(int_=ID)
-        except (e.NoInt, e.NoPositiveInt) as error:
-            debug.error(item=debug_str, keyword="set_user", message=f"Error = {error.message}")
-            return error.message, False
-
-        data, valid = s_h.select_handler.get_names_of_user(active=True)
-        if not valid:
-            return data, False
+        v.validation.must_positive_int(int_=ID)
+        data = s_h.select_handler.get_names_of_user(active=True)
 
         self.user_id = ID
         for ID, firstname, lastname in data:
@@ -63,7 +55,6 @@ class Config:
             break
 
         self._get_easter_egg_from_user_name()
-        return None, True
 
     def _set_user_name(self, firstname: str, lastname: str) -> None:
         if firstname and lastname:
