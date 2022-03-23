@@ -3,6 +3,7 @@
 # VereinsManager / Member Data Anniversary Handler
 
 import datetime
+from datetime import timedelta
 
 from sqlite import select_handler as s_h
 from config import config_sheet as c, exception_sheet as e
@@ -48,19 +49,14 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [str
 
 
 def _transform_current_data(b_day: list, entry_day: list) -> dict:
-    break_day: int = 15
-    current_date: datetime.datetime = datetime.datetime.now()
+    reference_date_1: datetime.datetime = datetime.datetime.today() - timedelta(days=5)
+    reference_date_2: datetime.datetime = datetime.datetime.today() + timedelta(days=31)
 
     current_b_day: list = list()
     for entry in b_day:
-        if current_date.day <= break_day:
-            if entry["date"].month == current_date.month:
-                current_b_day.append(entry)
-        else:
-            if entry["date"].month == current_date.month and entry["date"].day > break_day:
-                current_b_day.append(entry)
-            elif entry["date"].month == current_date.month + 1 and entry["date"].day < break_day:
-                current_b_day.append(entry)
+        if reference_date_1.month == entry['date'].month and reference_date_1.day <= entry['date'].day \
+                or reference_date_2.month == entry['date'].month and reference_date_2.day >= entry['date'].day:
+            current_b_day.append(entry)
 
     final_b_day_data: list = list()
     for entry in current_b_day:
@@ -71,14 +67,9 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
 
     current_entry_day: list = list()
     for entry in entry_day:
-        if current_date.day <= break_day:
-            if entry["date"].month == current_date.month:
-                current_entry_day.append(entry)
-        else:
-            if entry["date"].month == current_date.month and entry["date"].day > break_day:
-                current_entry_day.append(entry)
-            elif entry["date"].month == current_date.month + 1 and entry["date"].day < break_day:
-                current_entry_day.append(entry)
+        if reference_date_1.month == entry['date'].month and reference_date_1.day < entry['date'].day \
+                or reference_date_2.month == entry['date'].month and reference_date_2.day > entry['date'].day:
+            current_entry_day.append(entry)
 
     final_entry_date_data: list = list()
     for entry in current_entry_day:
