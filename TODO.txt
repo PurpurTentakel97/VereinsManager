@@ -2,6 +2,9 @@
 # 21.01.2022
 # VereinsManager // TODO
 
+validation
+    log member nexus
+
 pdf
     open after export?
     refactor break day in current anniversary
