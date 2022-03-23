@@ -12,50 +12,32 @@ debug_str: str = "User Handler"
 
 
 # get
-def get_names_of_user(active: bool = True) -> [tuple | str, bool]:
-    try:
-        v.validation.must_bool(bool_=active)
-    except e.NoBool as error:
-        debug.debug(item=debug_str, keyword="get_names_of_user", message=f"Error = {error.message}")
-        return error.message, False
+def get_names_of_user(active: bool = True) -> tuple:
+    v.validation.must_bool(bool_=active)
 
     return s_h.select_handler.get_names_of_user(active=active)
 
 
-def get_data_of_user_by_ID(ID: int, active: bool) -> [dict | str, bool]:
-    try:
-        v.validation.must_positive_int(int_=ID)
-        v.validation.must_bool(bool_=active)
-    except (e.NoInt, e.NoPositiveInt, e.NoBool) as error:
-        debug.error(item=debug_str, keyword="get_data_of_user", message=f"Error = {error.message}")
-        return error.message, False
+def get_data_of_user_by_ID(ID: int, active: bool) -> dict:
+    v.validation.must_positive_int(int_=ID)
+    v.validation.must_bool(bool_=active)
 
     return s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
 
 
 # add / update
-def add_update_user(data: dict) -> [int | str | None, bool]:
-    try:
-        v.validation.save_update_user(data=data)
-    except (e.NoDict, e.NoStr, e.NoInt, e.NoPositiveInt, e.DifferentPassword, e.PasswordToShort,
-            e.PasswordHasSpace, e.LowPassword, e.VeryLowPassword, e.ToLong, e.DefaultUserException,
-            e.CurrentUserException) as error:
-        debug.error(item=debug_str, keyword="save_update_user", message=f"Error = {error.message}")
-        return error.message, False
+def add_update_user(data: dict) -> int | None:
+    v.validation.save_update_user(data=data)
 
     if not data["ID"]:
         data["password_hashed"] = hasher.hash_password(data["password_1"])
         return a_h.add_handler.add_user(data=data)
 
-    result, valid = u_h.update_handler.update_user(ID=data["ID"], data=data)
-    if not valid:
-        return result, False
+    u_h.update_handler.update_user(ID=data["ID"], data=data)
 
     if data["password_1"]:
         data["password_hashed"] = hasher.hash_password(data["password_1"])
-        return u_h.update_handler.update_user_password(ID=data["ID"], password=data["password_hashed"])
-
-    return None, True
+        u_h.update_handler.update_user_password(ID=data["ID"], password=data["password_hashed"])
 
 
 # update
