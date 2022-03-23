@@ -4,7 +4,7 @@
 
 from helper import hasher
 from logic import validation as v
-from config import exception_sheet as e
+from config import exception_sheet as e, config_sheet as c
 from sqlite import add_handler as a_h, update_handler as u_h, select_handler as s_h
 import debug
 
@@ -28,7 +28,6 @@ def get_data_of_user_by_ID(ID: int, active: bool) -> [str | dict, bool]:
         v.validation.must_bool(bool_=active)
 
         data = s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
-        debug.debug(item=debug_str, keyword="get_data_of_user_by_ID", message=f"data = {data}")
         data_: dict = {
             "ID": data[0],
             "firstname": data[1],
@@ -66,12 +65,13 @@ def add_update_user(data: dict) -> [str | int | None, bool]:
             return a_h.add_handler.add_user(data=data), True
 
         u_h.update_handler.update_user(ID=data["ID"], data=data)
+        c.config.set_user(ID=c.config.user_id)
 
         if data["password_1"]:
             data["password_hashed"] = hasher.hash_password(data["password_1"])
             u_h.update_handler.update_user_password(ID=data["ID"], password=data["password_hashed"])
         return None, True
-    except (e.OperationalError, e.InputError, e.UserError) as error:
+    except (e.OperationalError, e.InputError, e.UserError, e.PasswordError) as error:
         debug.error(item=debug_str, keyword="add_update_user", message=f"Error = {error.message}")
         return error.message, False
 

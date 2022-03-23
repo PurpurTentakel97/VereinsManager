@@ -81,6 +81,7 @@ class Config:
                 if self.user_name.lower() in item:
                     self.easter_egg = item[1]
                     return
+            self.easter_egg = str()
 
 
 def create_config():
