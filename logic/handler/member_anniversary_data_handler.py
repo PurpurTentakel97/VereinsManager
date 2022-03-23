@@ -13,7 +13,7 @@ import debug
 debug_str = "Anniversary Handler"
 
 
-def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [dict | str, bool]:
+def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> dict:
     b_day_data: list = list()
     entry_day_data: list = list()
     member_data = s_h.select_handler.get_name_and_dates_from_member(active=active)
@@ -42,7 +42,7 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [dic
             return _transform_other_data(b_day=b_day_data, entry_day=entry_day_data, year=year)
 
 
-def _transform_current_data(b_day: list, entry_day: list) -> [dict, bool]:
+def _transform_current_data(b_day: list, entry_day: list) -> dict:
     break_day: int = 15
     current_date: datetime.datetime = datetime.datetime.now()
 
@@ -92,7 +92,7 @@ def _transform_current_data(b_day: list, entry_day: list) -> [dict, bool]:
     return data
 
 
-def _transform_other_data(b_day: list, entry_day: list, year: int) -> [dict or str, bool]:
+def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
     v.validation.must_positive_int(year, max_length=4)
 
     final_b_day_data: list = list()

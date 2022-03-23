@@ -12,7 +12,7 @@ import debug
 debug_str: str = "table_data_handler"
 
 
-def get_member_table_data(active: bool) -> [dict | str, bool]:
+def get_member_table_data(active: bool) -> dict:
     types = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
     type_ids: list = [x[0] for x in types]
 
@@ -69,7 +69,7 @@ def _transform_member_data(member: list) -> dict:
     return member_dict
 
 
-def _transform_nexus_data(nexus_data: list) -> [str | list, bool]:
+def _transform_nexus_data(nexus_data: list) -> list:
     nexus_list: list = list()
     for data in nexus_data:
         nexus_dict: dict = {
@@ -96,9 +96,9 @@ def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
             return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
 
 
-def _get_years_from_date_to_now(date: datetime.datetime) -> str | None:
+def _get_years_from_date_to_now(date: datetime.datetime) -> str or None:
     if not date:
-        return None
+        return
 
     now = datetime.datetime.now()
     years = now.year - date.year
@@ -107,9 +107,9 @@ def _get_years_from_date_to_now(date: datetime.datetime) -> str | None:
     return str(years)
 
 
-def _transform_date_to_str(date: datetime) -> str | None:
+def _transform_date_to_str(date: datetime) -> str or None:
     if not date:
-        return None
+        return
 
     return date.strftime(c.config.date_format["short"])
 
