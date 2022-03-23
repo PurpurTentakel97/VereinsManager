@@ -20,7 +20,7 @@ class Validation:
         cls.must_str(str_=type_name)
         cls.must_positive_int(int_=raw_type_id, max_length=None)
 
-        data, _ = s_h.select_handler.get_all_single_type()
+        data = s_h.select_handler.get_all_single_type()
         type_name = type_name.strip().title()
         for _, name, id_, _ in data:
             if type_name == name and id_ == raw_type_id:
@@ -48,7 +48,7 @@ class Validation:
         cls.must_positive_int(int_=ID, max_length=None)
         cls.must_bool(bool_=active)
 
-        data, _ = s_h.select_handler.get_all_single_type()
+        data = s_h.select_handler.get_all_single_type()
         exists: bool = False
         for old_id, old_name, old_type_id, old_active in data:
             if old_id == ID:

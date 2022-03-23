@@ -8,6 +8,7 @@ validation
 pdf
     open after export?
     refactor break day in current anniversary
+    dirfferent name for anniversary pdfs
 
 sql database
     let unser coose database name

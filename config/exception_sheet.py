@@ -5,20 +5,14 @@
 import debug
 
 
-class BaseException_(Exception):
+class OperationalError(BaseException):
     def __init__(self) -> None:
-        self.error_code: str = "0"
+        super().__init__()
+        self.error_code: str = "100"
         self.message: str = str()
 
     def set_message(self, message: str, info) -> None:
         self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
-
-
-#
-class OperationalError(BaseException_):
-    def __init__(self) -> None:
-        super().__init__()
-        self.error_code: str = "100"
 
 
 class LoadingFailed(OperationalError):
@@ -64,10 +58,14 @@ class ForeignKeyError(OperationalError):
 
 
 #
-class InputError(BaseException_):
+class InputError(BaseException):
     def __init__(self):
         super().__init__()
         self.error_code: str = "200"
+        self.message: str = str()
+
+    def set_message(self, message: str, info) -> None:
+        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
 
 
 class NoStr(InputError):
@@ -145,10 +143,14 @@ class ToLong(InputError):
 
 
 #
-class PasswordError(BaseException_):
+class PasswordError(BaseException):
     def __init__(self):
         super().__init__()
         self.error_code: str = "300"
+        self.message: str = str()
+
+    def set_message(self, message: str, info) -> None:
+        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
 
 
 class PasswordHasSpace(PasswordError):
@@ -187,10 +189,14 @@ class DifferentPassword(PasswordError):
 
 
 #
-class UserError(BaseException_):
+class UserError(BaseException):
     def __init__(self):
         super().__init__()
         self.error_code: str = "400"
+        self.message: str = str()
+
+    def set_message(self, message: str, info) -> None:
+        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
 
 
 class CurrentUserException(UserError):
@@ -208,10 +214,14 @@ class DefaultUserException(UserError):
 
 
 #
-class GeneralError(BaseException_):
+class GeneralError(BaseException):
     def __init__(self):
         super().__init__()
         self.error_code: str = "500"
+        self.message: str = str()
+
+    def set_message(self, message: str, info) -> None:
+        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
 
 
 class NotFound(GeneralError):

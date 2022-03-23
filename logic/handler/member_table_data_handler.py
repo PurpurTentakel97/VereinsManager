@@ -4,7 +4,7 @@
 
 import datetime
 
-from config import config_sheet as c
+from config import config_sheet as c, exception_sheet as e
 from sqlite import select_handler as s_h
 
 import debug
@@ -12,31 +12,36 @@ import debug
 debug_str: str = "table_data_handler"
 
 
-def get_member_table_data(active: bool) -> dict:
-    types = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
-    type_ids: list = [x[0] for x in types]
+def get_member_table_data(active: bool) -> [str | dict, bool]:
+    # validation
+    try:
+        types = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
+        type_ids: list = [x[0] for x in types]
 
-    final_data: dict = dict()
-    for type_id in type_ids:
-        member_data = s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
-                                                                                    membership_type_id=type_id)
-        final_members_list: list = list()
+        final_data: dict = dict()
+        for type_id in type_ids:
+            member_data = s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
+                                                                                        membership_type_id=type_id)
+            final_members_list: list = list()
 
-        for member in member_data:
-            member_dict = _transform_member_data(member=member)
-            phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
-            mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_dict["ID"])
-            phone_list = _transform_nexus_data(nexus_data=phone_data)
-            mail_list = _transform_nexus_data(nexus_data=mail_data)
+            for member in member_data:
+                member_dict = _transform_member_data(member=member)
+                phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
+                mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_dict["ID"])
+                phone_list = _transform_nexus_data(nexus_data=phone_data)
+                mail_list = _transform_nexus_data(nexus_data=mail_data)
 
-            single_member_data: dict = {
-                "member": member_dict,
-                "phone": phone_list,
-                "mail": mail_list,
-            }
-            final_members_list.append(single_member_data)
-        final_data[type_id] = final_members_list
-    return final_data
+                single_member_data: dict = {
+                    "member": member_dict,
+                    "phone": phone_list,
+                    "mail": mail_list,
+                }
+                final_members_list.append(single_member_data)
+            final_data[type_id] = final_members_list
+        return final_data, True
+    except (e.OperationalError, e.InputError) as error:
+        debug.error(item=debug_str, keyword="get_member_table_data", message=f"Error = {error.message}")
+        return error.message, False
 
 
 def _transform_member_data(member: list) -> dict:
@@ -69,7 +74,7 @@ def _transform_member_data(member: list) -> dict:
     return member_dict
 
 
-def _transform_nexus_data(nexus_data: list) -> list:
+def _transform_nexus_data(nexus_data: tuple) -> list:
     nexus_list: list = list()
     for data in nexus_data:
         nexus_dict: dict = {

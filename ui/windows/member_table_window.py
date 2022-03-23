@@ -9,6 +9,7 @@ from ui.windows.base_window import BaseWindow
 from ui.windows import members_window as m_w, window_manager as w
 from config import config_sheet as c
 import transition
+import debug
 
 debug_str: str = "MemberTableWindow"
 
@@ -135,6 +136,7 @@ class MemberTableWindow(BaseWindow):
             self._data = result
 
     def _get_type_names(self) -> None:
+        debug.debug(item=debug_str, keyword="_get_type_names", message=f"data = {self._data}")
         for ID, _ in self._data.items():
             result, valid = transition.get_type_name_by_ID(ID=ID)
             if not valid:
@@ -150,11 +152,8 @@ class MemberTableWindow(BaseWindow):
         if not check:
             self.set_info_bar(message="Export abgebrochen")
             return
-        result, valid = transition.get_member_table_pdf(file)
-        if not valid:
-            self.set_error_bar(message=result)
-        else:
-            self.set_info_bar(message="Export abgeschlossen")
+        transition.get_member_table_pdf(file)
+        self.set_info_bar(message="Export abgeschlossen")
 
     def closeEvent(self, event) -> None:
         event.ignore()

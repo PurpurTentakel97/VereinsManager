@@ -1,45 +1,50 @@
 # Purpur Tentakel
 # 13.02.2022
-# VereinsManager / Anniversary Handler
+# VereinsManager / Member Data Anniversary Handler
 
 import datetime
 
 from sqlite import select_handler as s_h
-from config import config_sheet as c
+from config import config_sheet as c, exception_sheet as e
 from logic import validation as v
 
 import debug
 
-debug_str = "Anniversary Handler"
+debug_str = "Member Data Anniversary Handler"
 
 
-def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> dict:
-    b_day_data: list = list()
-    entry_day_data: list = list()
-    member_data = s_h.select_handler.get_name_and_dates_from_member(active=active)
+def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [str | dict, bool]:
+    # validation
+    try:
+        b_day_data: list = list()
+        entry_day_data: list = list()
+        member_data = s_h.select_handler.get_name_and_dates_from_member(active=active)
 
-    for _, firstname, lastname, b_day, entry_day in member_data:
-        if b_day:
-            inner: dict = {
-                "firstname": firstname,
-                "lastname": lastname,
-                "date": _transform_timestamp_to_datetime(b_day),
-            }
-            b_day_data.append(inner)
-        if entry_day:
-            inner: dict = {
-                "firstname": firstname,
-                "lastname": lastname,
-                "date": _transform_timestamp_to_datetime(entry_day),
-            }
-            entry_day_data.append(inner)
+        for _, firstname, lastname, b_day, entry_day in member_data:
+            if b_day:
+                inner: dict = {
+                    "firstname": firstname,
+                    "lastname": lastname,
+                    "date": _transform_timestamp_to_datetime(b_day),
+                }
+                b_day_data.append(inner)
+            if entry_day:
+                inner: dict = {
+                    "firstname": firstname,
+                    "lastname": lastname,
+                    "date": _transform_timestamp_to_datetime(entry_day),
+                }
+                entry_day_data.append(inner)
 
-    match type_:
-        case "current":
-            return _transform_current_data(b_day=b_day_data, entry_day=entry_day_data)
+        match type_:
+            case "current":
+                return _transform_current_data(b_day=b_day_data, entry_day=entry_day_data), True
 
-        case "other":
-            return _transform_other_data(b_day=b_day_data, entry_day=entry_day_data, year=year)
+            case "other":
+                return _transform_other_data(b_day=b_day_data, entry_day=entry_day_data, year=year), True
+    except (e.OperationalError, e.InputError) as error:
+        debug.error(item=debug_str, keyword="get_anniversary_member_data", message=f"Error = {error.message}")
+        return error.message, False
 
 
 def _transform_current_data(b_day: list, entry_day: list) -> dict:

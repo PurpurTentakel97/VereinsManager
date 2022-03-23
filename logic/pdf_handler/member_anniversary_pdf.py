@@ -11,8 +11,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table
 from datetime import datetime
 
 from logic.handler import member_anniversary_data_handler
-from pdf_handler.base_pdf import BasePDF
+from logic.pdf_handler.base_pdf import BasePDF
 from config import config_sheet as c
+import debug
 
 debug_str: str = "MemberAnniversaryPDF"
 
@@ -33,9 +34,10 @@ class MemberAnniversaryPDF(BasePDF):
                                 topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
         if year:
-            data = member_anniversary_data_handler.get_anniversary_member_data(type_="other", active=active, year=year)
+            data, _ = member_anniversary_data_handler.get_anniversary_member_data(type_="other", active=active,
+                                                                                  year=year)
         else:
-            data = member_anniversary_data_handler.get_anniversary_member_data(type_="current", active=active)
+            data, _ = member_anniversary_data_handler.get_anniversary_member_data(type_="current", active=active)
 
         elements: list = [
             Paragraph("Geburtstage / Jubiläen", self.style_sheet["Title"])

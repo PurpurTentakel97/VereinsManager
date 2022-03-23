@@ -2,7 +2,7 @@
 # 21.03.2022
 # VereinsManager / Member Handler
 
-from config import config_sheet as c
+from config import config_sheet as c, exception_sheet as e
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, log_handler as l_h
 from logic import validation as v
 import debug
@@ -13,51 +13,47 @@ debug_str: str = "Member Handler"
 # member
 # add
 def _add_member(data: dict, log_date: int | None) -> int:  # No Validation
-    ID = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
+    type_id = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
 
-    data = _transform_membership_for_safe(data=data, ID=ID)
+    data = _transform_membership_for_safe(data=data, ID=type_id)
     data = _transform_dates_for_save(data=data)
 
     return a_h.add_handler.add_member(data=data, log_date=log_date)
 
 
 # get
-def get_member_data(ID: int, active: bool = True) -> dict:
-    v.validation.must_positive_int(int_=ID)
-    v.validation.must_bool(bool_=active)
+def get_member_data(ID: int, active: bool = True) -> [str | dict, bool]:
+    try:
+        v.validation.must_positive_int(int_=ID)
+        v.validation.must_bool(bool_=active)
 
-    member_data = get_member_data_by_id(ID=ID, active=active)
-    phone_data = get_phone_number_by_member_id(member_id=ID)
-    mail_data = get_mail_by_member_id(member_id=ID)
-    position_data = get_position_by_member_id(member_id=ID)
+        member_data = _get_member_data_by_id(ID=ID, active=active)
+        phone_data = _get_phone_number_by_member_id(member_id=ID)
+        mail_data = _get_mail_by_member_id(member_id=ID)
+        position_data = _get_position_by_member_id(member_id=ID)
 
-    return {
-        "member_data": member_data,
-        "phone": phone_data,
-        "mail": mail_data,
-        "position": position_data,
-    }
+        return {
+                   "member_data": member_data,
+                   "phone": phone_data,
+                   "mail": mail_data,
+                   "position": position_data,
+               }, True
+
+    except (e.OperationalError, e.InputError) as error:
+        debug.error(item=debug_str, keyword="get_member_data", message=f"Error = {error.message}")
+        return error.message, False
 
 
 def get_names_of_member(active: bool = True) -> tuple:
-    v.validation.must_bool(bool_=active)
-    return s_h.select_handler.get_names_of_member(active=active)
+    try:
+        v.validation.must_bool(bool_=active)
+        return s_h.select_handler.get_names_of_member(active=active), True
+    except (e.OperationalError, e.InputError) as error:
+        debug.error(item=debug_str, keyword="get_names_of_member", message=f"Error = {error.message}")
+        return error.message, False
 
 
-def get_name_and_dates_from_member(active: bool = True) -> tuple:
-    v.validation.must_bool(bool_=active)
-    return s_h.select_handler.get_name_and_dates_from_member(active=active)
-
-
-def get_data_from_member_by_membership_type_id(active: bool, membership_type_id: int) -> tuple:
-    v.validation.must_positive_int(int_=membership_type_id, max_length=None)
-    v.validation.must_bool(bool_=active)
-
-    return s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
-                                                                         membership_type_id=membership_type_id)
-
-
-def get_member_data_by_id(ID: int, active: bool = True) -> dict:
+def _get_member_data_by_id(ID: int, active: bool = True) -> dict:
     v.validation.must_positive_int(int_=ID, max_length=None)
     v.validation.must_bool(bool_=active)
 
@@ -69,7 +65,7 @@ def get_member_data_by_id(ID: int, active: bool = True) -> dict:
     return data
 
 
-def get_member_activity_by_id(ID: int) -> bool:
+def _get_member_activity_by_id(ID: int) -> bool:
     v.validation.must_positive_int(int_=ID, max_length=None)
 
     data = s_h.select_handler.get_member_activity_by_id(ID=ID)
@@ -79,33 +75,31 @@ def get_member_activity_by_id(ID: int) -> bool:
     return data
 
 
-def get_all_IDs_from_member(active: bool = True) -> list:
-    v.validation.must_bool(bool_=active)
-
-    return s_h.select_handler.get_all_IDs_from_member(active=active)
-
-
 # update
-def update_member_data(ID: int, data: dict, log_date: int | None) -> dict:
-    v.validation.must_dict(dict_=data)
-    v.validation.must_default_user(c.config.user_id, False)
-    if ID is not None:
-        v.validation.must_positive_int(int_=ID, max_length=None)
+def update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict, bool]:
+    try:
+        v.validation.must_dict(dict_=data)
+        v.validation.must_default_user(c.config.user_id, False)
+        if ID is not None:
+            v.validation.must_positive_int(int_=ID, max_length=None)
 
-    member_data: dict = data["member_data"]
-    member_nexus_data: dict = data["member_nexus_data"]
+        member_data: dict = data["member_data"]
+        member_nexus_data: dict = data["member_nexus_data"]
 
-    v.validation.update_member(data=member_data)
+        v.validation.update_member(data=member_data)
 
-    if ID is None:
-        ID = _add_member(data=member_data, log_date=log_date)
-    else:
-        _update_member(ID=ID, data=member_data, log_date=log_date)
+        if ID is None:
+            ID = _add_member(data=member_data, log_date=log_date)
+        else:
+            _update_member(ID=ID, data=member_data, log_date=log_date)
 
-    ids = _update_add_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
+        ids = _update_add_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
 
-    ids["member_id"] = ID
-    return ids
+        ids["member_id"] = ID
+        return ids, True
+    except (e.OperationalError, e.InputError) as error:
+        debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
+        return error.message, False
 
 
 def _update_member(ID: int | None, data: dict, log_date: int | None) -> None:  # No Validation
@@ -114,20 +108,26 @@ def _update_member(ID: int | None, data: dict, log_date: int | None) -> None:  #
     data = _transform_membership_for_safe(data=data, ID=type_id)
     data = _transform_dates_for_save(data=data)
 
-    reference_data = get_member_data_by_id(ID=ID, active=True)
+    reference_data = _get_member_data_by_id(ID=ID, active=True)
     u_h.update_handler.update_member(ID=ID, data=data)
     l_h.log_handler.log_member(target_id=ID, old_data=reference_data, new_data=data, log_date=log_date)
 
 
-def update_member_activity(ID: int, active: bool, log_date: int | None) -> None:
-    v.validation.must_positive_int(int_=ID, max_length=None)
-    v.validation.must_bool(bool_=active)
-    v.validation.must_default_user(c.config.user_id, False)
+def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str | None, bool]:
+    try:
+        v.validation.must_positive_int(int_=ID, max_length=None)
+        v.validation.must_bool(bool_=active)
+        v.validation.must_default_user(c.config.user_id, False)
 
-    reference_data = get_member_activity_by_id(ID=ID)
-    u_h.update_handler.update_member_activity(ID=ID, active=active)
-    l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data, new_activity=active,
-                                        log_date=log_date)
+        reference_data = _get_member_activity_by_id(ID=ID)
+        u_h.update_handler.update_member_activity(ID=ID, active=active)
+        l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data, new_activity=active,
+                                            log_date=log_date)
+        return None, True
+
+    except (e.OperationalError, e.InputError) as error:
+        debug.error(item=debug_str, keyword="update_member_activity", message=f"Error = {error.message}")
+        return error.message, False
 
 
 # helper
@@ -195,30 +195,21 @@ def _add_member_nexus_position(type_id: int, value: bool, member_id: int, log_da
 
 
 # get
-def get_phone_number_by_member_id(member_id: int) -> tuple:
+def _get_phone_number_by_member_id(member_id: int) -> tuple:
     v.validation.must_positive_int(int_=member_id, max_length=None)
     return s_h.select_handler.get_phone_number_by_member_id(member_id=member_id)
 
 
-def get_phone_number_by_ID(ID: int) -> tuple:
-    v.validation.must_positive_int(int_=ID, max_length=None)
-    return s_h.select_handler.get_phone_number_by_ID(ID=ID)
-
-
-def get_mail_by_member_id(member_id: int) -> tuple:
+def _get_mail_by_member_id(member_id: int) -> tuple:
     v.validation.must_positive_int(int_=member_id, max_length=None)
     return s_h.select_handler.get_mail_by_member_id(member_id=member_id)
 
 
-def get_mail_member_by_ID(ID: int) -> tuple:
-    v.validation.must_positive_int(int_=ID, max_length=None)
-    return s_h.select_handler.get_mail_member_by_ID(ID=ID)
-
-
-def get_position_by_member_id(member_id: int) -> tuple:
+def _get_position_by_member_id(member_id: int) -> tuple:
     v.validation.must_positive_int(int_=member_id, max_length=None)
     data = s_h.select_handler.get_position_by_member_id(member_id=member_id)
 
+    data = list(data)
     for i in range(len(data)):
         data[i] = list(data[i])
     for i in data:
@@ -226,12 +217,7 @@ def get_position_by_member_id(member_id: int) -> tuple:
     for i in range(len(data)):
         data[i] = tuple(data[i])
 
-    return data
-
-
-def get_position_member_by_ID(ID: int) -> tuple:
-    v.validation.must_positive_int(int_=ID, max_length=None)
-    return s_h.select_handler.get_position_member_by_ID(ID=ID)
+    return tuple(data)
 
 
 # update

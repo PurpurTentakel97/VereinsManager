@@ -103,7 +103,7 @@ class SelectHandler(Database):
         except self.OperationalError:
             raise e.LoadingFailed(info="single member data")
 
-    def get_member_activity_by_id(self, ID: int) -> bool:
+    def get_member_activity_by_id(self, ID: int) -> list:
         sql_command: str = f"""SELECT active FROM "member" WHERE ID = ?;"""
 
         try:
@@ -177,12 +177,12 @@ class SelectHandler(Database):
         sql_command: str = f"""SELECT * FROM {table} WHERE ID is ?;"""
 
         try:
-            return self.cursor.execute(sql_command, (ID,))
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
 
         except self.OperationalError:
             raise e.LoadingFailed(info="user data")
 
-    def get_hashed_password_by_ID(self, ID: int) -> str:
+    def get_hashed_password_by_ID(self, ID: int) -> bytes:
         sql_command: str = """SELECT password FROM v_active_user_password WHERE ID IS ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()[0]

@@ -201,14 +201,10 @@ class MemberAnniversaryWindow(BaseWindow):
         result, valid = 1, False
         match self._tabs.currentIndex():
             case 0:
-                result, valid = transition.get_member_anniversary_pdf(path=file)
+                transition.get_member_anniversary_pdf(path=file)
             case 1:
-                result, valid = transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
-
-        if not valid:
-            self.set_error_bar(message=result)
-        else:
-            self.set_info_bar(message="Export abgeschlossen")
+                transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
+        self.set_info_bar(message="Export abgeschlossen")
 
     def closeEvent(self, event) -> None:
         event.ignore()

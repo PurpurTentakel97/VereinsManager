@@ -13,8 +13,7 @@ from datetime import datetime
 from logic.handler import member_table_data_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
-from pdf_handler.base_pdf import BasePDF
-import debug
+from logic.pdf_handler.base_pdf import BasePDF
 
 debug_str: str = "MemberTablePDF"
 
@@ -26,6 +25,7 @@ class MemberTablePDF(BasePDF):
         super().__init__()
 
     def create_pdf(self, path: str, active: bool) -> None:
+        # validation
         self.transform_path(path=path)
         self.create_dir()
 
@@ -37,7 +37,7 @@ class MemberTablePDF(BasePDF):
             Paragraph("Mitglieder", self.style_sheet["Title"])
         ]
 
-        data= member_table_data_handler.get_member_table_data(active=active)
+        data,_ = member_table_data_handler.get_member_table_data(active=active)
         if not data:
             elements.append(Paragraph(
                 f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
@@ -47,7 +47,7 @@ class MemberTablePDF(BasePDF):
             doc.build(elements)
             return
 
-        type_ids= s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
+        type_ids = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
         type_ids = [[x[0], x[1]] for x in type_ids]
 
         for type_id, type_ in type_ids:

@@ -2,11 +2,10 @@
 # 08.02.2022
 # VereinsManager / Transition
 
-from sqlite import select_handler as s_h, update_handler as u_h, global_handler as g_h
 from logic import password_validation
 from logic.handler import member_anniversary_data_handler, path_handler, member_table_data_handler, user_handler, \
     type_handler, member_handler
-from pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p
+from logic.pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p
 
 
 # global
@@ -90,7 +89,7 @@ def get_all_user_name(active: bool = True) -> [str | dict, bool]:
 
 
 def get_user_data_by_id(ID: int, active: bool) -> [str | dict, bool]:
-    return s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
+    return user_handler.get_data_of_user_by_ID(ID=ID, active=active)
 
 
 # pdf_handler
