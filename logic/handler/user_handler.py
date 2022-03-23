@@ -22,7 +22,20 @@ def get_data_of_user_by_ID(ID: int, active: bool) -> dict:
     v.validation.must_positive_int(int_=ID)
     v.validation.must_bool(bool_=active)
 
-    return s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
+    data = s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
+    data_: dict = {
+        "ID": data[0],
+        "firstname": data[1],
+        "lastname": data[2],
+        "street": data[3],
+        "number": data[4],
+        "zip_code": data[5],
+        "city": data[6],
+        "phone": data[7],
+        "mail": data[8],
+        "position": data[9],
+    }
+    return data_
 
 
 # add / update
