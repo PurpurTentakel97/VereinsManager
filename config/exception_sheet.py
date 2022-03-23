@@ -5,20 +5,25 @@
 import debug
 
 
-class OperationalError(BaseException):
-    def __init__(self) -> None:
-        super().__init__()
-        self.error_code: str = "100"
+class BaseException_(Exception):
+    def __init__(self):
+        self.error_code: str = "0"
         self.message: str = str()
 
     def set_message(self, message: str, info) -> None:
-        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
+        self.message: str = f"{self.error_code} //  {message} // {info}" if info else f"{self.error_code} // {message}"
+
+
+class OperationalError(BaseException_):
+    def __init__(self) -> None:
+        super().__init__()
+        self.error_code: str = "100"
 
 
 class LoadingFailed(OperationalError):
     def __init__(self, info: str = "") -> None:
         super().__init__()
-        self.error_code:str = "101"
+        self.error_code: str = "101"
         self.set_message(message="Laden Fehlgeschlagen", info=info)
 
 
@@ -57,15 +62,10 @@ class ForeignKeyError(OperationalError):
         self.set_message(message="Datensatz noch in Benutzung", info=info)
 
 
-#
-class InputError(BaseException):
+class InputError(BaseException_):
     def __init__(self):
         super().__init__()
         self.error_code: str = "200"
-        self.message: str = str()
-
-    def set_message(self, message: str, info) -> None:
-        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
 
 
 class NoStr(InputError):
@@ -142,15 +142,10 @@ class ToLong(InputError):
                          info=f"{str(text)} ({str(len(text))} Zeichen")
 
 
-#
-class PasswordError(BaseException):
+class PasswordError(BaseException_):
     def __init__(self):
         super().__init__()
         self.error_code: str = "300"
-        self.message: str = str()
-
-    def set_message(self, message: str, info) -> None:
-        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
 
 
 class PasswordHasSpace(PasswordError):
@@ -188,15 +183,10 @@ class DifferentPassword(PasswordError):
         self.set_message(message="Deine Passwörter stimmen nicht überein", info=None)
 
 
-#
-class UserError(BaseException):
+class UserError(BaseException_):
     def __init__(self):
         super().__init__()
         self.error_code: str = "400"
-        self.message: str = str()
-
-    def set_message(self, message: str, info) -> None:
-        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
 
 
 class CurrentUserException(UserError):
@@ -213,15 +203,10 @@ class DefaultUserException(UserError):
         self.set_message(message="Default Benutzer kann nicht bearbeitet werden", info=info)
 
 
-#
-class GeneralError(BaseException):
+class GeneralError(BaseException_):
     def __init__(self):
         super().__init__()
         self.error_code: str = "500"
-        self.message: str = str()
-
-    def set_message(self, message: str, info) -> None:
-        self.message: str = self.error_code + "//" + message + "//" + info if info else self.error_code + "//" + message
 
 
 class NotFound(GeneralError):
