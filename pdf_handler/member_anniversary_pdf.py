@@ -23,7 +23,7 @@ class MemberAnniversaryPDF(BasePDF):
     def __init__(self):
         super().__init__()
 
-    def create_pdf(self, path: str, year: int, active: bool = True) -> [None or str, bool]:
+    def create_pdf(self, path: str, year: int, active: bool = True) -> None:
         self.transform_path(path=path)
         self.create_dir()
 
@@ -33,12 +33,9 @@ class MemberAnniversaryPDF(BasePDF):
                                 topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
         if year:
-            data, valid = member_anniversary_data_handler.get_anniversary_member_data(type_="other", active=active,
-                                                                                      year=year)
+            data = member_anniversary_data_handler.get_anniversary_member_data(type_="other", active=active, year=year)
         else:
-            data, valid = member_anniversary_data_handler.get_anniversary_member_data(type_="current", active=active)
-        if not valid:
-            return data, False
+            data = member_anniversary_data_handler.get_anniversary_member_data(type_="current", active=active)
 
         elements: list = [
             Paragraph("Geburtstage / Jubiläen", self.style_sheet["Title"])
@@ -51,7 +48,7 @@ class MemberAnniversaryPDF(BasePDF):
             elements.append(Paragraph(
                 f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
             doc.build(elements)
-            return None, True
+            return
 
         keys: list = [
             "b_day",
@@ -104,7 +101,6 @@ class MemberAnniversaryPDF(BasePDF):
             table = Table(table_data, style=style_data, repeatRows=1)
             elements.append(table)
         doc.build(elements)
-        return None, True
 
 
 def create_member_anniversary_pdf() -> None:

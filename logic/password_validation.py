@@ -12,14 +12,14 @@ import debug
 debug_str: str = "Password Validation"
 
 
-def check_password(ID: int, password: str) -> [str | bool, bool]:
+def check_password(ID: int, password: str) -> bool:
     v.validation.must_positive_int(int_=ID)
     v.validation.must_str(str_=password)
 
-    hashed, valid = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
+    hashed = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
 
     result: bool = hasher.compare_password(password=password, hashed=hashed)
     if result:
         c.config.set_user(ID=ID)
         window_handler.create_main_window()
-    return result, True
+    return result
