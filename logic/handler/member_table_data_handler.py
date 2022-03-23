@@ -13,39 +13,21 @@ debug_str: str = "table_data_handler"
 
 
 def get_member_table_data(active: bool) -> [dict | str, bool]:
-    types, valid = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
-    if not valid:
-        return types, False
+    types = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
     type_ids: list = [x[0] for x in types]
 
     final_data: dict = dict()
     for type_id in type_ids:
-        # get data
-        member_data, valid = s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
-                                                                                           membership_type_id=type_id)
-        if not valid:
-            return member_data, False
-
+        member_data = s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
+                                                                                    membership_type_id=type_id)
         final_members_list: list = list()
-        # member
+
         for member in member_data:
             member_dict = _transform_member_data(member=member)
-
-            phone_data, valid = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
-            if not valid:
-                return phone_data, False
-
-            mail_data, valid = s_h.select_handler.get_mail_by_member_id(member_id=member_dict["ID"])
-            if not valid:
-                return mail_data, False
-
-            phone_list, valid = _transform_nexus_data(nexus_data=phone_data)
-            if not valid:
-                return phone_list, False
-
-            mail_list, valid = _transform_nexus_data(nexus_data=mail_data)
-            if not valid:
-                return mail_list, False
+            phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
+            mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_dict["ID"])
+            phone_list = _transform_nexus_data(nexus_data=phone_data)
+            mail_list = _transform_nexus_data(nexus_data=mail_data)
 
             single_member_data: dict = {
                 "member": member_dict,
@@ -54,7 +36,7 @@ def get_member_table_data(active: bool) -> [dict | str, bool]:
             }
             final_members_list.append(single_member_data)
         final_data[type_id] = final_members_list
-    return final_data, True
+    return final_data
 
 
 def _transform_member_data(member: list) -> dict:
@@ -95,9 +77,7 @@ def _transform_nexus_data(nexus_data: list) -> [str | list, bool]:
             "type": data[1],
             "number": data[2],
         }
-        type_name, valid = s_h.select_handler.get_type_name_by_ID(ID=nexus_dict["type"])
-        if not valid:
-            return type_name, False
+        type_name = s_h.select_handler.get_type_name_by_ID(ID=nexus_dict["type"])
 
         nexus_dict["type"] = type_name[0]
         data: list = [
@@ -105,7 +85,7 @@ def _transform_nexus_data(nexus_data: list) -> [str | list, bool]:
             nexus_dict["number"],
         ]
         nexus_list.append(data)
-    return nexus_list, True
+    return nexus_list
 
 
 def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
@@ -119,19 +99,19 @@ def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
 def _get_years_from_date_to_now(date: datetime.datetime) -> str | None:
     if not date:
         return None
-    else:
-        now = datetime.datetime.now()
-        years = now.year - date.year
-        if now.month < date.month or (now.month == date.month and now.day < date.day):
-            years -= 1
-        return str(years)
+
+    now = datetime.datetime.now()
+    years = now.year - date.year
+    if now.month < date.month or (now.month == date.month and now.day < date.day):
+        years -= 1
+    return str(years)
 
 
 def _transform_date_to_str(date: datetime) -> str | None:
     if not date:
         return None
-    else:
-        return date.strftime(c.config.date_format["short"])
+
+    return date.strftime(c.config.date_format["short"])
 
 
 def _transform_street_and_number(street: str, number: str) -> str or None:
@@ -141,5 +121,3 @@ def _transform_street_and_number(street: str, number: str) -> str or None:
         return street
     elif number:
         return number
-    else:
-        return None
