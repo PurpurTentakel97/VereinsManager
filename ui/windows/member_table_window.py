@@ -136,7 +136,6 @@ class MemberTableWindow(BaseWindow):
             self._data = result
 
     def _get_type_names(self) -> None:
-        debug.debug(item=debug_str, keyword="_get_type_names", message=f"data = {self._data}")
         for ID, _ in self._data.items():
             result, valid = transition.get_type_name_by_ID(ID=ID)
             if not valid:
