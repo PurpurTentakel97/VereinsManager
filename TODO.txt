@@ -3,12 +3,10 @@
 # VereinsManager // TODO
 
 pdf
-    open after export?
     dirfferent name for anniversary pdfs
 
 sql database
     let unser coose database name
-    save at (user date)
     error without types (membership_type)
     substract inactve member time
 
@@ -17,8 +15,6 @@ UI
         window close automaticly even if not saved
     Base Window
         set Icon
-    Members Window
-        let user choose log date
 
     frame
         set_error_bar Error

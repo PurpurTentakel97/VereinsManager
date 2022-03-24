@@ -10,6 +10,7 @@ from enum import Enum
 import webbrowser
 
 import transition
+from ui.dialog.date_dialog import DateInput
 from ui.windows.base_window import BaseWindow
 from ui.windows import recover_window as r_w, member_table_window as m_t_w, window_manager as w, \
     member_anniversary_window as m_a_w
@@ -696,16 +697,22 @@ class MembersWindow(BaseWindow):
 
         data: dict = {
             "member_data": member_data,
-            "member_nexus_data": member_nexus_data
+            "member_nexus_data": member_nexus_data,
         }
 
-        result, valid = transition.update_member_data(id_=current_member.member_id_, data=data)
+        result, valid = transition.update_member_data(id_=current_member.member_id_, data=data,
+                                                      log_date=self._get_log_date())
         if not valid:
             self.set_error_bar(message=result)
             return
 
         self.set_info_bar(message="saved")
         self._set_save_ids(ids=result)
+
+    def _get_log_date(self) -> int:
+        dlg = DateInput(self)
+        if dlg.exec():
+            return QDateTime.toSecsSinceEpoch(QDateTime(dlg.get_date()))
 
     def _set_save_ids(self, ids: dict) -> None:
         current_member: MemberListItem = self._members_list.currentItem()
