@@ -22,7 +22,7 @@ class DateInput(QDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         self.layout = QVBoxLayout()
-        message = QLabel("Wähle das Log datum oder clicke Cancel")
+        message = QLabel("Wähle das Log datum oder klicke Cancel")
         self.layout.addWidget(message)
         self.layout.addWidget(self.date)
         self.layout.addWidget(self.buttonBox)
