@@ -103,6 +103,7 @@ class MemberAnniversaryPDF(BasePDF):
             table = Table(table_data, style=style_data, repeatRows=1)
             elements.append(table)
         doc.build(elements)
+        self._set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
 
 
 def create_member_anniversary_pdf() -> None:

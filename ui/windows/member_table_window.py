@@ -153,6 +153,10 @@ class MemberTableWindow(BaseWindow):
             self.set_info_bar(message="Export abgebrochen")
             return
         transition.get_member_table_pdf(file)
+
+        if self._open_permission():
+            transition.open_latest_export()
+
         self.set_info_bar(message="Export abgeschlossen")
 
     def closeEvent(self, event) -> None:

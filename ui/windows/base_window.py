@@ -39,6 +39,16 @@ class BaseWindow(QMainWindow):
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         return msg.exec_() == QMessageBox.Yes
 
+    @staticmethod
+    def _open_permission() -> bool:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Question)
+        msg.setText(f"Neues PDF öffnen?.")
+        msg.setInformativeText("Das neue PDF kann geöffnet werden.")
+        msg.setWindowTitle("PDF öffnen?")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        return msg.exec_() == QMessageBox.Yes
+
 
 def create_application():
     global app

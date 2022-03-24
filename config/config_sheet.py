@@ -31,6 +31,7 @@ class Config:
         self.organisation_dir: str = "default_organisation"
         self.export_dir: str = "export"
         self.member_dir: str = "member"
+        self.last_export_path: str = str()
 
         # file names
         self.database_name: str = f"default_database.vm"

@@ -103,6 +103,7 @@ class MemberTablePDF(BasePDF):
             elements.append(table)
             elements.append(Paragraph("(E) = Ehrenmitglied"))
         doc.build(elements)
+        self._set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
 
 
 def create_member_table_pdf() -> None:

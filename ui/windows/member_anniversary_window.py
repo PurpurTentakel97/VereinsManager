@@ -5,7 +5,7 @@
 import datetime
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QTableWidget, QTableWidgetItem, \
-    QPushButton, QLineEdit, QLabel, QFileDialog, QFrame
+    QPushButton, QLineEdit, QLabel, QFileDialog, QFrame, QMessageBox
 
 from ui.windows.base_window import BaseWindow
 from ui.windows import members_window as m_w, window_manager as w
@@ -198,12 +198,15 @@ class MemberAnniversaryWindow(BaseWindow):
         if not check:
             self.set_info_bar(message="Export abgebrochen")
             return
-        result, valid = 1, False
         match self._tabs.currentIndex():
             case 0:
                 transition.get_member_anniversary_pdf(path=file)
             case 1:
                 transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
+
+        if self._open_permission():
+            transition.open_latest_export()
+
         self.set_info_bar(message="Export abgeschlossen")
 
     def closeEvent(self, event) -> None:
