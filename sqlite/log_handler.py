@@ -25,6 +25,7 @@ class LogHandler(Database):
         log_date = self.transform_log_none_date(none_date=None)
 
         v.validation.must_positive_int(target_id, max_length=None)
+        v.validation.must_int(int_=log_date)
         v.validation.must_str(target_column)
 
         self._log(target_table="type", target_id=target_id, target_column=target_column, old_data=old_data,
@@ -106,6 +107,9 @@ class LogHandler(Database):
     def log_member_nexus(self, target_id: int, old_data: str | bool | None, new_data: str | int | None,
                          log_date: int | None, type_: str) -> None:
         log_date = self.transform_log_none_date(none_date=log_date)
+
+        v.validation.must_int(int_=log_date)
+
         match type_:
             case "phone":
                 if old_data != new_data:
