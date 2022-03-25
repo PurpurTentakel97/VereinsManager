@@ -1,5 +1,4 @@
 member:
-    Allert for b-day and anniversary
     export schreiben
         Änderung der Mtigliedsart
         Member card

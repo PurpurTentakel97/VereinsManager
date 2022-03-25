@@ -134,6 +134,12 @@ class MembersWindow(BaseWindow):
         self._anniversary_btn: QPushButton = QPushButton()
         self._anniversary_btn.setText("Jubiläen")
         self._anniversary_btn.clicked.connect(self._anniversary)
+        self._letter_btn: QPushButton = QPushButton()
+        self._letter_btn.setText("Scheiben")
+        self._letter_btn.clicked.connect(self._letter)
+        self._member_card_btn:QPushButton = QPushButton()
+        self._member_card_btn.setText("Mitliederkarte")
+        self._member_card_btn.clicked.connect(self._member_card)
 
         self._members_list: QListWidget = QListWidget()
         self._members_list.itemClicked.connect(self._load_single_member)
@@ -248,6 +254,8 @@ class MembersWindow(BaseWindow):
         label_members_hbox: QHBoxLayout = QHBoxLayout()
         label_members_hbox.addWidget(self._members_lb)
         label_members_hbox.addStretch()
+        label_members_hbox.addWidget(self._member_card_btn)
+        label_members_hbox.addWidget(self._letter_btn)
         label_members_hbox.addWidget(self._anniversary_btn)
         label_members_hbox.addWidget(self._table_btn)
 
@@ -767,6 +775,12 @@ class MembersWindow(BaseWindow):
         elif result:
             self.close()
             w.window_manger.member_anniversary_window = m_a_w.MemberAnniversaryWindow()
+
+    def _letter(self) -> None:
+        pass
+
+    def _member_card(self) -> None:
+        pass
 
     def _set_inactive(self) -> None:
         current_member: MemberListItem = self._members_list.currentItem()

@@ -1,7 +1,9 @@
 Auftrittstag
-	tag (aus datum generieren)
+	wochentagtag (aus datum generieren)
 	datum
 	abfahrt
+    ort
+    ort-link
 	uniform
 	zusaetztextfeld
 	Auftritte
@@ -12,6 +14,11 @@ Auftrittstag
 		ort
 		ort-link
 		zusatztextfeld
+
+Orte erstellen
+    Name
+    Addresse
+    Link
 		
 		
 def export to pdf
