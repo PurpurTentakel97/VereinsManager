@@ -14,3 +14,7 @@ UI
         window close automaticly even if not saved
     Base Window
         set Icon
+
+member
+    export member card
+    export schreiben
