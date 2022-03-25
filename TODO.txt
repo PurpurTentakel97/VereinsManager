@@ -6,9 +6,8 @@ pdf
     dirfferent name for anniversary pdfs
 
 sql database
-    let unser coose database name
+    let unser choose database name
     error without types (membership_type)
-    substract inactve member time
 
 UI
     Global

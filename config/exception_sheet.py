@@ -135,11 +135,11 @@ class ToLong(InputError):
     def __init__(self, max_length: int, text):
         super().__init__()
         self.error_code: str = "210"
-        if len(text) > 25:
+        if len(str(text)) > 25:
             text = f"{str(text)[:25]}..."
 
         self.set_message(message=f"Länge von {max_length} Zeichen überschritten",
-                         info=f"{str(text)} ({str(len(text))} Zeichen")
+                         info=f"{str(text)} ({str(len(str(text)))} Zeichen)")
 
 
 class PasswordError(BaseException_):

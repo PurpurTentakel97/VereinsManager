@@ -11,8 +11,9 @@ debug_str: str = "CurrentAnniversaryFrame"
 
 
 class CurrentAnniversaryFrame(QFrame):
-    def __init__(self) -> None:
+    def __init__(self, window) -> None:
         super().__init__()
+        self.window_ = window
         self._current_b_day_data: list = list()
         self._current_entry_day_data: list = list()
 
@@ -86,11 +87,12 @@ class CurrentAnniversaryFrame(QFrame):
                     table.setItem(index, 1, item)
                     item: QTableWidgetItem = QTableWidgetItem(str(entry['year']))
                     table.setItem(index, 2, item)
+        self.window_.set_info_bar("Daten geladen")
 
     def _get_current_data(self) -> None:
         data, valid = transition.get_anniversary_member_data(type_="current")
         if not valid:
-            self.set_error_bar(message=data)
+            self.window_.set_error_bar(message=data)
         else:
             self._current_b_day_data = data["b_day"]
             self._current_entry_day_data = data["entry_day"]

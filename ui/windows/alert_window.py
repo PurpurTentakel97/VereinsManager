@@ -40,7 +40,7 @@ class AlertWindow(BaseWindow):
         self.anniversary_lb: QLabel = QLabel()
         self.anniversary_lb.setFont(anniversary_font)
         self.anniversary_lb.setText("Jubiläen:")
-        self.anniversaries: CurrentAnniversaryFrame = CurrentAnniversaryFrame()
+        self.anniversaries: CurrentAnniversaryFrame = CurrentAnniversaryFrame(self)
 
     def _set_layout(self) -> None:
         # Headline
