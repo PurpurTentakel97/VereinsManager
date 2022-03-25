@@ -2,34 +2,13 @@
 # 22.02.2022
 # VereinsManager / Recover Members Window
 
-from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
 from ui.windows.base_window import BaseWindow
 from ui.windows import members_window as m_w, window_manager as w, user_window as u_w
+from ui.frames.list_frame import ListFrame
 
 import transition
-
-
-class MemberListItem(QListWidgetItem):
-    def __init__(self, id_: int, first_name: str, last_name: str):
-        super().__init__()
-        self.id_: int = id_
-        self.first_name: str = first_name
-        self.last_name: str = last_name
-        self._set_name()
-
-    def _set_name(self) -> None:
-        if self.first_name or self.last_name:
-            text_: str = str()
-            if self.first_name:
-                text_ += self.first_name.strip()
-            if self.first_name and self.last_name:
-                text_ += " "
-            if self.last_name:
-                text_ += self.last_name.strip()
-            self.setText(text_)
-        else:
-            self.setText("Kein Name vorhanden")
 
 
 class RecoverWindow(BaseWindow):
@@ -42,20 +21,18 @@ class RecoverWindow(BaseWindow):
         self._set_ui()
         self._set_layout()
 
-        self._load_member_names()
+        self.set_recover_enabled()
 
     def _set_type(self) -> None:
         match self._type:
             case "member":
                 self._window_name: str = "ehmalige Mitglieder - Vereinsmanager"
                 self._recover_btn_name: str = "Mitglied wieder herstellen"
-                self._names_method = transition.get_all_member_name
                 self._update_activity_method = transition.update_member_activity
                 self._valid_parent_window_method = w.window_manger.is_valid_member_window
             case "user":
                 self._window_name: str = "ehmalige Benutzer - Vereinsmanager"
                 self._recover_btn_name: str = "Benutzer wieder herstellen"
-                self._names_method = transition.get_all_user_name
                 self._update_activity_method = transition.update_user_activity
                 self._valid_parent_window_method = w.window_manger.is_valid_user_window
 
@@ -63,8 +40,7 @@ class RecoverWindow(BaseWindow):
         self.setWindowTitle(self._window_name)
 
     def _set_ui(self) -> None:
-        self.member_list: QListWidget = QListWidget()
-        self.member_list.itemClicked.connect(self._set_recover_enabled)
+        self.member_list: ListFrame = ListFrame(self, type_=self._type, active=False)
 
         self._recover_btn: QPushButton = QPushButton()
         self._recover_btn.setText(self._recover_btn_name)
@@ -84,37 +60,25 @@ class RecoverWindow(BaseWindow):
         self.set_widget(widget=widget)
         self.show()
 
-    def _set_recover_enabled(self) -> None:
-        current_member: MemberListItem = self.member_list.currentItem()
+    def set_recover_enabled(self) -> None:
+        current_member = self.member_list.list.currentItem()
         if current_member:
             self._recover_btn.setEnabled(True)
         else:
             self._recover_btn.setEnabled(False)
 
-    def _load_member_names(self) -> None:
-        self.member_list.clear()
-        data, valid = self._names_method(active=False)
-        if not valid:
-            self.set_error_bar(data)
-            return
-        for ID, first_name, last_name in data:
-            new_member: MemberListItem = MemberListItem(id_=ID, first_name=first_name, last_name=last_name)
-            self.member_list.addItem(new_member)
-            self.member_list.setCurrentItem(None)
-        self._set_recover_enabled()
-
     def _recover(self) -> None:
-        current_member: MemberListItem = self.member_list.currentItem()
-        result,valid = self._update_activity_method(ID=current_member.id_, active=True)
+        current_member = self.member_list.list.currentItem()
+        result, valid = self._update_activity_method(ID=current_member.ID, active=True)
         if not valid:
             self.set_error_bar(message=result)
             return
-        self._load_member_names()
+        self.member_list.load_list_data()
         self.set_info_bar(message="saved")
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        result,valid = self._valid_parent_window_method(active_recover_window=True)
+        result, valid = self._valid_parent_window_method(active_recover_window=True)
         if not valid:
             w.window_manger.recover_window = None
             event.accept()
