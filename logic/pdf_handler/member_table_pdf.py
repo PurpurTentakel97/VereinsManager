@@ -10,11 +10,10 @@ from reportlab.lib.units import cm
 
 from datetime import datetime
 
-from logic.handler import member_table_data_handler
+from logic.handler.data_handler import member_table_data_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
 from logic.pdf_handler.base_pdf import BasePDF
-import debug
 
 debug_str: str = "MemberTablePDF"
 
