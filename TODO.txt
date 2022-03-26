@@ -17,7 +17,6 @@ UI
         set Icon
 
 member
-    export member card
     export schreiben
 
 password
