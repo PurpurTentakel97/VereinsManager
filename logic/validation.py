@@ -31,7 +31,7 @@ class Validation:
         cls.must_str(new_name)
         cls.must_positive_int(ID, max_length=None)
 
-        data, _ = s_h.select_handler.get_all_single_type()
+        data = s_h.select_handler.get_all_single_type()
         exists: bool = False
         for old_id, old_name, *_ in data:
             if ID == old_id:

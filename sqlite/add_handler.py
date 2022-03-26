@@ -36,6 +36,8 @@ class AddHandler(Database):
                 function_ = self.add_member_nexus_position
                 value = False
 
+            if function_ is None:
+                return ID
             for member_id in member_ids:
                 member_id = member_id[0]
                 function_(type_id=ID, value=value, member_id=member_id, log_date=None)
