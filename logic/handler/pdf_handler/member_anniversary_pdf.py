@@ -11,7 +11,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table
 from datetime import datetime
 
 from logic.handler.data_handler import member_anniversary_data_handler
-from logic.pdf_handler.base_pdf import BasePDF
+from logic.handler.pdf_handler.base_pdf import BasePDF
 from config import config_sheet as c
 
 debug_str: str = "MemberAnniversaryPDF"
@@ -43,7 +43,7 @@ class MemberAnniversaryPDF(BasePDF):
 
         elements = self._get_table_elements(data, elements, keys, year)
         doc.build(elements)
-        self._set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+        self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
 
     def _no_data_return(self, elements: list, doc: SimpleDocTemplate) -> None:
         elements.append(Paragraph(

@@ -13,7 +13,7 @@ from datetime import datetime
 from logic.handler.data_handler import member_table_data_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
-from logic.pdf_handler.base_pdf import BasePDF
+from logic.handler.pdf_handler.base_pdf import BasePDF
 
 debug_str: str = "MemberTablePDF"
 
@@ -40,7 +40,7 @@ class MemberTablePDF(BasePDF):
 
         elements.extend(self._get_table_data(data, type_ids))
         doc.build(elements)
-        self._set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+        self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
 
     def _create_basics(self, path: str) -> None:
         self.transform_path(path=path)

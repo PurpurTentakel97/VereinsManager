@@ -197,12 +197,29 @@ def _add_member_nexus_position(type_id: int, value: bool, member_id: int, log_da
 # get
 def _get_phone_number_by_member_id(member_id: int) -> tuple:
     v.validation.must_positive_int(int_=member_id, max_length=None)
-    return s_h.select_handler.get_phone_number_by_member_id(member_id=member_id)
+    phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_id)
+    types = s_h.select_handler.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['phone'], active=True)
+    checked_phone_data: list = list()
+    for entry in phone_data:
+        _, type_id, *_ = entry
+        for type_id_, *_ in types:
+            if type_id == type_id_:
+                checked_phone_data.append(entry)
+
+    return tuple(checked_phone_data)
 
 
 def _get_mail_by_member_id(member_id: int) -> tuple:
     v.validation.must_positive_int(int_=member_id, max_length=None)
-    return s_h.select_handler.get_mail_by_member_id(member_id=member_id)
+    mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_id)
+    types = s_h.select_handler.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['mail'], active=True)
+    checked_mail_data: list = list()
+    for entry in mail_data:
+        _, type_id, *_ = entry
+        for type_id_, *_ in types:
+            if type_id == type_id_:
+                checked_mail_data.append(entry)
+    return tuple(checked_mail_data)
 
 
 def _get_position_by_member_id(member_id: int) -> tuple:

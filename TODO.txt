@@ -12,13 +12,13 @@ sql database
 UI
     Global
         window close automaticly even if not saved
+        switch close and generate new window
     Base Window
         set Icon
 
 member
     export member card
     export schreiben
-    refactor list
 
 password
     add no entry exception

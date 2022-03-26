@@ -5,7 +5,7 @@
 from PyQt5.QtCore import Qt, QDateTime
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
-    QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
+    QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit, QFileDialog
 from enum import Enum
 import webbrowser
 
@@ -669,7 +669,21 @@ class MembersWindow(BaseWindow):
         pass
 
     def _member_card(self) -> None:
-        pass
+        current_member: ListItem = self._members_list.list.currentItem()
+        transition.create_default_dir("export")
+        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
+                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/{current_member.first_name}_{current_member.last_name}.pdf",
+                                                  "PDF (*.pdf);;All Files (*)")
+        if not check:
+            self.set_info_bar("Export abgebrochen")
+            return
+
+        transition.get_member_card_pdf(current_member.ID, path=file)
+
+        if self._open_permission():
+            transition.open_latest_export()
+
+        self.set_info_bar("export abgeschlossen")
 
     def _set_inactive(self) -> None:
         current_member: ListItem = self._members_list.list.currentItem()

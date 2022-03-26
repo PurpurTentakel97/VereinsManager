@@ -5,7 +5,7 @@
 
 from config import config_sheet
 from sqlite import database, global_handler as g_h
-from logic.pdf_handler import global_pdf_handler as g_p_h
+from logic.handler.pdf_handler import global_pdf_handler as g_p_h
 from logic import validation
 
 from logic.handler import window_handler

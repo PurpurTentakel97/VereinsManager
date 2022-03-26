@@ -71,7 +71,7 @@ class Config:
 
         self.config: dict = json_data
 
-        self.date_format: dict = json_data["date_formats"]
+        self.date_format: dict = json_data["date_format"]
         self.raw_type_id: dict = json_data["raw_type_id"]
         self.default_user_id: dict = json_data["default_user_id"]
         self.special_user: dict = json_data["special_user"]

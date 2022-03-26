@@ -1,5 +1,5 @@
 {
-  "date_formats": {
+  "date_format": {
     "short": "%d.%m.%Y",
     "long": "%d.%m.%Y // %H:%M:%S",
     "path": "%Y-%m-%d",

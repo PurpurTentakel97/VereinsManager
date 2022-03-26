@@ -163,11 +163,12 @@ class Validation:
 
     # global
     @staticmethod
-    def must_str(str_: str, length: int = 50) -> None:
+    def must_str(str_: str, length: int | None = 50) -> None:
         if not isinstance(str_, str) or len(str_.strip()) == 0:
             raise e.NoStr(info=str_)
-        if len(str_) > length:
-            raise e.ToLong(max_length=length, text=str_)
+        if length is not  None:
+            if len(str_) > length:
+                raise e.ToLong(max_length=length, text=str_)
 
     @classmethod
     def _must_multiple_str_in_dict(cls, keys: list, data: dict) -> None:

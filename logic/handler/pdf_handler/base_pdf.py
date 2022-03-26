@@ -48,7 +48,7 @@ class BasePDF:
             return Paragraph(str("---" if not value else value), self.style_sheet["BodyText"])
 
     @staticmethod
-    def _set_last_export_path(path: str) -> None:
+    def set_last_export_path(path: str) -> None:
         c.config.last_export_path = path
 
 

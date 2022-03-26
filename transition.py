@@ -6,7 +6,8 @@ from logic import password_validation
 from logic.handler import path_handler, user_handler, \
     type_handler, member_handler
 from logic.handler.data_handler import member_anniversary_data_handler, member_table_data_handler
-from logic.pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p, global_pdf_handler
+from logic.handler.pdf_handler import member_table_pdf as m_t_p, global_pdf_handler, member_anniversary_pdf as m_a_p, \
+    member_card_pdf as m_c_p
 
 
 # global
@@ -100,6 +101,10 @@ def get_member_table_pdf(path: str, active: bool = True) -> [None | str, bool]:
 
 def get_member_anniversary_pdf(path: str, year: int or None = None, active: bool = True) -> [None or str, bool]:
     return m_a_p.member_anniversary_pdf.create_pdf(path=path, year=year, active=active)
+
+
+def get_member_card_pdf(ID: int, path: str, active: bool = True) -> None:
+    m_c_p.member_card_pdf.create_pdf(ID=ID, active=active, path=path)
 
 
 def open_latest_export() -> None:
