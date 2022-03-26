@@ -14,6 +14,7 @@ from ui.dialog.date_dialog import DateInput
 from ui.windows.base_window import BaseWindow
 from ui.windows import recover_window as r_w, member_table_window as m_t_w, window_manager as w, \
     member_anniversary_window as m_a_w
+from ui.frames.list_frame import ListItem, ListFrame
 from config import config_sheet as c
 import debug
 
@@ -23,59 +24,14 @@ debug_str: str = "MembersWindow"
 class LineEditType(Enum):
     FIRSTNAME = 0
     LASTNAME = 1
-    STREET = 2
-    NUMBER = 3
-    ZIP_CODE = 4
-    CITY = 5
-    COMMENT = 6
-    MAPS = 7
+    ADDRESS = 2
+    MAPS = 3
+    OTHER = 4
 
 
 class DateType(Enum):
     ENTRY = 0
     B_DAY = 1
-
-
-class MemberListItem(QListWidgetItem):
-    def __init__(self, id_: int | None = None, first_name: str | None = None, last_name: str | None = None):
-        super().__init__()
-        self.member_id_: int = id_
-        self.first_name: str = first_name
-        self.last_name: str = last_name
-
-        self.street: str | None = None
-        self.number: str | None = None
-        self.zip_code: str = ""
-        self.city: str | None = None
-
-        self.maps_url: str = str()
-
-        self.birth_date: QDate = QDate()
-        self.entry_date: QDate = QDate()
-
-        self.phone_numbers: list[list[int, int, str, str]] = list()  # [ID, type_id, Type, number]
-        self.mail_addresses: list[list[int, int, str, str]] = list()  # [ID, type_id, Type, mail]
-
-        self.membership_type: str | None = None
-        self.special_member: bool = False
-        self.positions: list[[int, int, PositionListItem, None]] = list()  # [ID, type_id, item, None]
-
-        self.comment_text: str | None = None
-
-        self.set_name()
-
-    def set_name(self) -> None:
-        if self.first_name or self.last_name:
-            text_: str = str()
-            if self.first_name:
-                text_ += self.first_name.strip()
-            if self.first_name and self.last_name:
-                text_ += " "
-            if self.last_name:
-                text_ += self.last_name.strip()
-            self.setText(text_)
-        else:
-            self.setText("Kein Name vorhanden")
 
 
 class PositionListItem(QListWidgetItem):
@@ -111,15 +67,19 @@ class MembersWindow(BaseWindow):
         self.raw_mail_ids: list[tuple[int, str]] = list()  # [ID, Name]
         self.raw_position_ids: list[tuple[int, PositionListItem]] = list()  # [ID, Name]
 
+        self.phone_numbers: list[list[int, int, str, str]] = list()  # [ID, type_id, Type, number]
+        self.mail_addresses: list[list[int, int, str, str]] = list()  # [ID, type_id, Type, mail]
+        self.positions: list[list[int, int, PositionListItem, None]] = list()
+
         self._set_window_information()
         self._set_ui()
         self._set_layout()
         self._set_types()
+        self._set_first_member()
 
         self._is_edit: bool = bool()
         self._set_edit_mode(active=False)
-        self._load_all_member_names()
-        self._maps_btn.setEnabled(self._is_maps())
+        self._set_maps()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Mitglieder - Vereinsmanager")
@@ -137,12 +97,11 @@ class MembersWindow(BaseWindow):
         self._letter_btn: QPushButton = QPushButton()
         self._letter_btn.setText("Scheiben")
         self._letter_btn.clicked.connect(self._letter)
-        self._member_card_btn:QPushButton = QPushButton()
+        self._member_card_btn: QPushButton = QPushButton()
         self._member_card_btn.setText("Mitliederkarte")
         self._member_card_btn.clicked.connect(self._member_card)
 
-        self._members_list: QListWidget = QListWidget()
-        self._members_list.itemClicked.connect(self._load_single_member)
+        self._members_list: ListFrame = ListFrame(window=self, type_="member", active=True)
 
         self._add_member_btn: QPushButton = QPushButton()
         self._add_member_btn.setText("Mitglied hinzufügen")
@@ -157,7 +116,7 @@ class MembersWindow(BaseWindow):
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
         self._break_btn.setEnabled(False)
-        self._break_btn.clicked.connect(self._load_single_member)
+        self._break_btn.clicked.connect(self.load_single_member)
         self._save_btn: QPushButton = QPushButton()
         self._save_btn.setText("Speichern")
         self._save_btn.setEnabled(False)
@@ -181,24 +140,24 @@ class MembersWindow(BaseWindow):
         self._address_lb.setText("Adresse:")
         self._street_le: QLineEdit = QLineEdit()
         self._street_le.setPlaceholderText("Straße")
-        self._street_le.textChanged.connect(lambda: self._set_el_input(LineEditType.STREET))
+        self._street_le.textChanged.connect(lambda: self._set_el_input(LineEditType.MAPS))
         self._street_le.returnPressed.connect(self._save)
         self._number_le: QLineEdit = QLineEdit()
         self._number_le.setPlaceholderText("Hausnummer")
-        self._number_le.textChanged.connect(lambda: self._set_el_input(LineEditType.NUMBER))
+        self._number_le.textChanged.connect(lambda: self._set_el_input(LineEditType.MAPS))
         self._number_le.returnPressed.connect(self._save)
         self._zip_code_le: QLineEdit = QLineEdit()
         self._zip_code_le.setPlaceholderText("PLZ")
         self._zip_code_le.setValidator(QIntValidator())
-        self._zip_code_le.textChanged.connect(lambda: self._set_el_input(LineEditType.ZIP_CODE))
+        self._zip_code_le.textChanged.connect(lambda: self._set_el_input(LineEditType.MAPS))
         self._zip_code_le.returnPressed.connect(self._save)
         self._city_le: QLineEdit = QLineEdit()
         self._city_le.setPlaceholderText("Stadt")
-        self._city_le.textChanged.connect(lambda: self._set_el_input(LineEditType.CITY))
+        self._city_le.textChanged.connect(lambda: self._set_el_input(LineEditType.MAPS))
         self._city_le.returnPressed.connect(self._save)
 
         self._maps_le: QLineEdit = QLineEdit()
-        self._maps_le.setPlaceholderText("Google Maps URL (falls nötig // nicht empfolen)")
+        self._maps_le.setPlaceholderText("Google Maps URL (falls nötig // nicht empfohlen)")
         self._maps_le.textChanged.connect(lambda: self._set_el_input(LineEditType.MAPS))
         self._maps_le.returnPressed.connect(self._save)
         self._maps_btn: QPushButton = QPushButton()
@@ -208,11 +167,11 @@ class MembersWindow(BaseWindow):
         self._birth_lb: QLabel = QLabel()
         self._birth_lb.setText("Geburtstag:")
         self._b_day_date: QDateEdit = QDateEdit(calendarPopup=True)
-        self._b_day_date.dateChanged.connect(lambda: self._set_date(type_=DateType.B_DAY))
+        self._b_day_date.dateChanged.connect(self._set_date)
         self._entry_lb: QLabel = QLabel()
         self._entry_lb.setText("Eintritt:")
         self._entry_date: QDateEdit = QDateEdit(calendarPopup=True)
-        self._entry_date.dateChanged.connect(lambda: self._set_date(type_=DateType.ENTRY))
+        self._entry_date.dateChanged.connect(self._set_date)
 
         self._phone_numbers_lb: QLabel = QLabel()
         self._phone_numbers_lb.setText("Telefon Nummern:")
@@ -247,7 +206,7 @@ class MembersWindow(BaseWindow):
         self._comment_lb: QLabel = QLabel()
         self._comment_lb.setText("Kommentar:")
         self._comment_text: QTextEdit = QTextEdit()
-        self._comment_text.textChanged.connect(lambda: self._set_el_input(LineEditType.COMMENT))
+        self._comment_text.textChanged.connect(lambda: self._set_el_input(LineEditType.OTHER))
 
     def _set_layout(self) -> None:
         # Top
@@ -357,15 +316,18 @@ class MembersWindow(BaseWindow):
             elif type_id == c.config.raw_type_id["mail"]:
                 self.raw_mail_ids.append((ID, name))
                 self._mail_address_type_box.addItem(name)
+                self.mail_addresses.append([None, ID, name, None])
 
             elif type_id == c.config.raw_type_id["phone"]:
                 self.raw_phone_number_ids.append((ID, name))
                 self._phone_number_type_box.addItem(name)
+                self.phone_numbers.append([None, ID, name, None])
 
             elif type_id == c.config.raw_type_id["position"]:
                 new_position: PositionListItem = PositionListItem(name=name, raw_id=ID)
                 self.raw_position_ids.append((ID, new_position))
                 self._positions_list.addItem(new_position)
+                self.positions.append([None, ID, new_position, None])
 
         if len(self.raw_phone_number_ids) == 0:
             self._phone_number_le.setEnabled(False)
@@ -381,41 +343,19 @@ class MembersWindow(BaseWindow):
         self._save_btn.setEnabled(self._is_edit)
         self._break_btn.setEnabled(self._is_edit)
 
-        self._members_list.setEnabled(invert_edit)
+        self._members_list.list.setEnabled(invert_edit)
         self._add_member_btn.setEnabled(invert_edit)
         self._remove_member_btn.setEnabled(invert_edit)
         self._recover_member_btn.setEnabled(invert_edit)
 
     def _set_current_member(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-
-        self._first_name_le.setText(current_member.first_name)
-        self._last_name_le.setText(current_member.last_name)
-        self._street_le.setText(current_member.street)
-        self._number_le.setText(current_member.number)
-        self._zip_code_le.setText(current_member.zip_code)
-        self._city_le.setText(current_member.city)
-        self._maps_le.setText(current_member.maps_url)
-        self._comment_text.setText(current_member.comment_text)
-
-        self._b_day_date.setDate(current_member.birth_date)
-        self._entry_date.setDate(current_member.entry_date)
-
-        self._membership_type_box.setCurrentText(current_member.membership_type)
-
-        self._special_member_cb.setChecked(current_member.special_member)
-
         self._set_phone_type()
         self._set_mail_type()
-
-        if current_member.member_id_ is None:
-            for _, _, item, _ in current_member.positions:
-                item.set_active(active=False)
 
         self._set_edit_mode(active=False)
 
     def _set_el_input(self, type_: LineEditType) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
+        current_member: ListItem = self._members_list.list.currentItem()
         match type_:
             case LineEditType.FIRSTNAME:
                 current_member.first_name = self._first_name_le.text().strip().title()
@@ -423,95 +363,59 @@ class MembersWindow(BaseWindow):
             case LineEditType.LASTNAME:
                 current_member.last_name = self._last_name_le.text().strip().title()
                 current_member.set_name()
-            case LineEditType.STREET:
-                current_member.street = self._street_le.text().strip().title()
-                self._maps_btn.setEnabled(self._is_maps())
-            case LineEditType.NUMBER:
-                current_member.number = self._number_le.text().strip()
-                self._maps_btn.setEnabled(self._is_maps())
-            case LineEditType.ZIP_CODE:
-                current_member.zip_code = self._zip_code_le.text().strip()
-                self._maps_btn.setEnabled(self._is_maps())
-            case LineEditType.CITY:
-                current_member.city = self._city_le.text().strip().title()
-                self._maps_btn.setEnabled(self._is_maps())
             case LineEditType.MAPS:
-                current_member.maps_url = self._maps_le.text().strip()
-                self._maps_btn.setEnabled(self._is_maps())
-            case LineEditType.COMMENT:
-                current_member.comment_text = self._comment_text.toPlainText().strip()
+                self._set_maps()
+            case LineEditType.OTHER:
+                pass  # To trigger edit mode
 
         self._set_edit_mode(active=True)
 
-    def _set_date(self, type_: DateType) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        match type_:
-            case DateType.B_DAY:
-                current_member.birth_date = self._b_day_date.date()
-            case DateType.ENTRY:
-                current_member.entry_date = self._entry_date.date()
-
+    def _set_date(self) -> None:
         self._set_edit_mode(active=True)
 
     def _set_phone_type(self) -> None:
         current_type: str = self._phone_number_type_box.currentText()
-        current_member: MemberListItem = self._members_list.currentItem()
 
-        if current_member:
-            for _, _, Type, phone in current_member.phone_numbers:
-                if current_type == Type:
-                    self._phone_number_le.setText(phone)
-                    break
+        for _, _, Type, phone in self.phone_numbers:
+            if current_type == Type:
+                self._phone_number_le.setText(phone)
+                break
 
     def _set_phone_number_input(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if current_member is not None:
-            for item in current_member.phone_numbers:
-                _, _, Type, phone = item
-                if Type == self._phone_number_type_box.currentText():
-                    current_member.phone_numbers[current_member.phone_numbers.index(item)][3] = \
-                        self._phone_number_le.text().strip()
-                    break
+        for item in self.phone_numbers:
+            _, _, Type, phone = item
+            if Type == self._phone_number_type_box.currentText():
+                self.phone_numbers[self.phone_numbers.index(item)][3] = self._phone_number_le.text().strip()
+                break
 
-            self._set_edit_mode(active=True)
+        self._set_edit_mode(active=True)
 
     def _set_mail_type(self) -> None:
         current_type: str = self._mail_address_type_box.currentText()
-        current_member: MemberListItem = self._members_list.currentItem()
 
-        if current_member:
-            for _, _, Type, mail in current_member.mail_addresses:
-                if current_type == Type:
-                    self._mail_address_le.setText(mail)
-                    break
+        for _, _, Type, mail in self.mail_addresses:
+            if current_type == Type:
+                self._mail_address_le.setText(mail)
+                break
 
     def _set_mail_input(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if current_member is not None:
-            for item in current_member.mail_addresses:
-                _, _, Type, mail = item
-                if Type == self._mail_address_type_box.currentText():
-                    current_member.mail_addresses[current_member.mail_addresses.index(item)][3] = \
-                        self._mail_address_le.text().strip()
-                    break
+        for item in self.mail_addresses:
+            _, _, Type, mail = item
+            if Type == self._mail_address_type_box.currentText():
+                self.mail_addresses[self.mail_addresses.index(item)][3] = self._mail_address_le.text().strip()
+                break
 
-            self._set_edit_mode(active=True)
+        self._set_edit_mode(active=True)
 
     def _set_membership_type(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        if current_member:
-            current_member.membership_type = self._membership_type_box.currentText()
-
-            self._set_edit_mode(active=True)
+        self._set_edit_mode(active=True)
 
     def _set_special_member(self) -> None:
-        self._members_list.currentItem().special_member = self._special_member_cb.isChecked()
         self._set_edit_mode(active=True)
 
     def _set_position(self) -> None:
         current_position: PositionListItem = self._positions_list.currentItem()
-        current_member: MemberListItem = self._members_list.currentItem()
-        for _, _, item, _ in current_member.positions:
+        for _, _, item, _ in self.positions:
             if current_position.name == item.name:
                 if item.active:
                     item.set_active(active=False)
@@ -521,156 +425,139 @@ class MembersWindow(BaseWindow):
         self._positions_list.setCurrentItem(None)
         self._set_edit_mode(active=True)
 
-    def _add_member(self) -> None:
-        new_member: MemberListItem = MemberListItem()
-        new_member.membership_type = self._membership_type_box.currentText()
-        new_member.birth_date = QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date()
-        new_member.entry_date = QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date()
-        new_member.membership_type = self._membership_type_box.currentText()
-        self._load_nexus_types(member=new_member, type_="phone")
-        self._load_nexus_types(member=new_member, type_="mail")
-        self._load_nexus_types(member=new_member, type_="position")
-        self._members_list.addItem(new_member)
-        self._members_list.setCurrentItem(new_member)
-        self._set_current_member()
-        self._set_edit_mode(active=True)
-        self.member_counter += 1
-
-    def _load_all_member_names(self) -> None:
-        data, valid = transition.get_all_member_name()
-        self._members_list.clear()
-
-        if not valid:
-            self.set_error_bar(message=data)
-            return
-
-        if len(data) == 0:
+    def _set_first_member(self) -> None:
+        try:
+            self._members_list.list.setCurrentRow(0)
+            self.load_single_member()
+        except AttributeError:
             self._add_member()
-            return
 
-        self._members_list.setCurrentItem(None)
-        for ID, first_name, last_name in data:
-            new_member: MemberListItem = MemberListItem(id_=ID, first_name=first_name, last_name=last_name)
-            self._load_nexus_types(member=new_member, type_="phone")
-            self._load_nexus_types(member=new_member, type_="mail")
-            self._load_nexus_types(member=new_member, type_="position")
-            self._members_list.addItem(new_member)
-            self.member_counter += 1
-        self._members_list.setCurrentRow(0)
-        self._load_single_member()
+    def _add_member(self) -> None:
+        new_member: ListItem = ListItem(ID=None)
+        self._load_nexus_types(type_="phone")
+        self._load_nexus_types(type_="mail")
+        self._load_nexus_types(type_="position")
+        self._members_list.list.addItem(new_member)
+        self._members_list.list.setCurrentItem(new_member)
+        self._set_current_member()
+        self.member_counter += 1
+        self._set_edit_mode(active=True)
 
-    def _load_nexus_types(self, member: MemberListItem, type_: str) -> None:
+    def _load_nexus_types(self, type_: str) -> None:
         dummy: list = list()
         member_dummy: list = list()
         match type_:
             case "phone":
                 dummy = self.raw_phone_number_ids
-                member_dummy = member.phone_numbers
+                member_dummy = self.phone_numbers
             case "mail":
                 dummy = self.raw_mail_ids
-                member_dummy = member.mail_addresses
+                member_dummy = self.mail_addresses
             case "position":
                 dummy = self.raw_position_ids
-                member_dummy = member.positions
+                member_dummy = self.positions
 
         member_dummy.clear()
         for ID, name_item in dummy:
             member_dummy.append([None, ID, name_item, ""])
 
-    def _load_single_member(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-
-        data, valid = transition.get_member_data_by_id(id_=current_member.member_id_)
+    def load_single_member(self) -> None:
+        current_member: ListItem = self._members_list.list.currentItem()
+        data, valid = transition.get_member_data_by_id(id_=current_member.ID)
         if not valid:
             self.set_error_bar(message=data)
             return
 
         member_data = data["member_data"]
-        current_member.first_name = "" if member_data["first_name"] is None else member_data["first_name"]
-        current_member.last_name = "" if member_data["last_name"] is None else member_data["last_name"]
-        current_member.street = "" if member_data["street"] is None else member_data["street"]
-        current_member.number = "" if member_data["number"] is None else member_data["number"]
-        current_member.zip_code = "" if member_data["zip_code"] is None else member_data["zip_code"]
-        current_member.city = "" if member_data["city"] is None else member_data["city"]
-        current_member.birth_date = QDateTime().fromSecsSinceEpoch(member_data["birth_date"]).date()
-        current_member.entry_date = QDateTime().fromSecsSinceEpoch(member_data["entry_date"]).date()
-        current_member.membership_type = member_data["membership_type"]
-        current_member.special_member = True if member_data["special_member"] else False
-        current_member.comment_text = "" if member_data["comment_text"] is None else member_data["comment_text"]
-        current_member.maps_url = "" if member_data["maps"] is None else member_data["maps"]
+        self._first_name_le.setText("" if member_data["first_name"] is None else member_data["first_name"])
+        self._last_name_le.setText("" if member_data["last_name"] is None else member_data["last_name"])
+        self._street_le.setText("" if member_data["street"] is None else member_data["street"])
+        self._number_le.setText("" if member_data["number"] is None else member_data["number"])
+        self._zip_code_le.setText("" if member_data["zip_code"] is None else member_data["zip_code"])
+        self._city_le.setText("" if member_data["city"] is None else member_data["city"])
+        self._b_day_date.setDate(QDateTime().fromSecsSinceEpoch(member_data["birth_date"]).date())
+        self._entry_date.setDate(QDateTime().fromSecsSinceEpoch(member_data["entry_date"]).date())
+        self._membership_type_box.setCurrentText(member_data["membership_type"])
+        self._special_member_cb.setChecked(True if member_data["special_member"] else False)
+        self._comment_text.setText("" if member_data["comment_text"] is None else member_data["comment_text"])
+        self._maps_le.setText("" if member_data["maps"] is None else member_data["maps"])
 
-        self._load_phone_data(current_member, data["phone"])
-        self._load_mail_data(current_member, data["mail"])
-        self._load_position_data(current_member, data["position"])
+        self._load_phone_data(data["phone"])
+        self._load_mail_data(data["mail"])
+        self._load_position_data(data["position"])
 
-        self._set_current_member()
+        self._set_maps()
+        self._set_edit_mode(active=False)
 
-    @staticmethod
-    def _load_phone_data(current_member, phone_data) -> None:
+    def _load_phone_data(self, phone_data) -> None:
+        current_type = self._phone_number_type_box.currentText()
         if len(phone_data) == 0:
-            for entry in current_member.phone_numbers:
-                current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = ""
-        for ID, new_type_id, new_phone in phone_data:
-            for entry in current_member.phone_numbers:
-                _, old_type_id, old_type, old_phone = entry
-                if old_type_id == new_type_id:
-                    if ID is not None:
-                        current_member.phone_numbers[current_member.phone_numbers.index(entry)][0] = ID
-                    current_member.phone_numbers[current_member.phone_numbers.index(entry)][3] = \
-                        "" if new_phone is None else new_phone
+            self._phone_number_le.setText("")
+            for entry in self.phone_numbers:
+                self.phone_numbers[self.phone_numbers.index(entry)][3] = ""
+            return
 
-    @staticmethod
-    def _load_mail_data(current_member, mail_data) -> None:
+        for ID, new_type_id, new_phone in phone_data:
+            for entry in self.phone_numbers:
+                _, old_type_id, old_type, old_phone = entry
+                if not old_type_id == new_type_id:
+                    continue
+                self.phone_numbers[self.phone_numbers.index(entry)][0] = ID
+                self.phone_numbers[self.phone_numbers.index(entry)][3] = "" if new_phone is None else new_phone
+                if old_type == current_type:
+                    self._phone_number_le.setText("" if new_phone is None else new_phone)
+
+    def _load_mail_data(self, mail_data) -> None:
+        current_type = self._mail_address_type_box.currentText()
         if len(mail_data) == 0:
-            for entry in current_member.mail_addresses:
-                current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = ""
+            for entry in self.mail_addresses:
+                self.mail_addresses[self.mail_addresses.index(entry)][3] = ""
             return
 
         for ID, new_type_id, new_mail in mail_data:
-            for entry in current_member.mail_addresses:
+            for entry in self.mail_addresses:
                 _, old_type_id, old_type, old_mail = entry
-                if old_type_id == new_type_id:
-                    if ID is not None:
-                        current_member.mail_addresses[current_member.mail_addresses.index(entry)][0] = ID
-                    current_member.mail_addresses[current_member.mail_addresses.index(entry)][3] = \
-                        "" if new_mail is None else new_mail
+                if not old_type_id == new_type_id:
+                    continue
+                self.mail_addresses[self.mail_addresses.index(entry)][0] = ID
+                self.mail_addresses[self.mail_addresses.index(entry)][3] = \
+                    "" if new_mail is None else new_mail
+                if old_type == current_type:
+                    self._mail_address_le.setText("" if new_mail is None else new_mail)
 
-    @staticmethod
-    def _load_position_data(current_member, position_data) -> None:
+    def _load_position_data(self, position_data) -> None:
         if len(position_data) == 0:
-            for _, _, item, _ in current_member.positions:
+            for _, _, item, _ in self.positions:
                 item.set_active(active=False)
             return
 
         for ID, new_type_id, new_active in position_data:
-            for item in current_member.positions:
+            for item in self.positions:
                 _, old_type_id, position, _ = item
-                if old_type_id == new_type_id:
-                    if ID is not None:
-                        current_member.positions[current_member.positions.index(item)][0] = ID
-                        current_member.positions[current_member.positions.index(item)][2].ID = ID
-                        current_member.positions[current_member.positions.index(item)][2].set_active(
-                            active=new_active)
+                if not old_type_id == new_type_id:
+                    continue
+                self.positions[self.positions.index(item)][0] = ID
+                position.ID = ID
+                position.set_active(active=new_active)
 
     def _save(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
         member_data: dict = {
-            "first_name": None if current_member.first_name == "" else current_member.first_name,
-            "last_name": None if current_member.last_name == "" else current_member.last_name,
-            "street": None if current_member.street == "" else current_member.street,
-            "number": None if current_member.number == "" else current_member.number,
-            "zip_code": None if current_member.zip_code == "" else current_member.zip_code,
-            "birth_date": QDateTime.toSecsSinceEpoch(QDateTime(current_member.birth_date)),
-            "entry_date": QDateTime.toSecsSinceEpoch(QDateTime(current_member.entry_date)),
-            "city": None if current_member.city == "" else current_member.city,
-            "membership_type": None if current_member.membership_type == "" else current_member.membership_type,
-            "special_member": current_member.special_member,
-            "comment_text": None if current_member.comment_text == "" else current_member.comment_text,
-            "maps": None if current_member.maps_url == "" else current_member.maps_url,
+            "first_name": None if self._first_name_le.text().strip() == "" else self._first_name_le.text().strip().title(),
+            "last_name": None if self._last_name_le.text().strip() == "" else self._last_name_le.text().strip().title(),
+            "street": None if self._street_le.text().strip() == "" else self._street_le.text().strip().title(),
+            "number": None if self._number_le.text().strip() == "" else self._number_le.text().strip().title(),
+            "zip_code": None if self._zip_code_le.text().strip() == "" else self._zip_code_le.text().strip().title(),
+            "birth_date": QDateTime.toSecsSinceEpoch(QDateTime(self._b_day_date.date())),
+            "entry_date": QDateTime.toSecsSinceEpoch(QDateTime(self._entry_date.date())),
+            "city": None if self._city_le.text().strip().title() == "" else self._city_le.text().strip().title(),
+            "membership_type": self._membership_type_box.currentText(),
+            "special_member": self._special_member_cb.isChecked(),
+            "comment_text": None if self._comment_text.toPlainText().strip() == "" else self._comment_text.toPlainText().strip(),
+            "maps": None if self._maps_le.text().strip() == "" else self._maps_le.text().strip(),
         }
 
         phone_list: list = list()
-        for ID, type_id, Type, phone in current_member.phone_numbers:
+        for ID, type_id, Type, phone in self.phone_numbers:
             phone_entry: list = [
                 ID,
                 type_id,
@@ -678,8 +565,9 @@ class MembersWindow(BaseWindow):
                 None if phone == "" else phone,
             ]
             phone_list.append(phone_entry)
+
         mail_list: list = list()
-        for ID, type_id, Type, mail in current_member.mail_addresses:
+        for ID, type_id, Type, mail in self.mail_addresses:
             mail_entry: list = [
                 ID,
                 type_id,
@@ -687,8 +575,9 @@ class MembersWindow(BaseWindow):
                 None if mail == "" else mail,
             ]
             mail_list.append(mail_entry)
+
         position_list: list = list()
-        for ID, type_id, item, _ in current_member.positions:
+        for ID, type_id, item, _ in self.positions:
             position_entry: list = [
                 ID,
                 type_id,
@@ -708,7 +597,7 @@ class MembersWindow(BaseWindow):
             "member_nexus_data": member_nexus_data,
         }
 
-        result, valid = transition.update_member_data(id_=current_member.member_id_, data=data,
+        result, valid = transition.update_member_data(id_=self._members_list.list.currentItem().ID, data=data,
                                                       log_date=self._get_log_date())
         if not valid:
             self.set_error_bar(message=result)
@@ -723,7 +612,7 @@ class MembersWindow(BaseWindow):
             return QDateTime.toSecsSinceEpoch(QDateTime(dlg.get_date()))
 
     def _set_save_ids(self, ids: dict) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
+        current_member: ListItem = self._members_list.list.currentItem()
 
         new_member_id: int = ids["member_id"]
         new_phone_ids: list = ids["phone"]
@@ -735,18 +624,18 @@ class MembersWindow(BaseWindow):
         for id_ in new_phone_ids:
             if id_ is None:
                 continue
-            current_member.phone_numbers[new_phone_ids.index(id_)][0] = id_
+            self.phone_numbers[new_phone_ids.index(id_)][0] = id_
 
         for id_ in new_mail_ids:
             if id_ is None:
                 continue
-            current_member.mail_addresses[new_mail_ids.index(id_)][0] = id_
+            self.mail_addresses[new_mail_ids.index(id_)][0] = id_
 
         for id_ in new_position_ids:
             if id_ is None:
                 continue
-            current_member.positions[new_position_ids.index(id_)][0] = id_
-            current_member.positions[new_position_ids.index(id_)][2].ID = id_
+            self.positions[new_position_ids.index(id_)][0] = id_
+            self.positions[new_position_ids.index(id_)][2].ID = id_
 
         self._set_edit_mode(active=False)
 
@@ -783,12 +672,13 @@ class MembersWindow(BaseWindow):
         pass
 
     def _set_inactive(self) -> None:
-        current_member: MemberListItem = self._members_list.currentItem()
-        result, valid = transition.update_member_activity(ID=current_member.member_id_, active=False)
+        current_member: ListItem = self._members_list.list.currentItem()
+        result, valid = transition.update_member_activity(ID=current_member.ID, active=False)
         if not valid:
             self.set_error_bar(message=result)
             return
-        self._load_all_member_names()
+        self._members_list.load_list_data()
+        self._set_first_member()
         self.set_info_bar(message="saved")
 
     def _is_maps(self) -> bool:
@@ -800,6 +690,9 @@ class MembersWindow(BaseWindow):
             return True
         else:
             return False
+
+    def _set_maps(self) -> None:
+        self._maps_btn.setEnabled(self._is_maps())
 
     def _open_maps(self) -> None:
         if self._is_maps():

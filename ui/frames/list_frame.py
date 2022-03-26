@@ -48,7 +48,8 @@ class ListFrame(QFrame):
             case "member":
                 match self._active:
                     case True:
-                        pass
+                        self._get_names_method = transition.get_all_member_name
+                        self._list_method = self._window.load_single_member
                     case False:
                         self._get_names_method = transition.get_all_member_name
                         self._list_method = self._window.set_recover_enabled
