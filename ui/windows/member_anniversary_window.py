@@ -76,7 +76,7 @@ class MemberAnniversaryWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        result, valid = w.window_manger.is_valid_member_window(active_member_anniversary_window=True)
+        result, valid = w.window_manger.is_valid_member_window(ignore_member_anniversary_window=True)
         if not valid:
             w.window_manger.member_anniversary_window = None
             event.accept()

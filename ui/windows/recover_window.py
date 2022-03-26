@@ -78,7 +78,7 @@ class RecoverWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        result, valid = self._valid_parent_window_method(active_recover_window=True)
+        result, valid = self._valid_parent_window_method(ignore_recover_window=True)
         if not valid:
             w.window_manger.recover_window = None
             event.accept()

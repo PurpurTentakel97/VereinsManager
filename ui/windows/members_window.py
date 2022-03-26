@@ -2,7 +2,7 @@
 # 21.01.2022
 # VereinsManager / Members Window
 
-from PyQt5.QtCore import QDate, Qt, QDateTime
+from PyQt5.QtCore import Qt, QDateTime
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
@@ -640,7 +640,7 @@ class MembersWindow(BaseWindow):
         self._set_edit_mode(active=False)
 
     def _recover(self) -> None:
-        result, valid = w.window_manger.is_valid_recover_window(type_="member", active_member_window=True)
+        result, valid = w.window_manger.is_valid_recover_window(type_="member", ignore_member_window=True)
         if not valid:
             self.set_error_bar(message=result)
             return
@@ -650,7 +650,7 @@ class MembersWindow(BaseWindow):
         self.close()
 
     def _table(self) -> None:
-        result = w.window_manger.is_valid_member_table_window(active_member_window=True)
+        result = w.window_manger.is_valid_member_table_window(ignore_member_window=True)
         if isinstance(result, str):
             self.set_info_bar(message=result)
         elif result:
@@ -658,7 +658,7 @@ class MembersWindow(BaseWindow):
             w.window_manger.member_table_window = m_t_w.MemberTableWindow()
 
     def _anniversary(self) -> None:
-        result = w.window_manger.is_valid_member_anniversary_window(active_member_window=True)
+        result = w.window_manger.is_valid_member_anniversary_window(ignore_member_window=True)
         if isinstance(result, str):
             self.set_info_bar(message=result)
         elif result:

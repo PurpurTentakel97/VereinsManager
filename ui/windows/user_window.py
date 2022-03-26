@@ -300,7 +300,7 @@ class UserWindow(BaseWindow):
             self._set_current_user_id(user_id=result)
 
     def _recover(self) -> None:
-        result, valid = w_m.window_manger.is_valid_recover_window(type_="user", active_user_window=True)
+        result, valid = w_m.window_manger.is_valid_recover_window(type_="user", ignore_user_window=True)
         if not valid:
             self.set_error_bar(message=result)
             return

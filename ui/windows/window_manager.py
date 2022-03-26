@@ -16,101 +16,122 @@ class WindowManager:
         self.recover_window = None
         self.member_table_window = None
         self.member_anniversary_window = None
+        self.member_card_window = None
         # User
         self.user_window = None
 
     # Main
-    @staticmethod
-    def is_valid_main_window() -> bool | str:
-        return True
-
     def is_valid_close_main_window(self) -> bool:
-        if self.members_window or self.user_window:
+        if self._is_window("member") or self._is_window("user"):
             return False
         else:
             return True
 
     # Types
     def is_valid_types_window(self) -> [bool | str, bool]:
-        if self.members_window:
+        if self._is_window("type"):
+            return "Type Fenster bereits geöffnet.", False
+        elif self._is_window("member"):
             return "Es können keine Typen berabeitet werden, währen das Mitglieder-Fenster geöffnet ist.", False
 
-        elif self.member_table_window:
-            return "Es können keine Typen berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist.", False
+        elif self._is_window("member_table"):
+            return "Es können keine Typen berabeitet werden, währen die Mitglieder-Tabellen geöffnet sind.", False
 
-        elif self.member_anniversary_window:
-            return "Es können keine Typen berabeitet werden, währen die Mitglieder-Jubiläen geöffnet ist.", False
+        elif self._is_window("member_anniversary"):
+            return "Es können keine Typen berabeitet werden, währen die Mitglieder-Jubiläen geöffnet sind.", False
+
+        elif self._is_window("member_card"):
+            return "Es können keine Typen berabeitet werden, währen die Mitglieder-Karten geöffnet sind.", False
 
         return True, True
 
     # Member
-    def is_valid_member_window(self, active_recover_window: bool = False,
-                               active_member_table_window: bool = False,
-                               active_member_anniversary_window: bool = False) -> [bool | str, bool]:
-        if self.types_window:
+    def is_valid_member_window(self, ignore_recover_window: bool = False,
+                               ignore_member_table_window: bool = False,
+                               ignore_member_anniversary_window: bool = False,
+                               ignore_member_card_window: bool = False) -> [bool | str, bool]:
+        if self._is_window("member"):
+            return "Mitgliederfenster bereits geöffnet.", False
+        elif self._is_window("type"):
             return "Es können keine Mitglieder berabeitet werden, währen das Typ-Fenster geöffnet ist.", False
 
-        elif self.recover_window and not active_recover_window:
+        elif self._is_window("recover", ignore_recover_window):
             return "Es können keine Mitglieder berabeitet werden, währen das Ehmalige-Mitglieder-Fenster geöffnet ist.", False
 
-        elif self.member_table_window and not active_member_table_window:
+        elif self._is_window("member_table", ignore_member_table_window):
             return "Es können keine Mitglieder berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist.", False
 
-        elif self.member_anniversary_window and not active_member_anniversary_window:
+        elif self._is_window("member_anniversary", ignore_member_anniversary_window):
             return "Es können keine Mitglieder berabeitet werden, währen die Mitglieder-Jubiläen geöffnet ist.", False
+
+        elif self._is_window("member_card", ignore_member_card_window):
+            return "Es können keine Mitglieder berabeitet werden, währen die Mitglieder-Karte geöffnet ist."
 
         return True, True
 
-    def is_valid_member_table_window(self, active_member_window: bool = False) -> [bool | str, bool]:
-        if self.members_window and not active_member_window:
+    def is_valid_member_table_window(self, ignore_member_window: bool = False) -> [bool | str, bool]:
+        if self._is_window("member_table"):
+            return "Mitglieder Tabelle  bereits geöffnet.", False
+        elif self._is_window("member", ignore_member_window):
             return "Die Tabelle kann nicht angezeigt werden, während das Mitglieder-Fenster geöffnet ist.", False
 
-        elif self.recover_window:
-            return "Die Tabelle kann nicht angezeigt werden, während das Ehmalige-Mitglieder-Fenster geöffnet ist.", False
+        elif self._is_window("type"):
+            return "Die Tabelle kann nicht angezeigt werden, während das Typen-Fenster geöffnet ist.", False
+
+        return True, True
+
+    def is_valid_member_anniversary_window(self, ignore_member_window: bool = False) -> [bool | str, bool]:
+        if self._is_window("member_anniversary"):
+            return "Type Fenster bereits geöffnet.", False
+        elif self._is_window("member", ignore_member_window):
+            return "Die Tabelle kann nicht angezeigt werden, während das Mitglieder-Fenster geöffnet ist.", False
 
         elif self.types_window:
             return "Die Tabelle kann nicht angezeigt werden, während das Typen-Fenster geöffnet ist.", False
 
         return True, True
 
-    def is_valid_member_anniversary_window(self, active_member_window: bool = False) -> [bool | str, bool]:
-        if self.members_window and not active_member_window:
+    def is_valid_member_card_window(self, ignore_member_window: bool = False) -> [bool, str | bool]:
+        if self._is_window("member_card"):
+            return "Mitglieder Karte bereits geöffnet.", False
+        if self._is_window("member", ignore_member_window):
             return "Die Tabelle kann nicht angezeigt werden, während das Mitglieder-Fenster geöffnet ist.", False
 
-        elif self.recover_window:
-            return "Die Tabelle kann nicht angezeigt werden, während das Ehmalige-Mitglieder-Fenster geöffnet ist.", False
-
-        elif self.types_window:
+        elif self._is_window("type"):
             return "Die Tabelle kann nicht angezeigt werden, während das Typen-Fenster geöffnet ist.", False
 
         return True, True
 
     # User
-    def is_valid_user_window(self, active_recover_window: bool = False) -> [str | bool, bool]:
-        if self.user_window and not active_recover_window:
-            return "Es können keine Benutzer berabeitet werden, während das benutzer-Wiederherstellen-Fenster geöffnet ist.", False
-
+    def is_valid_user_window(self, ignore_recover_window: bool = False) -> [str | bool, bool]:
+        if self._is_window("user"):
+            return "Benutzer Fenster bereits geöffnet.", False
+        elif self._is_window("recover", ignore_recover_window):
+            return "Es können keine Benutzer berabeitet werden, währen das Ehmalige-Benutzer-Fenster geöffnet ist.", False
         return True, True
 
     # Global
-    def is_valid_recover_window(self, type_: str, active_member_window: bool = False,
-                                active_user_window: bool = False) -> [bool | str, bool]:
+    def is_valid_recover_window(self, type_: str, ignore_member_window: bool = False,
+                                ignore_user_window: bool = False) -> [bool | str, bool]:
+        if self._is_window("recover"):
+            return "Wiederherstellen Fenster bereits geöffnet.", False
         match type_:
             case "member":
-                if self.members_window and not active_member_window:
+                if self._is_window("member",ignore_member_window):
                     return "Es können keine Ehmaligen Mitglider berabeitet werden, währen das Mitglieder-Fenster geöffnet ist.", False
-
-                elif self.member_table_window:
-                    return "Es können keine Ehmaligen Mitglider berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist.", False
             case "user":
-                if self.user_window and not active_user_window:
+                if self._is_window("user",ignore_user_window):
                     return "Es können keine Ehmaligen Benutzer berabeitet werden, währen das Benutzer-Fenster geöffnet ist.", False
+
         return True, True
 
     # close window
     def close_all_window(self) -> None:
         self.member_table_window.close() if self.member_table_window else None
         self.member_table_window = None
+
+        self.member_card_window.close() if self.member_card_window else None
+        self.member_card_window = None
 
         self.member_anniversary_window.close() if self.member_anniversary_window else None
         self.member_anniversary_window = None
@@ -126,6 +147,33 @@ class WindowManager:
 
         self.user_window.close() if self.user_window else None
         self.user_window = None
+
+    # global
+    def _is_window(self, window: str, ignore: bool = False) -> bool:
+        dummy_window = False
+        match window:
+            case "main":
+                dummy_window = self.main_window
+            case "recover":
+                dummy_window = self.recover_window
+            case "type":
+                dummy_window = self.types_window
+
+            case "member":
+                dummy_window = self.members_window
+            case "member_table":
+                dummy_window = self.member_table_window
+            case "member_anniversary":
+                dummy_window = self.member_anniversary_window
+            case "member_card":
+                dummy_window = self.member_card_window
+
+            case "user":
+                dummy_window = self.user_window
+
+        if dummy_window:
+            return not ignore
+        return False
 
 
 def create_window_manager() -> None:
