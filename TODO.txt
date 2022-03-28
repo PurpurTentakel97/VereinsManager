@@ -9,7 +9,6 @@ pdf
 sql database
     let unser choose database name
     error without types (membership_type)
-    bug inactive types in pdf
 
 UI
     Global

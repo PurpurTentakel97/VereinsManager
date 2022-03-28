@@ -6,6 +6,7 @@ import datetime
 
 from config import config_sheet as c, exception_sheet as e
 from sqlite import select_handler as s_h
+from logic.handler import member_nexus_handler as m_n_h
 
 import debug
 
@@ -26,8 +27,8 @@ def get_member_table_data(active: bool) -> [str | dict, bool]:
 
             for member in member_data:
                 member_dict = _transform_member_data(member=member)
-                phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_dict["ID"])
-                mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_dict["ID"])
+                phone_data = m_n_h.get_phone_number_by_member_id(member_id=member_dict["ID"])
+                mail_data = m_n_h.get_mail_by_member_id(member_id=member_dict["ID"])
                 phone_list = _transform_nexus_data(nexus_data=phone_data)
                 mail_list = _transform_nexus_data(nexus_data=mail_data)
 

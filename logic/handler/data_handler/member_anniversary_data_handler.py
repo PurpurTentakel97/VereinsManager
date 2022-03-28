@@ -128,5 +128,5 @@ def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
 
 def _get_years_from_date(date: datetime.datetime) -> int:
     current_date = datetime.datetime.now()
-    age = current_date.year - date.year  # TODO date in January False?
+    age = current_date.year - date.year
     return age
