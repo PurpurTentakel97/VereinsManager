@@ -221,7 +221,7 @@ class Validation:
         if password_1 != password_2:
             raise e.DifferentPassword()
 
-        if len(password_1) < 5:
+        if len(password_1) < 8:
             raise e.PasswordToShort()
 
         if " " in password_1:

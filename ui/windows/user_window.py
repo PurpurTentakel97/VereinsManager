@@ -321,7 +321,7 @@ class UserWindow(BaseWindow):
 
     def _set_current_user_id(self, user_id: int) -> None:
         current_user: ListItem = self._user_list.list.currentItem()
-        current_user.ID_ = user_id
+        current_user.ID = user_id
 
     def closeEvent(self, event) -> None:
         event.ignore()
