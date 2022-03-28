@@ -144,9 +144,9 @@ class MemberTableWindow(BaseWindow):
                 self._type_id_name.append([ID, result[0]])
 
     def _export(self) -> None:
-        transition.create_default_dir("export")
+        transition.create_default_dir("member_list")
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/Mitglieder.pdf",
+                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/{c.config.member_list}/Mitglieder.pdf",
                                                   "PDF (*.pdf);;All Files (*)")
         if not check:
             self.set_info_bar(message="Export abgebrochen")

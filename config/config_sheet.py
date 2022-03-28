@@ -30,7 +30,13 @@ class Config:
         self.save_dir: str = "saves"
         self.organisation_dir: str = "default_organisation"
         self.export_dir: str = "export"
+
         self.member_dir: str = "member"
+        self.member_list: str = "member_list"
+        self.member_anniversary: str = "member_anniversary"
+        self.member_card: str = "member_card"
+        self.member_letter: str = "member_letter"
+
         self.last_export_path: str = str()
 
         # file names

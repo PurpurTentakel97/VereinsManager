@@ -686,9 +686,9 @@ class MembersWindow(BaseWindow):
 
     def _member_card(self) -> None:
         current_member: ListItem = self._members_list.list.currentItem()
-        transition.create_default_dir("export")
+        transition.create_default_dir("member_card")
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/{current_member.first_name}_{current_member.last_name}.pdf",
+                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/{c.config.member_card}/{current_member.first_name}_{current_member.last_name}.pdf",
                                                   "PDF (*.pdf);;All Files (*)")
         if not check:
             self.set_info_bar("Export abgebrochen")

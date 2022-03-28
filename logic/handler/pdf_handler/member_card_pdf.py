@@ -90,7 +90,6 @@ class MemberCardPDF(BasePDF):
         return elements
 
     def _get_nexus_entries(self, data: list, type_: str) -> list:
-        debug.info(item=debug_str, keyword="_get_nexus_entries", message=f"input = {data}")
         elements: list = list()
         match type_:
             case "phone":
