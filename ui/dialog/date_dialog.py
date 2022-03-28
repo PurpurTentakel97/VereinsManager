@@ -4,6 +4,7 @@
 
 
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QDateEdit, QVBoxLayout, QLabel
+from PyQt5.QtCore import QDate
 
 
 class DateInput(QDialog):
@@ -16,6 +17,7 @@ class DateInput(QDialog):
 
         self.date = QDateEdit()
         self.date.setCalendarPopup(True)
+        self.date.setDate(QDate.currentDate())
 
         self.buttonBox = QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)

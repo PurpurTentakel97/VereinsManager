@@ -4,6 +4,7 @@
 
 pdf
     dirfferent name for anniversary pdfs
+    qusetion dialog no icon
 
 sql database
     let unser choose database name
@@ -18,5 +19,6 @@ UI
 
 member
     export schreiben
+    track member count
 
-set organisation icon
+
