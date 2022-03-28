@@ -4,14 +4,13 @@
 
 from config import config_sheet as c, exception_sheet as e
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, log_handler as l_h, \
-    delete_handler as d_h
+    delete_handler as d_h, member_nexus_handler as m_n_h
 from logic import validation as v
 import debug
 
 debug_str: str = "Member Handler"
 
 
-# member
 # add
 def _add_member(data: dict, log_date: int | None) -> int:  # No Validation
     type_id = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
@@ -29,9 +28,9 @@ def get_member_data(ID: int, active: bool = True) -> [str | dict, bool]:
         v.validation.must_bool(bool_=active)
 
         member_data = _get_member_data_by_id(ID=ID, active=active)
-        phone_data = _get_phone_number_by_member_id(member_id=ID)
-        mail_data = _get_mail_by_member_id(member_id=ID)
-        position_data = _get_position_by_member_id(member_id=ID)
+        phone_data = m_n_h.get_phone_number_by_member_id(member_id=ID)
+        mail_data = m_n_h.get_mail_by_member_id(member_id=ID)
+        position_data = m_n_h.get_position_by_member_id(member_id=ID)
 
         return {
                    "member_data": member_data,
@@ -94,7 +93,7 @@ def update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict
         else:
             _update_member(ID=ID, data=member_data, log_date=log_date)
 
-        ids = _update_add_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
+        ids = m_n_h.update_add_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
 
         ids["member_id"] = ID
         return ids, True
@@ -134,9 +133,8 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
 # delete
 def delete_inactive_member() -> None:
     reference_data, _ = get_names_of_member(active=False)
-    debug.info(item=debug_str, keyword="delete_inactive_member", message=f"inactive = {reference_data}")
     for ID, *_ in reference_data:
-        _delete_inactive_member_nexus(member_id=ID)
+        m_n_h.delete_inactive_member_nexus(member_id=ID)
         l_h.log_handler.delete_log(target_id=ID, target_table="member")
         d_h.delete_handler.delete_member(ID=ID)
 
@@ -188,168 +186,3 @@ def _transform_to_dict(data) -> dict:
         "special_member": data[11],
         "comment_text": data[12],
     }
-
-
-# member nexus
-# add
-def _add_member_nexus_phone(type_id: int, value: str, member_id: int, log_date: int | None) -> int:
-    return a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=value, member_id=member_id, log_date=log_date)
-
-
-def _add_member_nexus_mail(type_id: int, value: str, member_id: int, log_date: int | None) -> int:
-    return a_h.add_handler.add_member_nexus_mail(type_id=type_id, value=value, member_id=member_id, log_date=log_date)
-
-
-def _add_member_nexus_position(type_id: int, value: bool, member_id: int, log_date: int | None) -> int:
-    return a_h.add_handler.add_member_nexus_position(type_id=type_id, value=value, member_id=member_id,
-                                                     log_date=log_date)
-
-
-# get
-def _get_phone_number_by_member_id(member_id: int) -> tuple:
-    v.validation.must_positive_int(int_=member_id, max_length=None)
-    phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_id)
-    types = s_h.select_handler.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['phone'], active=True)
-    checked_phone_data: list = list()
-    for entry in phone_data:
-        _, type_id, *_ = entry
-        for type_id_, *_ in types:
-            if type_id == type_id_:
-                checked_phone_data.append(entry)
-
-    return tuple(checked_phone_data)
-
-
-def _get_mail_by_member_id(member_id: int) -> tuple:
-    v.validation.must_positive_int(int_=member_id, max_length=None)
-    mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_id)
-    types = s_h.select_handler.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['mail'], active=True)
-    checked_mail_data: list = list()
-    for entry in mail_data:
-        _, type_id, *_ = entry
-        for type_id_, *_ in types:
-            if type_id == type_id_:
-                checked_mail_data.append(entry)
-    return tuple(checked_mail_data)
-
-
-def _get_position_by_member_id(member_id: int) -> tuple:
-    v.validation.must_positive_int(int_=member_id, max_length=None)
-    data = s_h.select_handler.get_position_by_member_id(member_id=member_id)
-
-    data = list(data)
-    for i in range(len(data)):
-        data[i] = list(data[i])
-    for i in data:
-        data[data.index(i)][2] = data[data.index(i)][2] == 1
-    for i in range(len(data)):
-        data[i] = tuple(data[i])
-
-    return tuple(data)
-
-
-# update
-def _update_add_member_nexus(data: dict, member_id: int, log_date: int | None) -> dict:
-    v.validation.must_dict(data)
-
-    phone_ids = _update_add_member_nexus_phone(phone=data["phone"], member_id=member_id, log_date=log_date)
-    mail_ids = _update_add_member_nexus_mail(mail=data["mail"], member_id=member_id, log_date=log_date)
-    position_ids = _update_add_member_nexus_position(position=data["position"], member_id=member_id, log_date=log_date)
-
-    return {
-        "phone": phone_ids,
-        "mail": mail_ids,
-        "position": position_ids,
-    }
-
-
-def _update_add_member_nexus_phone(phone: list, member_id: int, log_date: int) -> list:
-    phone_ids: list = list()
-    for ID, type_id, Type, phone_number in phone:
-        v.validation.update_member_nexus(data=[ID, type_id, Type, phone_number], type_="phone")
-
-        if ID is None:
-            new_ID = _add_member_nexus_phone(type_id=type_id, value=phone_number, member_id=member_id,
-                                             log_date=log_date)
-        else:
-            new_ID = _update_member_nexus_phone(ID=ID, number=phone_number, log_date=log_date)
-        phone_ids.append(new_ID)
-
-    return phone_ids
-
-
-def _update_add_member_nexus_mail(mail: list, member_id: int, log_date: int) -> list:
-    mail_ids: list = list()
-    for ID, type_id, Type, mail_ in mail:
-        v.validation.update_member_nexus(data=[ID, type_id, Type, mail_], type_="mail")
-
-        if ID is None:
-            new_ID = _add_member_nexus_mail(type_id=type_id, value=mail_, member_id=member_id, log_date=log_date)
-        else:
-            new_ID = _update_member_nexus_mail(ID=ID, mail=mail_, log_date=log_date)
-        mail_ids.append(new_ID)
-
-    return mail_ids
-
-
-def _update_add_member_nexus_position(position: list, member_id: int, log_date: int) -> list:
-    position_ids: list = list()
-    for ID, type_id, Type, active in position:
-        v.validation.update_member_nexus(data=[ID, type_id, Type, active], type_="position")
-
-        if ID is None:
-            new_ID = _add_member_nexus_position(type_id=type_id, value=active, member_id=member_id, log_date=log_date)
-        else:
-            new_ID = _update_member_nexus_position(ID=ID, active=active, log_date=log_date)
-        position_ids.append(new_ID)
-
-    return position_ids
-
-
-def _update_member_nexus_phone(ID: int, number: str, log_date: int) -> None:  # no Validation
-    reference_data = s_h.select_handler.get_phone_number_by_ID(ID=ID)
-    u_h.update_handler.update_member_nexus_phone(ID=ID, number=number)
-    l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=number, log_date=log_date,
-                                     type_="phone")
-
-
-def _update_member_nexus_mail(ID: int, mail: str, log_date: int) -> None:  # no Validation
-    reference_data = s_h.select_handler.get_mail_member_by_ID(ID=ID)
-    u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail)
-    l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=mail, log_date=log_date,
-                                     type_="mail")
-
-
-def _update_member_nexus_position(ID: int, active: bool, log_date: int) -> None:  # no Validation
-    reference_data = s_h.select_handler.get_position_member_by_ID(ID=ID)
-    u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
-    l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=active, log_date=log_date,
-                                     type_="position")
-
-
-# delete
-def _delete_inactive_member_nexus(member_id: int) -> None:
-    _delete_inactive_member_phone(member_id=member_id)
-    _delete_inactive_member_mail(member_id=member_id)
-    _delete_inactive_member_position(member_id=member_id)
-
-
-def _delete_inactive_member_phone(member_id: int) -> None:
-    reference_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_id)
-    for ID, *_ in reference_data:
-        l_h.log_handler.delete_log(target_id=ID, target_table="member_phone")
-    d_h.delete_handler.delete_member_phone(member_id=member_id)
-
-
-def _delete_inactive_member_mail(member_id: int) -> None:
-    reference_data = s_h.select_handler.get_mail_by_member_id(member_id=member_id)
-    for ID, *_ in reference_data:
-        l_h.log_handler.delete_log(target_id=ID, target_table="member_mail")
-    d_h.delete_handler.delete_member_mail(member_id=member_id)
-
-
-def _delete_inactive_member_position(member_id: int) -> None:
-    reference_data = s_h.select_handler.get_position_by_member_id(member_id=member_id)
-    for ID, *_ in reference_data:
-        l_h.log_handler.delete_log(target_id=ID, target_table="member_position")
-    d_h.delete_handler.delete_member_position(member_id=member_id)
