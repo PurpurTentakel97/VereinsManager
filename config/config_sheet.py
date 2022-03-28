@@ -41,6 +41,7 @@ class Config:
 
         # file names
         self.database_name: str = f"default_database.vm"
+        self.icon_path: str = f"{self.save_dir}/{self.organisation_dir}/icon.png"
 
         # user
         self.user_id: int = int()

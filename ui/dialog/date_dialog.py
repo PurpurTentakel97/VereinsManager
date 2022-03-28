@@ -5,6 +5,9 @@
 
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QDateEdit, QVBoxLayout, QLabel
 from PyQt5.QtCore import QDate
+from PyQt5.QtGui import QIcon
+
+from config import config_sheet as c
 
 
 class DateInput(QDialog):
@@ -12,6 +15,7 @@ class DateInput(QDialog):
         super().__init__(parent)
 
         self.setWindowTitle("Log Date")
+        self.setWindowIcon(QIcon(c.config.icon_path))
 
         QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
 

@@ -17,7 +17,7 @@ class BaseWindow(QMainWindow):
         self._set_menu()
 
     def _set_base_window_information(self) -> None:
-        self.setWindowIcon(QIcon(f"{c.config.save_dir}/{c.config.organisation_dir}/icon.png"))
+        self.setWindowIcon(QIcon(c.config.icon_path))
 
     def _set_menu(self) -> None:
         pass
@@ -32,8 +32,9 @@ class BaseWindow(QMainWindow):
         self.statusBar().showMessage("Info: " + message, 2000)
 
     @staticmethod
-    def save_permission(window_name:str) -> bool:
+    def save_permission(window_name: str) -> bool:
         msg = QMessageBox()
+        msg.setWindowIcon(QIcon(c.config.icon_path))
         msg.setIcon(QMessageBox.Information)
         msg.setText(f"{window_name} wird geschlossen.")
         msg.setInformativeText("Du hast ungespeicherte Daten. Möchtest du diese Daten vorher speichern?")
@@ -44,6 +45,7 @@ class BaseWindow(QMainWindow):
     @staticmethod
     def _open_permission() -> bool:
         msg = QMessageBox()
+        msg.setWindowIcon(QIcon(c.config.icon_path))
         msg.setIcon(QMessageBox.Question)
         msg.setText(f"Neues PDF öffnen?")
         msg.setInformativeText("Das neue PDF kann geöffnet werden.")
