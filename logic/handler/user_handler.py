@@ -5,7 +5,7 @@
 from helper import hasher
 from logic import validation as v
 from config import exception_sheet as e, config_sheet as c
-from sqlite import add_handler as a_h, update_handler as u_h, select_handler as s_h
+from sqlite import add_handler as a_h, update_handler as u_h, select_handler as s_h, delete_handler as d_h
 import debug
 
 debug_str: str = "User Handler"
@@ -92,5 +92,7 @@ def update_user_activity(ID: int, active: bool) -> [str, bool]:
 
 
 # delete
-def delete_inactive_user()->None:
-    debug.info(item=debug_str, keyword="delete_inactive_user", message=f"Hier werden alle inaktiven User gelöscht.")
+def delete_inactive_user() -> None:
+    reference_data, _ = get_names_of_user(active=False)
+    for ID, *_ in reference_data:
+        d_h.delete_handler.delete_user(ID=ID)

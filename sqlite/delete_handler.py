@@ -69,6 +69,15 @@ class DeleteHandler(Database):
         except self.OperationalError:
             debug.error(item=debug_str, keyword="delete_member", message=f"delete member position failed")
 
+    # user
+    def delete_user(self, ID: int) -> None:
+        sql_command: str = """DELETE FROM user WHERE ID = ?;"""
+        try:
+            self.cursor.execute(sql_command, (ID,))
+            self.connection.commit()
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword="delete_user", message=f"delete user failed")
+
 
 def create_delete_handler() -> None:
     global delete_handler
