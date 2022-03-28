@@ -143,7 +143,13 @@ class MainWindow(BaseWindow):
         event.ignore()
         if not w_m.window_manger.is_valid_close_main_window():
             if self._get_close_permission():
-                w_m.window_manger.close_all_window()
+                counter: int = 0
+                while not w_m.window_manger.is_valid_close_main_window():
+                    w_m.window_manger.close_all_window()
+                    counter += 1
+                    if counter >= 5:
+                        self.set_error_bar("Programm konnte nicht geschlossen werden.")
+                        return
                 event.accept()
         else:
             w_m.window_manger.close_all_window()

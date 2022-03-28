@@ -4,7 +4,6 @@
 
 pdf
     dirfferent name for anniversary pdfs
-    extra directory for member cards
 
 sql database
     let unser choose database name

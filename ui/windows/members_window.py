@@ -556,7 +556,7 @@ class MembersWindow(BaseWindow):
                 position.ID = ID
                 position.set_active(active=new_active)
 
-    def _save(self) -> None:
+    def _save(self) -> None | bool:
         member_data: dict = {
             "first_name": None if self._first_name_le.text().strip() == "" else self._first_name_le.text().strip().title(),
             "last_name": None if self._last_name_le.text().strip() == "" else self._last_name_le.text().strip().title(),
@@ -617,10 +617,11 @@ class MembersWindow(BaseWindow):
                                                       log_date=self._get_log_date())
         if not valid:
             self.set_error_bar(message=result)
-            return
+            return False
 
         self.set_info_bar(message="saved")
         self._set_save_ids(ids=result)
+        return True
 
     def _get_log_date(self) -> int:
         dlg = DateInput(self)
@@ -736,6 +737,9 @@ class MembersWindow(BaseWindow):
     def closeEvent(self, event) -> None:
         event.ignore()
         if self._is_edit and self.save_permission(window_name="Mitgliederfenster"):
-            self._save()
-        w.window_manger.members_window = None
-        event.accept()
+            if self._save():
+                w.window_manger.members_window = None
+                event.accept()
+        else:
+            w.window_manger.members_window = None
+            event.accept()

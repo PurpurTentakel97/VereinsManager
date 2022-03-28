@@ -269,7 +269,7 @@ class UserWindow(BaseWindow):
 
         self._set_edit_mode(active=False)
 
-    def _save(self) -> None:
+    def _save(self) -> None | bool:
         current_user: ListItem = self._user_list.list.currentItem()
 
         data: dict = {
@@ -298,6 +298,7 @@ class UserWindow(BaseWindow):
         self._set_edit_mode(False)
         if isinstance(result, int):
             self._set_current_user_id(user_id=result)
+        return True
 
     def _recover(self) -> None:
         result, valid = w_m.window_manger.is_valid_recover_window(type_="user", ignore_user_window=True)
@@ -326,6 +327,9 @@ class UserWindow(BaseWindow):
     def closeEvent(self, event) -> None:
         event.ignore()
         if self._is_edit and self.save_permission(window_name="Benutzerfenster"):
-            self._save()
-        w_m.window_manger.user_window = None
-        event.accept()
+            if self._save():
+                w_m.window_manger.user_window = None
+                event.accept()
+        else:
+            w_m.window_manger.user_window = None
+            event.accept()

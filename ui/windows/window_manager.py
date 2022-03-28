@@ -118,13 +118,11 @@ class WindowManager:
         self.recover_window = None
 
         self.members_window.close() if self.members_window else None
-        self.members_window = None
 
         self.types_window.close() if self.types_window else None
         self.types_window = None
 
         self.user_window.close() if self.user_window else None
-        self.user_window = None
 
     # global
     def _is_window(self, window: str, ignore: bool = False) -> bool:
