@@ -14,6 +14,7 @@ class BaseException_(Exception):
         self.message: str = f"{self.error_code} //  {message} // {info}" if info else f"{self.error_code} // {message}"
 
 
+#
 class OperationalError(BaseException_):
     def __init__(self) -> None:
         super().__init__()
@@ -62,6 +63,7 @@ class ForeignKeyError(OperationalError):
         self.set_message(message="Datensatz noch in Benutzung", info=info)
 
 
+#
 class InputError(BaseException_):
     def __init__(self):
         super().__init__()
@@ -142,6 +144,7 @@ class ToLong(InputError):
                          info=f"{str(text)} ({str(len(str(text)))} Zeichen)")
 
 
+#
 class PasswordError(BaseException_):
     def __init__(self):
         super().__init__()
@@ -176,13 +179,21 @@ class PasswordToShort(PasswordError):
         self.set_message(message="Dein Passwort ist zu kurz", info=None)
 
 
-class DifferentPassword(PasswordError):
+class NoPassword(PasswordError):
     def __init__(self):
         super().__init__()
         self.error_code: str = "305"
+        self.set_message(message="Kein Passwort eingegeben", info=None)
+
+
+class DifferentPassword(PasswordError):
+    def __init__(self):
+        super().__init__()
+        self.error_code: str = "306"
         self.set_message(message="Deine Passwörter stimmen nicht überein", info=None)
 
 
+#
 class UserError(BaseException_):
     def __init__(self):
         super().__init__()
@@ -203,6 +214,7 @@ class DefaultUserException(UserError):
         self.set_message(message="Default Benutzer kann nicht bearbeitet werden", info=info)
 
 
+#
 class GeneralError(BaseException_):
     def __init__(self):
         super().__init__()

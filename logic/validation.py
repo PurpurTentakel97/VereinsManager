@@ -166,7 +166,7 @@ class Validation:
     def must_str(str_: str, length: int | None = 50) -> None:
         if not isinstance(str_, str) or len(str_.strip()) == 0:
             raise e.NoStr(info=str_)
-        if length is not  None:
+        if length is not None:
             if len(str_) > length:
                 raise e.ToLong(max_length=length, text=str_)
 
@@ -215,23 +215,37 @@ class Validation:
 
     @classmethod
     def must_password(cls, password_1: str, password_2: str) -> None:
-        cls.must_str(str_=password_1)
+        if not isinstance(password_1, str) or len(password_1.strip()) == 0:
+            raise e.NoPassword()
+
         if password_1 != password_2:
             raise e.DifferentPassword()
 
-        if len(password_1) < 10:
+        if len(password_1) < 5:
             raise e.PasswordToShort()
 
         if " " in password_1:
             raise e.PasswordHasSpace()
 
+        count = cls._get_count_for_password(password_1)
+        if count <= 0:
+            raise e.VeryLowPassword()
+        bits = math.log(count ** len(password_1), 2)
+
+        if bits < 20:
+            raise e.VeryLowPassword()
+        elif bits < 40:
+            raise e.LowPassword()
+
+    @classmethod
+    def _get_count_for_password(cls, password_1):
         digit: int = 0
         capital_letter: int = 0
         small_letter: int = 0
         special_character: int = 0
-
         count: int = 0
         characters: list = list()
+
         for character in password_1:
             if character.islower():
                 small_letter = 26
@@ -246,14 +260,7 @@ class Validation:
             characters.append(character)
 
         count += (digit + capital_letter + small_letter + special_character)
-        if count <= 0:
-            raise e.VeryLowPassword()
-        bits = math.log(count ** len(password_1), 2)
-
-        if bits < 20:
-            raise e.VeryLowPassword()
-        elif bits < 40:
-            raise e.LowPassword()
+        return count
 
 
 def create_validation() -> None:
