@@ -348,12 +348,6 @@ class MembersWindow(BaseWindow):
         self._remove_member_btn.setEnabled(invert_edit)
         self._recover_member_btn.setEnabled(invert_edit)
 
-    def _set_current_member(self) -> None:
-        self._set_phone_type()
-        self._set_mail_type()
-
-        self._set_edit_mode(active=False)
-
     def _set_el_input(self, type_: LineEditType) -> None:
         current_member: ListItem = self._members_list.list.currentItem()
         match type_:
@@ -439,9 +433,31 @@ class MembersWindow(BaseWindow):
         self._load_nexus_types(type_="position")
         self._members_list.list.addItem(new_member)
         self._members_list.list.setCurrentItem(new_member)
-        self._set_current_member()
+        self._set_new_member()
         self.member_counter += 1
         self._set_edit_mode(active=True)
+
+    def _set_new_member(self) -> None:
+        self._set_phone_type()
+        self._set_mail_type()
+
+        self._first_name_le.setText("")
+        self._last_name_le.setText("")
+        self._street_le.setText("")
+        self._number_le.setText("")
+        self._zip_code_le.setText("")
+        self._city_le.setText("")
+        self._maps_le.setText("")
+        self._comment_text.setText("")
+        self._special_member_cb.setChecked(False)
+
+        self._b_day_date.setDate(QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date())
+        self._entry_date.setDate(QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date())
+
+        for _, _, position, _ in self.positions:
+            position.set_active(active=False)
+
+        self._set_edit_mode(active=False)
 
     def _load_nexus_types(self, type_: str) -> None:
         dummy: list = list()
@@ -619,7 +635,7 @@ class MembersWindow(BaseWindow):
         new_mail_ids: list = ids["mail"]
         new_position_ids: list = ids["position"]
 
-        current_member.member_id_ = new_member_id
+        current_member.ID = new_member_id
 
         for id_ in new_phone_ids:
             if id_ is None:
