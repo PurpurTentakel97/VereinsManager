@@ -6,6 +6,7 @@
 from config import config_sheet
 from sqlite import database, global_handler as g_h
 from logic.handler.pdf_handler import global_pdf_handler as g_p_h
+from logic.handler import global_handler
 from logic import validation
 
 from logic.handler import window_handler
@@ -23,4 +24,5 @@ if __name__ == "__main__":
     g_h.create_global_handler()
     g_p_h.create_pdf_handler()
     window_handler.on_start()
+    global_handler.delete_inactive_data()
     _test()

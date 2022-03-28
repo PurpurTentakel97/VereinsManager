@@ -137,6 +137,15 @@ class LogHandler(Database):
         except self.OperationalError:
             raise e.ActiveSetFailed("Log failed")
 
+    # delete
+    def delete_log(self, target_id: int, target_table: str) -> None:
+        sql_command: str = """DELETE FROM log WHERE target_id = ? AND target_table = ?;"""
+        try:
+            self.cursor.execute(sql_command, (target_id, target_table))
+            self.connection.commit()
+        except self.OperationalError as error:
+            debug.error(item=debug_str, keyword="delete_log", message=f"delete log failed")
+
     # helper
     @staticmethod
     def transform_log_none_date(none_date: int | None) -> int:

@@ -89,3 +89,8 @@ def update_user_activity(ID: int, active: bool) -> [str, bool]:
     except (e.OperationalError, e.InputError, e.UserError) as error:
         debug.error(item=debug_str, keyword="update_user_activity", message=f"Error = {error.message}")
         return error.message, False
+
+
+# delete
+def delete_inactive_user()->None:
+    debug.info(item=debug_str, keyword="delete_inactive_user", message=f"Hier werden alle inaktiven User gelöscht.")

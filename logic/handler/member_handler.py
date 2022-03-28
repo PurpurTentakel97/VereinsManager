@@ -3,7 +3,8 @@
 # VereinsManager / Member Handler
 
 from config import config_sheet as c, exception_sheet as e
-from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, log_handler as l_h
+from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, log_handler as l_h, \
+    delete_handler as d_h
 from logic import validation as v
 import debug
 
@@ -128,6 +129,16 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
     except (e.OperationalError, e.InputError) as error:
         debug.error(item=debug_str, keyword="update_member_activity", message=f"Error = {error.message}")
         return error.message, False
+
+
+# delete
+def delete_inactive_member() -> None:
+    reference_data, _ = get_names_of_member(active=False)
+    debug.info(item=debug_str, keyword="delete_inactive_member", message=f"inactive = {reference_data}")
+    for ID, *_ in reference_data:
+        _delete_inactive_member_nexus(member_id=ID)
+        l_h.log_handler.delete_log(target_id=ID, target_table="member")
+        d_h.delete_handler.delete_member(ID=ID)
 
 
 # helper
@@ -314,3 +325,31 @@ def _update_member_nexus_position(ID: int, active: bool, log_date: int) -> None:
     u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
     l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=active, log_date=log_date,
                                      type_="position")
+
+
+# delete
+def _delete_inactive_member_nexus(member_id: int) -> None:
+    _delete_inactive_member_phone(member_id=member_id)
+    _delete_inactive_member_mail(member_id=member_id)
+    _delete_inactive_member_position(member_id=member_id)
+
+
+def _delete_inactive_member_phone(member_id: int) -> None:
+    reference_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_id)
+    for ID, *_ in reference_data:
+        l_h.log_handler.delete_log(target_id=ID, target_table="member_phone")
+    d_h.delete_handler.delete_member_phone(member_id=member_id)
+
+
+def _delete_inactive_member_mail(member_id: int) -> None:
+    reference_data = s_h.select_handler.get_mail_by_member_id(member_id=member_id)
+    for ID, *_ in reference_data:
+        l_h.log_handler.delete_log(target_id=ID, target_table="member_mail")
+    d_h.delete_handler.delete_member_mail(member_id=member_id)
+
+
+def _delete_inactive_member_position(member_id: int) -> None:
+    reference_data = s_h.select_handler.get_position_by_member_id(member_id=member_id)
+    for ID, *_ in reference_data:
+        l_h.log_handler.delete_log(target_id=ID, target_table="member_position")
+    d_h.delete_handler.delete_member_position(member_id=member_id)
