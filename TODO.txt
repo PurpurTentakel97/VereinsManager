@@ -15,6 +15,8 @@ UI
         switch close and generate new window
     Base Window
         set Icon
+    Member Window
+        no reset by new member
 
 member
     export schreiben
