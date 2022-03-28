@@ -4,6 +4,8 @@
 
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt5.QtGui import QIcon
+from config import config_sheet as c
 
 app: QApplication | None = None
 
@@ -15,7 +17,7 @@ class BaseWindow(QMainWindow):
         self._set_menu()
 
     def _set_base_window_information(self) -> None:
-        pass
+        self.setWindowIcon(QIcon(f"{c.config.save_dir}/{c.config.organisation_dir}/icon.png"))
 
     def _set_menu(self) -> None:
         pass

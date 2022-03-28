@@ -18,3 +18,5 @@ UI
 
 member
     export schreiben
+
+set organisation icon
