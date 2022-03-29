@@ -210,8 +210,20 @@ END;
 CREATE TABLE IF NOT EXISTS "main"."statistics" (
 "ID" INTEGER NOT NULL UNIQUE,
 "_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
+"_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
+"_log_date" INTEGER NOT NULL,
 "raw_type_id" INTEGER NOT NULL,
 "type_id" INTEGER NOT NULL,
 "count" INTEGER NOT NULL,
-PRIMARY KEY ("ID" AUTOINCREMENT)
+PRIMARY KEY ("ID" AUTOINCREMENT),
+FOREIGN KEY ("type_id") REFERENCES "type",
+FOREIGN KEY ("raw_type_id") REFERENCES "raw_type"
 );
+
+/* date */
+CREATE TRIGGER IF NOT EXISTS "trigger_update_statistics"
+    AFTER UPDATE ON "statistics"
+BEGIN
+    UPDATE "statistics" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+END;
+

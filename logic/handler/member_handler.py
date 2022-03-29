@@ -4,7 +4,7 @@
 
 from config import config_sheet as c, exception_sheet as e
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, log_handler as l_h, \
-    delete_handler as d_h
+    delete_handler as d_h, statistics_handler as st_h
 from logic.handler import member_nexus_handler as m_n_h
 from logic import validation as v
 import debug
@@ -18,8 +18,12 @@ def _add_member(data: dict, log_date: int | None) -> int:  # No Validation
 
     data = _transform_membership_for_safe(data=data, ID=type_id)
     data = _transform_dates_for_save(data=data)
+    result = a_h.add_handler.add_member(data=data, log_date=log_date)
 
-    return a_h.add_handler.add_member(data=data, log_date=log_date)
+    st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
+                                       new_type_id=data["membership_type"], old_type_id=None)
+
+    return result
 
 
 # get

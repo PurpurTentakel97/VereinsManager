@@ -9,6 +9,8 @@ sql database
     let unser choose database name
     error without types (membership_type)
 
+    move log to from sql handler to handler
+
 UI
     Global
         window close automaticly even if not saved

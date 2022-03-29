@@ -3,7 +3,7 @@
 # VereinsManager / Global Handler
 
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
-    log_handler as l_h
+    log_handler as l_h, statistics_handler as st_h
 import debug
 
 debug_str: str = "GlobalHandler"
@@ -22,6 +22,7 @@ class GlobalHandler:
         u_h.crate_update_handler()
         d_h.create_delete_handler()
         l_h.create_log_handler()
+        st_h.create_statistics_handler()
 
 
 def create_global_handler() -> None:
