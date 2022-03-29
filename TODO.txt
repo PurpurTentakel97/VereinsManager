@@ -4,6 +4,7 @@
 
 pdf
     dirfferent name for anniversary pdfs
+    set icon in PDF
 
 sql database
     let unser choose database name
@@ -13,8 +14,7 @@ sql database
 
 UI
     Global
-        window close automaticly even if not saved
-        switch close and generate new window
+        set Icon in Taskbar
     Base Window
         set Icon
 
