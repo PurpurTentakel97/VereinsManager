@@ -115,6 +115,10 @@ def _update_member(ID: int | None, data: dict, log_date: int | None) -> None:  #
 
     reference_data = _get_member_data_by_id(ID=ID, active=True)
     u_h.update_handler.update_member(ID=ID, data=data)
+    st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
+                                       new_type_id=data["membership_type"],
+                                       old_type_id=s_h.select_handler.get_id_by_type_name(raw_id=1, name=reference_data[
+                                           "membership_type"])[0])
     l_h.log_handler.log_member(target_id=ID, old_data=reference_data, new_data=data, log_date=log_date)
 
 

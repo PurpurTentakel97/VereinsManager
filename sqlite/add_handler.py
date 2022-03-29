@@ -76,7 +76,7 @@ class AddHandler(Database):
 
     # member nexus
     def add_member_nexus_phone(self, type_id: int, value: str, member_id: int, log_date: int | None) -> int:
-        sql_command: str = f"""INSERT INTO member_phone (member_id, type_id, number) VALUES (?,?,?);"""
+        sql_command: str = f"""INSERT INTO member_phone (member_id, type_id, number) VALUES (?, ?, ?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
@@ -88,7 +88,7 @@ class AddHandler(Database):
             raise e.AddFailed(info=value)
 
     def add_member_nexus_mail(self, type_id: int, value: str, member_id: int, log_date: int | None) -> int:
-        sql_command: str = f"""INSERT INTO member_mail (member_id, type_id, mail) VALUES (?,?,?);"""
+        sql_command: str = f"""INSERT INTO member_mail (member_id, type_id, mail) VALUES (?, ?, ?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
@@ -101,7 +101,7 @@ class AddHandler(Database):
             raise e.AddFailed(info=value)
 
     def add_member_nexus_position(self, type_id: int, value: bool, member_id: int, log_date: int | None) -> int:
-        sql_command: str = f"""INSERT INTO member_position (member_id, type_id, active) VALUES (?,?,?);"""
+        sql_command: str = f"""INSERT INTO member_position (member_id, type_id, active) VALUES (?, ?, ?);"""
         try:
             self.cursor.execute(sql_command, (member_id, type_id, value))
             self.connection.commit()
