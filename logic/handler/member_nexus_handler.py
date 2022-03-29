@@ -3,23 +3,32 @@
 # VereinsManager / Member Nexus Handler
 
 from sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h, log_handler as l_h, \
-    delete_handler as d_h
+    delete_handler as d_h, statistics_handler as st_h
 from logic import validation as v
 from config import config_sheet as c
 
 
 # add
 def _add_member_nexus_phone(type_id: int, value: str, member_id: int, log_date: int | None) -> int:
-    return a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=value, member_id=member_id, log_date=log_date)
+    ID = a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=value, member_id=member_id, log_date=log_date)
+    st_h.statistics_handler.statistics(type_="phone", raw_type_id=c.config.raw_type_id["phone"],
+                                       new_type_id=type_id, new_data=value)
+    return ID
 
 
 def _add_member_nexus_mail(type_id: int, value: str, member_id: int, log_date: int | None) -> int:
-    return a_h.add_handler.add_member_nexus_mail(type_id=type_id, value=value, member_id=member_id, log_date=log_date)
+    ID = a_h.add_handler.add_member_nexus_mail(type_id=type_id, value=value, member_id=member_id, log_date=log_date)
+    st_h.statistics_handler.statistics(type_="mail", raw_type_id=c.config.raw_type_id["mail"],
+                                       new_type_id=type_id, new_data=value)
+    return ID
 
 
 def _add_member_nexus_position(type_id: int, value: bool, member_id: int, log_date: int | None) -> int:
-    return a_h.add_handler.add_member_nexus_position(type_id=type_id, value=value, member_id=member_id,
-                                                     log_date=log_date)
+    ID = a_h.add_handler.add_member_nexus_position(type_id=type_id, value=value, member_id=member_id,
+                                                   log_date=log_date)
+    st_h.statistics_handler.statistics(type_="position", raw_type_id=c.config.raw_type_id["position"],
+                                       new_type_id=type_id, new_data=value)
+    return ID
 
 
 # get
@@ -88,6 +97,7 @@ def _update_add_member_nexus_phone(phone: list, member_id: int, log_date: int) -
         if ID is None:
             new_ID = _add_member_nexus_phone(type_id=type_id, value=phone_number, member_id=member_id,
                                              log_date=log_date)
+
         else:
             new_ID = _update_member_nexus_phone(ID=ID, number=phone_number, log_date=log_date)
         phone_ids.append(new_ID)

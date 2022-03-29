@@ -16,10 +16,20 @@ class StatisticsHandler(Database):
     def __init__(self) -> None:
         super().__init__()
 
-    def statistics(self, type_: str, raw_type_id: int, new_type_id: int | None, old_type_id: int | None) -> None:
+    def statistics(self, type_: str, raw_type_id: int, new_type_id: int | None, old_type_id: int | None = None,
+                   old_data=None, new_data=None) -> None:
         match type_:
             case "membership":
                 self._membership_statistics(raw_type_id=raw_type_id, new_type_id=new_type_id, old_type_id=old_type_id)
+            case "phone":
+                self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
+                                              old_data=old_data, new_data=new_data)
+            case "mail":
+                self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
+                                              old_data=old_data, new_data=new_data)
+            case "position":
+                self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
+                                              old_data=old_data, new_data=new_data)
 
     def _membership_statistics(self, raw_type_id: int, new_type_id: int | None, old_type_id: int | None) -> None:
         if not self._is_valid_membership(new_membership_id=new_type_id, old_membership_id=old_type_id):
@@ -29,6 +39,17 @@ class StatisticsHandler(Database):
 
         self._statistics(raw_type_id=raw_type_id, type_id=new_type_id, count=new_count)
         self._statistics(raw_type_id=raw_type_id, type_id=old_type_id, count=old_count)
+
+    def _member_nexus_statistics(self, type_: str, raw_type_id: int, new_type_id: int | None, old_data,
+                                 new_data) -> None:
+        if new_type_id is None:
+            return
+        if not self._is_valid_data(data_1=old_data, data_2=new_data):
+            return
+
+        count = self._get_current_nexus_count(type_=type_, type_id=new_type_id)
+
+        self._statistics(raw_type_id=raw_type_id, type_id=new_type_id, count=count)
 
     def _statistics(self, raw_type_id: int, type_id: int, count: int) -> None:
         if type_id is None:
@@ -83,8 +104,30 @@ class StatisticsHandler(Database):
             counts: list = list()
             for type_id in [new_type_id, old_type_id]:
                 list_ = self.cursor.execute(sql_command, (type_id,)).fetchall()
-                counts.append(len(list_))
+                if list_ is None:
+                    counts.append(0)
+                else:
+                    counts.append(len(list_))
             return counts
+        except self.OperationalError:
+            debug.debug(item=debug_str, keyword="_statistics", message=f"select statistic count failed")
+
+    def _get_current_nexus_count(self, type_: str, type_id: int) -> int:
+        match type_:
+            case "phone":
+                sql_command: str = """SELECT number FROM member_phone WHERE type_id is ?;"""
+            case "mail":
+                sql_command: str = """SELECT mail FROM member_mail WHERE type_id is ?;"""
+            case "position":
+                sql_command: str = """SELECT active FROM member_position WHERE type_id is ?;"""
+
+        try:
+            data = self.cursor.execute(sql_command, (type_id,)).fetchall()
+            counter: int = 0
+            for value, *_ in data:
+                if value:
+                    counter += 1
+            return counter
         except self.OperationalError:
             debug.debug(item=debug_str, keyword="_statistics", message=f"select statistic count failed")
 
