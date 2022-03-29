@@ -70,12 +70,13 @@ def _get_member_data_by_id(ID: int, active: bool = True) -> dict:
     return data
 
 
-def _get_member_activity_by_id(ID: int) -> bool:
+def get_member_activity_and_membership_by_id(ID: int) -> list:
     v.validation.must_positive_int(int_=ID, max_length=None)
 
-    data = s_h.select_handler.get_member_activity_by_id(ID=ID)
+    data = s_h.select_handler.get_member_activity_and_membership_by_id(ID=ID)
+    data = list(data)
     if isinstance(data[0], int):
-        data = data[0] == 1
+        data[0] = data[0] == 1
 
     return data
 
@@ -128,10 +129,12 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
         v.validation.must_bool(bool_=active)
         v.validation.must_default_user(c.config.user_id, False)
 
-        reference_data = _get_member_activity_by_id(ID=ID)
+        reference_data = get_member_activity_and_membership_by_id(ID=ID)
         u_h.update_handler.update_member_activity(ID=ID, active=active)
-        l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data, new_activity=active,
+        l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data[0], new_activity=active,
                                             log_date=log_date)
+        st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
+                                           new_type_id=reference_data[1], old_type_id=None)
         return None, True
 
     except (e.OperationalError, e.InputError) as error:

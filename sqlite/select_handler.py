@@ -103,8 +103,8 @@ class SelectHandler(Database):
         except self.OperationalError:
             raise e.LoadingFailed(info="single member data")
 
-    def get_member_activity_by_id(self, ID: int) -> list:
-        sql_command: str = f"""SELECT active FROM "member" WHERE ID = ?;"""
+    def get_member_activity_and_membership_by_id(self, ID: int) -> list:
+        sql_command: str = f"""SELECT active,membership_type FROM "member" WHERE ID = ?;"""
 
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()
