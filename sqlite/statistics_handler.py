@@ -4,6 +4,7 @@
 
 from datetime import date, datetime
 
+from config import exception_sheet as e
 from sqlite.database import Database
 import debug
 
@@ -18,18 +19,25 @@ class StatisticsHandler(Database):
 
     def statistics(self, type_: str, raw_type_id: int, new_type_id: int | None, old_type_id: int | None = None,
                    old_data=None, new_data=None) -> None:
-        match type_:
-            case "membership":
-                self._membership_statistics(raw_type_id=raw_type_id, new_type_id=new_type_id, old_type_id=old_type_id)
-            case "phone":
-                self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
-                                              old_data=old_data, new_data=new_data)
-            case "mail":
-                self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
-                                              old_data=old_data, new_data=new_data)
-            case "position":
-                self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
-                                              old_data=old_data, new_data=new_data)
+        try:
+            match type_:
+                case "membership":
+                    self._membership_statistics(raw_type_id=raw_type_id, new_type_id=new_type_id,
+                                                old_type_id=old_type_id)
+                case "phone":
+                    self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
+                                                  old_data=old_data, new_data=new_data)
+                case "mail":
+                    self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
+                                                  old_data=old_data, new_data=new_data)
+                case "position":
+                    self._member_nexus_statistics(type_=type_, raw_type_id=raw_type_id, new_type_id=new_type_id,
+                                                  old_data=old_data, new_data=new_data)
+                case _:
+                    raise e.CaseException(info=f"statistic type // {type_}")
+
+        except e.StatisticError as error:
+            debug.error(item=debug_str, keyword="statistics", message=f"Error = {error.message}")
 
     def _membership_statistics(self, raw_type_id: int, new_type_id: int | None, old_type_id: int | None) -> None:
         if not self._is_valid_membership(new_membership_id=new_type_id, old_membership_id=old_type_id):
@@ -120,6 +128,8 @@ class StatisticsHandler(Database):
                 sql_command: str = """SELECT mail FROM member_mail WHERE type_id is ? and _active_member is ?;"""
             case "position":
                 sql_command: str = """SELECT active FROM member_position WHERE type_id is ? and _active_member is ?;"""
+            case _:
+                raise e.CaseException(info=f"nexus type // {type_}")
 
         try:
             data = self.cursor.execute(sql_command, (type_id, True)).fetchall()

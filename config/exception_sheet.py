@@ -5,6 +5,7 @@
 import debug
 
 
+# 0
 class BaseException_(Exception):
     def __init__(self):
         self.error_code: str = "0"
@@ -14,7 +15,7 @@ class BaseException_(Exception):
         self.message: str = f"{self.error_code} //  {message} // {info}" if info else f"{self.error_code} // {message}"
 
 
-#
+# 100
 class OperationalError(BaseException_):
     def __init__(self) -> None:
         super().__init__()
@@ -63,7 +64,7 @@ class ForeignKeyError(OperationalError):
         self.set_message(message="Datensatz noch in Benutzung", info=info)
 
 
-#
+# 200
 class InputError(BaseException_):
     def __init__(self):
         super().__init__()
@@ -144,7 +145,7 @@ class ToLong(InputError):
                          info=f"{str(text)} ({str(len(str(text)))} Zeichen)")
 
 
-#
+# 300
 class PasswordError(BaseException_):
     def __init__(self):
         super().__init__()
@@ -193,7 +194,7 @@ class DifferentPassword(PasswordError):
         self.set_message(message="Deine Passwörter stimmen nicht überein", info=None)
 
 
-#
+# 400
 class UserError(BaseException_):
     def __init__(self):
         super().__init__()
@@ -214,15 +215,29 @@ class DefaultUserException(UserError):
         self.set_message(message="Default Benutzer kann nicht bearbeitet werden", info=info)
 
 
-#
-class GeneralError(BaseException_):
+# 500
+class StatisticError(BaseException_):
     def __init__(self):
         super().__init__()
         self.error_code: str = "500"
 
 
-class NotFound(GeneralError):
+class CaseException(StatisticError):
     def __init__(self, info: str = ""):
         super().__init__()
         self.error_code: str = "501"
+        self.set_message(message="Falscher Typ", info=info)
+
+
+# 900
+class GeneralError(BaseException_):
+    def __init__(self):
+        super().__init__()
+        self.error_code: str = "900"
+
+
+class NotFound(GeneralError):
+    def __init__(self, info: str = ""):
+        super().__init__()
+        self.error_code: str = "901"
         self.set_message(message="Nicht gefunden", info=info)
