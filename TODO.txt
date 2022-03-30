@@ -18,6 +18,7 @@ UI
         set Icon in Taskbar
     Base Window
         set Icon
+    Hide Anniversary Window for default user
 
 member
     export schreiben
