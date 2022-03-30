@@ -115,21 +115,22 @@ class StatisticsHandler(Database):
     def _get_current_nexus_count(self, type_: str, type_id: int) -> int:
         match type_:
             case "phone":
-                sql_command: str = """SELECT number FROM member_phone WHERE type_id is ?;"""
+                sql_command: str = """SELECT number FROM member_phone WHERE type_id is ? and _active_member is ?;"""
             case "mail":
-                sql_command: str = """SELECT mail FROM member_mail WHERE type_id is ?;"""
+                sql_command: str = """SELECT mail FROM member_mail WHERE type_id is ? and _active_member is ?;"""
             case "position":
-                sql_command: str = """SELECT active FROM member_position WHERE type_id is ?;"""
+                sql_command: str = """SELECT active FROM member_position WHERE type_id is ? and _active_member is ?;"""
 
         try:
-            data = self.cursor.execute(sql_command, (type_id,)).fetchall()
+            data = self.cursor.execute(sql_command, (type_id, True)).fetchall()
             counter: int = 0
             for value, *_ in data:
                 if value:
                     counter += 1
             return counter
-        except self.OperationalError:
-            debug.debug(item=debug_str, keyword="_statistics", message=f"select statistic count failed")
+        except self.OperationalError as error:
+            debug.debug(item=debug_str, keyword="_get_current_nexus_count",
+                        message=f"Command: {sql_command}\nError: {str(error)}")
 
     @staticmethod
     def _is_valid_data(data_1, data_2) -> bool:
