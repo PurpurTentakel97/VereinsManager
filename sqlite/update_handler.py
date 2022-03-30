@@ -97,6 +97,36 @@ class UpdateHandler(Database):
         except self.OperationalError:
             raise e.ActiveSetFailed(info=str(active))
 
+    def update_member_active_phone(self, member_id: int, active: bool) -> None:
+        sql_command: str = """UPDATE member_phone SET _active_member = ? WHERE member_id = ?"""
+        try:
+            self.cursor.execute(sql_command, (active, member_id))
+            self.connection.commit()
+        except self.OperationalError as error:
+            debug.debug(item=debug_str, keyword="update_member_active_phone",
+                        message=f"Command: {sql_command}\nError: {str(error)}")
+            raise e.UpdateFailed(info=str(active))
+
+    def update_member_active_mail(self, member_id: int, active: bool) -> None:
+        sql_command: str = """UPDATE member_mail SET _active_member = ? WHERE member_id = ?"""
+        try:
+            self.cursor.execute(sql_command, (active, member_id))
+            self.connection.commit()
+        except self.OperationalError as error:
+            debug.debug(item=debug_str, keyword="update_member_active_mail",
+                        message=f"Command: {sql_command}\nError: {str(error)}")
+            raise e.UpdateFailed(info=str(active))
+
+    def update_member_active_position(self, member_id: int, active: bool) -> None:
+        sql_command: str = """UPDATE member_position SET _active_member = ? WHERE member_id = ?"""
+        try:
+            self.cursor.execute(sql_command, (active, member_id))
+            self.connection.commit()
+        except self.OperationalError as error:
+            debug.debug(item=debug_str, keyword="update_member_active_position",
+                        message=f"Command: {sql_command}\nError: {str(error)}")
+            raise e.UpdateFailed(info=str(active))
+
     # user
     def update_user(self, ID: int, data: dict) -> None:
         sql_command: str = """UPDATE user SET first_name = ?,last_name = ?,street = ?,number = ?,zip_code = ?,city = ?,

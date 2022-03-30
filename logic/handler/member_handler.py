@@ -131,6 +131,7 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
 
         reference_data = get_member_activity_and_membership_by_id(ID=ID)
         u_h.update_handler.update_member_activity(ID=ID, active=active)
+        m_n_h.update_member_nexus_activity(member_id=ID, active=active)
         l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data[0], new_activity=active,
                                             log_date=log_date)
         st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],

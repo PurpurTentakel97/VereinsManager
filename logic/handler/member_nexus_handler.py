@@ -154,6 +154,12 @@ def _update_member_nexus_position(ID: int, active: bool, log_date: int) -> None:
                                      type_="position")
 
 
+def update_member_nexus_activity(member_id: int, active: bool) -> None:
+    u_h.update_handler.update_member_active_phone(member_id=member_id, active=active)
+    u_h.update_handler.update_member_active_mail(member_id=member_id, active=active)
+    u_h.update_handler.update_member_active_position(member_id=member_id, active=active)
+
+
 # delete
 def delete_inactive_member_nexus(member_id: int) -> None:
     _delete_inactive_member_phone(member_id=member_id)

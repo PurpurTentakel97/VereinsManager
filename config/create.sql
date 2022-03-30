@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS "main"."member_phone" (
 "member_id" INTEGER NOT NULL,
 "type_id" INTEGER NOT NULL,
 "number" VARCHAR(10),
+"_active_member" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT),
 FOREIGN KEY ("member_id") REFERENCES "member",
 FOREIGN KEY ("type_id") REFERENCES "type"
@@ -79,6 +80,7 @@ CREATE TABLE IF NOT EXISTS "main"."member_mail" (
 "member_id" INTEGER NOT NULL,
 "type_id" INTEGER NOT NULL,
 "mail" VARCHAR(20),
+"_active_member" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT),
 FOREIGN KEY ("member_id") REFERENCES "member",
 FOREIGN KEY ("type_id") REFERENCES "type"
@@ -98,6 +100,7 @@ CREATE TABLE IF NOT EXISTS "main"."member_position" (
 "member_id" INTEGER NOT NULL,
 "type_id" INTEGER NOT NULL,
 "active" INTEGER DEFAULT 1,
+"_active_member" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT),
 FOREIGN KEY ("member_id") REFERENCES "member",
 FOREIGN KEY ("type_id") REFERENCES "type"
