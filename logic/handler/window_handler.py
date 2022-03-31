@@ -23,7 +23,7 @@ def create_main_window() -> None:
 
 def _is_default_user() -> bool:
     try:
-        v.validation.must_default_user(c.config.user_id, False)
-        return False
-    except e.DefaultUserException:
+        v.validation.must_default_user(c.config.user_id, True)
         return True
+    except e.DefaultUserException:
+        return False

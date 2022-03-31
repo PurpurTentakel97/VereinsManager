@@ -20,4 +20,8 @@ member
     export schreiben
     add membership exception
 
+error log
+    add as txt
 
+acxeptions
+    add debugprint in every try-catch-block
