@@ -15,7 +15,6 @@ UI
         set Icon in Taskbar
     Member Window
         tap trap in comment text
-        dont troigger editmode with type box
     Hide Anniversary Window for default user
 
 member

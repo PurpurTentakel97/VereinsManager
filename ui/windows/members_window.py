@@ -371,9 +371,11 @@ class MembersWindow(BaseWindow):
     def _set_phone_type(self) -> None:
         current_type: str = self._phone_number_type_box.currentText()
 
+        temp_is_edit:bool = self._is_edit
         for _, _, Type, phone in self.phone_numbers:
             if current_type == Type:
                 self._phone_number_le.setText(phone)
+                self._set_edit_mode(active=temp_is_edit)
                 break
 
     def _set_phone_number_input(self) -> None:
@@ -388,9 +390,11 @@ class MembersWindow(BaseWindow):
     def _set_mail_type(self) -> None:
         current_type: str = self._mail_address_type_box.currentText()
 
+        temp_is_edit:bool = self._is_edit
         for _, _, Type, mail in self.mail_addresses:
             if current_type == Type:
                 self._mail_address_le.setText(mail)
+                self._set_edit_mode(active=temp_is_edit)
                 break
 
     def _set_mail_input(self) -> None:
