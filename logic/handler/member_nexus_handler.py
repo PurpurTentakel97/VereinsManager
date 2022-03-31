@@ -141,6 +141,8 @@ def _update_member_nexus_phone(ID: int, number: str, log_date: int) -> None:  # 
     u_h.update_handler.update_member_nexus_phone(ID=ID, number=number)
     l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=number, log_date=log_date,
                                      type_="phone")
+    st_h.statistics_handler.statistics(type_="phone", raw_type_id=c.config.raw_type_id['phone'],
+                                       new_type_id=reference_data[1], new_data=number, old_data=reference_data[0])
 
 
 def _update_member_nexus_mail(ID: int, mail: str, log_date: int) -> None:  # no Validation
@@ -148,6 +150,8 @@ def _update_member_nexus_mail(ID: int, mail: str, log_date: int) -> None:  # no 
     u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail)
     l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=mail, log_date=log_date,
                                      type_="mail")
+    st_h.statistics_handler.statistics(type_="mail", raw_type_id=c.config.raw_type_id['mail'],
+                                       new_type_id=reference_data[1], new_data=mail, old_data=reference_data[0])
 
 
 def _update_member_nexus_position(ID: int, active: bool, log_date: int) -> None:  # no Validation
@@ -155,6 +159,8 @@ def _update_member_nexus_position(ID: int, active: bool, log_date: int) -> None:
     u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
     l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=active, log_date=log_date,
                                      type_="position")
+    st_h.statistics_handler.statistics(type_="position", raw_type_id=c.config.raw_type_id['position'],
+                                       new_type_id=reference_data[1], new_data=active, old_data=reference_data[0])
 
 
 def update_member_nexus_activity(member_id: int, active: bool) -> None:

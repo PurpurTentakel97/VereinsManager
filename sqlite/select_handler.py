@@ -129,7 +129,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="member phone number")
 
     def get_phone_number_by_ID(self, ID: int) -> tuple:
-        sql_command: str = f"""SELECT number FROM member_phone WHERE ID is ?;"""
+        sql_command: str = f"""SELECT number,type_id FROM member_phone WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()
         except self.OperationalError:
@@ -143,7 +143,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="member mail address")
 
     def get_mail_member_by_ID(self, ID: int) -> tuple:
-        sql_command: str = f"""SELECT mail FROM member_mail WHERE ID is ?;"""
+        sql_command: str = f"""SELECT mail, type_id FROM member_mail WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()
         except self.OperationalError:
@@ -157,7 +157,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="member position")
 
     def get_position_member_by_ID(self, ID: int) -> tuple:
-        sql_command: str = f"""SELECT active FROM member_position WHERE ID is ?;"""
+        sql_command: str = f"""SELECT active,type_id FROM member_position WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()
         except self.OperationalError:
