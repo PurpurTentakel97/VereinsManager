@@ -16,8 +16,9 @@ sql database
 UI
     Global
         set Icon in Taskbar
-    Base Window
-        set Icon
+    Member Window
+        set first forcus on firstname
+        dont troigger editmode with type box
     Hide Anniversary Window for default user
 
 member
