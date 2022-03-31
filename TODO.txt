@@ -15,7 +15,6 @@ UI
         set Icon in Taskbar
     Member Window
         tap trap in comment text
-    Hide Anniversary Window for default user
 
 member
     export schreiben
