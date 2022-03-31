@@ -167,7 +167,7 @@ class Validation:
         if not isinstance(str_, str) or len(str_.strip()) == 0:
             raise e.NoStr(info=str_)
         if length is not None:
-            if len(str_) > length:
+            if len(str_.strip()) > length:
                 raise e.ToLong(max_length=length, text=str_)
 
     @classmethod
@@ -186,6 +186,8 @@ class Validation:
     def must_positive_int(int_: int, max_length: int | None = 15) -> None:
         if not isinstance(int_, int):
             raise e.NoInt(info=str(int_))
+        if type(int_) == bool:
+            raise e.NoInt(info=str(int_))
         if int_ <= 0:
             raise e.NoPositiveInt(info=str(int_))
         if max_length is not None and len(str(int_)) > max_length:
@@ -195,7 +197,9 @@ class Validation:
     def must_int(int_: int, max_length: int | None = 15) -> None:
         if not isinstance(int_, int):
             raise e.NoInt(info=str(int_))
-        if int_ is not None and len(str(int_)) > max_length:
+        if type(int_) == bool:
+            raise e.NoInt(info=str(int_))
+        if max_length is not None and len(str(int_)) > max_length:
             raise e.ToLong(max_length=max_length, text=int_)
 
     @staticmethod
@@ -210,6 +214,7 @@ class Validation:
 
     @staticmethod
     def must_length(len_: int, data) -> None:
+        Validation.must_positive_int(len_)
         if not len(data) == len_:
             raise e.WrongLength(str(len_) + "//" + str(data))
 

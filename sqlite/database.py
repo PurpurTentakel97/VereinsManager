@@ -40,7 +40,7 @@ class Database:
         self.cursor = self.connection.cursor()
 
     def drop_connection(self) -> None:
-        pass
+        self.connection.close()
 
 
 def crate_database() -> None:

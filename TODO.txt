@@ -22,4 +22,7 @@ member
     export schreiben
     track member count
 
+ester egg
+    only firstname
+
 
