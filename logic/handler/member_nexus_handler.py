@@ -6,6 +6,9 @@ from sqlite import add_handler as a_h, select_handler as s_h, update_handler as 
     delete_handler as d_h, statistics_handler as st_h
 from logic import validation as v
 from config import config_sheet as c
+import debug
+
+debug_str: str = "Member Nexus Handler"
 
 
 # add
@@ -138,6 +141,8 @@ def _update_member_nexus_phone(ID: int, number: str, log_date: int) -> None:  # 
     u_h.update_handler.update_member_nexus_phone(ID=ID, number=number)
     l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=number, log_date=log_date,
                                      type_="phone")
+    st_h.statistics_handler.statistics(type_="phone", raw_type_id=c.config.raw_type_id['phone'],
+                                       new_type_id=reference_data[1], new_data=number, old_data=reference_data[0])
 
 
 def _update_member_nexus_mail(ID: int, mail: str, log_date: int) -> None:  # no Validation
@@ -145,6 +150,8 @@ def _update_member_nexus_mail(ID: int, mail: str, log_date: int) -> None:  # no 
     u_h.update_handler.update_member_nexus_mail(ID=ID, mail=mail)
     l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=mail, log_date=log_date,
                                      type_="mail")
+    st_h.statistics_handler.statistics(type_="mail", raw_type_id=c.config.raw_type_id['mail'],
+                                       new_type_id=reference_data[1], new_data=mail, old_data=reference_data[0])
 
 
 def _update_member_nexus_position(ID: int, active: bool, log_date: int) -> None:  # no Validation
@@ -152,12 +159,41 @@ def _update_member_nexus_position(ID: int, active: bool, log_date: int) -> None:
     u_h.update_handler.update_member_nexus_position(ID=ID, active=active)
     l_h.log_handler.log_member_nexus(target_id=ID, old_data=reference_data[0], new_data=active, log_date=log_date,
                                      type_="position")
+    st_h.statistics_handler.statistics(type_="position", raw_type_id=c.config.raw_type_id['position'],
+                                       new_type_id=reference_data[1], new_data=active, old_data=reference_data[0])
 
 
 def update_member_nexus_activity(member_id: int, active: bool) -> None:
+    _update_member_nexus_activity_phone(member_id=member_id, active=active)
+    _update_member_nexus_activity_mail(member_id=member_id, active=active)
+    _update_member_nexus_activity_position(member_id=member_id, active=active)
+
+
+def _update_member_nexus_activity_phone(member_id: int, active: bool) -> None:
+    reference_data: tuple = s_h.select_handler.get_phone_number_by_member_id(member_id=member_id)
     u_h.update_handler.update_member_active_phone(member_id=member_id, active=active)
+    for ID, type_id, _ in reference_data:
+        if s_h.select_handler.get_phone_number_by_ID(ID=ID)[0]:
+            st_h.statistics_handler.statistics(type_="phone", raw_type_id=c.config.raw_type_id['phone'],
+                                               new_type_id=type_id, new_data=active, old_data=not active)
+
+
+def _update_member_nexus_activity_mail(member_id: int, active: bool) -> None:
+    reference_data: tuple = s_h.select_handler.get_mail_by_member_id(member_id=member_id)
     u_h.update_handler.update_member_active_mail(member_id=member_id, active=active)
+    for ID, type_id, _ in reference_data:
+        if s_h.select_handler.get_mail_member_by_ID(ID=ID)[0]:
+            st_h.statistics_handler.statistics(type_="mail", raw_type_id=c.config.raw_type_id['mail'],
+                                               new_type_id=type_id, new_data=active, old_data=not active)
+
+
+def _update_member_nexus_activity_position(member_id: int, active: bool) -> None:
+    reference_data: tuple = s_h.select_handler.get_position_by_member_id(member_id=member_id)
     u_h.update_handler.update_member_active_position(member_id=member_id, active=active)
+    for ID, type_id, _ in reference_data:
+        if s_h.select_handler.get_position_member_by_ID(ID=ID)[0]:
+            st_h.statistics_handler.statistics(type_="position", raw_type_id=c.config.raw_type_id['position'],
+                                               new_type_id=type_id, new_data=active, old_data=not active)
 
 
 # delete

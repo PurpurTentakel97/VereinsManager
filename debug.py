@@ -2,6 +2,8 @@
 # 21.01.2022
 # VereinsManager / SQLite
 
+from logic.handler import path_handler
+
 is_debug: bool = True
 is_debug_item: bool = False
 debug_item: str = "MEMBERS WINDOW"
@@ -13,6 +15,8 @@ is_info_item: bool = False
 info_item: str = "MEMBERS WINDOW"
 is_info_keyword: bool = False
 info_keyword: str = "Phonenumbers"
+
+_error: list = list()
 
 
 def debug(item, keyword, message) -> None:
@@ -36,4 +40,12 @@ def info(item, keyword, message) -> None:
 
 
 def error(item, keyword, message) -> None:
-    print(f"+++++ ERROR.LOG // {item} // {keyword} // {message} +++++")
+    error: str = f"+++++ ERROR.LOG // {item} // {keyword} // {message} +++++"
+    print(error)
+    _error.append(error)
+
+
+def export_error() -> None:
+    path_handler.create_default_path(type_="error_log")
+    text: str = "\n".join(_error)
+    print(f"<<< export_error start >>>\n{text}\n<<< export_error end >>>")

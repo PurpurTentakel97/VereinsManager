@@ -30,6 +30,7 @@ class Config:
         self.save_dir: str = "saves"
         self.organisation_dir: str = "default_organisation"
         self.export_dir: str = "export"
+        self.error_dir:str = "error-log"
 
         self.member_dir: str = "member"
         self.member_list: str = "member_list"

@@ -5,24 +5,26 @@
 pdf
     dirfferent name for anniversary pdfs
     set icon in PDF
+    add page count
 
 sql database
     let unser choose database name
-    error without types (membership_type)
-
-    move log to from sql handler to handler
 
 UI
     Global
         set Icon in Taskbar
-    Base Window
-        set Icon
+    Member Window
+        tap trap in comment text
 
 member
     export schreiben
-    track member count
+    add membership exception
 
+error log
+    add as txt
 ester egg
     only firstname
 
 
+acxeptions
+    add debugprint in every try-catch-block

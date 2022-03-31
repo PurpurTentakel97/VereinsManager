@@ -15,13 +15,15 @@ def on_start() -> None:
 
 
 def create_main_window() -> None:
-    main_window.create_main_window(_is_default_user())
-    alert_window.create_alert_window()
+    default_user = _is_default_user()
+    main_window.create_main_window(default_user)
+    if not default_user:
+        alert_window.create_alert_window()
 
 
 def _is_default_user() -> bool:
     try:
-        v.validation.must_default_user(c.config.user_id, False)
-        return False
-    except e.DefaultUserException:
+        v.validation.must_default_user(c.config.user_id, True)
         return True
+    except e.DefaultUserException:
+        return False

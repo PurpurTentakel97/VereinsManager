@@ -18,6 +18,8 @@ def create_default_path(type_: str) -> None:
             path = f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/{c.config.member_card}"
         case "member_letter":
             path = f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/{c.config.member_letter}"
+        case "error_log":
+            path = f"{c.config.save_dir}/{c.config.error_dir}"
 
     if path:
         if not os.path.exists(path):
