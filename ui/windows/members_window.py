@@ -80,6 +80,7 @@ class MembersWindow(BaseWindow):
         self._is_edit: bool = bool()
         self._set_edit_mode(active=False)
         self._set_maps()
+        self._first_name_le.setFocus()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Mitglieder - Vereinsmanager")

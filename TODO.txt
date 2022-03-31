@@ -14,7 +14,7 @@ UI
     Global
         set Icon in Taskbar
     Member Window
-        set first forcus on firstname
+        tap trap in comment text
         dont troigger editmode with type box
     Hide Anniversary Window for default user
 
