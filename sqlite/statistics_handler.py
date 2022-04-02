@@ -36,7 +36,7 @@ class StatisticsHandler(Database):
                 case _:
                     raise e.CaseException(info=f"statistic type // {type_}")
 
-        except e.StatisticError as error:
+        except e.GeneralError as error:
             debug.error(item=debug_str, keyword="statistics", message=f"Error = {error.message}")
 
     def _membership_statistics(self, raw_type_id: int, new_type_id: int | None, old_type_id: int | None) -> None:

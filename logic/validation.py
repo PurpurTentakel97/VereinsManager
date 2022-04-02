@@ -6,6 +6,9 @@ import math
 
 from sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
+import debug
+
+debug_str:str = "Validation"
 
 validation: "Validation"
 
@@ -35,7 +38,7 @@ class Validation:
         exists: bool = False
         for old_id, old_name, *_ in data:
             if ID == old_id:
-                if new_name == old_name:
+                if new_name.strip().title() == old_name:
                     raise e.NoChance(info=new_name)
                 exists = True
                 break
@@ -50,7 +53,7 @@ class Validation:
 
         data = s_h.select_handler.get_all_single_type()
         exists: bool = False
-        for old_id, old_name, old_type_id, old_active in data:
+        for old_id, _, _, old_active in data:
             if old_id == ID:
                 if old_active == active:
                     raise e.NoChance(info="Type Aktivität")
@@ -63,6 +66,7 @@ class Validation:
     # member
     @classmethod
     def update_member(cls, data: dict) -> None:
+        print(data)
         cls.must_dict(dict_=data)
         cls._must_multiple_str_in_dict([
             "first_name",
@@ -92,25 +96,30 @@ class Validation:
     # member nexus
     @classmethod
     def update_member_nexus(cls, data: list, type_: str) -> None:
-        cls.must_list(data)
-        cls.must_length(4, data)
+        try:
+            cls.must_list(data)
+            cls.must_length(4, data)
 
-        ID, type_id, Type, value = data
-        cls.must_positive_int(type_id, max_length=None)
+            ID, type_id, Type, value = data
+            cls.must_positive_int(type_id, max_length=None)
 
-        if ID is not None:
-            cls.must_positive_int(ID, max_length=None)
+            if ID is not None:
+                cls.must_positive_int(ID, max_length=None)
 
-        if Type is not None:
-            cls.must_str(Type)
+            if Type is not None:
+                cls.must_str(Type)
 
-        match type_:
-            case "phone":
-                cls._update_member_nexus_phone(phone=value)
-            case "mail":
-                cls._update_member_nexus_mail(mail=value)
-            case "position":
-                cls._update_member_nexus_position(active=value)
+            match type_:
+                case "phone":
+                    cls._update_member_nexus_phone(phone=value)
+                case "mail":
+                    cls._update_member_nexus_mail(mail=value)
+                case "position":
+                    cls._update_member_nexus_position(active=value)
+                case _:
+                    raise e.CaseException(f"validation // type: {type_}")
+        except e.GeneralError as error:
+            debug.debug(item=debug_str, keyword="update_member_nexus", message=f"Error = {error.message}")
 
     @classmethod
     def _update_member_nexus_phone(cls, phone: str) -> None:

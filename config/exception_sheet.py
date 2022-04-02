@@ -215,20 +215,6 @@ class DefaultUserException(UserError):
         self.set_message(message="Default Benutzer kann nicht bearbeitet werden", info=info)
 
 
-# 500
-class StatisticError(BaseException_):
-    def __init__(self):
-        super().__init__()
-        self.error_code: str = "500"
-
-
-class CaseException(StatisticError):
-    def __init__(self, info: str = ""):
-        super().__init__()
-        self.error_code: str = "501"
-        self.set_message(message="Falscher Typ", info=info)
-
-
 # 900
 class GeneralError(BaseException_):
     def __init__(self):
@@ -241,3 +227,10 @@ class NotFound(GeneralError):
         super().__init__()
         self.error_code: str = "901"
         self.set_message(message="Nicht gefunden", info=info)
+
+
+class CaseException(GeneralError):
+    def __init__(self, info: str = ""):
+        super().__init__()
+        self.error_code: str = "902"
+        self.set_message(message="Falscher Typ", info=info)

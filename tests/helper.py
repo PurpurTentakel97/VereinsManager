@@ -7,6 +7,7 @@ import string
 import random
 import shutil
 
+import config.config_sheet
 from config import config_sheet
 from sqlite import select_handler, database
 
@@ -49,9 +50,14 @@ def generate_temp_database():
 
 
 def add_generic_type() -> None:
-    database.database.cursor.execute("""INSERT INTO type (name,type_id) VALUES (?,?);""", ("Type_1", 1))
-    database.database.cursor.execute("""INSERT INTO type (name,type_id) VALUES (?,?);""", ("Type_2", 2))
+    database.database.cursor.execute("""INSERT INTO type (name,type_id) VALUES (?,?);""", ("type_1".title(), 1))
+    database.database.cursor.execute("""INSERT INTO type (name,type_id) VALUES (?,?);""", ("type_2".title(), 2))
     database.database.connection.commit()
+
+
+def add_memer_ids_in_config() -> None:
+    config.config_sheet.create_config()
+    confic.config_sheeg.user_id = 2
 
 
 def generate_select_handler() -> None:
