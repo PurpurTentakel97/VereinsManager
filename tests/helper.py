@@ -7,8 +7,7 @@ import string
 import random
 import shutil
 
-import config.config_sheet
-from config import config_sheet
+from config import config_sheet as c
 from sqlite import select_handler, database
 
 
@@ -38,14 +37,14 @@ def generate_password() -> str:
 
 
 def _generate_config() -> None:
-    config_sheet.create_config()
+    c.create_config()
 
 
 def generate_temp_database():
     _generate_config()
-    config_sheet.config.save_dir = "temp_save_dir"
-    config_sheet.config.organisation_dir = "temp_organisation_dir"
-    config_sheet.config.database_name = "unit_test_database"
+    c.config.save_dir = "temp_save_dir"
+    c.config.organisation_dir = "temp_organisation_dir"
+    c.config.database_name = "unit_test_database"
     database.crate_database()
 
 
@@ -55,9 +54,9 @@ def add_generic_type() -> None:
     database.database.connection.commit()
 
 
-def add_memer_ids_in_config() -> None:
-    config.config_sheet.create_config()
-    confic.config_sheeg.user_id = 2
+def add_user_ids_in_config() -> None:
+    c.create_config()
+    c.config.user_id = 2
 
 
 def generate_select_handler() -> None:

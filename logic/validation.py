@@ -8,7 +8,7 @@ from sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
 import debug
 
-debug_str:str = "Validation"
+debug_str: str = "Validation"
 
 validation: "Validation"
 
@@ -142,8 +142,8 @@ class Validation:
         cls.must_dict(dict_=data)
         if data["ID"] is not None:
             cls.must_positive_int(int_=data["ID"], max_length=None)
-            cls.must_current_user(ID=data["ID"], same=True)
             cls.must_default_user(ID=data["ID"], same=False)
+            cls.must_current_user(ID=data["ID"], same=True)
 
         if data["ID"] is None or data["password_1"] is not None:
             cls.must_password(password_1=data["password_1"], password_2=data["password_2"])
