@@ -62,7 +62,7 @@ def get_count_for_password(password_1):
     return count
 
 
-def check_user_password(ID: int, password: str) -> [str | bool, bool]:
+def check_user_password(ID: int, password: str, main_window: bool = True) -> [str | bool, bool]:
     try:
         v.must_positive_int(int_=ID)
         v.must_str(str_=password)
@@ -72,8 +72,11 @@ def check_user_password(ID: int, password: str) -> [str | bool, bool]:
         result: bool = hasher.compare_password(password=password, hashed=hashed)
         if result:
             c.config.set_user(ID=ID)
-            window_handler.create_main_window()
+            if main_window:
+                window_handler.create_main_window()
         return result, True
     except (e.InputError, e.OperationalError, e.PasswordError) as error:
         debug.debug(item=debug_str, keyword="check_password", message=f"Message = {error.message}")
         return error.message, False
+    except TypeError:
+        return False, False
