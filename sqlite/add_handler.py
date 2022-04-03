@@ -44,7 +44,9 @@ class AddHandler(Database):
             return ID
 
         except self.OperationalError:
-            raise e.AddFailed(info=f"Typ: {type_name}")
+            error = e.AddFailed(info=f"Typ: {type_name}")
+            debug.error(item=debug_str, keyword="add_type", message=f"Error = {error.message}")
+            raise error
 
     # member
     def add_member(self, data: dict, log_date: int | None) -> int:
@@ -72,7 +74,9 @@ class AddHandler(Database):
             l_h.log_handler.log_member(target_id=ID, old_data=None, new_data=data, log_date=log_date)
             return ID
         except self.OperationalError:
-            raise e.AddFailed("Mitglied")
+            error = e.AddFailed("Mitglied")
+            debug.error(item=debug_str, keyword="add_member", message=f"Error = {error.message}")
+            raise error
 
     # member nexus
     def add_member_nexus_phone(self, type_id: int, value: str, member_id: int, log_date: int | None) -> int:
@@ -85,7 +89,9 @@ class AddHandler(Database):
                                              type_="phone")
             return ID
         except self.OperationalError:
-            raise e.AddFailed(info=value)
+            error = e.AddFailed(info=value)
+            debug.error(item=debug_str, keyword="add_member_nexus_phone", message=f"Error = {error.message}")
+            raise error
 
     def add_member_nexus_mail(self, type_id: int, value: str, member_id: int, log_date: int | None) -> int:
         sql_command: str = f"""INSERT INTO member_mail (member_id, type_id, mail) VALUES (?, ?, ?);"""
@@ -98,7 +104,9 @@ class AddHandler(Database):
             return ID
 
         except self.OperationalError:
-            raise e.AddFailed(info=value)
+            error = e.AddFailed(info=value)
+            debug.error(item=debug_str, keyword="add_member_nexus_mail", message=f"Error = {error.message}")
+            raise error
 
     def add_member_nexus_position(self, type_id: int, value: bool, member_id: int, log_date: int | None) -> int:
         sql_command: str = f"""INSERT INTO member_position (member_id, type_id, active) VALUES (?, ?, ?);"""
@@ -111,7 +119,9 @@ class AddHandler(Database):
             return ID
 
         except self.OperationalError:
-            raise e.AddFailed(info=str(value))
+            error = e.AddFailed(info=str(value))
+            debug.error(item=debug_str, keyword="add_member_nexus_position", message=f"Error = {error.message}")
+            raise error
 
     # user
     def add_user(self, data: dict) -> int:
@@ -134,7 +144,9 @@ class AddHandler(Database):
             self.connection.commit()
             return self.cursor.lastrowid
         except self.OperationalError:
-            raise e.AddFailed("Mitglied")
+            error = e.AddFailed("Mitglied")
+            debug.error(item=debug_str, keyword="add_user", message=f"Error = {error.message}")
+            raise error
 
 
 def create_add_handler() -> None:

@@ -48,11 +48,14 @@ def get_data_of_user_by_ID(ID: int, active: bool) -> [str | dict, bool]:
 
 
 def get_hashed_password_by_ID(ID: int) -> bytes:
-    v.must_positive_int(int_=ID)
+    try:
+        v.must_positive_int(int_=ID)
 
-    hashed = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
+        hashed = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
 
-    return hashed
+        return hashed
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="get_hashed_password_by_ID", message=f"Error = {error.message}")
 
 
 # add / update
@@ -93,6 +96,9 @@ def update_user_activity(ID: int, active: bool) -> [str, bool]:
 
 # delete
 def delete_inactive_user() -> None:
-    reference_data, _ = get_names_of_user(active=False)
-    for ID, *_ in reference_data:
-        d_h.delete_handler.delete_user(ID=ID)
+    try:
+        reference_data, _ = get_names_of_user(active=False)
+        for ID, *_ in reference_data:
+            d_h.delete_handler.delete_user(ID=ID)
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="delete_inactive_user", message=f"Error = {error.message}")

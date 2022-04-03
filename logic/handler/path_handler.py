@@ -8,6 +8,14 @@ from config import config_sheet as c
 
 
 def create_default_path(type_: str) -> None:
+    path: str = _get_default_path(type_=type_)
+
+    if path:
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+
+def _get_default_path(type_: str) -> str:
     path: str = ""
     match type_:
         case "member_list":
@@ -21,6 +29,4 @@ def create_default_path(type_: str) -> None:
         case "error_log":
             path = f"{c.config.save_dir}/{c.config.error_dir}"
 
-    if path:
-        if not os.path.exists(path):
-            os.makedirs(path)
+    return path

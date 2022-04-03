@@ -76,7 +76,9 @@ def check_user_password(ID: int, password: str, main_window: bool = True) -> [st
                 window_handler.create_main_window()
         return result, True
     except (e.InputError, e.OperationalError, e.PasswordError) as error:
-        debug.debug(item=debug_str, keyword="check_password", message=f"Message = {error.message}")
+        debug.error(item=debug_str, keyword="check_user_password", message=f"Error = {error.message}")
         return error.message, False
     except TypeError:
+        debug.error(item=debug_str, keyword="check_user_password",
+                    message=f"Error = TypeError // probably non existing ID")
         return False, False

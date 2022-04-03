@@ -28,7 +28,7 @@ def get_raw_types() -> [str | tuple, bool]:
     try:
         return s_h.select_handler.get_raw_types(), True
     except e.OperationalError as error:
-        debug.debug(item=debug_str, keyword="get_raw_types", message=f"Error = {error.message}")
+        debug.error(item=debug_str, keyword="get_raw_types", message=f"Error = {error.message}")
         return error.message, False
 
 

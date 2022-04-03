@@ -135,7 +135,9 @@ class LogHandler(Database):
             self.cursor.execute(sql_command, (target_table, target_id, target_column, old_data, new_data, log_date))
             self.connection.commit()
         except self.OperationalError:
-            raise e.ActiveSetFailed("Log failed")
+            error = e.AddFailed("Log failed")
+            debug.error(item=debug_str, keyword="_log", message=f"Error = {error.message}")
+            raise error
 
     # delete
     def delete_log(self, target_id: int, target_table: str) -> None:
@@ -143,8 +145,9 @@ class LogHandler(Database):
         try:
             self.cursor.execute(sql_command, (target_id, target_table))
             self.connection.commit()
-        except self.OperationalError as error:
-            debug.error(item=debug_str, keyword="delete_log", message=f"delete log failed")
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword="delete_log",
+                        message=f"delete log failed // target_id = {target_id} // target_table = {target_table}")
 
     # helper
     @staticmethod

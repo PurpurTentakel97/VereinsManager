@@ -11,6 +11,9 @@ import debug
 debug_str: str = "Member Nexus Handler"
 
 
+# no try / catch -> try / catch in member_handler.py
+
+
 # add
 def _add_member_nexus_phone(type_id: int, value: str, member_id: int, log_date: int | None) -> int:
     ID = a_h.add_handler.add_member_nexus_phone(type_id=type_id, value=value, member_id=member_id, log_date=log_date)

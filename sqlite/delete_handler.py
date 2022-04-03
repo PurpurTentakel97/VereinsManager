@@ -16,9 +16,6 @@ class DeleteHandler(Database):
     def __init__(self) -> None:
         super().__init__()
 
-    def __str__(self) -> str:
-        return "DeleteHandler(Database)"
-
     # type
     def delete_type(self, ID: int) -> [str | None, bool]:
         sql_command: str = """DELETE FROM type WHERE ID is ?;"""
@@ -29,11 +26,15 @@ class DeleteHandler(Database):
             l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=name[0],
                                      new_data=None)
         except self.OperationalError:
-            raise e.DeleteFailed(info="Typ")
+            error = e.DeleteFailed(info="Typ")
+            debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
+            raise error
 
         except self.IntegrityError:
             self.connection.commit()
-            raise e.ForeignKeyError(info="Typ")
+            error = e.ForeignKeyError(info="Typ")
+            debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
+            raise error
 
     # member
     def delete_member(self, ID: int) -> None:

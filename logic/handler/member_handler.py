@@ -70,7 +70,7 @@ def _get_member_data_by_id(ID: int, active: bool = True) -> dict:
     return data
 
 
-def get_member_activity_and_membership_by_id(ID: int) -> list:
+def _get_member_activity_and_membership_by_id(ID: int) -> list:
     v.must_positive_int(int_=ID, max_length=None)
 
     data = s_h.select_handler.get_member_activity_and_membership_by_id(ID=ID)
@@ -129,7 +129,7 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
         v.must_bool(bool_=active)
         v.must_default_user(c.config.user_id, False)
 
-        reference_data = get_member_activity_and_membership_by_id(ID=ID)
+        reference_data = _get_member_activity_and_membership_by_id(ID=ID)
         u_h.update_handler.update_member_activity(ID=ID, active=active)
         m_n_h.update_member_nexus_activity(member_id=ID, active=active)
         l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data[0], new_activity=active,
@@ -145,11 +145,14 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
 
 # delete
 def delete_inactive_member() -> None:
-    reference_data, _ = get_names_of_member(active=False)
-    for ID, *_ in reference_data:
-        m_n_h.delete_inactive_member_nexus(member_id=ID)
-        l_h.log_handler.delete_log(target_id=ID, target_table="member")
-        d_h.delete_handler.delete_member(ID=ID)
+    try:
+        reference_data, _ = get_names_of_member(active=False)
+        for ID, *_ in reference_data:
+            m_n_h.delete_inactive_member_nexus(member_id=ID)
+            l_h.log_handler.delete_log(target_id=ID, target_table="member")
+            d_h.delete_handler.delete_member(ID=ID)
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="delete_inactive_member", message=f"Error = {error.message}")
 
 
 # helper

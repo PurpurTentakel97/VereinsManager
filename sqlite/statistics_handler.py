@@ -85,7 +85,7 @@ class StatisticsHandler(Database):
             ))
             self.connection.commit()
         except self.OperationalError:
-            debug.debug(item=debug_str, keyword="_statistics", message=f"add statistics failed")
+            debug.error(item=debug_str, keyword="_statistics", message=f"add statistics failed")
 
     def _update(self, ID: int, count: int) -> None:
         sql_command: str = """UPDATE statistics SET count = ? WHERE ID = ?;"""
@@ -93,7 +93,7 @@ class StatisticsHandler(Database):
             self.cursor.execute(sql_command, (count, ID))
             self.connection.commit()
         except self.OperationalError:
-            debug.debug(item=debug_str, keyword="_statistics", message=f"update statistics failed")
+            debug.error(item=debug_str, keyword="_statistics", message=f"update statistics failed")
 
     def _get_current_ID(self, type_id):
         sql_command: str = """SELECT * FROM statistics WHERE _log_date = ? and type_id = ?;"""
@@ -104,7 +104,7 @@ class StatisticsHandler(Database):
                 type_id,
             )).fetchone()
         except self.OperationalError:
-            debug.debug(item=debug_str, keyword="_statistics", message=f"get current statistic failed")
+            debug.error(item=debug_str, keyword="_statistics", message=f"get current statistic failed")
 
     def _get_current_membership_counts(self, new_type_id: int, old_type_id: int) -> [int]:
         sql_command: str = """SELECT membership_type FROM v_active_member WHERE membership_type is ?;"""
@@ -118,7 +118,7 @@ class StatisticsHandler(Database):
                     counts.append(len(list_))
             return counts
         except self.OperationalError:
-            debug.debug(item=debug_str, keyword="_statistics", message=f"select statistic count failed")
+            debug.error(item=debug_str, keyword="_statistics", message=f"select statistic count failed")
 
     def _get_current_nexus_count(self, type_: str, type_id: int) -> int:
         match type_:
@@ -139,7 +139,7 @@ class StatisticsHandler(Database):
                     counter += 1
             return counter
         except self.OperationalError as error:
-            debug.debug(item=debug_str, keyword="_get_current_nexus_count",
+            debug.error(item=debug_str, keyword="_get_current_nexus_count",
                         message=f"Command: {sql_command}\nError: {str(error)}")
 
     @staticmethod

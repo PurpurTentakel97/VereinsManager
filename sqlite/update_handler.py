@@ -24,7 +24,9 @@ class UpdateHandler(Database):
             self.connection.commit()
 
         except self.OperationalError:
-            raise e.UpdateFailed(info=name)
+            error = e.UpdateFailed(info=name)
+            debug.error(item=debug_str, keyword="update_type", message=f"Error = {error.message}")
+            raise error
 
     def update_type_activity(self, ID: int, active: bool) -> None:
         sql_command: str = """UPDATE type SET active = ? WHERE ID is ?;"""
@@ -33,7 +35,9 @@ class UpdateHandler(Database):
             self.connection.commit()
 
         except self.OperationalError:
-            raise e.ActiveSetFailed()
+            error = e.ActiveSetFailed()
+            debug.error(item=debug_str, keyword="update_type_activity", message=f"Error = {error.message}")
+            raise error
 
     # member
     def update_member(self, ID: int | None, data: dict) -> None:
@@ -58,7 +62,9 @@ class UpdateHandler(Database):
             self.connection.commit()
 
         except self.OperationalError:
-            raise e.ActiveSetFailed("update member")
+            error = e.ActiveSetFailed("update member")
+            debug.error(item=debug_str, keyword="update_member", message=f"Error = {error.message}")
+            raise error
 
     def update_member_activity(self, ID: int, active: bool) -> None:
         sql_command: str = f"""UPDATE member SET active = ? WHERE ID is ?;"""
@@ -67,7 +73,9 @@ class UpdateHandler(Database):
             self.connection.commit()
 
         except self.OperationalError:
-            raise e.ActiveSetFailed()
+            error = e.ActiveSetFailed()
+            debug.error(item=debug_str, keyword="update_member_activity", message=f"Error = {error.message}")
+            raise error
 
     # member nexus
     def update_member_nexus_phone(self, ID: int, number: str) -> None:
@@ -77,7 +85,9 @@ class UpdateHandler(Database):
             self.connection.commit()
 
         except self.OperationalError:
-            raise e.ActiveSetFailed(info=number)
+            error = e.ActiveSetFailed(info=number)
+            debug.error(item=debug_str, keyword="update_member_nexus_phone", message=f"Error = {error.message}")
+            raise error
 
     def update_member_nexus_mail(self, ID: int, mail: str) -> None:
         sql_command: str = f"""UPDATE member_mail SET mail = ? WHERE ID is ?;"""
@@ -86,7 +96,9 @@ class UpdateHandler(Database):
             self.connection.commit()
 
         except self.OperationalError:
-            raise e.ActiveSetFailed(info=mail)
+            error = e.ActiveSetFailed(info=mail)
+            debug.error(item=debug_str, keyword="update_member_nexus_mail", message=f"Error = {error.message}")
+            raise error
 
     def update_member_nexus_position(self, ID: int, active: bool) -> None:
         sql_command: str = f"""UPDATE member_position SET active = ? WHERE ID is ?;"""
@@ -95,17 +107,19 @@ class UpdateHandler(Database):
             self.connection.commit()
 
         except self.OperationalError:
-            raise e.ActiveSetFailed(info=str(active))
+            error = e.ActiveSetFailed(info=str(active))
+            debug.error(item=debug_str, keyword="update_member_nexus_position", message=f"Error = {error.message}")
+            raise error
 
     def update_member_active_phone(self, member_id: int, active: bool) -> None:
         sql_command: str = """UPDATE member_phone SET _active_member = ? WHERE member_id = ?"""
         try:
             self.cursor.execute(sql_command, (active, member_id))
             self.connection.commit()
-        except self.OperationalError as error:
-            debug.debug(item=debug_str, keyword="update_member_active_phone",
-                        message=f"Command: {sql_command}\nError: {str(error)}")
-            raise e.UpdateFailed(info=str(active))
+        except self.OperationalError:
+            error = e.UpdateFailed(info=str(active))
+            debug.error(item=debug_str, keyword="update_member_active_phone", message=f"Error= {error.message}")
+            raise error
 
     def update_member_active_mail(self, member_id: int, active: bool) -> None:
         sql_command: str = """UPDATE member_mail SET _active_member = ? WHERE member_id = ?"""
@@ -113,9 +127,9 @@ class UpdateHandler(Database):
             self.cursor.execute(sql_command, (active, member_id))
             self.connection.commit()
         except self.OperationalError as error:
-            debug.debug(item=debug_str, keyword="update_member_active_mail",
-                        message=f"Command: {sql_command}\nError: {str(error)}")
-            raise e.UpdateFailed(info=str(active))
+            error = e.UpdateFailed(info=str(active))
+            debug.error(item=debug_str, keyword="update_member_active_mail", message=f"Error= {error.message}")
+            raise error
 
     def update_member_active_position(self, member_id: int, active: bool) -> None:
         sql_command: str = """UPDATE member_position SET _active_member = ? WHERE member_id = ?"""
@@ -123,9 +137,9 @@ class UpdateHandler(Database):
             self.cursor.execute(sql_command, (active, member_id))
             self.connection.commit()
         except self.OperationalError as error:
-            debug.debug(item=debug_str, keyword="update_member_active_position",
-                        message=f"Command: {sql_command}\nError: {str(error)}")
-            raise e.UpdateFailed(info=str(active))
+            error = e.UpdateFailed(info=str(active))
+            debug.error(item=debug_str, keyword="update_member_active_position", message=f"Error= {error.message}")
+            raise error
 
     # user
     def update_user(self, ID: int, data: dict) -> None:
@@ -147,7 +161,9 @@ class UpdateHandler(Database):
             ))
             self.connection.commit()
         except self.OperationalError:
-            raise e.ActiveSetFailed("update user")
+            error = e.ActiveSetFailed("update user")
+            debug.error(item=debug_str, keyword="update_user", message=f"Error = {error.message}")
+            raise error
 
     def update_user_password(self, ID: int, password: bytes) -> None:
         sql_command: str = """UPDATE user SET password = ? WHERE ID is ?;"""
@@ -160,7 +176,9 @@ class UpdateHandler(Database):
             self.connection.commit()
 
         except self.OperationalError:
-            raise e.ActiveSetFailed()
+            error = e.ActiveSetFailed()
+            debug.error(item=debug_str, keyword="update_user_password", message=f"Error = {error.message}")
+            raise error
 
     def update_user_activity(self, ID: int, active: bool) -> None:
         sql_command: str = """UPDATE user SET _active = ? WHERE ID IS ?;"""
@@ -169,7 +187,9 @@ class UpdateHandler(Database):
             self.cursor.execute(sql_command, (active, ID))
             self.connection.commit()
         except self.OperationalError:
-            raise e.ActiveSetFailed()
+            error = e.ActiveSetFailed()
+            debug.error(item=debug_str, keyword="update_user_activity", message=f"Error = {error.message}")
+            raise error
 
 
 def crate_update_handler() -> None:

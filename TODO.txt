@@ -28,3 +28,18 @@ ester egg
 
 acxeptions
     add debugprint in every try-catch-block
+
+test
+    handler
+        add
+        update
+        select
+        delete
+        statistics
+        log
+        member
+        user
+        type
+        data
+        pfd
+
