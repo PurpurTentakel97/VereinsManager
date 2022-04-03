@@ -23,7 +23,7 @@ def create_main_window() -> None:
 
 def _is_default_user() -> bool:
     try:
-        v.must_default_user(c.config.user_id, True)
+        v.must_default_user(c.config.user['ID'], True)
         return True
     except e.DefaultUserException:
         return False

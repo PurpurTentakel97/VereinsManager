@@ -15,7 +15,7 @@ debug_str: str = "Type Handler"
 def add_type(type_name: str, raw_type_id: int) -> [str | int, bool]:
     try:
         v.add_type(type_name=type_name, raw_type_id=raw_type_id)
-        v.must_default_user(c.config.user_id, False)
+        v.must_default_user(c.config.user['ID'], False)
 
         return a_h.add_handler.add_type(type_name=type_name.strip().title(), raw_type_id=raw_type_id), True
     except (e.OperationalError, e.InputError) as error:
@@ -65,7 +65,7 @@ def get_type_name_by_ID(ID: int) -> [str | tuple, bool]:
 def update_type(ID: int, name: str) -> [str | None, bool]:
     try:
         v.update_type(ID=ID, new_name=name)
-        v.must_default_user(c.config.user_id, False)
+        v.must_default_user(c.config.user['ID'], False)
 
         name = name.strip().title()
 
@@ -81,7 +81,7 @@ def update_type(ID: int, name: str) -> [str | None, bool]:
 def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
     try:
         v.update_type_activity(ID=ID, active=active)
-        v.must_default_user(c.config.user_id, False)
+        v.must_default_user(c.config.user['ID'], False)
 
         reference_data = s_h.select_handler.get_type_active_by_id(ID=ID)
         u_h.update_handler.update_type_activity(ID=ID, active=active)
@@ -96,7 +96,7 @@ def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
 def delete_type(ID: int) -> [str | None, bool]:
     try:
         v.must_positive_int(ID, max_length=None)
-        v.must_default_user(c.config.user_id, False)
+        v.must_default_user(c.config.user['ID'], False)
 
         d_h.delete_handler.delete_type(ID=ID)
         return None, True

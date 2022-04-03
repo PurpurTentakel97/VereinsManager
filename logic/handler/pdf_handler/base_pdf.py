@@ -33,7 +33,8 @@ class BasePDF:
                 name += _
             self.file_name = f"{name}_{now.strftime(c.config.date_format['path'])}.{file_type}"
         else:
-            self.dir_name = f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.member_dir}/{c.config.export_dir}"
+            self.dir_name = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['member']}/\
+                {c.config.dirs['export']}"
             self.file_name = f"Mitglieder_{now.strftime(c.config.date_format['path'])}.pdf"
 
     def create_dir(self) -> None:

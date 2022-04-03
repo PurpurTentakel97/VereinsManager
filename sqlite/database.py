@@ -32,10 +32,9 @@ class Database:
         self.connection.commit()
 
     def create_cursor_connection(self) -> None:
-        if not os.path.exists(f"{c.config.save_dir}/{c.config.organisation_dir}"):
-            os.makedirs(f"{c.config.save_dir}/{c.config.organisation_dir}")
-        self.connection = sqlite3.connect(f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.database_name}",
-                                          detect_types=sqlite3.PARSE_DECLTYPES)
+        if not os.path.exists(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}"):
+            os.makedirs(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}")
+        self.connection = sqlite3.connect(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['database']}", detect_types=sqlite3.PARSE_DECLTYPES)
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.cursor = self.connection.cursor()
 

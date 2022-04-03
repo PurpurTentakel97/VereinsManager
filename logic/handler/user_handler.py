@@ -68,7 +68,7 @@ def add_update_user(data: dict) -> [str | int | None, bool]:
             return a_h.add_handler.add_user(data=data), True
 
         u_h.update_handler.update_user(ID=data["ID"], data=data)
-        c.config.set_user(ID=c.config.user_id)
+        c.config.set_user(ID=c.config.user['ID'])
 
         if data["password_1"]:
             data["password_hashed"] = hasher.hash_password(data["password_1"])

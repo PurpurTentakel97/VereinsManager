@@ -9,6 +9,7 @@ pdf
 
 sql database
     let unser choose database name
+    password
 
 UI
     Global
@@ -22,9 +23,6 @@ member
 
 error log
     add as txt
-
-config
-    move atributes into json
 
 
 test

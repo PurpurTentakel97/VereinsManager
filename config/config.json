@@ -12,19 +12,40 @@
     "position": 4,
     "job": 5
   },
-  "default_user_id": {
-    "default": 1
+  "hash": {
+    "rounds": 12
   },
-  "special_user": {
-    "traijan__": "Ehrenmannmitglied",
-    "necromenzer": "Ehren Todgeweihter",
-    "coder2k": "Ehren Coder",
-    "purpurtentakel": "Ehren Tentakel",
-    "lordrepha": "Ehren Lord",
-    "crazynightowl01": "Ehren Eule",
-    "quatschsalat": "Ehren Quatsch",
-    "freetimedevelopment": "Ehren Ei",
-    "grammar2parserboy": "Parser sind seine Spezialität",
-    "artimus83": "Ehren Hamster"
+  "dirs": {
+    "save": "saves",
+    "organisation": "default_organisation",
+    "export": "export",
+    "error": "error_log",
+    "member": "member",
+    "member_list": "member_list",
+    "member_anniversary": "member_anniversary",
+    "member_card": "member_card",
+    "member_letter": "member_letter"
+  },
+  "files": {
+    "database": "default_database.vm",
+    "icon": "icon.png"
+  },
+  "user": {
+    "ID": 0,
+    "default_user_id": 1,
+    "name": "",
+    "easter_egg": "",
+    "special": {
+      "traijan__": "Ehrenmannmitglied",
+      "necromenzer": "Ehren Todgeweihter",
+      "coder2k": "Ehren Coder",
+      "purpurtentakel": "Ehren Tentakel",
+      "lordrepha": "Ehren Lord",
+      "crazynightowl01": "Ehren Eule",
+      "quatschsalat": "Ehren Quatsch",
+      "freetimedevelopment": "Ehren Ei",
+      "grammar2parserboy": "Parser sind seine Spezialität",
+      "artimus83": "Ehren Hamster"
+    }
   }
 }

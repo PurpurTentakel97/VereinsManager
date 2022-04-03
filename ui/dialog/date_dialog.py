@@ -15,7 +15,7 @@ class DateInput(QDialog):
         super().__init__(parent)
 
         self.setWindowTitle("Log Date")
-        self.setWindowIcon(QIcon(c.config.icon_path))
+        self.setWindowIcon(QIcon(c.config.get_icon_path()))
 
         QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
 

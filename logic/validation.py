@@ -152,12 +152,12 @@ def save_update_user(data: dict) -> None:
 
 
 def must_current_user(ID: int, same: bool) -> None:
-    if (ID == c.config.user_id) != same:
+    if (ID == c.config.user['ID']) != same:
         raise e.CurrentUserException()
 
 
 def must_default_user(ID: int, same: bool) -> None:
-    if (ID == c.config.default_user_id["default"]) != same:
+    if (ID == c.config.user['default_user_id']) != same:
         raise e.DefaultUserException()
 
 

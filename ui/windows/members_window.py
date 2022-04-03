@@ -197,7 +197,7 @@ class MembersWindow(BaseWindow):
         self._membership_type_box: QComboBox = QComboBox()
         self._membership_type_box.currentTextChanged.connect(self._set_membership_type)
         self._special_member_cb: QCheckBox = QCheckBox()
-        self._special_member_cb.setText(c.config.easter_egg if c.config.easter_egg else "Ehrenmitglied")
+        self._special_member_cb.setText(c.config.user['easter_egg'] if c.config.user['easter_egg'] else "Ehrenmitglied")
         self._special_member_cb.toggled.connect(self._set_special_member)
         self._positions_lb: QLabel = QLabel()
         self._positions_lb.setText("Positionen:")
@@ -371,7 +371,7 @@ class MembersWindow(BaseWindow):
     def _set_phone_type(self) -> None:
         current_type: str = self._phone_number_type_box.currentText()
 
-        temp_is_edit:bool = self._is_edit
+        temp_is_edit: bool = self._is_edit
         for _, _, Type, phone in self.phone_numbers:
             if current_type == Type:
                 self._phone_number_le.setText(phone)
@@ -390,7 +390,7 @@ class MembersWindow(BaseWindow):
     def _set_mail_type(self) -> None:
         current_type: str = self._mail_address_type_box.currentText()
 
-        temp_is_edit:bool = self._is_edit
+        temp_is_edit: bool = self._is_edit
         for _, _, Type, mail in self.mail_addresses:
             if current_type == Type:
                 self._mail_address_le.setText(mail)
@@ -694,7 +694,7 @@ class MembersWindow(BaseWindow):
         current_member: ListItem = self._members_list.list.currentItem()
         transition.create_default_dir("member_card")
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  f"{c.config.save_dir}/{c.config.organisation_dir}/{c.config.export_dir}/{c.config.member_dir}/{c.config.member_card}/{current_member.first_name}_{current_member.last_name}.pdf",
+                                                  f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/{c.config.dirs['member']}/{c.config.dirs['member_card']}/{current_member.first_name}_{current_member.last_name}.pdf",
                                                   "PDF (*.pdf);;All Files (*)")
         if not check:
             self.set_info_bar("Export abgebrochen")
