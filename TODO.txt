@@ -22,12 +22,10 @@ member
 
 error log
     add as txt
-ester egg
-    only firstname
 
+config
+    move atributes into json
 
-acxeptions
-    add debugprint in every try-catch-block
 
 test
     handler

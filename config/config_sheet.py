@@ -50,7 +50,6 @@ class Config:
         self.easter_egg: str = str()
 
         self._load_config()
-        self._get_easter_egg_from_user_name()
 
     def set_user(self, ID: int) -> [str | None, bool]:
         v.must_positive_int(int_=ID)
@@ -61,9 +60,8 @@ class Config:
             if not ID == self.user_id:
                 continue
             self._set_user_name(firstname=firstname, lastname=lastname)
+            self._set_easter_egg_from_user_name(firstname=firstname)
             break
-
-        self._get_easter_egg_from_user_name()
 
     def _set_user_name(self, firstname: str, lastname: str) -> None:
         if firstname and lastname:
@@ -84,10 +82,10 @@ class Config:
         self.default_user_id: dict = json_data["default_user_id"]
         self.special_user: dict = json_data["special_user"]
 
-    def _get_easter_egg_from_user_name(self) -> None:
-        if self.user_name:
+    def _set_easter_egg_from_user_name(self, firstname: str) -> None:
+        if firstname:
             for item in self.special_user.items():
-                if self.user_name.lower() in item:
+                if firstname.lower() in item:
                     self.easter_egg = item[1]
                     return
             self.easter_egg = str()
