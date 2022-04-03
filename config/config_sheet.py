@@ -53,7 +53,7 @@ class Config:
         self._get_easter_egg_from_user_name()
 
     def set_user(self, ID: int) -> [str | None, bool]:
-        v.validation.must_positive_int(int_=ID)
+        v.must_positive_int(int_=ID)
         data = s_h.select_handler.get_names_of_user(active=True)
 
         self.user_id = ID

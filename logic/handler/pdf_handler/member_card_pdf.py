@@ -116,9 +116,9 @@ class MemberCardPDF(BasePDF):
     @staticmethod
     def _validate_data(path: str, active: bool, ID: int) -> None | str:
         try:
-            v.validation.must_positive_int(int_=ID)
-            v.validation.must_bool(bool_=active)
-            v.validation.must_str(str_=path, length=None)
+            v.must_positive_int(int_=ID)
+            v.must_bool(bool_=active)
+            v.must_str(str_=path, length=None)
         except e.InputError as error:
             debug.error(item=debug_str, keyword="_validate_data", message=f"Error = {error.message}")
             return error.message

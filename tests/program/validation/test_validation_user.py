@@ -64,9 +64,8 @@ from tests import helper
      },
 ])
 def test_save_update_user_pass(user):
-    v.create_validation()
     helper.add_user_ids_in_config()
-    v.validation.save_update_user(user)
+    v.save_update_user(user)
 
 
 @pytest.mark.parametrize(("user", "expected"), [
@@ -112,10 +111,9 @@ def test_save_update_user_pass(user):
 
 ])
 def test_save_update_user_exception(user, expected):
-    v.create_validation()
     helper.add_user_ids_in_config()
     with pytest.raises(expected):
-        v.validation.save_update_user(user)
+        v.save_update_user(user)
 
 
 @pytest.mark.parametrize(("ID", "bool_"), [
@@ -123,9 +121,8 @@ def test_save_update_user_exception(user, expected):
     (3, False),
 ])
 def test_must_current_user_pass(ID, bool_):
-    v.create_validation()
     helper.add_user_ids_in_config()
-    v.validation.must_current_user(ID, bool_)
+    v.must_current_user(ID, bool_)
 
 
 @pytest.mark.parametrize(("ID", "bool_", "expected"), [
@@ -133,10 +130,9 @@ def test_must_current_user_pass(ID, bool_):
     (2, False, e.CurrentUserException),
 ])
 def test_must_current_user_exception(ID, bool_, expected):
-    v.create_validation()
     helper.add_user_ids_in_config()
     with pytest.raises(expected):
-        v.validation.must_current_user(ID, bool_)
+        v.must_current_user(ID, bool_)
 
 
 @pytest.mark.parametrize(("ID", "bool_"), [
@@ -144,9 +140,8 @@ def test_must_current_user_exception(ID, bool_, expected):
     (2, False),
 ])
 def test_must_default_user_pass(ID, bool_):
-    v.create_validation()
     helper.add_user_ids_in_config()
-    v.validation.must_default_user(ID, bool_)
+    v.must_default_user(ID, bool_)
 
 
 @pytest.mark.parametrize(("ID", "bool_", "expected"), [
@@ -154,7 +149,6 @@ def test_must_default_user_pass(ID, bool_):
     (1, False, e.DefaultUserException),
 ])
 def test_must_default_user_exception(ID, bool_, expected):
-    v.create_validation()
     helper.add_user_ids_in_config()
     with pytest.raises(expected):
-        v.validation.must_default_user(ID, bool_)
+        v.must_default_user(ID, bool_)

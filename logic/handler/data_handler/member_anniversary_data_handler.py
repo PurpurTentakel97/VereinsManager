@@ -89,7 +89,7 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
 
 
 def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
-    v.validation.must_positive_int(year, max_length=4)
+    v.must_positive_int(year, max_length=4)
 
     final_b_day_data: list = list()
     for entry in b_day:

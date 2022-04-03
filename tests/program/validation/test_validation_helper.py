@@ -16,14 +16,12 @@ import config.exception_sheet as e
     50 * "a",
 ])
 def test_must_str_pass(str_pass):
-    v.create_validation()
-    v.validation.must_str(str_pass)
+    v.must_str(str_pass)
 
 
 def test_must_string_length_None():
     test_str = "a" * 100
-    v.create_validation()
-    v.validation.must_str(test_str, None)
+    v.must_str(test_str, None)
 
 
 @pytest.mark.parametrize(("str_exception", "expected"), [
@@ -40,9 +38,8 @@ def test_must_string_length_None():
     ("a" * 100, e.ToLong),
 ])
 def test_must_string_exception(str_exception, expected):
-    v.create_validation()
     with pytest.raises(expected):
-        v.validation.must_str(str_exception)
+        v.must_str(str_exception)
 
 
 # must dict with strings
@@ -51,8 +48,7 @@ def test_must_string_exception(str_exception, expected):
     (["1"], {"1": None}),
 ])
 def test_must_stings_in_dict_pass(keys_pass, data_pass):
-    v.create_validation()
-    v.validation._must_multiple_str_in_dict(keys_pass, data_pass)
+    v._must_multiple_str_in_dict(keys_pass, data_pass)
 
 
 @pytest.mark.parametrize(("keys_exception", "data_exception", "expected"), [
@@ -61,15 +57,13 @@ def test_must_stings_in_dict_pass(keys_pass, data_pass):
     (1, {"1": "1"}, TypeError),
 ])
 def test_must_stings_in_dict_exception(keys_exception, data_exception, expected):
-    v.create_validation()
     with pytest.raises(expected):
-        v.validation._must_multiple_str_in_dict(keys_exception, data_exception)
+        v._must_multiple_str_in_dict(keys_exception, data_exception)
 
 
 # must bool
 def test_must_bool_pass():
-    v.create_validation()
-    v.validation.must_bool(bool())
+    v.must_bool(bool())
 
 
 @pytest.mark.parametrize("bool_exception", [
@@ -81,9 +75,8 @@ def test_must_bool_pass():
     dict(),
 ])
 def test_must_bool_exception(bool_exception):
-    v.create_validation()
     with pytest.raises(e.NoBool):
-        v.validation.must_bool(bool_exception)
+        v.must_bool(bool_exception)
 
 
 # must positive int
@@ -93,13 +86,12 @@ def test_must_bool_exception(bool_exception):
     helper.random_with_N_digits(15),
 ])
 def test_must_positive_int_passed(int_pass):
-    v.create_validation()
-    v.validation.must_positive_int(int_=int_pass)
+    v.must_positive_int(int_=int_pass)
 
 
 def test_must_positive_int_length_None():
     test_int = helper.random_with_N_digits(20)
-    v.validation.must_positive_int(test_int, None)
+    v.must_positive_int(test_int, None)
 
 
 @pytest.mark.parametrize(("int_exception", "expected"), [
@@ -116,9 +108,8 @@ def test_must_positive_int_length_None():
     (helper.random_with_N_digits(25), e.ToLong),
 ])
 def test_must_positive_int_exception(int_exception, expected):
-    v.create_validation()
     with pytest.raises(expected):
-        v.validation.must_positive_int(int_exception)
+        v.must_positive_int(int_exception)
 
 
 # must int
@@ -130,13 +121,12 @@ def test_must_positive_int_exception(int_exception, expected):
     helper.random_with_N_digits(15),
 ])
 def test_must_int_passed(int_pass):
-    v.create_validation()
-    v.validation.must_int(int_=int_pass)
+    v.must_int(int_=int_pass)
 
 
 def test_must_int_length_None():
     test_int = helper.random_with_N_digits(20)
-    v.validation.must_int(test_int, None)
+    v.must_int(test_int, None)
 
 
 @pytest.mark.parametrize(("int_exception", "expected"), [
@@ -151,15 +141,13 @@ def test_must_int_length_None():
     (helper.random_with_N_digits(25), e.ToLong),
 ])
 def test_must_int_exception(int_exception, expected):
-    v.create_validation()
     with pytest.raises(expected):
-        v.validation.must_int(int_exception)
+        v.must_int(int_exception)
 
 
 # must dict
 def test_must_dict_pass():
-    v.create_validation()
-    v.validation.must_dict(dict())
+    v.must_dict(dict())
 
 
 @pytest.mark.parametrize("dict_exception", [
@@ -171,15 +159,13 @@ def test_must_dict_pass():
     bool(),
 ])
 def test_must_dict_exception(dict_exception):
-    v.create_validation()
     with pytest.raises(e.NoDict):
-        v.validation.must_dict(dict_exception)
+        v.must_dict(dict_exception)
 
 
 # must list
 def test_must_list_pass():
-    v.create_validation()
-    v.validation.must_list(list())
+    v.must_list(list())
 
 
 @pytest.mark.parametrize("dict_exception", [
@@ -192,7 +178,7 @@ def test_must_list_pass():
 ])
 def test_must_list_exception(dict_exception):
     with pytest.raises(e.NoList):
-        v.validation.must_list(dict_exception)
+        v.must_list(dict_exception)
 
 
 # must length
@@ -203,8 +189,7 @@ def test_must_list_exception(dict_exception):
     (2, {"1": 1, "2": 2}.items())
 ])
 def test_must_length_pass(length_pass, data):
-    v.create_validation()
-    v.validation.must_length(length_pass, data)
+    v.must_length(length_pass, data)
 
 
 @pytest.mark.parametrize(("length", "data", "expected"), [
@@ -215,34 +200,6 @@ def test_must_length_pass(length_pass, data):
     (2, int(), TypeError),
 ])
 def test_must_length_exception(length, data, expected):
-    v.create_validation()
     with pytest.raises(expected):
-        v.validation.must_length(length, data)
+        v.must_length(length, data)
 
-
-# must password
-def test_must_password_pass():
-    password = helper.generate_password()
-    v.create_validation()
-    v.validation.must_password(password, password)
-
-
-@pytest.mark.parametrize(("password_1", "password_2", "expected"), [
-    (int(), None, e.NoPassword),
-    (float(), None, e.NoPassword),
-    (list(), None, e.NoPassword),
-    (tuple(), None, e.NoPassword),
-    (dict(), None, e.NoPassword),
-    (bool(), None, e.NoPassword),
-    (None, None, e.NoPassword),
-    (str(), None, e.NoPassword),
-    ("123", "456", e.DifferentPassword),
-    ("123", "123", e.PasswordToShort),
-    ("1 23456789", "1 23456789", e.PasswordHasSpace),
-    ("1111111111", "1111111111", e.VeryLowPassword),
-    ("1234567890", "1234567890", e.LowPassword),
-])
-def test_must_password_exception(password_1, password_2, expected):
-    v.create_validation()
-    with pytest.raises(expected):
-        v.validation.must_password(password_1, password_2)

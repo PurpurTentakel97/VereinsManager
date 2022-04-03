@@ -18,8 +18,7 @@ def test_add_type_pass(name, raw_type_id):
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.create_validation()
-    v.validation.add_type(type_name=name, raw_type_id=raw_type_id)
+    v.add_type(type_name=name, raw_type_id=raw_type_id)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -28,9 +27,8 @@ def test_add_type_exception():
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.create_validation()
     with pytest.raises(e.AlreadyExists):
-        v.validation.add_type(type_name="type_2", raw_type_id=2)
+        v.add_type(type_name="type_2", raw_type_id=2)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -39,8 +37,7 @@ def test_update_type_pass():
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.create_validation()
-    v.validation.update_type(1, "test")
+    v.update_type(1, "test")
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -55,9 +52,8 @@ def test_update_type_exception(ID, new_name, expexted):
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.create_validation()
     with pytest.raises(expexted):
-        v.validation.update_type(ID, new_name)
+        v.update_type(ID, new_name)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -66,8 +62,7 @@ def test_update_type_activity_pass():
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.create_validation()
-    v.validation.update_type_activity(1, False)
+    v.update_type_activity(1, False)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -80,8 +75,7 @@ def test_update_type_activity_exception(ID, active, expexted):
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.create_validation()
     with pytest.raises(expexted):
-        v.validation.update_type_activity(ID, active)
+        v.update_type_activity(ID, active)
     helper.drop_select_handler()
     helper.delete_temp_database()

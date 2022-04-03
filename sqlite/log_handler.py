@@ -24,9 +24,9 @@ class LogHandler(Database):
     def log_type(self, target_id: int, target_column: str, old_data, new_data) -> None:
         log_date = self.transform_log_none_date(none_date=None)
 
-        v.validation.must_positive_int(target_id, max_length=None)
-        v.validation.must_int(int_=log_date)
-        v.validation.must_str(target_column)
+        v.must_positive_int(target_id, max_length=None)
+        v.must_int(int_=log_date)
+        v.must_str(target_column)
 
         self._log(target_table="type", target_id=target_id, target_column=target_column, old_data=old_data,
                   new_data=new_data, log_date=log_date)
@@ -35,7 +35,7 @@ class LogHandler(Database):
     def log_member(self, target_id: int, old_data: dict | None, new_data: dict, log_date: int | None) -> None:
         log_date = self.transform_log_none_date(none_date=log_date)
 
-        v.validation.must_int(int_=log_date)
+        v.must_int(int_=log_date)
 
         if old_data:
             self._log_member(target_id=target_id, old_data=old_data, new_data=new_data, log_date=log_date)
@@ -94,9 +94,9 @@ class LogHandler(Database):
     def log_member_activity(self, target_id: int, old_activity: bool, new_activity: bool, log_date: int) -> None:
         log_date = self.transform_log_none_date(none_date=log_date)
 
-        v.validation.must_int(int_=log_date)
-        v.validation.must_bool(old_activity)
-        v.validation.must_bool(new_activity)
+        v.must_int(int_=log_date)
+        v.must_bool(old_activity)
+        v.must_bool(new_activity)
 
         if old_activity != new_activity:
             self._log(target_id=target_id, target_table="member", target_column="active",
@@ -108,7 +108,7 @@ class LogHandler(Database):
                          log_date: int | None, type_: str) -> None:
         log_date = self.transform_log_none_date(none_date=log_date)
 
-        v.validation.must_int(int_=log_date)
+        v.must_int(int_=log_date)
 
         match type_:
             case "phone":

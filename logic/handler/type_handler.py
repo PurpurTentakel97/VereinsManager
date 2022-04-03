@@ -14,8 +14,8 @@ debug_str: str = "Type Handler"
 # add
 def add_type(type_name: str, raw_type_id: int) -> [str | int, bool]:
     try:
-        v.validation.add_type(type_name=type_name, raw_type_id=raw_type_id)
-        v.validation.must_default_user(c.config.user_id, False)
+        v.add_type(type_name=type_name, raw_type_id=raw_type_id)
+        v.must_default_user(c.config.user_id, False)
 
         return a_h.add_handler.add_type(type_name=type_name.strip().title(), raw_type_id=raw_type_id), True
     except (e.OperationalError, e.InputError) as error:
@@ -34,8 +34,8 @@ def get_raw_types() -> [str | tuple, bool]:
 
 def get_single_raw_type_types(raw_type_id: int, active: bool = True) -> [str | tuple, bool]:
     try:
-        v.validation.must_positive_int(int_=raw_type_id)
-        v.validation.must_bool(bool_=active)
+        v.must_positive_int(int_=raw_type_id)
+        v.must_bool(bool_=active)
 
         return s_h.select_handler.get_single_raw_type_types(raw_type_id=raw_type_id, active=active), True
     except (e.OperationalError, e.InputError) as error:
@@ -53,7 +53,7 @@ def get_active_member_type() -> [str | tuple, bool]:
 
 def get_type_name_by_ID(ID: int) -> [str | tuple, bool]:
     try:
-        v.validation.must_positive_int(int_=ID, max_length=None)
+        v.must_positive_int(int_=ID, max_length=None)
 
         return s_h.select_handler.get_type_name_by_ID(ID=ID), True
     except (e.OperationalError, e.InputError) as error:
@@ -64,8 +64,8 @@ def get_type_name_by_ID(ID: int) -> [str | tuple, bool]:
 # update
 def update_type(ID: int, name: str) -> [str | None, bool]:
     try:
-        v.validation.update_type(ID=ID, new_name=name)
-        v.validation.must_default_user(c.config.user_id, False)
+        v.update_type(ID=ID, new_name=name)
+        v.must_default_user(c.config.user_id, False)
 
         name = name.strip().title()
 
@@ -80,8 +80,8 @@ def update_type(ID: int, name: str) -> [str | None, bool]:
 
 def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
     try:
-        v.validation.update_type_activity(ID=ID, active=active)
-        v.validation.must_default_user(c.config.user_id, False)
+        v.update_type_activity(ID=ID, active=active)
+        v.must_default_user(c.config.user_id, False)
 
         reference_data = s_h.select_handler.get_type_active_by_id(ID=ID)
         u_h.update_handler.update_type_activity(ID=ID, active=active)
@@ -95,8 +95,8 @@ def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
 # delete
 def delete_type(ID: int) -> [str | None, bool]:
     try:
-        v.validation.must_positive_int(ID, max_length=None)
-        v.validation.must_default_user(c.config.user_id, False)
+        v.must_positive_int(ID, max_length=None)
+        v.must_default_user(c.config.user_id, False)
 
         d_h.delete_handler.delete_type(ID=ID)
         return None, True

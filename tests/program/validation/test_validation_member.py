@@ -23,8 +23,7 @@ from config import exception_sheet as e
      'maps': 'www.bester_link.com'}
 ])
 def test_update_member_pass(member):
-    v.create_validation()
-    v.validation.update_member(member)
+    v.update_member(member)
 
 
 @pytest.mark.parametrize(("member", "expected"), [
@@ -42,9 +41,8 @@ def test_update_member_pass(member):
       'maps': 'www.bester_link.com'}, e.ToLong)
 ])
 def test_update_member_exception(member, expected):
-    v.create_validation()
     with pytest.raises(expected):
-        v.validation.update_member(member)
+        v.update_member(member)
 
 
 @pytest.mark.parametrize(("data", "type_"), [
@@ -54,8 +52,7 @@ def test_update_member_exception(member, expected):
     ([None, 2, None, True], "position"),
 ])
 def test_update_member_nexus_pass(data, type_):
-    v.create_validation()
-    v.validation.update_member_nexus(data, type_)
+    v.update_member_nexus(data, type_)
 
 
 @pytest.mark.parametrize(("data", "type_", "expected"), [
@@ -65,6 +62,5 @@ def test_update_member_nexus_pass(data, type_):
     ([None, 2, None, True], "phone", e.NoStr),
 ])
 def test_update_member_nexus_exception(data, type_, expected):
-    v.create_validation()
     with pytest.raises(expected):
-        v.validation.update_member_nexus(data, type_)
+        v.update_member_nexus(data, type_)

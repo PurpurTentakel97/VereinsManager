@@ -36,7 +36,7 @@ def _add_member_nexus_position(type_id: int, value: bool, member_id: int, log_da
 
 # get
 def get_phone_number_by_member_id(member_id: int) -> tuple:
-    v.validation.must_positive_int(int_=member_id, max_length=None)
+    v.must_positive_int(int_=member_id, max_length=None)
     phone_data = s_h.select_handler.get_phone_number_by_member_id(member_id=member_id)
     types = s_h.select_handler.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['phone'], active=True)
     checked_phone_data: list = list()
@@ -50,7 +50,7 @@ def get_phone_number_by_member_id(member_id: int) -> tuple:
 
 
 def get_mail_by_member_id(member_id: int) -> tuple:
-    v.validation.must_positive_int(int_=member_id, max_length=None)
+    v.must_positive_int(int_=member_id, max_length=None)
     mail_data = s_h.select_handler.get_mail_by_member_id(member_id=member_id)
     types = s_h.select_handler.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['mail'], active=True)
     checked_mail_data: list = list()
@@ -63,7 +63,7 @@ def get_mail_by_member_id(member_id: int) -> tuple:
 
 
 def get_position_by_member_id(member_id: int) -> tuple:
-    v.validation.must_positive_int(int_=member_id, max_length=None)
+    v.must_positive_int(int_=member_id, max_length=None)
     data = s_h.select_handler.get_position_by_member_id(member_id=member_id)
 
     data = list(data)
@@ -79,7 +79,7 @@ def get_position_by_member_id(member_id: int) -> tuple:
 
 # update
 def update_add_member_nexus(data: dict, member_id: int, log_date: int | None) -> dict:
-    v.validation.must_dict(data)
+    v.must_dict(data)
 
     phone_ids = _update_add_member_nexus_phone(phone=data["phone"], member_id=member_id, log_date=log_date)
     mail_ids = _update_add_member_nexus_mail(mail=data["mail"], member_id=member_id, log_date=log_date)
@@ -95,7 +95,7 @@ def update_add_member_nexus(data: dict, member_id: int, log_date: int | None) ->
 def _update_add_member_nexus_phone(phone: list, member_id: int, log_date: int) -> list:
     phone_ids: list = list()
     for ID, type_id, Type, phone_number in phone:
-        v.validation.update_member_nexus(data=[ID, type_id, Type, phone_number], type_="phone")
+        v.update_member_nexus(data=[ID, type_id, Type, phone_number], type_="phone")
 
         if ID is None:
             new_ID = _add_member_nexus_phone(type_id=type_id, value=phone_number, member_id=member_id,
@@ -111,7 +111,7 @@ def _update_add_member_nexus_phone(phone: list, member_id: int, log_date: int) -
 def _update_add_member_nexus_mail(mail: list, member_id: int, log_date: int) -> list:
     mail_ids: list = list()
     for ID, type_id, Type, mail_ in mail:
-        v.validation.update_member_nexus(data=[ID, type_id, Type, mail_], type_="mail")
+        v.update_member_nexus(data=[ID, type_id, Type, mail_], type_="mail")
 
         if ID is None:
             new_ID = _add_member_nexus_mail(type_id=type_id, value=mail_, member_id=member_id, log_date=log_date)
@@ -125,7 +125,7 @@ def _update_add_member_nexus_mail(mail: list, member_id: int, log_date: int) -> 
 def _update_add_member_nexus_position(position: list, member_id: int, log_date: int) -> list:
     position_ids: list = list()
     for ID, type_id, Type, active in position:
-        v.validation.update_member_nexus(data=[ID, type_id, Type, active], type_="position")
+        v.update_member_nexus(data=[ID, type_id, Type, active], type_="position")
 
         if ID is None:
             new_ID = _add_member_nexus_position(type_id=type_id, value=active, member_id=member_id, log_date=log_date)

@@ -16,7 +16,7 @@ def create_default_dir(type_) -> None:
 
 
 def compare_password(ID: int, password: str) -> [str | bool, bool]:
-    return password_validation.check_password(ID=ID, password=password)
+    return password_validation.check_user_password(ID=ID, password=password)
 
 
 # type

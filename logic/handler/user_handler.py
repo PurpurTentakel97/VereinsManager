@@ -14,7 +14,7 @@ debug_str: str = "User Handler"
 # get
 def get_names_of_user(active: bool = True) -> [str | tuple, bool]:
     try:
-        v.validation.must_bool(bool_=active)
+        v.must_bool(bool_=active)
         return s_h.select_handler.get_names_of_user(active=active), True
 
     except (e.OperationalError, e.InputError) as error:
@@ -24,8 +24,8 @@ def get_names_of_user(active: bool = True) -> [str | tuple, bool]:
 
 def get_data_of_user_by_ID(ID: int, active: bool) -> [str | dict, bool]:
     try:
-        v.validation.must_positive_int(int_=ID)
-        v.validation.must_bool(bool_=active)
+        v.must_positive_int(int_=ID)
+        v.must_bool(bool_=active)
 
         data = s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
         data_: dict = {
@@ -48,7 +48,7 @@ def get_data_of_user_by_ID(ID: int, active: bool) -> [str | dict, bool]:
 
 
 def get_hashed_password_by_ID(ID: int) -> bytes:
-    v.validation.must_positive_int(int_=ID)
+    v.must_positive_int(int_=ID)
 
     hashed = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
 
@@ -58,7 +58,7 @@ def get_hashed_password_by_ID(ID: int) -> bytes:
 # add / update
 def add_update_user(data: dict) -> [str | int | None, bool]:
     try:
-        v.validation.save_update_user(data=data)
+        v.save_update_user(data=data)
 
         if not data["ID"]:
             data["password_hashed"] = hasher.hash_password(data["password_1"])
@@ -79,10 +79,10 @@ def add_update_user(data: dict) -> [str | int | None, bool]:
 # update
 def update_user_activity(ID: int, active: bool) -> [str, bool]:
     try:
-        v.validation.must_positive_int(int_=ID)
-        v.validation.must_bool(bool_=active)
-        v.validation.must_current_user(ID=ID, same=False)
-        v.validation.must_default_user(ID=ID, same=False)
+        v.must_positive_int(int_=ID)
+        v.must_bool(bool_=active)
+        v.must_current_user(ID=ID, same=False)
+        v.must_default_user(ID=ID, same=False)
         u_h.update_handler.update_user_activity(ID=ID, active=active)
         return None, True
 
