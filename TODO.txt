@@ -14,8 +14,7 @@ sql database
 UI
     Global
         set Icon in Taskbar
-    Member Window
-        tap trap in comment text
+        check for screen reader
 
 member
     export schreiben

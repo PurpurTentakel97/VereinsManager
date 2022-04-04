@@ -208,6 +208,7 @@ class MembersWindow(BaseWindow):
         self._comment_lb.setText("Kommentar:")
         self._comment_text: QTextEdit = QTextEdit()
         self._comment_text.textChanged.connect(lambda: self._set_el_input(LineEditType.OTHER))
+        self._comment_text.setTabChangesFocus(True)
 
     def _set_layout(self) -> None:
         # Top
