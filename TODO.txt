@@ -21,9 +21,6 @@ member
     export schreiben
     add membership exception
 
-error log
-    add as txt
-
 
 test
     handler

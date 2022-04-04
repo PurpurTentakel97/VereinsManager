@@ -31,6 +31,6 @@ def _get_default_path(type_: str) -> str:
             path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/\
                 {c.config.dirs['member']}/{c.config.dirs['member_letter']}"
         case "error_log":
-            path = f"{c.config.dirs['save']}/{c.config.dirs['error']}"
+            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['error']}"
 
     return path

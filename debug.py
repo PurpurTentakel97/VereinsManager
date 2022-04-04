@@ -2,7 +2,11 @@
 # 21.01.2022
 # VereinsManager / SQLite
 
+import json
+
 from logic.handler import path_handler
+from config import config_sheet as c
+from datetime import datetime
 
 is_debug: bool = True
 is_debug_item: bool = False
@@ -42,10 +46,25 @@ def info(item, keyword, message) -> None:
 def error(item, keyword, message) -> None:
     error: str = f"+++++ ERROR.LOG // {item} // {keyword} // {message} +++++"
     print(error)
-    _error.append(error)
+    _add_error_to_list(item, keyword, message)
+
+
+def _add_error_to_list(item, keyword, message) -> None:
+    entry: dict = {
+        "date": datetime.strftime(datetime.now(), c.config.date_format['long']),
+        "type": "Error",
+        "item": item,
+        "keyword": keyword,
+        "message": message,
+    }
+    _error.append(entry)
 
 
 def export_error() -> None:
-    path_handler.create_default_path(type_="error_log")
-    text: str = "\n".join(_error)
-    print(f"<<< export_error start >>>\n{text}\n<<< export_error end >>>")
+    if _error:
+        path_handler.create_default_path(type_="error_log")
+        print(f"<<< export_error start >>>\n{_error}\n<<< export_error end >>>")
+        with open(
+                f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['error']}/error_log_{datetime.strftime(datetime.now(), c.config.date_format['long_save'])}.json",
+                "w", encoding='UTF-8') as file:
+            json.dump(_error, file, ensure_ascii=False, indent=4)
