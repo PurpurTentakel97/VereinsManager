@@ -2,8 +2,7 @@
 # 21.03.2022
 # VereinsManager / Global Handler
 
-from logic.handler import member_handler, user_handler
-import debug
+from logic.handler.main_handler import member_handler, user_handler
 
 debug_str: str = "Global Handler"
 

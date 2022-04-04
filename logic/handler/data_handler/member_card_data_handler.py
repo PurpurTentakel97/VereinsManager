@@ -4,11 +4,9 @@
 
 import datetime
 
-from logic.handler import member_handler
+from logic.handler.main_handler import member_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
-
-import debug
 
 debug_str: str = "Member Card Handler"
 none_str: str = "---"

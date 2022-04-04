@@ -3,8 +3,7 @@
 # VereinsManager / Transition
 
 from helper import password_validation
-from logic.handler import path_handler, user_handler, \
-    type_handler, member_handler
+from logic.handler.main_handler import member_handler, path_handler, type_handler, user_handler
 from logic.handler.data_handler import member_anniversary_data_handler, member_table_data_handler
 from logic.handler.pdf_handler import member_table_pdf as m_t_p, global_pdf_handler, member_anniversary_pdf as m_a_p, \
     member_card_pdf as m_c_p

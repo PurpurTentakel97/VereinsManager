@@ -9,8 +9,7 @@ import traceback
 from config import config_sheet
 from sqlite import database, global_database_handler
 from logic.handler.pdf_handler import global_pdf_handler
-from logic.handler import global_handler
-from logic.handler import window_handler
+from logic.handler.main_handler import global_handler, window_handler
 
 import debug
 

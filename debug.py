@@ -4,7 +4,7 @@
 
 import json
 
-from logic.handler import path_handler
+from logic.handler.main_handler import path_handler
 from config import config_sheet as c
 from datetime import datetime
 
