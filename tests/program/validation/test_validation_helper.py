@@ -42,6 +42,42 @@ def test_must_string_exception(str_exception, expected):
         v.must_str(str_exception)
 
 
+# must membership type
+@pytest.mark.parametrize("membership_type", [
+    "Type_1",
+])
+def test_must_membership_type_pass(membership_type):
+    helper.generate_temp_database()
+    helper.add_generic_type()
+    helper.generate_select_handler()
+    v.must_membership_type(membership_type)
+    helper.drop_select_handler()
+    helper.delete_temp_database()
+
+
+@pytest.mark.parametrize(("membership_type", "expected"), [
+    ("Type_2", e.NotFound),
+    ("", e.NoMembership),
+    (5, e.NoMembership),
+    (-9, e.NoMembership),
+    (5.6, e.NoMembership),
+    (-9.6, e.NoMembership),
+    (str(), e.NoMembership),
+    (bool(), e.NoMembership),
+    (list(), e.NoMembership),
+    (tuple(), e.NoMembership),
+    (dict(), e.NoMembership),
+])
+def test_must_membership_type_pass(membership_type,expected):
+    helper.generate_temp_database()
+    helper.add_generic_type()
+    helper.generate_select_handler()
+    with pytest.raises(expected):
+        v.must_membership_type(membership_type)
+    helper.drop_select_handler()
+    helper.delete_temp_database()
+
+
 # must dict with strings
 @pytest.mark.parametrize(("keys_pass", "data_pass"), [
     (["1"], {"1": "1"}),
@@ -202,4 +238,3 @@ def test_must_length_pass(length_pass, data):
 def test_must_length_exception(length, data, expected):
     with pytest.raises(expected):
         v.must_length(length, data)
-

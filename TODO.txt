@@ -19,7 +19,6 @@ UI
 
 member
     export schreiben
-    add membership exception
 
 
 test

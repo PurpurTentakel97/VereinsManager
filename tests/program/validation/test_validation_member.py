@@ -6,6 +6,7 @@ import pytest
 
 from logic import validation as v
 from config import exception_sheet as e
+from tests import helper
 
 
 @pytest.mark.parametrize("member", [
@@ -17,13 +18,18 @@ from config import exception_sheet as e
      'birth_date': -2207955600,
      'entry_date': -2207178000,
      'city': 'Köln',
-     'membership_type': 'Aktiv',
+     'membership_type': 'Type_1',
      'special_member': True,
      'comment_text': f'Ich bin der weltbeste Kommtentar und sehr lang.\n{"a" * 200}',
      'maps': 'www.bester_link.com'}
 ])
 def test_update_member_pass(member):
+    helper.generate_temp_database()
+    helper.add_generic_type()
+    helper.generate_select_handler()
     v.update_member(member)
+    helper.drop_select_handler()
+    helper.delete_temp_database()
 
 
 @pytest.mark.parametrize(("member", "expected"), [
@@ -35,14 +41,43 @@ def test_update_member_pass(member):
       'birth_date': -2207955600,
       'entry_date': -2207178000,
       'city': 'Köln',
-      'membership_type': 'Aktiv',
+      'membership_type': 'Type_1',
       'special_member': True,
       'comment_text': f'Ich bin der weltbeste Kommtentar und sehr lang.\n{"a" * 2000}',
-      'maps': 'www.bester_link.com'}, e.ToLong)
+      'maps': 'www.bester_link.com'}, e.ToLong),
+    ({'first_name': 'Hans Peter',
+      'last_name': 'Schmitz',
+      'street': 'Straße',
+      'number': '66785',
+      'zip_code': '56754',
+      'birth_date': -2207955600,
+      'entry_date': -2207178000,
+      'city': 'Köln',
+      'membership_type': 'Type_2',
+      'special_member': True,
+      'comment_text': f'Ich bin der weltbeste Kommtentar und sehr lang.',
+      'maps': 'www.bester_link.com'}, e.NotFound),
+    ({'first_name': 'Hans Peter',
+      'last_name': 'Schmitz',
+      'street': 'Straße',
+      'number': '66785',
+      'zip_code': '56754',
+      'birth_date': -2207955600,
+      'entry_date': -2207178000,
+      'city': 'Köln',
+      'membership_type': '',
+      'special_member': True,
+      'comment_text': f'Ich bin der weltbeste Kommtentar und sehr lang.',
+      'maps': 'www.bester_link.com'}, e.NoMembership)
 ])
 def test_update_member_exception(member, expected):
+    helper.generate_temp_database()
+    helper.add_generic_type()
+    helper.generate_select_handler()
     with pytest.raises(expected):
         v.update_member(member)
+    helper.drop_select_handler()
+    helper.delete_temp_database()
 
 
 @pytest.mark.parametrize(("data", "type_"), [

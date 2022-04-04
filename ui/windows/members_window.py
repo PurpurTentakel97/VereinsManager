@@ -60,6 +60,7 @@ class PositionListItem(QListWidgetItem):
 class MembersWindow(BaseWindow):
     def __init__(self):
         super().__init__()
+        self._is_edit: bool = bool()
         self.member_counter: int = int()
 
         self.raw_membership_ids: list[tuple[int, str]] = list()  # [ID, Name]
@@ -77,7 +78,6 @@ class MembersWindow(BaseWindow):
         self._set_types()
         self._set_first_member()
 
-        self._is_edit: bool = bool()
         self._set_edit_mode(active=False)
         self._set_maps()
         self._first_name_le.setFocus()

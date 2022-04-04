@@ -78,59 +78,66 @@ class NoStr(InputError):
         self.set_message(message="Keine Eingabe", info=info)
 
 
-class NoBool(InputError):
+class NoMembership(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
         self.error_code: str = "202"
+        self.set_message(message="Keine Mitgliedsart vorhanden", info=info)
+
+
+class NoBool(InputError):
+    def __init__(self, info: str = ""):
+        super().__init__()
+        self.error_code: str = "203"
         self.set_message(message="Kein Bool-Wert", info=info)
 
 
 class NoDict(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
-        self.error_code: str = "203"
+        self.error_code: str = "204"
         self.set_message(message="Kein Dictionary", info=info)
 
 
 class NoInt(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
-        self.error_code: str = "204"
+        self.error_code: str = "205"
         self.set_message(message="Keine Ganzzahl", info=info)
 
 
 class NoPositiveInt(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
-        self.error_code: str = "205"
+        self.error_code: str = "206"
         self.set_message(message="Keine positive Ganzzahl", info=info)
 
 
 class NoList(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
-        self.error_code: str = "206"
+        self.error_code: str = "207"
         self.set_message(message="Keine Liste", info=info)
 
 
 class WrongLength(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
-        self.error_code: str = "207"
+        self.error_code: str = "208"
         self.set_message(message="Falsche Länge", info=info)
 
 
 class NoChance(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
-        self.error_code: str = "208"
+        self.error_code: str = "209"
         self.set_message(message="Keine Änderung", info=info)
 
 
 class AlreadyExists(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
-        self.error_code: str = "209"
+        self.error_code: str = "210"
         self.set_message(message="Bereits vorhanden", info=info)
 
 

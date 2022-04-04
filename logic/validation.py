@@ -4,6 +4,7 @@
 from sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
 from logic import password_validation as p_v
+from logic.handler import type_handler as t_h
 import debug
 
 debug_str: str = "Validation"
@@ -65,9 +66,11 @@ def update_member(data: dict) -> None:
         "number",
         "city",
         "maps",
-        "membership_type",
         "zip_code",
     ], data)
+
+    if data['membership_type'] is not None:
+        must_membership_type(data['membership_type'])
 
     if data["comment_text"] is not None:
         must_str(str_=data["comment_text"], length=2000)
@@ -168,6 +171,20 @@ def must_str(str_: str, length: int | None = 50) -> None:
     if length is not None:
         if len(str_.strip()) > length:
             raise e.ToLong(max_length=length, text=str_)
+
+
+def must_membership_type(str_: str) -> None:
+    if not isinstance(str_, str) or len(str_.strip()) == 0:
+        raise e.NoMembership(info=str_)
+    reference_data,_ = t_h.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['membership'], active=True)
+    not_found: bool = True
+    for entry in reference_data:
+        if str_ in entry:
+            not_found = False
+            break
+
+    if not_found:
+        raise e.NotFound(info=str_)
 
 
 def _must_multiple_str_in_dict(keys: list, data: dict) -> None:
