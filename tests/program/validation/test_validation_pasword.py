@@ -43,6 +43,6 @@ def test_check_user_password_pass(ID, password, expected_password, expected_func
     result = p_v.check_user_password(ID, password, False)
     assert result[0] == expected_password
     assert result[1] == expected_function
-    assert (ID == c.config.user_id) == expected_password
+    assert (ID == c.config.user['ID']) == expected_password
     helper.drop_select_handler()
     helper.delete_temp_database()

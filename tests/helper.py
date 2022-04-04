@@ -18,7 +18,7 @@ def generate_config() -> None:
 
 def add_user_ids_in_config() -> None:
     c.create_config()
-    c.config.user_id = 2
+    c.config.user['ID'] = 2
 
 
 # handler
@@ -33,9 +33,9 @@ def drop_select_handler() -> None:
 # database
 def generate_temp_database():
     generate_config()
-    c.config.save_dir = "temp_save_dir"
-    c.config.organisation_dir = "temp_organisation_dir"
-    c.config.database_name = "unit_test_database"
+    c.config.dirs['save'] = "temp_save"
+    c.config.dirs['organisation'] = "temp_organisation"
+    c.config.files['database'] = "unit_test_database"
     database.crate_database()
 
 
@@ -47,7 +47,7 @@ def add_generic_type() -> None:
 
 def delete_temp_database():
     database.database.drop_connection()
-    shutil.rmtree("temp_save_dir", ignore_errors=False)
+    shutil.rmtree("temp_save", ignore_errors=False)
 
 
 # helper
