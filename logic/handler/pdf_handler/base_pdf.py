@@ -2,8 +2,10 @@
 # 06.03.2022
 # VereinsManager / Base PDF
 
+from PIL import Image as image
 from reportlab.lib.styles import StyleSheet1
-from reportlab.platypus import Paragraph
+from reportlab.platypus import Paragraph, Image
+from reportlab.lib.units import cm
 
 from datetime import datetime
 import os
@@ -47,6 +49,37 @@ class BasePDF:
                              self.style_sheet["BodyText"])
         else:
             return Paragraph(str("---" if not value else value), self.style_sheet["BodyText"])
+
+    def get_icon(self) -> Image:
+        width, height = self._get_icon_ratio()
+        icon: Image = Image(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}",
+                            width=width * cm, height=height * cm)
+        icon.hAlign = 'RIGHT'
+        return icon
+
+    def _get_icon_ratio(self) -> tuple:
+        image_ = image.open(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}")
+        width, height = image_.size
+        if width == height:
+            return c.config.constant['icon_height'], c.config.constant['icon_height']
+        ratio = width / height
+        width_ratio = c.config.constant['icon_height'] * ratio
+        height_ratio = c.config.constant['icon_height']
+        if width_ratio > c.config.constant['icon_max_width']:
+            width_ratio, height_ratio = self._transform_max_width(ratio=ratio)
+        return width_ratio, height_ratio
+
+    @staticmethod
+    def _transform_max_width(ratio: float) -> tuple:
+        width = c.config.constant['icon_max_width']
+        height = width / ratio
+        return width, height
+
+    @staticmethod
+    def is_icon() -> bool:
+        if os.path.exists(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}"):
+            return True
+        return False
 
     @staticmethod
     def set_last_export_path(path: str) -> None:

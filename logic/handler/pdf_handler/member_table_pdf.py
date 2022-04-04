@@ -30,9 +30,9 @@ class MemberTablePDF(BasePDF):
         data = self._get_data(active)
         type_ids = self._get_type_ids()
 
-        elements: list = [
-            Paragraph("Mitglieder", self.style_sheet["Title"])
-        ]
+        elements: list = list()
+        elements.append(self.get_icon())
+        elements.extend(self._get_header())
 
         if not data:
             self._no_data_return(doc, elements)
@@ -112,6 +112,9 @@ class MemberTablePDF(BasePDF):
             if member_data["membership_years"] is not None and int(member_data["membership_years"]) % 5 == 0:
                 style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
         return table_data, style_data
+
+    def _get_header(self) -> list:
+        return [Paragraph("Mitglieder", self.style_sheet["Title"])]
 
     @staticmethod
     def _get_data(active: bool) -> dict:

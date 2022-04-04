@@ -33,10 +33,10 @@ class MemberCardPDF(BasePDF):
         doc: SimpleDocTemplate = self._get_doc()
         data = member_card_data_handler.get_card_member_data(active=active, ID=ID)
 
-        elements: list = [
-            Paragraph(data['member_data']['name'],
-                      self.style_sheet["Title"])
-        ]
+        elements: list = list()
+        if self.is_icon():
+            elements.append(self.get_icon())
+        elements.extend(self._get_title(data=data))
 
         if not data:
             self._mo_data_return(doc=doc, elements=elements)
@@ -112,6 +112,11 @@ class MemberCardPDF(BasePDF):
             elements.append(Paragraph(entry, self.style_sheet['Normal']))
 
         return elements
+
+    def _get_title(self, data: dict) -> list:
+        return [Paragraph(data['member_data']['name'], self.style_sheet["Title"])]
+
+
 
     @staticmethod
     def _validate_data(path: str, active: bool, ID: int) -> None | str:

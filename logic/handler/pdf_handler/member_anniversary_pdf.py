@@ -28,9 +28,9 @@ class MemberAnniversaryPDF(BasePDF):
         doc: SimpleDocTemplate = self._get_doc()
         data = self._get_data(year=year, active=active)
 
-        elements: list = [
-            Paragraph("Geburtstage / Jubiläen", self.style_sheet["Title"])
-        ]
+        elements: list = list()
+        elements.append(self.get_icon())
+        elements.extend(self._get_header())
 
         if not data:
             self._no_data_return(elements=elements, doc=doc)
@@ -108,6 +108,9 @@ class MemberAnniversaryPDF(BasePDF):
         return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
                                  leftMargin=1.5 * cm,
                                  topMargin=1.5 * cm, bottomMargin=1.5 * cm)
+
+    def _get_header(self) -> list:
+        return [Paragraph("Geburtstage / Jubiläen", self.style_sheet["Title"])]
 
     @staticmethod
     def _get_data(year: int | None, active: bool) -> dict:

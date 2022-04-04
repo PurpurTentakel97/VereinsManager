@@ -19,6 +19,7 @@ debug_str: str = "Main"
 def _test() -> None:
     pass
 
+
 # main
 if __name__ == "__main__":
     try:

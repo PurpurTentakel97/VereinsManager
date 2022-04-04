@@ -19,7 +19,7 @@ class Config:
         # from config json
         self.date_format: dict = dict()
         self.raw_type_id: dict = dict()
-        self.hash: dict = dict()
+        self.constant: dict = dict()
         self.dirs: dict = dict()
         self.files: dict = dict()
         self.user: dict = dict()
@@ -35,7 +35,7 @@ class Config:
 
         self.date_format: dict = json_data["date_format"]
         self.raw_type_id: dict = json_data["raw_type_id"]
-        self.hash: dict = json_data["hash"]
+        self.constant: dict = json_data["constant"]
         self.dirs: dict = json_data["dirs"]
         self.files: dict = json_data["files"]
         self.user: dict = json_data["user"]

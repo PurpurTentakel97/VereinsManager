@@ -14,8 +14,10 @@
     "position": 4,
     "job": 5
   },
-  "hash": {
-    "rounds": 12
+  "constant": {
+    "hash_rounds": 12,
+    "icon_height": 3,
+    "icon_max_width": 16
   },
   "dirs": {
     "save": "saves",
@@ -30,7 +32,7 @@
   },
   "files": {
     "database": "default_database.vm",
-    "icon": "icon.png"
+    "icon": "icon_2.png"
   },
   "user": {
     "ID": 0,
