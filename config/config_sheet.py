@@ -73,6 +73,9 @@ class Config:
     def get_icon_path(self) -> str:
         return f"{self.dirs['save']}/{self.dirs['organisation']}/{self.files['icon']}"
 
+    def get_default_icon_path(self) -> str:
+        return f"{self.dirs['config']}/{self.files['default_icon']}"
+
 
 def create_config():
     global config

@@ -4,7 +4,6 @@
 
 pdf
     dirfferent name for anniversary pdfs
-    set icon in PDF
     add page count
     add spacer
 

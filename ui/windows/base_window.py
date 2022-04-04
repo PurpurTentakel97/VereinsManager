@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Base Window
+
 from PIL import Image
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
@@ -19,6 +20,8 @@ class BaseWindow(QMainWindow):
     def _set_base_window_information(self) -> None:
         if self.is_ui_icon():
             self.setWindowIcon(QIcon(c.config.get_icon_path()))
+        else:
+            self.setWindowIcon(QIcon(c.config.get_default_icon_path()))
 
     def _set_menu(self) -> None:
         pass
@@ -35,7 +38,7 @@ class BaseWindow(QMainWindow):
     @staticmethod
     def is_ui_icon() -> bool:
         image = Image.open(c.config.get_icon_path())
-        if 1.1 > image.width / image.height > 0.9:
+        if 1.05 > image.width / image.height > 0.95:
             return True
         return False
 
@@ -44,6 +47,8 @@ class BaseWindow(QMainWindow):
         msg = QMessageBox()
         if BaseWindow.is_ui_icon():
             msg.setWindowIcon(QIcon(c.config.get_icon_path()))
+        else:
+            msg.setWindowIcon(QIcon(c.config.get_default_icon_path()))
         msg.setIcon(QMessageBox.Information)
         msg.setText(f"{window_name} wird geschlossen.")
         msg.setInformativeText("Du hast ungespeicherte Daten. Möchtest du diese Daten vorher speichern?")
@@ -56,6 +61,8 @@ class BaseWindow(QMainWindow):
         msg = QMessageBox()
         if BaseWindow.is_ui_icon():
             msg.setWindowIcon(QIcon(c.config.get_icon_path()))
+        else:
+            msg.setWindowIcon(QIcon(c.config.get_default_icon_path()))
         msg.setIcon(QMessageBox.Question)
         msg.setText(f"Neues PDF öffnen?")
         msg.setInformativeText("Das neue PDF kann geöffnet werden.")

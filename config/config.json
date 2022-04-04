@@ -28,11 +28,13 @@
     "member_list": "member_list",
     "member_anniversary": "member_anniversary",
     "member_card": "member_card",
-    "member_letter": "member_letter"
+    "member_letter": "member_letter",
+    "config": "config"
   },
   "files": {
     "database": "default_database.vm",
-    "icon": "icon_1.png"
+    "icon": "icon_3.png",
+    "default_icon": "default_icon.png"
   },
   "user": {
     "ID": 0,
