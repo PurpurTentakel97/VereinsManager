@@ -69,7 +69,7 @@ class MemberAnniversaryWindow(BaseWindow):
             case 1:
                 transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
 
-        if self._open_permission():
+        if self.open_permission():
             transition.open_latest_export()
 
         self.set_info_bar(message="Export abgeschlossen")

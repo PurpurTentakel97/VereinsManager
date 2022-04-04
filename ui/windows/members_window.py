@@ -702,7 +702,7 @@ class MembersWindow(BaseWindow):
 
         transition.get_member_card_pdf(current_member.ID, path=file)
 
-        if self._open_permission():
+        if self.open_permission():
             transition.open_latest_export()
 
         self.set_info_bar("export abgeschlossen")

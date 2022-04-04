@@ -2,6 +2,7 @@
 # 24.03.2022
 # VereinsManager / Date Input Dialog
 
+from ui.windows.base_window import BaseWindow
 
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QDateEdit, QVBoxLayout, QLabel
 from PyQt5.QtCore import QDate
@@ -15,7 +16,8 @@ class DateInput(QDialog):
         super().__init__(parent)
 
         self.setWindowTitle("Log Date")
-        self.setWindowIcon(QIcon(c.config.get_icon_path()))
+        if BaseWindow.is_ui_icon():
+            self.setWindowIcon(QIcon(c.config.get_icon_path()))
 
         QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
 

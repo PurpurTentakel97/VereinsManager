@@ -1,7 +1,7 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Base Window
-
+from PIL import Image
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtGui import QIcon
@@ -17,7 +17,8 @@ class BaseWindow(QMainWindow):
         self._set_menu()
 
     def _set_base_window_information(self) -> None:
-        self.setWindowIcon(QIcon(c.config.get_icon_path()))
+        if self.is_ui_icon():
+            self.setWindowIcon(QIcon(c.config.get_icon_path()))
 
     def _set_menu(self) -> None:
         pass
@@ -32,9 +33,17 @@ class BaseWindow(QMainWindow):
         self.statusBar().showMessage("Info: " + message, 2000)
 
     @staticmethod
+    def is_ui_icon() -> bool:
+        image = Image.open(c.config.get_icon_path())
+        if 1.1 > image.width / image.height > 0.9:
+            return True
+        return False
+
+    @staticmethod
     def save_permission(window_name: str) -> bool:
         msg = QMessageBox()
-        msg.setWindowIcon(QIcon(c.config.get_icon_path()))
+        if BaseWindow.is_ui_icon():
+            msg.setWindowIcon(QIcon(c.config.get_icon_path()))
         msg.setIcon(QMessageBox.Information)
         msg.setText(f"{window_name} wird geschlossen.")
         msg.setInformativeText("Du hast ungespeicherte Daten. Möchtest du diese Daten vorher speichern?")
@@ -43,9 +52,10 @@ class BaseWindow(QMainWindow):
         return msg.exec_() == QMessageBox.Yes
 
     @staticmethod
-    def _open_permission() -> bool:
+    def open_permission() -> bool:
         msg = QMessageBox()
-        msg.setWindowIcon(QIcon(c.config.get_icon_path()))
+        if BaseWindow.is_ui_icon():
+            msg.setWindowIcon(QIcon(c.config.get_icon_path()))
         msg.setIcon(QMessageBox.Question)
         msg.setText(f"Neues PDF öffnen?")
         msg.setInformativeText("Das neue PDF kann geöffnet werden.")
