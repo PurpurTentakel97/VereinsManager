@@ -4,7 +4,7 @@
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import Paragraph, Table, SimpleDocTemplate
+from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 
@@ -14,6 +14,7 @@ from logic.handler.data_handler import member_table_data_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
 from logic.handler.pdf_handler.base_pdf import BasePDF
+import debug
 
 debug_str: str = "MemberTablePDF"
 
@@ -32,7 +33,9 @@ class MemberTablePDF(BasePDF):
 
         elements: list = list()
         elements.append(self.get_icon())
+        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
         elements.extend(self._get_header())
+        elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
 
         if not data:
             self._no_data_return(doc, elements)
@@ -64,13 +67,15 @@ class MemberTablePDF(BasePDF):
         elements: list = list()
         for type_id, type_ in type_ids:
             all_members: list = data[type_id]
-            elements.append(Paragraph(type_, self.style_sheet["Heading3"]))
+            elements.append(Paragraph(f"<u>{type_}</u>", self.custom_styles["CustomHeading"]))
             elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
                                       self.style_sheet["BodyText"]))
+            elements.append(Spacer(width=0, height=c.config.spacer['0.1'] * cm))
             if not all_members:
                 elements.append(Paragraph(
                     f"Keine Mitglieder vorhanden",
-                    self.style_sheet["BodyText"]), )
+                    self.style_sheet["BodyText"]))
+                elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
                 continue
 
             table_data: list = self._get_default_table_data()
@@ -78,10 +83,14 @@ class MemberTablePDF(BasePDF):
             table, style = self._get_single_table_data(all_members)
             table_data.extend(table)
             style_data.extend(style)
+            first_column_width: float = self._get_first_column_with(data=table)
 
-            table = Table(table_data, style=style_data, repeatRows=1)
+            table = Table(table_data, style=style_data, repeatRows=1,
+                          colWidths=[first_column_width * cm] + [None])
             elements.append(table)
+            elements.append(Spacer(width=0, height=c.config.spacer['0.1'] * cm))
             elements.append(Paragraph("(E) = Ehrenmitglied"))
+            elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
         return elements
 
     def _get_single_table_data(self, all_members: list) -> tuple:
@@ -114,7 +123,14 @@ class MemberTablePDF(BasePDF):
         return table_data, style_data
 
     def _get_header(self) -> list:
-        return [Paragraph("Mitglieder", self.style_sheet["Title"])]
+        return [Paragraph("<u>Mitglieder</u>", self.custom_styles["CustomTitle"])]
+
+    @staticmethod
+    def _get_first_column_with(data) -> float:
+        length = len(str(len(data)))
+        default_width = 1
+        character_width = 0.2
+        return default_width + character_width * length
 
     @staticmethod
     def _get_data(active: bool) -> dict:

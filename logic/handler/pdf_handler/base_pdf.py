@@ -3,7 +3,7 @@
 # VereinsManager / Base PDF
 
 from PIL import Image as image
-from reportlab.lib.styles import StyleSheet1
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, Image
 from reportlab.lib.units import cm
 
@@ -22,7 +22,9 @@ class BasePDF:
     def __init__(self) -> None:
         self.dir_name: str = str()
         self.file_name: str = str()
-        self.style_sheet: StyleSheet1 = StyleSheet1()
+        self.styles = getSampleStyleSheet()
+        self.custom_styles: dict = dict()
+        self._add_styles()
 
     def transform_path(self, path: str) -> None:
         now = datetime.now()
@@ -46,9 +48,9 @@ class BasePDF:
     def paragraph(self, value) -> Paragraph:
         if isinstance(value, list):
             return Paragraph(str(value[0]) + ": " + str("---" if not value[1] else value[1]),
-                             self.style_sheet["BodyText"])
+                             self.styles["BodyText"])
         else:
-            return Paragraph(str("---" if not value else value), self.style_sheet["BodyText"])
+            return Paragraph(str("---" if not value else value), self.styles["BodyText"])
 
     def get_icon(self) -> Image:
         width, height = self._get_icon_ratio()
@@ -67,6 +69,12 @@ class BasePDF:
         if width_ratio > c.config.constant['icon_max_width']:
             width_ratio, height_ratio = self._transform_max_width(ratio=ratio)
         return width_ratio, height_ratio
+
+    def _add_styles(self) -> None:
+        self.custom_styles['CustomTitle'] = (ParagraphStyle(name='CustomTitle', parent=self.styles['Title'],
+                                                            fontSize=35))
+        self.custom_styles['CustomHeading'] = (ParagraphStyle(name='CustomHeading', parent=self.styles['Heading1'],
+                                                              fontSize=20))
 
     @staticmethod
     def _transform_max_width(ratio: float) -> tuple:

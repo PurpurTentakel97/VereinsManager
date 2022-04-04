@@ -49,7 +49,20 @@
       "quatschsalat": "Ehren Quatsch",
       "freetimedevelopment": "Ehren Ei",
       "grammar2parserboy": "Parser sind seine Spezialität",
-      "artimus83": "Ehren Hamster"
+      "artimus83": "Ehren Hamster",
+      "mostwanted38": "Mosudo Wantedo"
     }
+  },
+  "spacer": {
+    "0.1": 0.1,
+    "0.2": 0.2,
+    "0.3": 0.3,
+    "0.5": 0.5,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "5": 5,
+    "7.5": 7.5,
+    "10": 10
   }
 }
