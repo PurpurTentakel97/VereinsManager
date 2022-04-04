@@ -52,8 +52,7 @@ class BasePDF:
 
     def get_icon(self) -> Image:
         width, height = self._get_icon_ratio()
-        icon: Image = Image(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}",
-                            width=width * cm, height=height * cm)
+        icon: Image = Image(c.config.get_icon_path(), width=width * cm, height=height * cm)
         icon.hAlign = 'RIGHT'
         return icon
 
@@ -77,7 +76,7 @@ class BasePDF:
 
     @staticmethod
     def is_icon() -> bool:
-        if os.path.exists(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}"):
+        if os.path.exists(c.config.get_icon_path()):
             return True
         return False
 
