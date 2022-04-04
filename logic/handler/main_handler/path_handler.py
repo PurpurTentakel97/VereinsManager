@@ -19,17 +19,13 @@ def _get_default_path(type_: str) -> str:
     path: str = ""
     match type_:
         case "member_list":
-            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/\
-                {c.config.dirs['member']}/{c.config.dirs['member_list']}"
+            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/{c.config.dirs['member']}/{c.config.dirs['member_list']}"
         case "member_anniversary":
-            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/\
-                {c.config.dirs['member']}/{c.config.dirs['member_anniversary']}"
+            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/{c.config.dirs['member']}/{c.config.dirs['member_anniversary']}"
         case "member_card":
-            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/\
-                {c.config.dirs['member']}/{c.config.dirs['member_card']}"
+            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/{c.config.dirs['member']}/{c.config.dirs['member_card']}"
         case "member_letter":
-            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/\
-                {c.config.dirs['member']}/{c.config.dirs['member_letter']}"
+            path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/{c.config.dirs['member']}/{c.config.dirs['member_letter']}"
         case "error_log":
             path = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['error']}"
 
