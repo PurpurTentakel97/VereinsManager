@@ -10,7 +10,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph
 
 from logic.handler.pdf_handler.base_pdf import BasePDF
 from logic.handler.data_handler import member_card_data_handler
-from logic import validation as v
+from helper import validation as v
 from config import exception_sheet as e, config_sheet as c
 
 import debug

@@ -4,10 +4,9 @@
 
 import math
 
-from logic import validation as v
 from logic.handler import window_handler, user_handler
 from config import config_sheet as c, exception_sheet as e
-from helper import hasher
+from helper import hasher, validation as v
 import debug
 
 debug_str: str = "Password Validation"

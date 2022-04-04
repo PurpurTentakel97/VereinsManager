@@ -6,7 +6,7 @@ from config import config_sheet as c, exception_sheet as e
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, log_handler as l_h, \
     delete_handler as d_h, statistics_handler as st_h
 from logic.handler import member_nexus_handler as m_n_h
-from logic import validation as v
+from helper import validation as v
 import debug
 
 debug_str: str = "Member Handler"

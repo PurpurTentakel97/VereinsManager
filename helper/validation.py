@@ -3,7 +3,7 @@
 # VereinsManager / Validation
 from sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
-from logic import password_validation as p_v
+from helper import password_validation as p_v
 from logic.handler import type_handler as t_h
 import debug
 

@@ -2,7 +2,7 @@
 # 21.03.2022
 # VereinsManager / Type Handler
 
-from logic import validation as v
+from helper import validation as v
 from config import config_sheet as c, exception_sheet as e
 from sqlite import add_handler as a_h, delete_handler as d_h, select_handler as s_h, update_handler as u_h, \
     log_handler as l_h

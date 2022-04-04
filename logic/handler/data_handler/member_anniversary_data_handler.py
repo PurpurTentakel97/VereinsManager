@@ -7,7 +7,7 @@ from datetime import timedelta
 
 from sqlite import select_handler as s_h
 from config import config_sheet as c, exception_sheet as e
-from logic import validation as v
+from helper import validation as v
 
 import debug
 

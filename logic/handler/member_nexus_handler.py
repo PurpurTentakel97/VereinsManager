@@ -4,9 +4,8 @@
 
 from sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h, log_handler as l_h, \
     delete_handler as d_h, statistics_handler as st_h
-from logic import validation as v
+from helper import validation as v
 from config import config_sheet as c
-import debug
 
 debug_str: str = "Member Nexus Handler"
 

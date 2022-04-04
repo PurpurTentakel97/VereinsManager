@@ -4,7 +4,7 @@
 
 import pytest
 
-from logic import validation as v
+from helper import validation as v
 from config import exception_sheet as e
 from tests import helper
 
