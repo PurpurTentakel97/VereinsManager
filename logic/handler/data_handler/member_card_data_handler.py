@@ -146,6 +146,4 @@ def _get_years_from_timestamp(timestamp: int) -> str:
 
 
 def _transform_timestamp_to_date(timestamp: int) -> datetime.datetime:
-    if timestamp > 0:
-        return datetime.datetime.fromtimestamp(timestamp)
     return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
