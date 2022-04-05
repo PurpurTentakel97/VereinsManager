@@ -71,11 +71,11 @@ class MemberTablePDF(BasePDF):
         elements: list = list()
         for type_id, type_ in type_ids:
             all_members: list = data[type_id]
-            elements.append(Paragraph(f"<u>{type_}</u>", self.custom_styles["CustomHeading"]))
+            elements.append(Paragraph(f"{type_}", self.custom_styles["CustomHeading"]))
             elements.append(Spacer(width=0, height=c.config.spacer['0.1'] * cm))
             if not all_members:
                 elements.append(Paragraph(
-                    f"Keine Mitglieder vorhanden",
+                    f"Keine Mitglieder vorhanden.",
                     self.style_sheet["BodyText"]))
                 elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
                 continue
@@ -125,7 +125,7 @@ class MemberTablePDF(BasePDF):
         return table_data, style_data
 
     def _get_header(self) -> list:
-        return [Paragraph("<u>Mitglieder</u>", self.custom_styles["CustomTitle"])]
+        return [Paragraph("Mitglieder", self.custom_styles["CustomTitle"])]
 
     @staticmethod
     def _get_first_column_with(data) -> float:
@@ -158,9 +158,6 @@ class MemberTablePDF(BasePDF):
     def _get_default_style_data() -> list:
         return [
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
-            ("BOX", (0, 0), (-1, -1), 2, colors.black),
-            ("LINEAFTER", (0, 0), (0, -1), 3, colors.black),
-            ("LINEBELOW", (0, 0), (-1, 0), 3, colors.black),
         ]
 
 
