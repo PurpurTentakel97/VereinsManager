@@ -120,7 +120,7 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
 
 def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
     if timestamp:
-        if timestamp > 0:
+        if 32536799999 > timestamp > 0:
             return datetime.datetime.fromtimestamp(timestamp)
         else:
             return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)

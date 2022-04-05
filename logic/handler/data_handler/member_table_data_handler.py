@@ -96,10 +96,7 @@ def _transform_nexus_data(nexus_data: tuple) -> list:
 
 def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
     if timestamp:
-        if timestamp > 0:
-            return datetime.datetime.fromtimestamp(timestamp)
-        else:
-            return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
+        return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
 
 
 def _get_years_from_date_to_now(date: datetime.datetime) -> str or None:

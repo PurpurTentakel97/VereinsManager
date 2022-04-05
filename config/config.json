@@ -33,7 +33,7 @@
   },
   "files": {
     "database": "default_database.vm",
-    "icon": "icon_3.png",
+    "icon": "icon.png",
     "default_icon": "default_icon.png"
   },
   "user": {

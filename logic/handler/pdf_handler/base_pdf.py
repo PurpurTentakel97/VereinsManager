@@ -4,6 +4,7 @@
 
 from PIL import Image as image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Image
 from reportlab.lib.units import cm
 
@@ -63,12 +64,7 @@ class BasePDF:
         width, height = image_.size
         if width == height:
             return c.config.constant['icon_height'], c.config.constant['icon_height']
-        ratio = width / height
-        width_ratio = c.config.constant['icon_height'] * ratio
-        height_ratio = c.config.constant['icon_height']
-        if width_ratio > c.config.constant['icon_max_width']:
-            width_ratio, height_ratio = self._transform_max_width(ratio=ratio)
-        return width_ratio, height_ratio
+        return self._transform_width_height(width=width, height=height)
 
     def _add_styles(self) -> None:
         self.custom_styles['CustomTitle'] = (ParagraphStyle(name='CustomTitle', parent=self.styles['Title'],
@@ -77,10 +73,17 @@ class BasePDF:
                                                               fontSize=20))
 
     @staticmethod
-    def _transform_max_width(ratio: float) -> tuple:
-        width = c.config.constant['icon_max_width']
-        height = width / ratio
-        return width, height
+    def _transform_width_height(width: int, height: int) -> tuple:
+        ratio = width / height
+        width_ratio = c.config.constant['icon_height'] * ratio
+        height_ratio = c.config.constant['icon_height']
+
+        if width_ratio < c.config.constant['icon_max_width']:
+            return width_ratio, height_ratio
+
+        width_ratio = c.config.constant['icon_max_width']
+        height_ratio = width_ratio / ratio
+        return width_ratio, height_ratio
 
     @staticmethod
     def is_icon() -> bool:
@@ -91,6 +94,30 @@ class BasePDF:
     @staticmethod
     def set_last_export_path(path: str) -> None:
         c.config.last_export_path = path
+
+
+class NumberedCanvas(canvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        canvas.Canvas.__init__(self, *args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        """add page info to each page (page x of y)"""
+        num_pages = len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.draw_page_number(num_pages)
+            canvas.Canvas.showPage(self)
+        canvas.Canvas.save(self)
+
+    def draw_page_number(self, page_count):
+        self.setFont("Helvetica", 7)
+        self.drawRightString(20 * cm, 2 * cm,
+                             "Seite %d von %d" % (self._pageNumber, page_count))
 
 
 def create_base_pdf() -> None:

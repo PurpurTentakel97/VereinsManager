@@ -13,7 +13,7 @@ from datetime import datetime
 from logic.handler.data_handler import member_table_data_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
-from logic.handler.pdf_handler.base_pdf import BasePDF
+from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 import debug
 
 debug_str: str = "MemberTablePDF"
@@ -32,8 +32,9 @@ class MemberTablePDF(BasePDF):
         type_ids = self._get_type_ids()
 
         elements: list = list()
-        elements.append(self.get_icon())
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+        if self.is_icon():
+            elements.append(self.get_icon())
+            elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
         elements.extend(self._get_header())
         elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
 
@@ -42,7 +43,8 @@ class MemberTablePDF(BasePDF):
             return
 
         elements.extend(self._get_table_data(data, type_ids))
-        doc.build(elements)
+        elements = elements[:-1]
+        doc.build(elements, canvasmaker=NumberedCanvas)
         self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
 
     def _create_basics(self, path: str) -> None:

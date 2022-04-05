@@ -29,7 +29,8 @@ class MemberAnniversaryPDF(BasePDF):
         data = self._get_data(year=year, active=active)
 
         elements: list = list()
-        elements.append(self.get_icon())
+        if self.is_icon():
+            elements.append(self.get_icon())
         elements.extend(self._get_header())
 
         if not data:

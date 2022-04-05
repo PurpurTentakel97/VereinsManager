@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Base Window
+import os.path
 
 from PIL import Image
 import sys
@@ -37,6 +38,8 @@ class BaseWindow(QMainWindow):
 
     @staticmethod
     def is_ui_icon() -> bool:
+        if not os.path.exists(c.config.get_icon_path()):
+            return False
         image = Image.open(c.config.get_icon_path())
         if 1.05 > image.width / image.height > 0.95:
             return True
