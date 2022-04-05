@@ -62,7 +62,6 @@ class MemberCardPDF(BasePDF):
     def _set_column_width(self, data: dict) -> None:
         global column_width
         column_width = 2.9 * cm
-        debug.info(item=debug_str, keyword="_set_column_width", message=f"data = {data}")
         length = self._get_longest_value(data=data)
         new_column_width: float = 0.22 * length * cm
         if new_column_width > column_width:
@@ -81,7 +80,6 @@ class MemberCardPDF(BasePDF):
                 if length > longest:
                     longest = length
 
-        debug.info(item=debug_str, keyword="_get_longest_value", message=f"longest = {longest}")
         return longest
 
     def _get_doc(self) -> SimpleDocTemplate:

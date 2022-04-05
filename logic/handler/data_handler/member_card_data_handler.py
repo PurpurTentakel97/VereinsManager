@@ -7,6 +7,7 @@ import datetime
 from logic.handler.main_handler import member_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c
+import debug
 
 debug_str: str = "Member Card Handler"
 none_str: str = "---"
@@ -18,14 +19,15 @@ def get_card_member_data(active: bool, ID: int) -> dict:
     data['phone'] = _transform_nexus_data(data['phone'])
     data['mail'] = _transform_nexus_data(data['mail'])
     data['position'] = _transform_position_data(data['position'])
+    debug.info(item=debug_str, keyword="get_card_member_data", message=f"data = {data}")
     return data
 
 
 def _transform_member_data(data: dict) -> dict:  # No need to transform membership_type
     data = _transform_member_strings(data=data)
+    data = _transform_maps(data=data)
     data = _transform_street(data=data)
     data = _transform_name(data=data)
-    data['special_member'] = _transform_bool(int_=data['special_member'])
     data = _transform_member_dates(data=data)
     return data
 
@@ -39,6 +41,14 @@ def _transform_member_strings(data: dict) -> dict:
     ]
     for key in keys:
         data[key] = _transform_str(data[key])
+    return data
+
+
+def _transform_maps(data: dict) -> dict:
+    if len(data['maps']) > 5:
+        return data
+    maps = f"""http://www.google.de/maps/place/{data['street']}+{data['number']},+{data['zip_code']}+{data['city']}"""
+    data['maps'] = maps.replace(" ", "")
     return data
 
 

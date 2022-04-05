@@ -738,7 +738,7 @@ class MembersWindow(BaseWindow):
             else:
                 webbrowser.open(
                     f"""http://www.google.de/maps/place/{self._street_le.text().strip()}+{self._number_le.text().strip()}
-                    ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}""")
+                    ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}""".replace(" ", ""))
 
     def closeEvent(self, event) -> None:
         event.ignore()
