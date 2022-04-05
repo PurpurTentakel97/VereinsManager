@@ -34,7 +34,9 @@ class MemberTablePDF(BasePDF):
         elements: list = list()
         if self.is_icon():
             elements.append(self.get_icon())
-            elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+                                  self.custom_styles["CustomBodyTextRight"]))
+        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
         elements.extend(self._get_header())
         elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
 
@@ -70,8 +72,6 @@ class MemberTablePDF(BasePDF):
         for type_id, type_ in type_ids:
             all_members: list = data[type_id]
             elements.append(Paragraph(f"<u>{type_}</u>", self.custom_styles["CustomHeading"]))
-            elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-                                      self.style_sheet["BodyText"]))
             elements.append(Spacer(width=0, height=c.config.spacer['0.1'] * cm))
             if not all_members:
                 elements.append(Paragraph(

@@ -3,6 +3,7 @@
 # VereinsManager / Base PDF
 
 from PIL import Image as image
+from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Image
@@ -71,6 +72,9 @@ class BasePDF:
                                                             fontSize=35))
         self.custom_styles['CustomHeading'] = (ParagraphStyle(name='CustomHeading', parent=self.styles['Heading1'],
                                                               fontSize=20))
+        self.custom_styles['CustomBodyTextRight'] = (ParagraphStyle(name='CustomBodyTextRight',
+                                                                    parent=self.styles['BodyText'], fontSize=10,
+                                                                    alignment=TA_RIGHT))
 
     @staticmethod
     def _transform_width_height(width: int, height: int) -> tuple:
@@ -115,7 +119,7 @@ class NumberedCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
     def draw_page_number(self, page_count):
-        self.setFont("Helvetica", 7)
+        self.setFont("Helvetica", 10)
         self.drawRightString(20 * cm, 2 * cm,
                              "Seite %d von %d" % (self._pageNumber, page_count))
 
