@@ -19,7 +19,6 @@ def get_card_member_data(active: bool, ID: int) -> dict:
     data['phone'] = _transform_nexus_data(data['phone'])
     data['mail'] = _transform_nexus_data(data['mail'])
     data['position'] = _transform_position_data(data['position'])
-    debug.info(item=debug_str, keyword="get_card_member_data", message=f"data = {data}")
     return data
 
 
