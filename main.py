@@ -4,7 +4,6 @@
 # Python 3.10
 
 import sys
-import traceback
 
 from config import config_sheet
 from sqlite import database, global_database_handler
@@ -32,8 +31,6 @@ if __name__ == "__main__":
         debug.export_error()
         _test()
     except Exception as error:
-        ex_type, ex_value, ex_traceback = sys.exc_info()
-        debug.error(item=debug_str, keyword="main",
-                    message=f"Error = {ex_type} // {ex_value} // {traceback.extract_tb(ex_traceback)}")
+        debug.error(item=debug_str, keyword="main", error_=sys.exc_info())
         debug.export_error()
         raise Exception()

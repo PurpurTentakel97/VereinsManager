@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 21.03.2022
 # VereinsManager / Member Handler
+import sys
 
 from config import config_sheet as c, exception_sheet as e
 from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, log_handler as l_h, \
@@ -44,8 +45,12 @@ def get_member_data(ID: int, active: bool = True) -> [str | dict, bool]:
                    "position": position_data,
                }, True
 
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="get_member_data", message=f"Error = {error.message}")
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="get_member_data", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="get_member_data", error_=sys.exc_info())
         return error.message, False
 
 
@@ -53,8 +58,13 @@ def get_names_of_member(active: bool = True) -> tuple:
     try:
         v.must_bool(bool_=active)
         return s_h.select_handler.get_names_of_member(active=active), True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="get_names_of_member", message=f"Error = {error.message}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="get_names_of_member", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="get_names_of_member", error_=sys.exc_info())
         return error.message, False
 
 
@@ -103,8 +113,13 @@ def update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict
 
         ids["member_id"] = ID
         return ids, True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="update_member_data", message=f"Error = {error.message}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="update_member_data", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="update_member_data", error_=sys.exc_info())
         return error.message, False
 
 
@@ -138,8 +153,12 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str 
                                            new_type_id=reference_data[1], old_type_id=None)
         return None, True
 
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="update_member_activity", message=f"Error = {error.message}")
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="update_member_activity", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="update_member_activity", error_=sys.exc_info())
         return error.message, False
 
 
@@ -151,8 +170,9 @@ def delete_inactive_member() -> None:
             m_n_h.delete_inactive_member_nexus(member_id=ID)
             l_h.log_handler.delete_log(target_id=ID, target_table="member")
             d_h.delete_handler.delete_member(ID=ID)
-    except e.OperationalError as error:
-        debug.error(item=debug_str, keyword="delete_inactive_member", message=f"Error = {error.message}")
+
+    except e.OperationalError:
+        debug.error(item=debug_str, keyword="delete_inactive_member", error_=sys.exc_info())
 
 
 # helper

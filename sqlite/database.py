@@ -4,6 +4,7 @@
 
 import sqlite3
 import os
+import sys
 
 from config import config_sheet as c
 import debug
@@ -25,9 +26,8 @@ class Database:
         with open("config/create.sql") as create_file:
             try:
                 self.cursor.executescript(create_file.read())
-            except self.OperationalError as error:
-                debug.error(item=debug_str, keyword="_create_tables", message=f"create tables failed\n"
-                                                                              f"error = {' '.join(error.args)}")
+            except self.OperationalError:
+                debug.error(item=debug_str, keyword="_create_tables", error_=sys.exc_info())
 
         self.connection.commit()
 

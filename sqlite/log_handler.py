@@ -1,7 +1,7 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Log Handler
-
+import sys
 import time
 
 from sqlite.database import Database
@@ -135,9 +135,8 @@ class LogHandler(Database):
             self.cursor.execute(sql_command, (target_table, target_id, target_column, old_data, new_data, log_date))
             self.connection.commit()
         except self.OperationalError:
-            error = e.AddFailed("Log failed")
-            debug.error(item=debug_str, keyword="_log", message=f"Error = {error.message}")
-            raise error
+            debug.error(item=debug_str, keyword="_log", error_=sys.exc_info())
+            raise e.AddFailed("Log failed")
 
     # delete
     def delete_log(self, target_id: int, target_table: str) -> None:
@@ -147,7 +146,7 @@ class LogHandler(Database):
             self.connection.commit()
         except self.OperationalError:
             debug.error(item=debug_str, keyword="delete_log",
-                        message=f"delete log failed // target_id = {target_id} // target_table = {target_table}")
+                        error_=sys.exc_info())
 
     # helper
     @staticmethod

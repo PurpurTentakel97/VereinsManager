@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Add Handler
+import sys
 
 from sqlite.database import Database
 from sqlite import select_handler as s_h, log_handler as l_h
@@ -26,15 +27,13 @@ class DeleteHandler(Database):
             l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=name[0],
                                      new_data=None)
         except self.OperationalError:
-            error = e.DeleteFailed(info="Typ")
-            debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
-            raise error
+            debug.error(item=debug_str, keyword="delete_type", error_=sys.exc_info())
+            raise e.DeleteFailed(info="Typ")
 
         except self.IntegrityError:
             self.connection.commit()
-            error = e.ForeignKeyError(info="Typ")
-            debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
-            raise error
+            debug.error(item=debug_str, keyword="delete_type", error_=sys.exc_info())
+            raise e.ForeignKeyError(info="Typ")
 
     # member
     def delete_member(self, ID: int) -> None:
@@ -43,7 +42,7 @@ class DeleteHandler(Database):
             self.cursor.execute(sql_command, (ID,))
             self.connection.commit()
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="delete_member", message=f"delete member failed")
+            debug.error(item=debug_str, keyword="delete_member", error_=sys.exc_info())
 
     # member_nexus
     def delete_member_phone(self, member_id: int) -> None:
@@ -52,7 +51,7 @@ class DeleteHandler(Database):
             self.cursor.execute(sql_command, (member_id,))
             self.connection.commit()
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="delete_member", message=f"delete member phone failed")
+            debug.error(item=debug_str, keyword="delete_member", error_=sys.exc_info())
 
     def delete_member_mail(self, member_id: int) -> None:
         sql_command: str = """DELETE FROM member_mail WHERE member_id = ?;"""
@@ -60,7 +59,7 @@ class DeleteHandler(Database):
             self.cursor.execute(sql_command, (member_id,))
             self.connection.commit()
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="delete_member", message=f"delete member mail failed")
+            debug.error(item=debug_str, keyword="delete_member", error_=sys.exc_info())
 
     def delete_member_position(self, member_id: int) -> None:
         sql_command: str = """DELETE FROM member_position WHERE member_id = ?;"""
@@ -68,7 +67,7 @@ class DeleteHandler(Database):
             self.cursor.execute(sql_command, (member_id,))
             self.connection.commit()
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="delete_member", message=f"delete member position failed")
+            debug.error(item=debug_str, keyword="delete_member", error_=sys.exc_info())
 
     # user
     def delete_user(self, ID: int) -> None:
@@ -77,7 +76,7 @@ class DeleteHandler(Database):
             self.cursor.execute(sql_command, (ID,))
             self.connection.commit()
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="delete_user", message=f"delete user failed")
+            debug.error(item=debug_str, keyword="delete_user", error_=sys.exc_info())
 
 
 def create_delete_handler() -> None:

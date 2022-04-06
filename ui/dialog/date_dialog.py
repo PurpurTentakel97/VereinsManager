@@ -16,7 +16,7 @@ class DateInput(QDialog):
         super().__init__(parent)
 
         self.setWindowTitle("Log Date")
-        if BaseWindow.is_ui_icon():
+        if BaseWindow.is_ui_icon(BaseWindow()):
             self.setWindowIcon(QIcon(c.config.get_icon_path()))
         else:
             self.setWindowIcon(QIcon(c.config.get_default_icon_path()))

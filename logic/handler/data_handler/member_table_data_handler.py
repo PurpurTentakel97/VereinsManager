@@ -3,6 +3,7 @@
 # VereinsManager / Table Data Handler
 
 import datetime
+import sys
 
 from config import config_sheet as c, exception_sheet as e
 from sqlite import select_handler as s_h
@@ -40,8 +41,13 @@ def get_member_table_data(active: bool) -> [str | dict, bool]:
                 final_members_list.append(single_member_data)
             final_data[type_id] = final_members_list
         return final_data, True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="get_member_table_data", message=f"Error = {error.message}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="get_member_table_data", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="get_member_table_data", error_=sys.exc_info())
         return error.message, False
 
 

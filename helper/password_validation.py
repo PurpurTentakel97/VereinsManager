@@ -3,6 +3,7 @@
 # VereinsManager / Password Validation
 
 import math
+import sys
 
 from logic.handler.main_handler import user_handler, window_handler
 from config import config_sheet as c, exception_sheet as e
@@ -74,10 +75,17 @@ def check_user_password(ID: int, password: str, main_window: bool = True) -> [st
             if main_window:
                 window_handler.create_main_window()
         return result, True
-    except (e.InputError, e.OperationalError, e.PasswordError) as error:
-        debug.error(item=debug_str, keyword="check_user_password", message=f"Error = {error.message}")
+
+    except (e.InputError, e.PasswordError) as error:
+        debug.info(item=debug_str, keyword="check_user_password", error_=sys.exc_info())
         return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="check_user_password", error_=sys.exc_info())
+        return error.message, False
+
     except TypeError:
-        debug.error(item=debug_str, keyword="check_user_password",
-                    message=f"Error = TypeError // probably non existing ID")
+        debug.info(item=debug_str, keyword="check_user_password", error_=sys.exc_info())
         return False, False
+
+

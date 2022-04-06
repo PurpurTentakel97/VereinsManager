@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 21.03.2022
 # VereinsManager / Type Handler
+import sys
 
 from helper import validation as v
 from config import config_sheet as c, exception_sheet as e
@@ -18,8 +19,13 @@ def add_type(type_name: str, raw_type_id: int) -> [str | int, bool]:
         v.must_default_user(c.config.user['ID'], False)
 
         return a_h.add_handler.add_type(type_name=type_name.strip().title(), raw_type_id=raw_type_id), True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="add_type", message=f"Error = {error}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="add_type", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="add_type", error_=sys.exc_info())
         return error.message, False
 
 
@@ -27,8 +33,9 @@ def add_type(type_name: str, raw_type_id: int) -> [str | int, bool]:
 def get_raw_types() -> [str | tuple, bool]:
     try:
         return s_h.select_handler.get_raw_types(), True
+
     except e.OperationalError as error:
-        debug.error(item=debug_str, keyword="get_raw_types", message=f"Error = {error.message}")
+        debug.error(item=debug_str, keyword="get_raw_types", error_=sys.exc_info())
         return error.message, False
 
 
@@ -38,16 +45,22 @@ def get_single_raw_type_types(raw_type_id: int, active: bool = True) -> [str | t
         v.must_bool(bool_=active)
 
         return s_h.select_handler.get_single_raw_type_types(raw_type_id=raw_type_id, active=active), True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="get_single_raw_type_types", message=f"Error = {error.message}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="get_single_raw_type_types", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="get_single_raw_type_types", error_=sys.exc_info())
         return error.message, False
 
 
 def get_active_member_type() -> [str | tuple, bool]:
     try:
         return s_h.select_handler.get_active_member_type(), True
+
     except e.OperationalError as error:
-        debug.error(item=debug_str, keyword="get_active_member_type", message=f"Error = {error.message}")
+        debug.error(item=debug_str, keyword="get_active_member_type", error_=sys.exc_info())
         return error.message, False
 
 
@@ -56,8 +69,13 @@ def get_type_name_by_ID(ID: int) -> [str | tuple, bool]:
         v.must_positive_int(int_=ID, max_length=None)
 
         return s_h.select_handler.get_type_name_by_ID(ID=ID), True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="get_type_name_by_ID", message=f"Error = {error.message}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="get_type_name_by_ID", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="get_type_name_by_ID", error_=sys.exc_info())
         return error.message, False
 
 
@@ -73,8 +91,13 @@ def update_type(ID: int, name: str) -> [str | None, bool]:
         u_h.update_handler.update_type(ID=ID, name=name)
         l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=reference_data[0], new_data=name)
         return None, True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="update_type", message=f"Error = {error.message}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="update_type", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="update_type", error_=sys.exc_info())
         return error.message, False
 
 
@@ -87,8 +110,13 @@ def update_type_activity(ID: int, active: bool = True) -> [str | None, bool]:
         u_h.update_handler.update_type_activity(ID=ID, active=active)
         l_h.log_handler.log_type(target_id=ID, target_column="active", old_data=reference_data[0], new_data=active)
         return None, True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="update_type_activity", message=f"Error = {error.message}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="update_type_activity", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="update_type_activity", error_=sys.exc_info())
         return error.message, False
 
 
@@ -100,6 +128,11 @@ def delete_type(ID: int) -> [str | None, bool]:
 
         d_h.delete_handler.delete_type(ID=ID)
         return None, True
-    except (e.OperationalError, e.InputError) as error:
-        debug.error(item=debug_str, keyword="delete_type", message=f"Error = {error.message}")
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="delete_type", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="delete_type", error_=sys.exc_info())
         return error.message, False

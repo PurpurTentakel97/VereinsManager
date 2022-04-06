@@ -241,3 +241,10 @@ class CaseException(GeneralError):
         super().__init__()
         self.error_code: str = "902"
         self.set_message(message="Falscher Typ", info=info)
+
+
+class InvalidFormat(GeneralError):
+    def __init__(self, info: str = ""):
+        super().__init__()
+        self.error_code: str = "903"
+        self.set_message(message="Falsches Format", info=info)

@@ -1,7 +1,7 @@
 # Purpur Tentakel
 # 29.03.2022
 # VereinsManager / Statistics Handler
-
+import sys
 from datetime import date, datetime
 
 from config import exception_sheet as e
@@ -36,8 +36,8 @@ class StatisticsHandler(Database):
                 case _:
                     raise e.CaseException(info=f"statistic type // {type_}")
 
-        except e.GeneralError as error:
-            debug.error(item=debug_str, keyword="statistics", message=f"Error = {error.message}")
+        except e.GeneralError:
+            debug.info(item=debug_str, keyword="statistics", error_=sys.exc_info())
 
     def _membership_statistics(self, raw_type_id: int, new_type_id: int | None, old_type_id: int | None) -> None:
         if not self._is_valid_membership(new_membership_id=new_type_id, old_membership_id=old_type_id):
@@ -85,7 +85,7 @@ class StatisticsHandler(Database):
             ))
             self.connection.commit()
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="_statistics", message=f"add statistics failed")
+            debug.info(item=debug_str, keyword="_statistics", error_=sys.exc_info())
 
     def _update(self, ID: int, count: int) -> None:
         sql_command: str = """UPDATE statistics SET count = ? WHERE ID = ?;"""
@@ -93,7 +93,7 @@ class StatisticsHandler(Database):
             self.cursor.execute(sql_command, (count, ID))
             self.connection.commit()
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="_statistics", message=f"update statistics failed")
+            debug.info(item=debug_str, keyword="_statistics", error_=sys.exc_info())
 
     def _get_current_ID(self, type_id):
         sql_command: str = """SELECT * FROM statistics WHERE _log_date = ? and type_id = ?;"""
@@ -104,7 +104,7 @@ class StatisticsHandler(Database):
                 type_id,
             )).fetchone()
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="_statistics", message=f"get current statistic failed")
+            debug.info(item=debug_str, keyword="_statistics", error_=sys.exc_info())
 
     def _get_current_membership_counts(self, new_type_id: int, old_type_id: int) -> [int]:
         sql_command: str = """SELECT membership_type FROM v_active_member WHERE membership_type is ?;"""
@@ -118,7 +118,7 @@ class StatisticsHandler(Database):
                     counts.append(len(list_))
             return counts
         except self.OperationalError:
-            debug.error(item=debug_str, keyword="_statistics", message=f"select statistic count failed")
+            debug.info(item=debug_str, keyword="_statistics", error_=sys.exc_info())
 
     def _get_current_nexus_count(self, type_: str, type_id: int) -> int:
         match type_:
@@ -138,9 +138,9 @@ class StatisticsHandler(Database):
                 if value:
                     counter += 1
             return counter
-        except self.OperationalError as error:
-            debug.error(item=debug_str, keyword="_get_current_nexus_count",
-                        message=f"Command: {sql_command}\nError: {str(error)}")
+        except self.OperationalError:
+            debug.info(item=debug_str, keyword="_get_current_nexus_count",
+                        error_=sys.exc_info())
 
     @staticmethod
     def _is_valid_data(data_1, data_2) -> bool:

@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 26.03.2022
 # VereinsManager / Member Card PDF
+import sys
 from datetime import datetime
 
 from reportlab.lib.pagesizes import A4
@@ -198,7 +199,7 @@ class MemberCardPDF(BasePDF):
             v.must_bool(bool_=active)
             v.must_str(str_=path, length=None)
         except e.InputError as error:
-            debug.error(item=debug_str, keyword="_validate_data", message=f"Error = {error.message}")
+            debug.info(item=debug_str, keyword="_validate_data", error_=sys.exc_info())
             return error.message
 
 

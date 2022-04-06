@@ -16,7 +16,6 @@ class Config:
     def __init__(self) -> None:
         self.config: dict = dict()
 
-        # from config json
         self.date_format: dict = dict()
         self.raw_type_id: dict = dict()
         self.constant: dict = dict()
