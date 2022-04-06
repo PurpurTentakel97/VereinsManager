@@ -6,12 +6,12 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 
 from datetime import datetime
 
 from logic.handler.data_handler import member_anniversary_data_handler
-from logic.handler.pdf_handler.base_pdf import BasePDF
+from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 from config import config_sheet as c
 
 debug_str: str = "MemberAnniversaryPDF"
@@ -31,19 +31,22 @@ class MemberAnniversaryPDF(BasePDF):
         elements: list = list()
         if self.is_icon():
             elements.append(self.get_icon())
+        if year:
+            elements.append(Paragraph(f"Stand: {year}", self.custom_styles["CustomBodyTextRight"]))
+        else:
+            elements.append(Paragraph(f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+                                      self.custom_styles["CustomBodyTextRight"]))
+        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
         elements.extend(self._get_header())
+        elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
 
         if not data:
             self._no_data_return(elements=elements, doc=doc)
             return
 
-        keys: list = [
-            "b_day",
-            "entry_day",
-        ]
-
-        elements = self._get_table_elements(data, elements, keys, year)
-        doc.build(elements)
+        elements = self._get_table_elements(data, elements)
+        elements = elements[:-1]
+        doc.build(elements, canvasmaker=NumberedCanvas)
         self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
 
     def _no_data_return(self, elements: list, doc: SimpleDocTemplate) -> None:
@@ -59,30 +62,39 @@ class MemberAnniversaryPDF(BasePDF):
         self.create_dir()
         self.style_sheet = getSampleStyleSheet()
 
-    def _get_table_elements(self, data: dict, elements: list, keys: list, year: int) -> list:
+    def _get_table_elements(self, data: dict, elements: list) -> list:
+        keys: list = [
+            "b_day",
+            "entry_day",
+        ]
         for key in keys:
             style_data: list = self._get_style_data()
 
             headers, elements = self._get_table_headers(elements, key)
-            table_data: list = [
-                headers,
-            ]
-
-            elements.append(
-                Paragraph(
-                    f"Stand: {str(year)}" if year else f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-                    self.style_sheet["BodyText"]))
 
             if not data[key]:
                 elements.append(Paragraph("Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
+                elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
                 continue
 
+            table_data: list = [
+                headers,
+            ]
             for index, entry in enumerate(data[key], start=1):
                 table_data.append(self._get_row_data(entry, index))
 
-            table = Table(table_data, style=style_data, repeatRows=1)
+            table = Table(table_data, style=style_data, repeatRows=1,
+                          colWidths=[self._get_first_column_with(data[key]) * cm] + [None] * 3)
             elements.append(table)
+            elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
         return elements
+
+    @staticmethod
+    def _get_first_column_with(data) -> float:
+        length = len(str(len(data)))
+        default_width = 1
+        character_width = 0.2
+        return default_width + character_width * length
 
     def _get_table_headers(self, elements: list, key: str) -> tuple:
         headers: list = list()
@@ -127,9 +139,6 @@ class MemberAnniversaryPDF(BasePDF):
     def _get_style_data() -> list:
         return [
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
-            ("BOX", (0, 0), (-1, -1), 2, colors.black),
-            ("LINEAFTER", (0, 0), (0, -1), 3, colors.black),
-            ("LINEBELOW", (0, 0), (-1, 0), 3, colors.black),
         ]
 
     @staticmethod
