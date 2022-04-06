@@ -98,9 +98,7 @@ class BasePDF:
                 _ = image.open(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}")
                 return True
             except UnidentifiedImageError:
-                error_type, error_value, error_traceback = sys.exc_info()
-                debug.error(item=debug_str, keyword="is_icon",
-                            message=f"Error = {error_type} // {error_value} // {traceback.extract_tb(error_traceback)}")
+                debug.info(item=debug_str, keyword="is_icon", error_=sys.exc_info())
         return False
 
     @staticmethod
