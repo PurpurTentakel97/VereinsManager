@@ -38,7 +38,7 @@ def _get_error_values(error_) -> list:
 def _add_error_to_list(print_type, item, keyword, error_type, error_value, error_traceback) -> None:
     entry: dict = {
         "date": datetime.strftime(datetime.now(), c.config.date_format['long']),
-        "type": "Error",
+        "type": print_type.title(),
         "item": item,
         "keyword": keyword,
         print_type: {
