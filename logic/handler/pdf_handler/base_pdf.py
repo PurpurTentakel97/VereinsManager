@@ -1,8 +1,10 @@
 # Purpur Tentakel
 # 06.03.2022
 # VereinsManager / Base PDF
+import sys
+import traceback
 
-from PIL import Image as image
+from PIL import Image as image, UnidentifiedImageError
 from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfgen import canvas
@@ -92,7 +94,13 @@ class BasePDF:
     @staticmethod
     def is_icon() -> bool:
         if os.path.exists(c.config.get_icon_path()):
-            return True
+            try:
+                _ = image.open(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}")
+                return True
+            except UnidentifiedImageError:
+                error_type, error_value, error_traceback = sys.exc_info()
+                debug.error(item=debug_str, keyword="is_icon",
+                            message=f"Error = {error_type} // {error_value} // {traceback.extract_tb(error_traceback)}")
         return False
 
     @staticmethod

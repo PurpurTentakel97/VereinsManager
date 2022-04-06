@@ -3,7 +3,7 @@
 # VereinsManager / Base Window
 import os.path
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtGui import QIcon
@@ -36,19 +36,21 @@ class BaseWindow(QMainWindow):
     def set_info_bar(self, message: str) -> None:
         self.statusBar().showMessage("Info: " + message, 2000)
 
-    @staticmethod
-    def is_ui_icon() -> bool:
+    def is_ui_icon(self) -> bool:
         if not os.path.exists(c.config.get_icon_path()):
             return False
-        image = Image.open(c.config.get_icon_path())
-        if 1.05 > image.width / image.height > 0.95:
-            return True
-        return False
+        try:
+            image = Image.open(c.config.get_icon_path())
+            if 1.05 > image.width / image.height > 0.95:
+                return True
+        except UnidentifiedImageError:
+            self.set_error_bar(message="Umbekanntes Icon-Bildformat")
+            return False
 
     @staticmethod
     def save_permission(window_name: str) -> bool:
         msg = QMessageBox()
-        if BaseWindow.is_ui_icon():
+        if BaseWindow.is_ui_icon(BaseWindow()):
             msg.setWindowIcon(QIcon(c.config.get_icon_path()))
         else:
             msg.setWindowIcon(QIcon(c.config.get_default_icon_path()))
@@ -62,7 +64,7 @@ class BaseWindow(QMainWindow):
     @staticmethod
     def open_permission() -> bool:
         msg = QMessageBox()
-        if BaseWindow.is_ui_icon():
+        if BaseWindow.is_ui_icon(BaseWindow()):
             msg.setWindowIcon(QIcon(c.config.get_icon_path()))
         else:
             msg.setWindowIcon(QIcon(c.config.get_default_icon_path()))
