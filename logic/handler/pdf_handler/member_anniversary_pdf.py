@@ -30,7 +30,7 @@ class MemberAnniversaryPDF(BasePDF):
 
         elements: list = list()
         if self.is_icon():
-            elements.append(self.get_icon())
+            elements.append(self.get_icon(type_="table"))
         if year:
             elements.append(Paragraph(f"Stand: {year}", self.custom_styles["CustomBodyTextRight"]))
         else:

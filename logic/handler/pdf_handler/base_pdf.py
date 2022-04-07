@@ -2,7 +2,6 @@
 # 06.03.2022
 # VereinsManager / Base PDF
 import sys
-import traceback
 
 from PIL import Image as image, UnidentifiedImageError
 from reportlab.lib.enums import TA_RIGHT
@@ -14,7 +13,7 @@ from reportlab.lib.units import cm
 from datetime import datetime
 import os
 
-from config import config_sheet as c
+from config import config_sheet as c, exception_sheet as e
 import debug
 
 debug_str: str = "BasePDF"
@@ -56,18 +55,19 @@ class BasePDF:
         else:
             return Paragraph(str("---" if not value else value), self.styles["BodyText"])
 
-    def get_icon(self) -> Image:
-        width, height = self._get_icon_ratio()
-        icon: Image = Image(c.config.get_icon_path(), width=width * cm, height=height * cm)
-        icon.hAlign = 'RIGHT'
-        return icon
+    def get_icon(self, type_: str) -> Image:
+        try:
+            width, height = self._get_icon_ratio(type_=type_)
+            icon: Image = Image(c.config.get_icon_path(), width=width * cm, height=height * cm)
+            icon.hAlign = 'RIGHT'
+            return icon
+        except e.CaseException:
+            debug.info(item=debug_str, keyword="get_icon", error_=sys.exc_info())
 
-    def _get_icon_ratio(self) -> tuple:
+    def _get_icon_ratio(self, type_: str) -> tuple:
         image_ = image.open(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}")
         width, height = image_.size
-        if width == height:
-            return c.config.constant['icon_height'], c.config.constant['icon_height']
-        return self._transform_width_height(width=width, height=height)
+        return self._transform_width_height(type_=type_, width=width, height=height)
 
     def _add_styles(self) -> None:
         self.custom_styles['CustomTitle'] = (ParagraphStyle(name='CustomTitle', parent=self.styles['Title'],
@@ -79,15 +79,28 @@ class BasePDF:
                                                                     alignment=TA_RIGHT))
 
     @staticmethod
-    def _transform_width_height(width: int, height: int) -> tuple:
-        ratio = width / height
-        width_ratio = c.config.constant['icon_height'] * ratio
-        height_ratio = c.config.constant['icon_height']
+    def _transform_width_height(type_: str, width: int, height: int) -> tuple:
+        match type_:
+            case "letter":
+                icon_height = c.config.constant['icon_height_letter']
+                icon_max_width = c.config.constant['icon_max_width_letter']
+            case "table":
+                icon_height = c.config.constant['icon_height_table']
+                icon_max_width = c.config.constant['icon_max_width_table']
+            case _:
+                raise e.CaseException(type_)
 
-        if width_ratio < c.config.constant['icon_max_width']:
+        if width == height:
+            return icon_height, icon_height
+
+        ratio = width / height
+        width_ratio = icon_height * ratio
+        height_ratio = icon_height
+
+        if width_ratio < icon_max_width:
             return width_ratio, height_ratio
 
-        width_ratio = c.config.constant['icon_max_width']
+        width_ratio = icon_max_width
         height_ratio = width_ratio / ratio
         return width_ratio, height_ratio
 
