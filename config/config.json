@@ -16,8 +16,10 @@
   },
   "constant": {
     "hash_rounds": 12,
-    "icon_height": 3,
-    "icon_max_width": 16
+    "icon_height_table": 3,
+    "icon_max_width_table": 16,
+    "icon_height_letter": 4,
+    "icon_max_width_letter": 4
   },
   "dirs": {
     "save": "saves",

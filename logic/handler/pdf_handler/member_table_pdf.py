@@ -34,7 +34,7 @@ class MemberTablePDF(BasePDF):
 
         elements: list = list()
         if self.is_icon():
-            elements.append(self.get_icon())
+            elements.append(self.get_icon(type_="table"))
         elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
