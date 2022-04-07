@@ -8,6 +8,7 @@ pdf
 sql database
     let unser choose database name
     password
+    add country to member address
 
 UI
     Global
