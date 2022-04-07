@@ -2,17 +2,18 @@
 # 06.03.2022
 # VereinsManager / Member Table PDF
 
+import sys
+from datetime import datetime
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 
-from datetime import datetime
-
 from logic.handler.data_handler import member_table_data_handler
 from sqlite import select_handler as s_h
-from config import config_sheet as c
+from config import config_sheet as c, exception_sheet as e
 from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 import debug
 
@@ -25,7 +26,7 @@ class MemberTablePDF(BasePDF):
     def __init__(self) -> None:
         super().__init__()
 
-    def create_pdf(self, path: str, active: bool) -> None:
+    def create_pdf(self, path: str, active: bool) -> [str | None, bool]:
         self._create_basics(path)
         doc: SimpleDocTemplate = self._get_doc()
         data = self._get_data(active)
@@ -46,8 +47,13 @@ class MemberTablePDF(BasePDF):
 
         elements.extend(self._get_table_data(data, type_ids))
         elements = elements[:-1]
-        doc.build(elements, canvasmaker=NumberedCanvas)
-        self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+        try:
+            doc.build(elements, canvasmaker=NumberedCanvas)
+            self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+            return None, True
+        except PermissionError:
+            debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())
+            return e.PermissionException(self.file_name).message, False
 
     def _create_basics(self, path: str) -> None:
         self.transform_path(path=path)

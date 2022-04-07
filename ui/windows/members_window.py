@@ -701,7 +701,11 @@ class MembersWindow(BaseWindow):
             self.set_info_bar("Export abgebrochen")
             return
 
-        transition.get_member_card_pdf(current_member.ID, path=file)
+        message, result = transition.get_member_card_pdf(current_member.ID, path=file)
+
+        if not result:
+            self.set_error_bar(message=message)
+            return
 
         if self.open_permission():
             transition.open_latest_export()

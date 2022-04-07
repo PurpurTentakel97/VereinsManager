@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 26.03.2022
 # VereinsManager / Member Card PDF
+
 import sys
 from datetime import datetime
 
@@ -50,10 +51,15 @@ class MemberCardPDF(BasePDF):
 
         if not data:
             self._mo_data_return(doc=doc, elements=elements)
-            return None, False
+            return e.NotFound(info="Keine Daten vorhanden").message, False
         elements.extend(self._get_card_data(data=data))
-        doc.build(elements, canvasmaker=NumberedCanvas)
-        self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+        try:
+            doc.build(elements, canvasmaker=NumberedCanvas)
+            self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+            return None, True
+        except PermissionError:
+            debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())
+            return e.PermissionException(self.file_name).message, False
 
     def _create_basics(self, path: str) -> None:
         self.transform_path(path=path)

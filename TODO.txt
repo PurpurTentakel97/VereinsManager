@@ -4,9 +4,6 @@
 
 pdf
     dirfferent name for anniversary pdfs
-    add page count
-    add spacer
-    blocked export while exporting while reader is open
 
 sql database
     let unser choose database name

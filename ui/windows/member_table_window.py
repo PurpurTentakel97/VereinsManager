@@ -151,7 +151,12 @@ class MemberTableWindow(BaseWindow):
         if not check:
             self.set_info_bar(message="Export abgebrochen")
             return
-        transition.get_member_table_pdf(file)
+
+        message, result = transition.get_member_table_pdf(file)
+
+        if not result:
+            self.set_error_bar(message=message)
+            return
 
         if self.open_permission():
             transition.open_latest_export()

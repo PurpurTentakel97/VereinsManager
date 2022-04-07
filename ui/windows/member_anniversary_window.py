@@ -63,11 +63,16 @@ class MemberAnniversaryWindow(BaseWindow):
         if not check:
             self.set_info_bar(message="Export abgebrochen")
             return
+        message, result = "", True
         match self._tabs.currentIndex():
             case 0:
-                transition.get_member_anniversary_pdf(path=file)
+                message, result = transition.get_member_anniversary_pdf(path=file)
             case 1:
-                transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
+                message, result = transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
+
+        if not result:
+            self.set_error_bar(message=message)
+            return
 
         if self.open_permission():
             transition.open_latest_export()

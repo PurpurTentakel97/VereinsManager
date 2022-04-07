@@ -248,3 +248,10 @@ class InvalidFormat(GeneralError):
         super().__init__()
         self.error_code: str = "903"
         self.set_message(message="Falsches Format", info=info)
+
+
+class PermissionException(GeneralError):
+    def __init__(self, info: str = ""):
+        super().__init__()
+        self.error_code: str = "904"
+        self.set_message(message="Dateizugriff verweigert", info=info)

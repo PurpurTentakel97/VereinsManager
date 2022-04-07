@@ -2,20 +2,21 @@
 # 06.03.2022
 # VereinsManager / Member Anniversary PDF
 
+import sys
+from datetime import datetime
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 
-from datetime import datetime
-
 from logic.handler.data_handler import member_anniversary_data_handler
 from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
-from config import config_sheet as c
+from config import config_sheet as c, exception_sheet as e
+import debug
 
 debug_str: str = "MemberAnniversaryPDF"
-
 member_anniversary_pdf: "MemberAnniversaryPDF"
 
 
@@ -23,7 +24,7 @@ class MemberAnniversaryPDF(BasePDF):
     def __init__(self):
         super().__init__()
 
-    def create_pdf(self, path: str, year: int, active: bool = True) -> None:
+    def create_pdf(self, path: str, year: int, active: bool = True) -> [None | str, bool]:
         self._create_basics(path)
         doc: SimpleDocTemplate = self._get_doc()
         data = self._get_data(year=year, active=active)
@@ -46,8 +47,13 @@ class MemberAnniversaryPDF(BasePDF):
 
         elements = self._get_table_elements(data, elements)
         elements = elements[:-1]
-        doc.build(elements, canvasmaker=NumberedCanvas)
-        self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+        try:
+            doc.build(elements, canvasmaker=NumberedCanvas)
+            self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+            return None, True
+        except PermissionError:
+            debug.info(item=debug_str, keyword="create_pdf", error_=sys.exc_info())
+            return e.PermissionException(self.file_name).message, False
 
     def _no_data_return(self, elements: list, doc: SimpleDocTemplate) -> None:
         elements.append(Paragraph(

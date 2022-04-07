@@ -98,12 +98,12 @@ def get_member_table_pdf(path: str, active: bool = True) -> [None | str, bool]:
     return m_t_p.member_table_pdf.create_pdf(path=path, active=active)
 
 
-def get_member_anniversary_pdf(path: str, year: int or None = None, active: bool = True) -> [None or str, bool]:
+def get_member_anniversary_pdf(path: str, year: int or None = None, active: bool = True) -> [None | str, bool]:
     return m_a_p.member_anniversary_pdf.create_pdf(path=path, year=year, active=active)
 
 
-def get_member_card_pdf(ID: int, path: str, active: bool = True) -> None:
-    m_c_p.member_card_pdf.create_pdf(ID=ID, active=active, path=path)
+def get_member_card_pdf(ID: int, path: str, active: bool = True) -> [None | str, bool]:
+    return m_c_p.member_card_pdf.create_pdf(ID=ID, active=active, path=path)
 
 
 def open_latest_export() -> None:
