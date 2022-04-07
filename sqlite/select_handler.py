@@ -50,8 +50,8 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword="get_active_member_type", error_=sys.exc_info())
             raise e.LoadingFailed(info="active member type")
 
-    def get_type_name_by_ID(self, ID: int) -> tuple:
-        sql_command: str = f"""SELECT name FROM type WHERE ID is ?;"""
+    def get_type_name_and_extra_value_by_ID(self, ID: int) -> tuple:
+        sql_command: str = f"""SELECT name,extra_value FROM type WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()
         except self.OperationalError:

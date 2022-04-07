@@ -11,9 +11,11 @@ debug_str: str = "Validation"
 
 
 # type
-def add_type(type_name: str, raw_type_id: int) -> None:
+def add_type(type_name: str, raw_type_id: int, extra_value: str) -> None:
     must_str(str_=type_name)
     must_positive_int(int_=raw_type_id, max_length=None)
+    if extra_value is not None:
+        must_str(str_=extra_value)
 
     data = s_h.select_handler.get_all_single_type()
     type_name = type_name.strip().title()
@@ -22,9 +24,11 @@ def add_type(type_name: str, raw_type_id: int) -> None:
             raise e.AlreadyExists()
 
 
-def update_type(ID: int, new_name: str) -> None:
+def update_type(ID: int, new_name: str, extra_value: str) -> None:
     must_str(new_name)
     must_positive_int(ID, max_length=None)
+    if extra_value is not None:
+        must_str(extra_value)
 
     data = s_h.select_handler.get_all_single_type()
     exists: bool = False
@@ -176,7 +180,7 @@ def must_str(str_: str, length: int | None = 50) -> None:
 def must_membership_type(str_: str) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:
         raise e.NoMembership(info=str_)
-    reference_data,_ = t_h.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['membership'], active=True)
+    reference_data, _ = t_h.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['membership'], active=True)
     not_found: bool = True
     for entry in reference_data:
         if str_ in entry:

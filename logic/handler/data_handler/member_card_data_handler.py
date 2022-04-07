@@ -104,7 +104,7 @@ def _transform_single_nexus_data(entry: tuple) -> list:
     ID, type_id, value = entry
     if value is None:
         value = none_str
-    type_id = s_h.select_handler.get_type_name_by_ID(ID=type_id)[0]
+    type_id = s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=type_id)[0]
     return [type_id, value]
 
 
@@ -123,7 +123,7 @@ def _transform_position_data(data: dict) -> list:
 def _transform_single_position(entry: tuple) -> str:
     ID, type_id, active = entry
     if active:
-        return s_h.select_handler.get_type_name_by_ID(ID=type_id)[0]
+        return s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=type_id)[0]
 
 
 def _transform_str(str_: str) -> str:

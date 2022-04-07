@@ -35,12 +35,12 @@ def get_type_name_by_ID(ID: int) -> [tuple | str, bool]:
     return type_handler.get_type_name_by_ID(ID=ID)
 
 
-def add_type(type_name: str, raw_type_id: int) -> [str | None, bool]:
-    return type_handler.add_type(type_name=type_name, raw_type_id=raw_type_id)
+def add_type(type_name: str, raw_type_id: int, extra_value) -> [str | None, bool]:
+    return type_handler.add_type(type_name=type_name, raw_type_id=raw_type_id, extra_value=extra_value)
 
 
-def update_type(id_: int, name: str) -> [str | None, bool]:
-    return type_handler.update_type(ID=id_, name=name)
+def update_type(id_: int, name: str, extra_value: str) -> [str | None, bool]:
+    return type_handler.update_type(ID=id_, name=name, extra_value=extra_value)
 
 
 def update_type_activity(id_: int, active: bool) -> [str | None, bool]:

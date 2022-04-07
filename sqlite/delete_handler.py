@@ -21,11 +21,14 @@ class DeleteHandler(Database):
     def delete_type(self, ID: int) -> [str | None, bool]:
         sql_command: str = """DELETE FROM type WHERE ID is ?;"""
         try:
-            name: tuple = s_h.select_handler.get_type_name_by_ID(ID=ID)
+            reference_data: tuple = s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=ID)
             self.cursor.execute(sql_command, (ID,))
             self.connection.commit()
-            l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=name[0],
+            l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=reference_data[0],
                                      new_data=None)
+            l_h.log_handler.log_type(target_id=ID, target_column="extra_value", old_data=reference_data[1],
+                                     new_data=None)
+
         except self.OperationalError:
             debug.error(item=debug_str, keyword="delete_type", error_=sys.exc_info())
             raise e.DeleteFailed(info="Typ")

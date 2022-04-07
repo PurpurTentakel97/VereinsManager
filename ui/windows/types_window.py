@@ -2,25 +2,42 @@
 # 21.01.2022
 # VereinsManager /Types Window
 
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListWidget, QListWidgetItem, QLineEdit
 
 from ui.windows.base_window import BaseWindow
 from ui.windows import window_manager as w
+from config import config_sheet as c
 import transition
+import debug
+
+debug_str: str = "TypesWindow"
 
 
 class TypesListEntry(QListWidgetItem):
-    def __init__(self, type_: tuple, active: bool = True) -> None:
+    def __init__(self, type_: tuple, active: bool) -> None:
         super().__init__()
-        self.id_: int = int()
+        self.ID: int = int()
         self.name: str = str()
+        self.extra_entry = None
         self.raw_id: int = int()
         self.raw_name: str = str()
-        self.id_, self.name, self.raw_id, self.raw_name = type_
 
         self.active: bool = active
 
+        self._set_attributes(type_=type_)
         self._set_name()
+
+    def _set_attributes(self, type_: tuple) -> None:
+        attributes: list = [
+            "ID",
+            "name",
+            "extra_entry",
+            "raw_id",
+            "raw_name",
+        ]
+        for index, attribute in enumerate(attributes):
+            setattr(self, attribute, type_[index])
 
     def _set_name(self) -> None:
         self.setText(self.name) if self.active else self.setText(self.name + " (inaktiv)")
@@ -37,7 +54,7 @@ class TypesWindow(BaseWindow):
         self._create_layout()
         self._set_window_information()
 
-        self._set_types()
+        self._set_raw_types()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Typen - Vereinsmanager")
@@ -46,10 +63,15 @@ class TypesWindow(BaseWindow):
         self._types_box: QComboBox = QComboBox()
         self._types_box.currentTextChanged.connect(self._set_current_type)
 
-        self._edit: QLineEdit = QLineEdit()
-        self._edit.textChanged.connect(self._text_chanced)
-        self._edit.returnPressed.connect(self._add_edit_type)
-        self._edit.setPlaceholderText("Typ:")
+        self._edit_type_le: QLineEdit = QLineEdit()
+        self._edit_type_le.textChanged.connect(self._text_chanced)
+        self._edit_type_le.returnPressed.connect(self._add_edit_type)
+        self._edit_type_le.setPlaceholderText("Typ:")
+
+        self._edit_extra_le: QLineEdit = QLineEdit()
+        self._edit_extra_le.textChanged.connect(self._text_chanced)
+        self._edit_extra_le.returnPressed.connect(self._add_edit_type)
+        self._edit_extra_le.setPlaceholderText("Zusatzinfo")
 
         self._types_list: QListWidget = QListWidget()
         self._types_list.currentItemChanged.connect(self._row_chanced)
@@ -73,7 +95,10 @@ class TypesWindow(BaseWindow):
         grid.addWidget(self._types_box, row, 0, 1, -1)
 
         row += 1
-        grid.addWidget(self._edit, row, 0, 1, -1)
+        grid.addWidget(self._edit_type_le, row, 0, 1, -1)
+
+        row += 1
+        grid.addWidget(self._edit_extra_le, row, 0, 1, -1)
 
         row += 1
         grid.addWidget(self._add_edit_btn, row, 0)
@@ -89,37 +114,47 @@ class TypesWindow(BaseWindow):
         self.show()
 
     def _set_current_type(self) -> None:
-        self._edit.clear()
+        self._edit_type_le.clear()
         self._types_list.clear()
         self._types_list_items.clear()
-        data, valid = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
-                                                 active=True)
-        if not valid:
-            self.set_error_bar(message=data)
-            return
 
-        for type_ in data:
-            new_type: TypesListEntry = TypesListEntry(type_=type_)
-            self._types_list.addItem(new_type)
-            self._types_list_items.append(new_type)
+        bools: list = [
+            True,
+            False
+        ]
+        for bool_ in bools:
+            data, valid = transition.get_single_type(
+                raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
+                active=bool_)
+            if not valid:
+                self.set_error_bar(message=data)
+                return
 
-        data, valid = transition.get_single_type(raw_type_id=self._get_raw_id_from_name(self._types_box.currentText()),
-                                                 active=False)
-        if not valid:
-            self.set_error_bar(message=data)
-            return
+            for type_ in data:
+                new_type: TypesListEntry = TypesListEntry(type_=type_, active=bool_)
+                self._types_list.addItem(new_type)
+                self._types_list_items.append(new_type)
 
-        for type_ in data:
-            new_type: TypesListEntry = TypesListEntry(type_=type_, active=False)
-            self._types_list.addItem(new_type)
-            self._types_list_items.append(new_type)
-        self._edit.setFocus()
+        self._set_extra_le()
+        self._edit_type_le.setFocus()
         self._types_list.setCurrentItem(None)
-        self._edit.clear()
+        self._edit_type_le.clear()
+        self._edit_extra_le.clear()
 
         self._set_btn()
 
-    def _set_types(self) -> None:
+    def _set_extra_le(self) -> None:
+        current_raw_type_id: int = self._get_raw_id_from_name(self._types_box.currentText())
+        if current_raw_type_id == c.config.raw_type_id['membership']:
+            self._edit_extra_le.setEnabled(True)
+            self._edit_extra_le.setPlaceholderText("Beitrag")
+            self._edit_extra_le.setValidator(QIntValidator())
+        else:
+            self._edit_extra_le.setEnabled(False)
+            self._edit_extra_le.setPlaceholderText("Keine Eingabe möglich")
+            self._edit_extra_le.setValidator(None)
+
+    def _set_raw_types(self) -> None:
         data, valid = transition.get_raw_types()
         if not valid:
             self.set_error_bar(message=data)
@@ -133,7 +168,8 @@ class TypesWindow(BaseWindow):
     def _row_chanced(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
         if current_item is not None:
-            self._edit.setText(current_item.name)
+            self._edit_type_le.setText(current_item.name)
+            self._edit_extra_le.setText(current_item.extra_entry)
             self._set_btn()
 
     def _text_chanced(self) -> None:
@@ -154,7 +190,12 @@ class TypesWindow(BaseWindow):
             return False
 
     def _is_input(self) -> bool:
-        return False if len(self._edit.text().strip()) == 0 else True
+        if len(self._edit_type_le.text().strip()) != 0:
+            if self._edit_extra_le.isEnabled() and len(self._edit_extra_le.text().strip()) != 0:
+                return True
+            if not self._edit_extra_le.isEnabled():
+                return True
+        return False
 
     def _is_activity(self) -> bool:
         if self._types_list.currentItem() is not None:
@@ -176,9 +217,15 @@ class TypesWindow(BaseWindow):
                 return ID
 
     def _add_type(self) -> None:
-        result, valid = transition.add_type(type_name=self._edit.text(),
+        if not self._is_input():
+            self.set_info_bar(message="Nicht alle Eingaben vorhanden")
+            return
+
+        result, valid = transition.add_type(type_name=self._edit_type_le.text().strip().title(),
                                             raw_type_id=self._get_raw_id_from_name(
-                                                type_name=self._types_box.currentText()))
+                                                type_name=self._types_box.currentText()),
+                                            extra_value=None if self._edit_extra_le.text().strip() \
+                                                                == "" else self._edit_extra_le.text().strip())
         if not valid:
             self.set_error_bar(message=result)
             return
@@ -187,9 +234,14 @@ class TypesWindow(BaseWindow):
         self._set_current_type()
 
     def _edit_type(self) -> None:
+        if not self._is_input():
+            self.set_info_bar(message="Nicht alle Eingaben vorhanden")
+            return
         current_item: TypesListEntry = self._types_list.currentItem()
-        text: str = self._edit.text().strip().title()
-        result, valid = transition.update_type(id_=current_item.id_, name=text)
+        text: str = self._edit_type_le.text().strip().title()
+        result, valid = transition.update_type(id_=current_item.ID, name=text,
+                                               extra_value=None if self._edit_extra_le.text().strip() \
+                                                                   == "" else self._edit_extra_le.text().strip())
         if not valid:
             self.set_error_bar(message=result)
             self._set_current_type()
@@ -200,7 +252,7 @@ class TypesWindow(BaseWindow):
 
     def _set_type_activity(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        result, valid = transition.update_type_activity(id_=current_item.id_,
+        result, valid = transition.update_type_activity(id_=current_item.ID,
                                                         active=False if current_item.active else True)
         if not valid:
             self.set_error_bar(message=result)
@@ -211,7 +263,7 @@ class TypesWindow(BaseWindow):
 
     def _remove_type(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        result, valid = transition.delete_type(id_=current_item.id_)
+        result, valid = transition.delete_type(id_=current_item.ID)
         if not valid:
             self.set_error_bar(message=result)
             return

@@ -186,7 +186,7 @@ def _transform_membership_for_safe(data, ID) -> dict:
 
 def _transform_membership_for_load(data: dict) -> dict:
     if isinstance(data["membership_type"], int):
-        data["membership_type"] = s_h.select_handler.get_type_name_by_ID(data["membership_type"])[0]
+        data["membership_type"] = s_h.select_handler.get_type_name_and_extra_value_by_ID(data["membership_type"])[0]
     return data
 
 

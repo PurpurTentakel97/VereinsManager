@@ -89,7 +89,7 @@ def _transform_nexus_data(nexus_data: tuple) -> list:
             "type": data[1],
             "number": data[2],
         }
-        type_name = s_h.select_handler.get_type_name_by_ID(ID=nexus_dict["type"])
+        type_name = s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=nexus_dict["type"])
 
         nexus_dict["type"] = type_name[0]
         data: list = [

@@ -17,13 +17,14 @@ class AddHandler(Database):
         super().__init__()
 
     # type
-    def add_type(self, type_name: str, raw_type_id: int) -> int:
-        sql_command: str = f"""INSERT INTO type (name,type_id) VALUES (?,?);"""
+    def add_type(self, type_name: str, raw_type_id: int, extra_value: str) -> int:
+        sql_command: str = f"""INSERT INTO type (name,type_id,extra_value) VALUES (?,?,?);"""
         try:
-            self.cursor.execute(sql_command, (type_name, raw_type_id))
+            self.cursor.execute(sql_command, (type_name, raw_type_id, extra_value))
             self.connection.commit()
             ID: int = self.cursor.lastrowid
             l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=None, new_data=type_name)
+            l_h.log_handler.log_type(target_id=ID, target_column="extra_value", old_data=None, new_data=extra_value)
 
             member_ids = s_h.select_handler.get_all_IDs_from_member(active=True)
             function_ = None

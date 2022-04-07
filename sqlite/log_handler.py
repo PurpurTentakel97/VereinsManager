@@ -24,6 +24,9 @@ class LogHandler(Database):
     def log_type(self, target_id: int, target_column: str, old_data, new_data) -> None:
         log_date = self.transform_log_none_date(none_date=None)
 
+        if old_data == new_data:
+            return
+
         v.must_positive_int(target_id, max_length=None)
         v.must_int(int_=log_date)
         v.must_str(target_column)

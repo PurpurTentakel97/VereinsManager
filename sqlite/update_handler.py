@@ -17,11 +17,11 @@ class UpdateHandler(Database):
         super().__init__()
 
     # types
-    def update_type(self, ID: int, name: str) -> None:
-        sql_command: str = """UPDATE type SET name = ? WHERE ID is ?;"""
+    def update_type(self, ID: int, name: str, extra_value: str) -> None:
+        sql_command: str = """UPDATE type SET name = ?, extra_value = ? WHERE ID is ?;"""
         try:
 
-            self.cursor.execute(sql_command, (name, ID))
+            self.cursor.execute(sql_command, (name, extra_value, ID))
             self.connection.commit()
 
         except self.OperationalError:
@@ -130,7 +130,7 @@ class UpdateHandler(Database):
             self.connection.commit()
         except self.OperationalError:
             debug.error(item=debug_str, keyword="update_member_active_position", error_=sys.exc_info())
-            raise  e.UpdateFailed(info=str(active))
+            raise e.UpdateFailed(info=str(active))
 
     # user
     def update_user(self, ID: int, data: dict) -> None:

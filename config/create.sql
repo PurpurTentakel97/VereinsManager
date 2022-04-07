@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS "main"."type" (
 "_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "name" Varchar(10) NOT NULL,
 "type_id" INTEGER(1) NOT NULL,
+"extra_value" VARCHAR(10) Default NULL,
 "active" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT),
 FOREIGN KEY ("type_id") REFERENCES "raw_type"
@@ -32,12 +33,12 @@ END;
 
 /* Active Type */
 CREATE VIEW IF NOT EXISTS "main"."v_active_type" AS
-SELECT type.ID, type.name, type.type_id, raw_type.type_name
+SELECT type.ID, type.name, type.extra_value, type.type_id, raw_type.type_name
 FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
 WHERE type.active = 1;
-/* Active Member Type */
+/* Inactive Type */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_type" AS
-SELECT type.ID,type.name,type.type_id,raw_type.type_name
+SELECT type.ID, type.name, type.extra_value, type.type_id, raw_type.type_name
 FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
 WHERE type.active = 0;
 /* Active Member Type */

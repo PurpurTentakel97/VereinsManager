@@ -13,12 +13,13 @@ debug_str: str = "Type Handler"
 
 
 # add
-def add_type(type_name: str, raw_type_id: int) -> [str | int, bool]:
+def add_type(type_name: str, raw_type_id: int, extra_value: str) -> [str | int, bool]:
     try:
-        v.add_type(type_name=type_name, raw_type_id=raw_type_id)
+        v.add_type(type_name=type_name, raw_type_id=raw_type_id, extra_value=extra_value)
         v.must_default_user(c.config.user['ID'], False)
 
-        return a_h.add_handler.add_type(type_name=type_name.strip().title(), raw_type_id=raw_type_id), True
+        return a_h.add_handler.add_type(type_name=type_name.strip().title(), raw_type_id=raw_type_id,
+                                        extra_value=extra_value), True
 
     except e.InputError as error:
         debug.info(item=debug_str, keyword="add_type", error_=sys.exc_info())
@@ -68,7 +69,7 @@ def get_type_name_by_ID(ID: int) -> [str | tuple, bool]:
     try:
         v.must_positive_int(int_=ID, max_length=None)
 
-        return s_h.select_handler.get_type_name_by_ID(ID=ID), True
+        return s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=ID), True
 
     except e.InputError as error:
         debug.info(item=debug_str, keyword="get_type_name_by_ID", error_=sys.exc_info())
@@ -80,16 +81,18 @@ def get_type_name_by_ID(ID: int) -> [str | tuple, bool]:
 
 
 # update
-def update_type(ID: int, name: str) -> [str | None, bool]:
+def update_type(ID: int, name: str, extra_value: str) -> [str | None, bool]:
     try:
-        v.update_type(ID=ID, new_name=name)
+        v.update_type(ID=ID, new_name=name, extra_value=extra_value)
         v.must_default_user(c.config.user['ID'], False)
 
         name = name.strip().title()
 
-        reference_data = s_h.select_handler.get_type_name_by_ID(ID=ID)
-        u_h.update_handler.update_type(ID=ID, name=name)
+        reference_data = s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=ID)
+        u_h.update_handler.update_type(ID=ID, name=name, extra_value=extra_value)
         l_h.log_handler.log_type(target_id=ID, target_column="name", old_data=reference_data[0], new_data=name)
+        l_h.log_handler.log_type(target_id=ID, target_column="extra_value", old_data=reference_data[1],
+                                 new_data=extra_value)
         return None, True
 
     except e.InputError as error:
