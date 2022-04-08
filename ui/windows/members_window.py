@@ -67,6 +67,7 @@ class MembersWindow(BaseWindow):
         self.raw_phone_number_ids: list[tuple[int, str]] = list()  # [ID, Name]
         self.raw_mail_ids: list[tuple[int, str]] = list()  # [ID, Name]
         self.raw_position_ids: list[tuple[int, PositionListItem]] = list()  # [ID, Name]
+        self.raw_country_ids: list[tuple[int, str]] = list()  # [ID, Name]
 
         self.phone_numbers: list[list[int, int, str, str]] = list()  # [ID, type_id, Type, number]
         self.mail_addresses: list[list[int, int, str, str]] = list()  # [ID, type_id, Type, mail]
@@ -156,6 +157,8 @@ class MembersWindow(BaseWindow):
         self._city_le.setPlaceholderText("Stadt")
         self._city_le.textChanged.connect(lambda: self._set_el_input(LineEditType.MAPS))
         self._city_le.returnPressed.connect(self._save)
+        self._country_box: QComboBox = QComboBox()
+        self._country_box.currentTextChanged.connect(self._set_membership_type_and_country)
 
         self._maps_le: QLineEdit = QLineEdit()
         self._maps_le.setPlaceholderText("Google Maps URL (falls nötig // nicht empfohlen)")
@@ -195,7 +198,7 @@ class MembersWindow(BaseWindow):
         self._member_lb: QLabel = QLabel()
         self._member_lb.setText("Mitgliedsart:")
         self._membership_type_box: QComboBox = QComboBox()
-        self._membership_type_box.currentTextChanged.connect(self._set_membership_type)
+        self._membership_type_box.currentTextChanged.connect(self._set_membership_type_and_country)
         self._special_member_cb: QCheckBox = QCheckBox()
         self._special_member_cb.setText(c.config.user['easter_egg'] if c.config.user['easter_egg'] else "Ehrenmitglied")
         self._special_member_cb.toggled.connect(self._set_special_member)
@@ -247,6 +250,7 @@ class MembersWindow(BaseWindow):
         row += 1
         grid.addWidget(self._zip_code_le, row, 1)
         grid.addWidget(self._city_le, row, 2)
+        grid.addWidget(self._country_box, row, 3)
         row += 1
         grid.addWidget(self._maps_le, row, 1, 1, 2)
         grid.addWidget(self._maps_btn, row, 3)
@@ -331,6 +335,10 @@ class MembersWindow(BaseWindow):
                 self._positions_list.addItem(new_position)
                 self.positions.append([None, ID, new_position, None])
 
+            elif type_id == c.config.raw_type_id['country']:
+                self.raw_country_ids.append((ID, name))
+                self._country_box.addItem(name)
+
         if len(self.raw_phone_number_ids) == 0:
             self._phone_number_le.setEnabled(False)
         if len(self.raw_mail_ids) == 0:
@@ -407,7 +415,7 @@ class MembersWindow(BaseWindow):
 
         self._set_edit_mode(active=True)
 
-    def _set_membership_type(self) -> None:
+    def _set_membership_type_and_country(self) -> None:
         self._set_edit_mode(active=True)
 
     def _set_special_member(self) -> None:
@@ -500,6 +508,7 @@ class MembersWindow(BaseWindow):
         self._b_day_date.setDate(QDateTime().fromSecsSinceEpoch(member_data["birth_date"]).date())
         self._entry_date.setDate(QDateTime().fromSecsSinceEpoch(member_data["entry_date"]).date())
         self._membership_type_box.setCurrentText(member_data["membership_type"])
+        self._country_box.setCurrentText(member_data["country"])
         self._special_member_cb.setChecked(True if member_data["special_member"] else False)
         self._comment_text.setText("" if member_data["comment_text"] is None else member_data["comment_text"])
         self._maps_le.setText("" if member_data["maps"] is None else member_data["maps"])
@@ -563,6 +572,8 @@ class MembersWindow(BaseWindow):
                 position.set_active(active=new_active)
 
     def _save(self) -> None | bool:
+
+        phone_list: list = list()
         member_data: dict = {
             "first_name": None if self._first_name_le.text().strip() == "" else self._first_name_le.text().strip().title(),
             "last_name": None if self._last_name_le.text().strip() == "" else self._last_name_le.text().strip().title(),
@@ -573,12 +584,11 @@ class MembersWindow(BaseWindow):
             "entry_date": QDateTime.toSecsSinceEpoch(QDateTime(self._entry_date.date())),
             "city": None if self._city_le.text().strip().title() == "" else self._city_le.text().strip().title(),
             "membership_type": self._membership_type_box.currentText(),
+            "country": self._country_box.currentText(),
             "special_member": self._special_member_cb.isChecked(),
             "comment_text": None if self._comment_text.toPlainText().strip() == "" else self._comment_text.toPlainText().strip(),
             "maps": None if self._maps_le.text().strip() == "" else self._maps_le.text().strip(),
         }
-
-        phone_list: list = list()
         for ID, type_id, Type, phone in self.phone_numbers:
             phone_entry: list = [
                 ID,
@@ -742,7 +752,8 @@ class MembersWindow(BaseWindow):
             else:
                 webbrowser.open(
                     f"""http://www.google.de/maps/place/{self._street_le.text().strip()}+{self._number_le.text().strip()}
-                    ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}""".replace(" ", ""))
+                    ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}+
+                    {self._country_box.currentText()}""".replace(" ", ""))
 
     def closeEvent(self, event) -> None:
         event.ignore()

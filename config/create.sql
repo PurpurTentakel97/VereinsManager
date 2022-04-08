@@ -11,6 +11,7 @@ INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (2,"E-Mail");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (3,"Telefon");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (4,"Position");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (5,"Job");
+INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (6,"Land");
 
 /* TYPE */
 CREATE TABLE IF NOT EXISTS "main"."type" (
@@ -45,12 +46,12 @@ WHERE type.active = 0;
 CREATE VIEW IF NOT EXISTS "main"."v_active_member_type" AS
 SELECT type.ID,type.name,type.type_id,raw_type.type_name
 FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
-WHERE type.active = 1 AND type_id IN (1,2,3,4);
+WHERE type.active = 1 AND type_id IN (1,2,3,4,6);
 /* Inactive Member Type */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_member_type" AS
 SELECT type.ID,type.name,type.type_id,raw_type.type_name
 FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
-WHERE type.active = 0 AND type_id IN (1,2,3,4);
+WHERE type.active = 0 AND type_id IN (1,2,3,4,6);
 
 
 /* MEMBER PHONE */
@@ -124,6 +125,7 @@ CREATE TABLE IF NOT EXISTS "main"."member" (
 "number" VARCHAR(10),
 "zip_code" VARCHAR(10),
 "city" VARCHAR(10),
+"country" VARCHAR(10),
 "maps" VARCHAR(50),
 "b_day" INTEGER,
 "entry_day" INTEGER,
@@ -136,13 +138,13 @@ FOREIGN KEY ("membership_type") REFERENCES "type"
 );
 /* Active Member */
 CREATE VIEW IF NOT EXISTS "main"."v_active_member" AS
-SELECT ID,first_name,last_name,street,number,zip_code,city,maps,b_day,entry_day,membership_type,special_member,comment
+SELECT ID,first_name,last_name,street,number,zip_code,city,country,maps,b_day,entry_day,membership_type,special_member,comment
 FROM member
 WHERE active = 1;
 
 /* Inactive Member */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_member" AS
-SELECT ID,first_name,last_name,street,number,zip_code,city,maps,b_day,entry_day,membership_type,special_member,comment
+SELECT ID,first_name,last_name,street,number,zip_code,city,country,maps,b_day,entry_day,membership_type,special_member,comment
 FROM member
 WHERE active = 0;
 
@@ -177,6 +179,7 @@ CREATE TABLE IF NOT EXISTS "main"."user" (
 "number" VARCHAR(10),
 "zip_code" VARCHAR(10),
 "city" VARCHAR(10),
+"country" VARCHAR(10),
 "phone" VARCHAR(10),
 "mail" VARCHAR(20),
 "position" VARCHAR(20),
@@ -187,7 +190,7 @@ PRIMARY KEY ("ID" AUTOINCREMENT)
 INSERT OR IGNORE INTO user (ID,first_name, last_name, password) VALUES (1,"Default","Default","$2b$12$o1u7aISUrLVJmKKq3XcGDuA2rOhU25Bg5uFJR8Fpwld4z.gKCnQK2");
 /* Active User */
 CREATE VIEW IF NOT EXISTS "main"."v_active_user" AS
-SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position
+SELECT ID,first_name,last_name,street,number,zip_code,city,country,phone,mail,position
 FROM "user"
 WHERE _active = 1;
 
@@ -199,7 +202,7 @@ WHERE _active = 1;
 
 /* Inactive User */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_user" AS
-SELECT ID,first_name,last_name,street,number,zip_code,city,phone,mail,position
+SELECT ID,first_name,last_name,street,number,zip_code,city,country,phone,mail,position
 FROM "user"
 WHERE _active = 0;
 

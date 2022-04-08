@@ -41,7 +41,7 @@ class UpdateHandler(Database):
     # member
     def update_member(self, ID: int | None, data: dict) -> None:
         sql_command: str = f"""Update member SET first_name = ?, last_name = ?, street = ?,number = ?,zip_code = ?,
-        city = ?,maps = ?,b_day = ?,entry_day = ?, membership_type = ?,special_member = ?,comment = ? WHERE ID is ?;"""
+        city = ?, country = ? , maps = ?,b_day = ?,entry_day = ?, membership_type = ?,special_member = ?,comment = ? WHERE ID is ?;"""
         try:
             self.cursor.execute(sql_command, (
                 data["first_name"],
@@ -50,6 +50,7 @@ class UpdateHandler(Database):
                 data["number"],
                 data["zip_code"],
                 data["city"],
+                data["country"],
                 data["maps"],
                 data["birth_date"],
                 data["entry_date"],

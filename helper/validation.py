@@ -69,6 +69,7 @@ def update_member(data: dict) -> None:
         "street",
         "number",
         "city",
+        "country",
         "maps",
         "zip_code",
     ], data)

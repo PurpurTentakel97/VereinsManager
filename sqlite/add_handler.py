@@ -52,8 +52,8 @@ class AddHandler(Database):
     # member
     def add_member(self, data: dict, log_date: int | None) -> int:
         sql_command: str = f"""INSERT INTO member 
-        (first_name,last_name,street,number,zip_code,city,maps,b_day,entry_day,membership_type,special_member,comment) 
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?);"""
+        (first_name,last_name,street,number,zip_code,city,country,maps,b_day,entry_day,membership_type,special_member,comment) 
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);"""
 
         try:
             self.cursor.execute(sql_command, (
@@ -63,6 +63,7 @@ class AddHandler(Database):
                 data["number"],
                 data["zip_code"],
                 data["city"],
+                data["country"],
                 data["maps"],
                 data["birth_date"],
                 data["entry_date"],
