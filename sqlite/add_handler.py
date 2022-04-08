@@ -123,8 +123,8 @@ class AddHandler(Database):
 
     # user
     def add_user(self, data: dict) -> int:
-        sql_command: str = """INSERT INTO user (first_name,last_name,street,number,zip_code,city,phone,mail,
-        position,password) VALUES (?,?,?,?,?,?,?,?,?,?);"""
+        sql_command: str = """INSERT INTO user (first_name,last_name,street,number,zip_code,city,country,phone,mail,
+        position,password) VALUES (?,?,?,?,?,?,?,?,?,?,?);"""
 
         try:
             self.cursor.execute(sql_command, (
@@ -134,6 +134,7 @@ class AddHandler(Database):
                 data["number"],
                 data["zip_code"],
                 data["city"],
+                data["country"],
                 data["phone"],
                 data["mail"],
                 data["position"],

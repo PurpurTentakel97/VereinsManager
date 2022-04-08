@@ -136,7 +136,7 @@ class UpdateHandler(Database):
     # user
     def update_user(self, ID: int, data: dict) -> None:
         sql_command: str = """UPDATE user SET first_name = ?,last_name = ?,street = ?,number = ?,zip_code = ?,city = ?,
-        phone = ?,mail = ?, position = ? WHERE ID is ?;"""
+        country = ?, phone = ?, mail = ?, position = ? WHERE ID is ?;"""
 
         try:
             self.cursor.execute(sql_command, (
@@ -146,6 +146,7 @@ class UpdateHandler(Database):
                 data["number"],
                 data["zip_code"],
                 data["city"],
+                data["country"],
                 data["phone"],
                 data["mail"],
                 data["position"],

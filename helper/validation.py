@@ -152,6 +152,7 @@ def save_update_user(data: dict) -> None:
         "street",
         "number",
         "city",
+        "country",
         "phone",
         "mail",
         "position",

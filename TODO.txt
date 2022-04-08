@@ -2,9 +2,6 @@
 # 21.01.2022
 # VereinsManager // TODO
 
-validation
-    validate extra value
-
 pdf
     dirfferent name for anniversary pdfs
 
@@ -18,8 +15,12 @@ UI
         set Icon in Taskbar
         check for screen reader
 
+user
+    log
+
 member
     export schreiben
+    convert country to ID
 
 
 test

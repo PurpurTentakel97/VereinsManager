@@ -40,9 +40,10 @@ def get_data_of_user_by_ID(ID: int, active: bool) -> [str | dict, bool]:
             "number": data[4],
             "zip_code": data[5],
             "city": data[6],
-            "phone": data[7],
-            "mail": data[8],
-            "position": data[9],
+            "country": data[7],
+            "phone": data[8],
+            "mail": data[9],
+            "position": data[10],
         }
         return data_, True
 

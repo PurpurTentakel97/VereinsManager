@@ -93,6 +93,10 @@ class UserWindow(BaseWindow):
         self._city_le.setPlaceholderText("Stadt")
         self._city_le.textChanged.connect(lambda: self._set_el_input(LineEditType.OTHER))
         self._city_le.returnPressed.connect(self._save)
+        self._county_le: QLineEdit = QLineEdit()
+        self._county_le.setPlaceholderText("Land")
+        self._county_le.textChanged.connect(lambda: self._set_el_input(LineEditType.OTHER))
+        self._county_le.returnPressed.connect(self._save)
 
         self._phone_number_lb: QLabel = QLabel()
         self._phone_number_lb.setText("Telefon:")
@@ -159,6 +163,7 @@ class UserWindow(BaseWindow):
         row += 1
         grid.addWidget(self._zip_code_le, row, 1)
         grid.addWidget(self._city_le, row, 2)
+        grid.addWidget(self._county_le, row, 3)
         row += 1
 
         # Mail / Number / Position / Password
@@ -228,6 +233,7 @@ class UserWindow(BaseWindow):
         self._number_le.setText("")
         self._zip_code_le.setText("")
         self._city_le.setText("")
+        self._county_le.setText("")
         self._phone_number_le.setText("")
         self._mail_le.setText("")
         self._position_le.setText("")
@@ -263,6 +269,7 @@ class UserWindow(BaseWindow):
         self._number_le.setText("" if data["number"] is None else data["number"])
         self._zip_code_le.setText("" if data["zip_code"] is None else data["zip_code"])
         self._city_le.setText("" if data["city"] is None else data["city"])
+        self._county_le.setText("" if data["country"] is None else data["country"])
         self._phone_number_le.setText("" if data["phone"] is None else data["phone"])
         self._mail_le.setText("" if data["mail"] is None else data["mail"])
         self._position_le.setText("" if data["position"] is None else data["position"])
@@ -280,6 +287,7 @@ class UserWindow(BaseWindow):
             "number": None if self._number_le.text().strip() == "" else self._number_le.text().strip().title(),
             "zip_code": None if self._zip_code_le.text().strip() == "" else self._zip_code_le.text().strip().title(),
             "city": None if self._city_le.text().strip() == "" else self._city_le.text().strip().title(),
+            "country": None if self._county_le.text().strip() == "" else self._county_le.text().strip().title(),
             "phone": None if self._phone_number_le.text().strip() == "" else self._phone_number_le.text().strip(),
             "mail": None if self._mail_le.text().strip() == "" else self._mail_le.text().strip().lower(),
             "position": None if self._position_le.text().strip() == "" else self._position_le.text().strip().title(),
