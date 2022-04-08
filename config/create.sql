@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS "main"."member" (
 "number" VARCHAR(10),
 "zip_code" VARCHAR(10),
 "city" VARCHAR(10),
-"country" VARCHAR(10),
+"country" INTEGER(1),
 "maps" VARCHAR(50),
 "b_day" INTEGER,
 "entry_day" INTEGER,
@@ -135,6 +135,7 @@ CREATE TABLE IF NOT EXISTS "main"."member" (
 "active" INTEGER(1) DEFAULT 1,
 PRIMARY KEY ("ID" AUTOINCREMENT)
 FOREIGN KEY ("membership_type") REFERENCES "type"
+FOREIGN KEY ("country") REFERENCES "type"
 );
 /* Active Member */
 CREATE VIEW IF NOT EXISTS "main"."v_active_member" AS
