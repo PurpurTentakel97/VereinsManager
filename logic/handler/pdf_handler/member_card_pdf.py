@@ -119,8 +119,8 @@ class MemberCardPDF(BasePDF):
             "<b>Adresse:</b>",
             f"{input_['name']}",
             f"{input_['street']}",
-            f"{input_['zip_code']}",
-            f"{input_['city']}",
+            f"{input_['zip_code']} {input_['city']}",
+            f"{input_['country']}",
             f"{input_['maps']}",
         )
         elements.extend(self._get_single_table(data=data))
@@ -129,6 +129,7 @@ class MemberCardPDF(BasePDF):
             ["<b>Geburtstag:</b>", f"{input_['birth_date']}, {input_['age']}"],
             ["<b>Eintritt:</b>", f"{input_['entry_date']}, {input_['years']}"],
             ["<b>Mitgliedsart:</b>", f"{input_['membership_type']}"],
+            ["<b>Beitrag:</b>", f"{input_['membership_type_extra_value']}"],
             ["<b>Ehrenmitglied:</b>", f"{'Ja' if input_['special_member'] else 'Nein'}"],
         )
         elements.extend(self._get_double_table(data=data))

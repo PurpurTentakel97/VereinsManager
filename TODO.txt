@@ -4,6 +4,7 @@
 
 pdf
     dirfferent name for anniversary pdfs
+    add currency
 
 sql database
     let unser choose database name

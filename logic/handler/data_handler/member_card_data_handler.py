@@ -1,6 +1,6 @@
 # Purpur Tentakel
 # 26.03.2022
-# VereinsManager / Member Card Handler
+# VereinsManager / Member Card Data Handler
 
 import datetime
 
@@ -9,7 +9,7 @@ from sqlite import select_handler as s_h
 from config import config_sheet as c
 import debug
 
-debug_str: str = "Member Card Handler"
+debug_str: str = "Member Card Data Handler"
 none_str: str = "---"
 
 

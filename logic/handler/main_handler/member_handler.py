@@ -73,8 +73,8 @@ def _get_member_data_by_id(ID: int, active: bool = True) -> dict:
 
     data = s_h.select_handler.get_member_data_by_id(ID=ID, active=active)
     data = _transform_to_dict(data)
-    data = _transform_membership_for_load(data=data, key="membership_type")
-    data = _transform_membership_for_load(data=data, key="country")
+    data = _transform_type_for_load(data=data, key="membership_type")
+    data = _transform_type_for_load(data=data, key="country")
     data = _transform_dates_for_load(data)
 
     return data
@@ -184,9 +184,11 @@ def _transform_type_for_safe(data, raw_id, key) -> dict:
     return data
 
 
-def _transform_membership_for_load(data: dict, key) -> dict:
+def _transform_type_for_load(data: dict, key) -> dict:
     if isinstance(data[key], int):
-        data[key] = s_h.select_handler.get_type_name_and_extra_value_by_ID(data[key])[0]
+        type_name, extra_value = s_h.select_handler.get_type_name_and_extra_value_by_ID(data[key])
+        data[key] = type_name
+        data[f"{key}_extra_value"] = extra_value
     return data
 
 
