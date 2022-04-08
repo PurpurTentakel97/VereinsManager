@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMessageBox
 
 from ui.windows.base_window import BaseWindow
 from ui.windows import members_window as m_w, window_manager as w_m, types_window as t_w, user_window as u_w, \
-    user_verify_window as u_v_w
+    user_verify_window as u_v_w, organisation_data_window as o_d_w
 
 import debug
 
@@ -65,6 +65,10 @@ class MainWindow(BaseWindow):
         self._chance_organization_btn.setText("Organisation wechseln")
         self._chance_organization_btn.clicked.connect(self._open_chance_organization)
 
+        self._organization_data_btn: QPushButton = QPushButton()
+        self._organization_data_btn.setText("Organisations Daten")
+        self._organization_data_btn.clicked.connect(self._open_organisation_data)
+
     def _set_layout(self) -> None:
         row: int = 0
         grid: QGridLayout = QGridLayout()
@@ -81,6 +85,8 @@ class MainWindow(BaseWindow):
         row += 1
         grid.addWidget(self._chance_user_btn, row, 0)
         grid.addWidget(self._chance_organization_btn, row, 1)
+        row += 1
+        grid.addWidget(self._organization_data_btn, row, 0)
 
         widget: QWidget = QWidget()
         widget.setLayout(grid)
@@ -99,19 +105,19 @@ class MainWindow(BaseWindow):
     def _open_members(self) -> None:
         result, valid = w_m.window_manger.is_valid_member_window()
         if not valid:
-            self.set_info_bar(message=result)
+            self.set_debug_bar(message=result)
             return
 
         w_m.window_manger.members_window = m_w.MembersWindow()
 
     def _open_my_jobs(self) -> None:
-        debug.info(item=debug_str, keyword="_open_my_jobs", message=f"my jobs open")
+        debug.debug(item=debug_str, keyword="_open_my_jobs", message=f"my jobs open")
 
     def _open_jobs(self) -> None:
-        debug.info(item=debug_str, keyword="_open_jobs", message=f"open jobs")
+        debug.debug(item=debug_str, keyword="_open_jobs", message=f"open jobs")
 
     def _open_performances(self) -> None:
-        debug.info(item=debug_str, keyword="_open_performances", message=f"performances open")
+        debug.debug(item=debug_str, keyword="_open_performances", message=f"performances open")
 
     def _open_edit_types(self) -> None:
         result, valid = w_m.window_manger.is_valid_types_window()
@@ -121,7 +127,7 @@ class MainWindow(BaseWindow):
 
         w_m.window_manger.types_window = t_w.TypesWindow()
 
-    def _open_user_data(self):
+    def _open_user_data(self) -> None:
         result, valid = w_m.window_manger.is_valid_user_window()
         if not valid:
             self.set_error_bar(message=result)
@@ -129,15 +135,23 @@ class MainWindow(BaseWindow):
 
         w_m.window_manger.user_window = u_w.UserWindow()
 
-    def _open_export_pdf(self):
-        debug.info(item=debug_str, keyword="_open_export_pdf", message=f"pdf open")
+    def _open_export_pdf(self) -> None:
+        debug.debug(item=debug_str, keyword="_open_export_pdf", message=f"pdf open")
 
-    def _open_chance_user(self):
+    def _open_chance_user(self) -> None:
         u_v_w.create_user_verify_window()
         self.close()
 
     def _open_chance_organization(self):
-        debug.info(item=debug_str, keyword="_open_chance_organization", message=f"chance database")
+        debug.debug(item=debug_str, keyword="_open_chance_organization", message=f"chance database")
+
+    def _open_organisation_data(self) -> None:
+        result, valid = w_m.window_manger.is_valid_organisation_data_window()
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        w_m.window_manger.organisation_data_window = o_d_w.OrganisationDataWindow()
 
     def closeEvent(self, event) -> None:
         event.ignore()

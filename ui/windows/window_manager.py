@@ -18,6 +18,8 @@ class WindowManager:
         self.member_anniversary_window = None
         # User
         self.user_window = None
+        # Organisation
+        self.organisation_data_window = None
 
     # Main
     def is_valid_close_main_window(self) -> bool:
@@ -91,6 +93,12 @@ class WindowManager:
             return "Es können keine Benutzer berabeitet werden, währen das Ehmalige-Benutzer-Fenster geöffnet ist.", False
         return True, True
 
+    # Organisation
+    def is_valid_organisation_data_window(self) -> [bool | str, bool]:
+        if self.organisation_data_window:
+            return "Fenster bereits geöffnet", False
+        return True, True
+
     # Global
     def is_valid_recover_window(self, type_: str, ignore_member_window: bool = False,
                                 ignore_user_window: bool = False) -> [bool | str, bool]:
@@ -123,6 +131,10 @@ class WindowManager:
         self.types_window = None
 
         self.user_window.close() if self.user_window else None
+        self.user_window = None
+
+        self.organisation_data_window.close() if self.organisation_data_window else None
+        self.organisation_data_window = None
 
     # global
     def _is_window(self, window: str, ignore: bool = False) -> bool:
@@ -144,6 +156,9 @@ class WindowManager:
 
             case "user":
                 dummy_window = self.user_window
+
+            case "organisation_data":
+                dummy_window = self.organisation_data_window
 
         if dummy_window:
             return not ignore
