@@ -15,12 +15,14 @@ UI
         set Icon in Taskbar
         check for screen reader
 
+log
+    show log in ui
+
 user
     log
 
 member
     export schreiben
-    convert country to ID
 
 
 test

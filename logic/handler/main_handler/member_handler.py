@@ -15,9 +15,8 @@ debug_str: str = "Member Handler"
 
 # add
 def _add_member(data: dict, log_date: int | None) -> int:  # No Validation
-    type_id = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
-
-    data = _transform_membership_for_safe(data=data, ID=type_id)
+    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id['membership'], key="membership_type")
+    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id['country'], key="country")
     data = _transform_dates_for_save(data=data)
     result = a_h.add_handler.add_member(data=data, log_date=log_date)
 
@@ -74,7 +73,8 @@ def _get_member_data_by_id(ID: int, active: bool = True) -> dict:
 
     data = s_h.select_handler.get_member_data_by_id(ID=ID, active=active)
     data = _transform_to_dict(data)
-    data = _transform_membership_for_load(data=data)
+    data = _transform_membership_for_load(data=data, key="membership_type")
+    data = _transform_membership_for_load(data=data, key="country")
     data = _transform_dates_for_load(data)
 
     return data
@@ -124,9 +124,8 @@ def update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict
 
 
 def _update_member(ID: int | None, data: dict, log_date: int | None) -> None:  # No Validation
-    type_id = s_h.select_handler.get_id_by_type_name(raw_id=1, name=data["membership_type"])
-
-    data = _transform_membership_for_safe(data=data, ID=type_id)
+    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id['membership'], key="membership_type")
+    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id['country'], key="country")
     data = _transform_dates_for_save(data=data)
 
     reference_data = _get_member_data_by_id(ID=ID, active=True)
@@ -176,17 +175,18 @@ def delete_inactive_member() -> None:
 
 
 # helper
-def _transform_membership_for_safe(data, ID) -> dict:
-    if ID:
-        data["membership_type"] = ID[0]
+def _transform_type_for_safe(data, raw_id, key) -> dict:
+    type_id = s_h.select_handler.get_id_by_type_name(raw_id=raw_id, name=data[key])
+    if type_id:
+        data[key] = type_id[0]
     else:
-        data["membership_type"] = ID
+        data[key] = type_id
     return data
 
 
-def _transform_membership_for_load(data: dict) -> dict:
-    if isinstance(data["membership_type"], int):
-        data["membership_type"] = s_h.select_handler.get_type_name_and_extra_value_by_ID(data["membership_type"])[0]
+def _transform_membership_for_load(data: dict, key) -> dict:
+    if isinstance(data[key], int):
+        data[key] = s_h.select_handler.get_type_name_and_extra_value_by_ID(data[key])[0]
     return data
 
 
