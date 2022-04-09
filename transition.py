@@ -115,5 +115,9 @@ def open_latest_export() -> None:
 
 
 # organisation
+def get_organisation_data() -> [tuple | str, bool]:
+    return organisation_handler.get_organisation_data()
+
+
 def add_update_organisation(data: dict) -> [int | str, bool]:
     return organisation_handler.add_update_organisation(data=data)

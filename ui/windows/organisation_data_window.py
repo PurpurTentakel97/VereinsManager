@@ -25,6 +25,7 @@ class OrganisationDataWindow(BaseWindow):
         self._create_ui()
         self._create_layout()
         self._set_contact_persons()
+        self._set_organisation_data()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Vereinsinformationen")
@@ -34,6 +35,7 @@ class OrganisationDataWindow(BaseWindow):
         self._save_btn: QPushButton = QPushButton("Speichern")
         self._save_btn.clicked.connect(self._save)
         self._restore_btn: QPushButton = QPushButton("Zurücksetzten")
+        self._restore_btn.clicked.connect(self._set_organisation_data)
 
         # organisation
         self._organisation_name_lb: QLabel = QLabel("Name:")
@@ -74,6 +76,7 @@ class OrganisationDataWindow(BaseWindow):
         self._extra_info_lb: QLabel = QLabel("Extra Infos:")
         self._extra_info_text: QTextEdit = QTextEdit()
         self._extra_info_text.setPlaceholderText("Extra Infos")
+        self._extra_info_text.setTabChangesFocus(True)
 
     def _create_layout(self) -> None:
         extra_text_vbox: QVBoxLayout = QVBoxLayout()
@@ -125,14 +128,17 @@ class OrganisationDataWindow(BaseWindow):
         self.show()
 
     def _set_contact_persons(self) -> None:
-        contact_person, valid = transition.get_all_user_name()
+        data, valid = transition.get_all_user_name()  # TODO chance to without default when validation is ready
         if not valid:
-            self.set_error_bar(message=contact_person)
+            self.set_error_bar(message=data)
 
-        self.contact_persons = contact_person
+        contact_persons: list = list()
+        for ID, firstname, lastname in data:
+            display_name = self._get_display_name(firstname=firstname, lastname=lastname)
+            contact_persons.append([ID, display_name])
+            self._contact_person_box.addItem(display_name)
 
-        for ID, firstname, lastname in contact_person:
-            self._contact_person_box.addItem(self._get_display_name(firstname=firstname, lastname=lastname))
+        self.contact_persons = contact_persons
 
     @staticmethod
     def _get_display_name(firstname: str, lastname: str) -> str:
@@ -143,6 +149,28 @@ class OrganisationDataWindow(BaseWindow):
         if lastname:
             return lastname
         return "Kein Name vorhanden"
+
+    def _set_organisation_data(self) -> None:
+        data, valid = transition.get_organisation_data()
+        if not valid:
+            self.set_error_bar(message=data)
+            return
+
+        self.ID = data['ID']
+        self._name_le.setText("" if data['name'] is None else data['name'])
+        self._street_le.setText("" if data['street'] is None else data['street'])
+        self._number_le.setText("" if data['number'] is None else data['number'])
+        self._zip_code_le.setText("" if data['zip_code'] is None else data['zip_code'])
+        self._city_le.setText("" if data['city'] is None else data['city'])
+        self._county_le.setText("" if data['country'] is None else data['country'])
+        self._bank_name_le.setText("" if data['bank_name'] is None else data['bank_name'])
+        self._bank_owner_le.setText("" if data['bank_owner'] is None else data['bank_owner'])
+        self._bank_IBAN_le.setText("" if data['bank_IBAN'] is None else data['bank_IBAN'])
+        self._bank_BIC_le.setText("" if data['bank_BIC'] is None else data['bank_BIC'])
+        self._web_le.setText("" if data['web_link'] is None else data['web_link'])
+        self._extra_info_text.setText("" if data['extra_text'] is None else data['extra_text'])
+        self._contact_person_box.setCurrentText(
+            self._get_display_name(firstname=data['contact_person'][1], lastname=data['contact_person'][2]))
 
     def _save(self) -> None:
         data: dict = {
@@ -157,7 +185,7 @@ class OrganisationDataWindow(BaseWindow):
             "bank_owner": None if self._bank_owner_le.text().strip() == "" else self._bank_owner_le.text().strip().title(),
             "bank_IBAN": None if self._bank_IBAN_le.text() == "" else self._bank_IBAN_le.text().strip(),
             "bank_BIC": None if self._bank_BIC_le.text().strip() == "" else self._bank_BIC_le.text().strip(),
-            "contact_person": None if self._contact_person_box.currentText() == "" else self._contact_person_box.currentText(),
+            "contact_person": self._get_ID_from_contact_person(),
             "web_link": None if self._web_le.text().strip() == "" else self._web_le.text().strip(),
             "extra_text": None if self._extra_info_text.toPlainText().strip() == "" else self._extra_info_text.toPlainText().strip(),
         }
@@ -170,6 +198,15 @@ class OrganisationDataWindow(BaseWindow):
         else:
             self.ID = ID
             self.set_info_bar(message="saved")
+
+    def _get_ID_from_contact_person(self) -> int | None:
+        current_entry: str = self._contact_person_box.currentText()
+
+        for ID, display_name in self.contact_persons:
+            if current_entry == display_name:
+                return ID
+
+        return None
 
     def closeEvent(self, event) -> None:
         event.ignore()

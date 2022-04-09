@@ -195,6 +195,15 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword="get_names_of_user", error_=sys.exc_info())
             raise e.LoadingFailed(info="user names")
 
+    def get_name_of_user_by_ID(self, ID: int, active: bool = True) -> tuple:
+        table: str = "v_active_user" if active else "v_inactive_user"
+        sql_command: str = f"""SELECT ID,first_name,last_name FROM {table} WHERE ID is ?;"""
+        try:
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword="get_name_of_user_by_ID", error_=sys.exc_info())
+            raise e.LoadingFailed(info="user name by ID")
+
     def get_data_of_user_by_ID(self, ID: int, active: bool) -> tuple:
         table: str = "v_active_user" if active else "v_inactive_user"
         sql_command: str = f"""SELECT * FROM {table} WHERE ID is ?;"""
@@ -213,6 +222,16 @@ class SelectHandler(Database):
         except self.OperationalError:
             debug.error(item=debug_str, keyword="get_hashed_password_by_ID", error_=sys.exc_info())
             raise e.LoadingFailed(info="user passsword")
+
+    # organisation
+    def get_organisation_data(self) -> tuple:
+        sql_command: str = """SELECT ID,name,street,number,zip_code,city,country,bank_name,bank_owner,bank_IBAN,
+                                bank_BIC,contact_person, web_link,extra_text FROM organisation;"""
+        try:
+            return self.cursor.execute(sql_command).fetchone()
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"get_organisation_data", error_=sys.exc_info())
+            raise e.LoadingFailed(info="Organisationsdaten")
 
 
 def create_select_handler() -> None:

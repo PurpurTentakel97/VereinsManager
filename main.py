@@ -34,7 +34,7 @@ if __name__ == "__main__":
         global_handler.delete_inactive_data()
         debug.export_error()
         _test()
-    except Exception as error:
+    except Exception:
         debug.error(item=debug_str, keyword="main", error_=sys.exc_info())
         debug.export_error()
         raise Exception()
