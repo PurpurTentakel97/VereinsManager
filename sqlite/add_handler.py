@@ -146,6 +146,33 @@ class AddHandler(Database):
             debug.error(item=debug_str, keyword="add_user", error_=sys.exc_info())
             raise e.AddFailed("Mitglied")
 
+    # organisation
+    def add_organisation(self, data: dict, log_date:int) -> int:
+        sql_command: str = """INSERT INTO organisation (name,street,zip_code,city,country,bank_name,bank_owner,
+                            bank_IBAN,bank_BIC,contact_person,web_link,extra_text) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"""
+
+        try:
+            self.cursor.execute(sql_command, (
+                data["name"],
+                data["street"],
+                data["zip_code"],
+                data["city"],
+                data["country"],
+                data["bank_name"],
+                data["bank_owner"],
+                data["bank_IBAN"],
+                data["bank_BIC"],
+                data["contact_person"],
+                data["web_link"],
+                data["extra_text"],
+            ))
+            self.connection.commit()
+            return self.cursor.lastrowid
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"add_organisation", error_=sys.exc_info())
+            raise e.AddFailed(info="Organisationsdaten")
+
 
 def create_add_handler() -> None:
     global add_handler

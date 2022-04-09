@@ -176,7 +176,7 @@ class UserWindow(BaseWindow):
         grid.addWidget(self._password_1_le, row, 3, 1, 1)
         row += 1
         grid.addWidget(self._position_lb, row, 0, 1, 1)
-        grid.addWidget(self._position_le, row, 1, 1, 1)
+        grid.addWidget(self._position_le, row, 1, 1, 2)
         grid.addWidget(self._password_2_le, row, 3, 1, -1)
         row += 1
 

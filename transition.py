@@ -3,7 +3,7 @@
 # VereinsManager / Transition
 
 from helper import password_validation
-from logic.handler.main_handler import member_handler, path_handler, type_handler, user_handler
+from logic.handler.main_handler import member_handler, path_handler, type_handler, user_handler, organisation_handler
 from logic.handler.data_handler import member_anniversary_data_handler, member_table_data_handler
 from logic.handler.pdf_handler import member_table_pdf as m_t_p, global_pdf_handler, member_anniversary_pdf as m_a_p, \
     member_card_pdf as m_c_p
@@ -69,7 +69,7 @@ def get_member_data_for_table(active: bool = True) -> [dict | str, bool]:
 
 
 def update_member_data(id_: int, data: dict, log_date: int | None = None) -> [str | dict, bool]:
-    return member_handler.update_member_data(ID=id_, data=data, log_date=log_date)
+    return member_handler.add_update_member_data(ID=id_, data=data, log_date=log_date)
 
 
 def update_member_activity(ID: int, active: bool, log_date: int | None = None) -> [str | None, bool]:
@@ -87,6 +87,10 @@ def update_user_activity(ID: int, active: bool) -> [str | None, bool]:
 
 def get_all_user_name(active: bool = True) -> [str | dict, bool]:
     return user_handler.get_names_of_user(active=active)
+
+
+def get_all_user_name_without_default(active: bool = True) -> [str | dict, bool]:
+    return user_handler.get_names_of_user_without_default(active=active)
 
 
 def get_user_data_by_id(ID: int, active: bool) -> [str | dict, bool]:
@@ -108,3 +112,8 @@ def get_member_card_pdf(ID: int, path: str, active: bool = True) -> [None | str,
 
 def open_latest_export() -> None:
     global_pdf_handler.open_last_export()
+
+
+# organisation
+def add_update_organisation(data: dict) -> [int | str, bool]:
+    return organisation_handler.add_update_organisation(data=data)

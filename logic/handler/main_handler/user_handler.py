@@ -26,6 +26,24 @@ def get_names_of_user(active: bool = True) -> [str | tuple, bool]:
         return error.message, False
 
 
+def get_names_of_user_without_default(active: bool = True) -> [str | tuple, bool]:
+    data, valid = get_names_of_user(active=active)
+    if not valid:
+        return data, valid
+
+    index = None
+    for entry in data:
+        ID, *_ = entry
+        if ID == c.config.user['default_user_id']:
+            index = data.index(entry)
+            break
+
+    if index is not None:
+        del data[index]
+
+    return data, True
+
+
 def get_data_of_user_by_ID(ID: int, active: bool) -> [str | dict, bool]:
     try:
         v.must_positive_int(int_=ID)

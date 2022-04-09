@@ -235,3 +235,31 @@ BEGIN
     UPDATE "statistics" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
 END;
 
+/* Organisation */
+CREATE TABLE IF NOT EXISTS "main"."organisation" (
+"ID" INTEGER NOT NULL UNIQUE,
+"_created" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
+"_updated" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
+"name" VARCHAR(30),
+"street" VARCHAR(30),
+"number" VARCHAR(10),
+"zip_code" VARCHAR(10),
+"city" VARCHAR(10),
+"country" VARCHAR(15),
+"bank_name" VARCHAR(30),
+"bank_owner" VARCHAR(30),
+"bank_IBAN" VARCHAR(15),
+"bank_BIC" VARCHAR(10),
+"contact_person" INTEGER(1),
+"web_link" VARCHAR(50),
+"extra_text" VARCHAR,
+PRIMARY KEY ("ID" AUTOINCREMENT),
+FOREIGN KEY ("contact_person") REFERENCES "user"
+);
+
+/* date */
+CREATE TRIGGER IF NOT EXISTS "trigger_update_organisation"
+    AFTER UPDATE ON "organisation"
+BEGIN
+    UPDATE "organisation" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+END;

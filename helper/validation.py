@@ -170,6 +170,11 @@ def must_default_user(ID: int, same: bool) -> None:
         raise e.DefaultUserException()
 
 
+# organisation
+def must_organisation(data: dict) -> None:
+    debug.debug(item=debug_str, keyword="must_organisation", message=f"data = {data}")
+
+
 # global
 def must_str(str_: str, length: int | None = 50) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:

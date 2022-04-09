@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 21.03.2022
 # VereinsManager / Member Handler
+
 import sys
 
 from config import config_sheet as c, exception_sheet as e
@@ -92,7 +93,7 @@ def _get_member_activity_and_membership_by_id(ID: int) -> list:
 
 
 # update
-def update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict, bool]:
+def add_update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict, bool]:
     try:
         v.must_dict(dict_=data)
         v.must_default_user(c.config.user['ID'], False)

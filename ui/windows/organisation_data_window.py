@@ -2,38 +2,29 @@
 # 08.04.2022
 # VereinsManager / Organisation Data Window
 
-# name
-# adresse
-#     straße
-#     nummer
-#     plz
-#     stadt
-#     land
-# allgemeiner Ansprechpartner
-#     drop down per user
-# web
-# bankverbindung
-#     name
-#     Inhaber
-#     IBAN
-#     BIC
-# zusatzinfos
 
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel, QPushButton, QTextEdit, QGridLayout, QHBoxLayout, \
     QVBoxLayout, QWidget
 
+import transition
 from ui.windows.base_window import BaseWindow
 from ui.windows import window_manager as w_m
+import debug
+
+debug_str: str = "OrganisationDataWindow"
 
 
 class OrganisationDataWindow(BaseWindow):
     def __init__(self):
         super().__init__()
+        self.ID: int | None = None
+        self.contact_persons: list = list()
 
         self._set_window_information()
         self._create_ui()
         self._create_layout()
+        self._set_contact_persons()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Vereinsinformationen")
@@ -41,12 +32,13 @@ class OrganisationDataWindow(BaseWindow):
     def _create_ui(self) -> None:
         # buttons
         self._save_btn: QPushButton = QPushButton("Speichern")
+        self._save_btn.clicked.connect(self._save)
         self._restore_btn: QPushButton = QPushButton("Zurücksetzten")
 
         # organisation
         self._organisation_name_lb: QLabel = QLabel("Name:")
-        self._organisation_name_le: QLineEdit = QLineEdit()
-        self._organisation_name_le.setPlaceholderText("Name")
+        self._name_le: QLineEdit = QLineEdit()
+        self._name_le.setPlaceholderText("Name")
 
         self._address_lb: QLabel = QLabel()
         self._address_lb.setText("Adresse:")
@@ -91,7 +83,7 @@ class OrganisationDataWindow(BaseWindow):
         grid: QGridLayout = QGridLayout()
         row: int = 0
         grid.addWidget(self._organisation_name_lb, row, 0, 1, 1)
-        grid.addWidget(self._organisation_name_le, row, 1, 1, -1)
+        grid.addWidget(self._name_le, row, 1, 1, -1)
         row += 1
         grid.addWidget(self._address_lb, row, 0, 1, 1)
         grid.addWidget(self._street_le, row, 1, 1, 2)
@@ -131,6 +123,53 @@ class OrganisationDataWindow(BaseWindow):
         widget.setLayout(global_vbox)
         self.set_widget(widget=widget)
         self.show()
+
+    def _set_contact_persons(self) -> None:
+        contact_person, valid = transition.get_all_user_name()
+        if not valid:
+            self.set_error_bar(message=contact_person)
+
+        self.contact_persons = contact_person
+
+        for ID, firstname, lastname in contact_person:
+            self._contact_person_box.addItem(self._get_display_name(firstname=firstname, lastname=lastname))
+
+    @staticmethod
+    def _get_display_name(firstname: str, lastname: str) -> str:
+        if firstname and lastname:
+            return f"{firstname} {lastname}"
+        if firstname:
+            return firstname
+        if lastname:
+            return lastname
+        return "Kein Name vorhanden"
+
+    def _save(self) -> None:
+        data: dict = {
+            "ID": self.ID,
+            "name": None if self._name_le.text().strip() == "" else self._name_le.text().strip().title(),
+            "street": None if self._street_le.text().strip() == "" else self._street_le.text().strip().title(),
+            "number": None if self._number_le.text().strip() == "" else self._number_le.text().strip(),
+            "zip_code": None if self._zip_code_le.text().strip() == "" else self._zip_code_le.text().strip(),
+            "city": None if self._city_le.text().strip() == "" else self._city_le.text().strip().title(),
+            "country": None if self._county_le.text().strip() == "" else self._county_le.text().strip().title(),
+            "bank_name": None if self._bank_name_le.text().strip() == "" else self._bank_name_le.text().strip().title(),
+            "bank_owner": None if self._bank_owner_le.text().strip() == "" else self._bank_owner_le.text().strip().title(),
+            "bank_IBAN": None if self._bank_IBAN_le.text() == "" else self._bank_IBAN_le.text().strip(),
+            "bank_BIC": None if self._bank_BIC_le.text().strip() == "" else self._bank_BIC_le.text().strip(),
+            "contact_person": None if self._contact_person_box.currentText() == "" else self._contact_person_box.currentText(),
+            "web_link": None if self._web_le.text().strip() == "" else self._web_le.text().strip(),
+            "extra_text": None if self._extra_info_text.toPlainText().strip() == "" else self._extra_info_text.toPlainText().strip(),
+        }
+
+        ID, result = transition.add_update_organisation(data=data)
+
+        if not result:
+            self.set_error_bar(message=ID)
+            return
+        else:
+            self.ID = ID
+            self.set_info_bar(message="saved")
 
     def closeEvent(self, event) -> None:
         event.ignore()
