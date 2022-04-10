@@ -171,7 +171,7 @@ def must_default_user(ID: int, same: bool) -> None:
 
 
 # organisation
-def must_organisation(data: dict) -> None:
+def add_update_organisation(data: dict) -> None:
     must_dict(dict_=data)
     must_length(data=data, len_=14)
 
