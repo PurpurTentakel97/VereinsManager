@@ -175,7 +175,7 @@ def add_update_organisation(data: dict) -> None:
     must_dict(dict_=data)
     must_length(data=data, len_=14)
 
-    keys: tuple = (
+    _must_multiple_str_in_dict(keys=[
         "name",
         "street",
         "number",
@@ -188,10 +188,7 @@ def add_update_organisation(data: dict) -> None:
         "bank_BIC",
         "web_link",
         "extra_text",
-    )
-    for key in keys:
-        if data[key] is not None:
-            must_str(str_=data[key])
+    ], data=data)
 
     keys: tuple = (
         "ID",
@@ -227,9 +224,8 @@ def must_membership_type(str_: str) -> None:
 
 def _must_multiple_str_in_dict(keys: list, data: dict) -> None:
     for key in keys:
-        entry = data[key]
-        if entry is not None:
-            must_str(str_=entry)
+        if data[key] is not None:
+            must_str(str_=data[key])
 
 
 def must_bool(bool_: bool) -> None:
