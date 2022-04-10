@@ -4,7 +4,7 @@
 
 import sys
 
-from sqlite import add_handler as a_h, select_handler as s_h
+from sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h
 from config import config_sheet as c, exception_sheet as e
 from helper import validation as v
 import debug
@@ -35,7 +35,7 @@ def _add_organisation(data: dict, log_date: int) -> int:
     return a_h.add_handler.add_organisation(data=data, log_date=log_date)
 
 
-# update
+# add / update
 def add_update_organisation(data: dict, log_date: int = None) -> [int | str, bool]:
     try:
         v.must_dict(dict_=data)
@@ -45,7 +45,7 @@ def add_update_organisation(data: dict, log_date: int = None) -> [int | str, boo
         if data['ID'] is None:
             data['ID'] = _add_organisation(data=data, log_date=log_date)
         else:
-            pass
+            _update_organisation(data=data)
 
         return data['ID'], True
 
@@ -58,9 +58,13 @@ def add_update_organisation(data: dict, log_date: int = None) -> [int | str, boo
         return error.message, False
 
 
+# update
+def _update_organisation(data: dict) -> None:
+    u_h.update_handler.update_organisation(data=data)
+
+
 # helper
 def _transform_data_for_load(data: tuple) -> dict:
-    debug.debug(item=debug_str, keyword="_transform_data_for_load", message=f"data = {data}")
     data_dict: dict = {
         'ID': data[0],
         'name': data[1],
@@ -77,7 +81,5 @@ def _transform_data_for_load(data: tuple) -> dict:
         'web_link': data[12],
         'extra_text': data[13],
     }
-    data = s_h.select_handler.get_name_of_user_by_ID(ID=data_dict['contact_person'])
-    debug.debug(item=debug_str, keyword="_transform_data_for_load", message=f"data = {data}")
-    data_dict['contact_person'] = data
+    data_dict['contact_person'] = s_h.select_handler.get_name_of_user_by_ID(ID=data_dict['contact_person'])
     return data_dict

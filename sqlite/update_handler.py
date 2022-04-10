@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Select Handler
+
 import sys
 
 from sqlite.database import Database
@@ -180,6 +181,34 @@ class UpdateHandler(Database):
         except self.OperationalError:
             debug.error(item=debug_str, keyword="update_user_activity", error_=sys.exc_info())
             raise e.ActiveSetFailed()
+
+    # organisation
+    def update_organisation(self, data: dict) -> None:
+        sql_command: str = """UPDATE organisation SET name = ?, street = ?, number = ?, zip_code = ?, city = ?,
+                            country = ?, bank_name = ?, bank_owner = ?, bank_IBAN = ?, bank_BIC = ?, contact_person = ?,
+                             web_link = ?, extra_text = ? WHERE ID is ?;"""
+        try:
+            self.cursor.execute(sql_command, (
+                data['name'],
+                data['street'],
+                data['number'],
+                data['zip_code'],
+                data['city'],
+                data['country'],
+                data['bank_name'],
+                data['bank_owner'],
+                data['bank_IBAN'],
+                data['bank_BIC'],
+                data['contact_person'],
+                data['web_link'],
+                data['extra_text'],
+                data['ID'],
+            ))
+            self.connection.commit()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"update_organisation", error_=sys.exc_info())
+            raise e.UpdateFailed(info="Organisation")
 
 
 def crate_update_handler() -> None:
