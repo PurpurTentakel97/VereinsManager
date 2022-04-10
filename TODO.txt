@@ -4,7 +4,7 @@
 
 pdf
     dirfferent name for anniversary pdfs
-    add currency
+    fix maps link with no data in member card pdf
 
 sql database
     let unser choose database name

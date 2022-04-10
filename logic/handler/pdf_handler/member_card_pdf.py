@@ -12,6 +12,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 
 from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 from logic.handler.data_handler import member_card_data_handler
+from logic.handler.main_handler import organisation_handler
 from helper import validation as v
 from config import exception_sheet as e, config_sheet as c
 
@@ -41,13 +42,7 @@ class MemberCardPDF(BasePDF):
         self._set_column_width(data=data)
 
         elements: list = list()
-        if self.is_icon():
-            elements.append(self.get_icon(type_="table"))
-        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-                                  self.custom_styles["CustomBodyTextRight"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
-        elements.extend(self._get_title(data=data))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+        elements.extend(self._get_header(data=data))
 
         if not data:
             self._mo_data_return(doc=doc, elements=elements)
@@ -196,8 +191,22 @@ class MemberCardPDF(BasePDF):
             Spacer(0, c.config.spacer['0.5'] * cm),
         ]
 
-    def _get_title(self, data: dict) -> list:
-        return [Paragraph(data['member_data']['name'], self.style_sheet["Title"])]
+    def _get_header(self, data: dict) -> list:
+        elements: list = list()
+
+        if self.is_icon():
+            elements.append(self.get_icon(type_="table"))
+        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+                                  self.custom_styles["CustomBodyTextRight"]))
+        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+
+        organisation_data,_ = organisation_handler.get_organisation_data()
+        if organisation_data['name']:
+            elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
+        elements.append(Paragraph(data['member_data']['name'], self.style_sheet["Title"]))
+        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+
+        return elements
 
     @staticmethod
     def _validate_data(path: str, active: bool, ID: int) -> None | str:
