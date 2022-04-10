@@ -172,8 +172,9 @@ def must_default_user(ID: int, same: bool) -> None:
 
 # organisation
 def must_organisation(data: dict) -> None:
-    debug.debug(item=debug_str, keyword="must_organisation", message=f"data = {data}")
     must_dict(dict_=data)
+    must_length(data=data, len_=14)
+
     keys: tuple = (
         "name",
         "street",
@@ -269,4 +270,4 @@ def must_list(list_: list) -> None:
 def must_length(len_: int, data) -> None:
     must_positive_int(len_)
     if not len(data) == len_:
-        raise e.WrongLength(str(len_) + "//" + str(data))
+        raise e.WrongLength(str(len_) + " // " + str(data))
