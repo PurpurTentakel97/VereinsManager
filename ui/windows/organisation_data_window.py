@@ -175,7 +175,7 @@ class OrganisationDataWindow(BaseWindow):
     def _save(self) -> None:
         data: dict = {
             "ID": self.ID,
-            "name": None if self._name_le.text().strip() == "" else self._name_le.text().strip().title(),
+            "name": None if self._name_le.text().strip() == "" else self._name_le.text().strip(),
             "street": None if self._street_le.text().strip() == "" else self._street_le.text().strip().title(),
             "number": None if self._number_le.text().strip() == "" else self._number_le.text().strip(),
             "zip_code": None if self._zip_code_le.text().strip() == "" else self._zip_code_le.text().strip(),

@@ -23,20 +23,18 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [str
         member_data = s_h.select_handler.get_name_and_dates_from_member(active=active)
 
         for _, firstname, lastname, b_day, entry_day in member_data:
+            inner: dict = {
+                "firstname": firstname,
+                "lastname": lastname,
+            }
             if b_day:
-                inner: dict = {
-                    "firstname": firstname,
-                    "lastname": lastname,
-                    "date": _transform_timestamp_to_datetime(b_day),
-                }
-                b_day_data.append(inner)
+                inner_b_day = inner
+                inner_b_day["date"] = _transform_timestamp_to_datetime(b_day)
+                b_day_data.append(inner_b_day)
             if entry_day:
-                inner: dict = {
-                    "firstname": firstname,
-                    "lastname": lastname,
-                    "date": _transform_timestamp_to_datetime(entry_day),
-                }
-                entry_day_data.append(inner)
+                inner_entry_day = inner
+                inner_entry_day["date"] = _transform_timestamp_to_datetime(entry_day)
+                entry_day_data.append(inner_entry_day)
 
         match type_:
             case "current":

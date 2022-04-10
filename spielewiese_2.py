@@ -30,13 +30,13 @@ def _is_valid_var(vars_to_check: tuple) -> bool:
 
 
 def _is_next_calculation(var: str) -> bool:
-    if var == "0":
+    if var != "0":
         return True
     return False
 
 
 def _calculate_with_round(var_1_to_calculate: float, var_2_to_calculate: float, operator_for_calculate: str,
-                          round_: int) -> float:
+                          round_: int) -> float | str:
     match operator_for_calculate:
         case "+":
             return round(_addition(var_1_to_calculate=var_1_to_calculate, var_2_to_calculate=var_2_to_calculate),
@@ -48,8 +48,10 @@ def _calculate_with_round(var_1_to_calculate: float, var_2_to_calculate: float, 
             return round(_multiplication(var_1_to_calculate=var_1_to_calculate, var_2_to_calculate=var_2_to_calculate),
                          round_)
         case "/":
-            return round(_division(var_1_to_calculate=var_1_to_calculate, var_2_to_calculate=var_2_to_calculate),
-                         round_)
+            result_ = _division(var_1_to_calculate=var_1_to_calculate, var_2_to_calculate=var_2_to_calculate)
+            if isinstance(result_, str):
+                return result_
+            return round(result_, 2)
 
 
 def _addition(var_1_to_calculate: float, var_2_to_calculate: float) -> float:
@@ -64,7 +66,9 @@ def _multiplication(var_1_to_calculate: float, var_2_to_calculate: float) -> flo
     return var_1_to_calculate * var_2_to_calculate
 
 
-def _division(var_1_to_calculate: float, var_2_to_calculate: float) -> float:
+def _division(var_1_to_calculate: float, var_2_to_calculate: float) -> float | str:
+    if var_2_to_calculate == 0:
+        return "Division durch '0'"
     return var_1_to_calculate / var_2_to_calculate
 
 
@@ -88,5 +92,5 @@ if __name__ == "__main__":
 
         print(f"{var_1} {operator} {var_2} = {result}")
 
-        if not _is_next_calculation(input("Noch eine Rechnung ausführen? '0' = Ja\n")):
+        if not _is_next_calculation(input("Programm beenden? '0' = Ja\n")):
             next_operation = False

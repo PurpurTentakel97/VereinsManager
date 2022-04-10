@@ -13,6 +13,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 
 from logic.handler.data_handler import member_anniversary_data_handler
 from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
+from logic.handler.main_handler import organisation_handler
 from config import config_sheet as c, exception_sheet as e
 import debug
 
@@ -27,25 +28,12 @@ class MemberAnniversaryPDF(BasePDF):
     def create_pdf(self, path: str, year: int, active: bool = True) -> [None | str, bool]:
         self._create_basics(path)
         doc: SimpleDocTemplate = self._get_doc()
-        data = self._get_data(year=year, active=active)
+        anniversary_data = self._get_data(year=year, active=active)
 
         elements: list = list()
-        if self.is_icon():
-            elements.append(self.get_icon(type_="table"))
-        if year:
-            elements.append(Paragraph(f"Stand: {year}", self.custom_styles["CustomBodyTextRight"]))
-        else:
-            elements.append(Paragraph(f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-                                      self.custom_styles["CustomBodyTextRight"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
-        elements.extend(self._get_header())
-        elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+        elements = self._get_header(year=year, elements=elements)
 
-        if not data:
-            self._no_data_return(elements=elements, doc=doc)
-            return
-
-        elements = self._get_table_elements(data, elements)
+        elements = self._get_table_elements(anniversary_data, elements)
         elements = elements[:-1]
         try:
             doc.build(elements, canvasmaker=NumberedCanvas)
@@ -54,14 +42,6 @@ class MemberAnniversaryPDF(BasePDF):
         except PermissionError:
             debug.info(item=debug_str, keyword="create_pdf", error_=sys.exc_info())
             return e.PermissionException(self.file_name).message, False
-
-    def _no_data_return(self, elements: list, doc: SimpleDocTemplate) -> None:
-        elements.append(Paragraph(
-            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-            self.style_sheet["BodyText"]))
-        elements.append(Paragraph(
-            f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
-        doc.build(elements)
 
     def _create_basics(self, path: str) -> None:
         self.transform_path(path=path)
@@ -128,16 +108,35 @@ class MemberAnniversaryPDF(BasePDF):
                                  leftMargin=1.5 * cm,
                                  topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
-    def _get_header(self) -> list:
-        return [Paragraph("Geburtstage / Jubiläen", self.style_sheet["Title"])]
+    def _get_header(self, year: int, elements: list) -> list:
+        if self.is_icon():
+            elements.append(self.get_icon(type_="table"))
+
+        if year:
+            elements.append(Paragraph(f"Stand: {year}", self.custom_styles["CustomBodyTextRight"]))
+        else:
+            elements.append(Paragraph(f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+                                      self.custom_styles["CustomBodyTextRight"]))
+        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+
+        organisation_data, _ = organisation_handler.get_organisation_data()
+
+        if organisation_data['name']:
+            elements.append(Paragraph(organisation_data['name'], self.style_sheet['Title']))
+
+        elements.append(Paragraph("Geburtstage / Jubiläen", self.style_sheet['Title']))
+        elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+        return elements
 
     @staticmethod
     def _get_data(year: int | None, active: bool) -> dict:
         if year:
-            data, _ = member_anniversary_data_handler.get_anniversary_member_data(type_="other", active=active,
-                                                                                  year=year)
+            data, _ = member_anniversary_data_handler.get_anniversary_member_data(
+                type_="other", active=active, year=year)
+
         else:
-            data, _ = member_anniversary_data_handler.get_anniversary_member_data(type_="current", active=active)
+            data, _ = member_anniversary_data_handler.get_anniversary_member_data(
+                type_="current", active=active)
 
         return data
 

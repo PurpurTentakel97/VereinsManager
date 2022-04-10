@@ -3,12 +3,13 @@
 # Python 3.10
 
 
-dict_: dict = {
-    "1": 1,
-    "2": 2,
-    "3": 3,
-    "4": 4,
-    "5": 5,
-}
+is_next: bool = True
+while is_next:
+    var_1 = float(input("0"))
+    if var_1 == 0.0:
+        is_next = False
+        continue
+    # other inputs
+    # rechnung
 
-print(len(dict_))
+print("Progamm beendet")
