@@ -12,9 +12,10 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 
 from logic.handler.data_handler import member_table_data_handler
+from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
+from logic.handler.main_handler import organisation_handler
 from sqlite import select_handler as s_h
 from config import config_sheet as c, exception_sheet as e
-from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 import debug
 
 debug_str: str = "MemberTablePDF"
@@ -33,13 +34,8 @@ class MemberTablePDF(BasePDF):
         type_ids = self._get_type_ids()
 
         elements: list = list()
-        if self.is_icon():
-            elements.append(self.get_icon(type_="table"))
-        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-                                  self.custom_styles["CustomBodyTextRight"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+
         elements.extend(self._get_header())
-        elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
 
         if not data:
             self._no_data_return(doc, elements)
@@ -77,7 +73,7 @@ class MemberTablePDF(BasePDF):
         elements: list = list()
         for type_id, type_ in type_ids:
             all_members: list = data[type_id]
-            elements.append(Paragraph(f"{type_}", self.custom_styles["CustomHeading"]))
+            elements.append(Paragraph(f"{type_}", self.style_sheet["Heading3"]))
             elements.append(Spacer(width=0, height=c.config.spacer['0.1'] * cm))
             if not all_members:
                 elements.append(Paragraph(
@@ -131,7 +127,19 @@ class MemberTablePDF(BasePDF):
         return table_data, style_data
 
     def _get_header(self) -> list:
-        return [Paragraph("Mitglieder", self.custom_styles["CustomTitle"])]
+        elements: list = list()
+        if self.is_icon():
+            elements.append(self.get_icon(type_="table"))
+        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+                                  self.custom_styles["CustomBodyTextRight"]))
+        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+
+        organisation_data, _ = organisation_handler.get_organisation_data()
+        if organisation_data['name']:
+            elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
+        elements.append(Paragraph("Mitglieder", self.style_sheet["Title"]))
+        elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+        return elements
 
     @staticmethod
     def _get_first_column_with(data) -> float:
