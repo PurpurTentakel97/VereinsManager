@@ -1,6 +1,5 @@
 # Purpur Tentakel
-# 10.04.2022
-# Example Calculater
+# Spielewiese 2
 # Python 3.10
 
 _possible_operators: tuple = (

@@ -1,3 +1,7 @@
+# Purpur Tentakel
+# Spielewiese 1
+# Python 3.10
+
 from config import config_sheet as c
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
