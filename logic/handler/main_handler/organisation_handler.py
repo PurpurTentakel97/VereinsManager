@@ -38,7 +38,6 @@ def _add_organisation(data: dict, log_date: int) -> int:
 # add / update
 def add_update_organisation(data: dict, log_date: int = None) -> [int | str, bool]:
     try:
-        v.must_dict(dict_=data)
         v.must_organisation(data=data)
         v.must_default_user(c.config.user['ID'], False)
 

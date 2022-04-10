@@ -173,6 +173,32 @@ def must_default_user(ID: int, same: bool) -> None:
 # organisation
 def must_organisation(data: dict) -> None:
     debug.debug(item=debug_str, keyword="must_organisation", message=f"data = {data}")
+    must_dict(dict_=data)
+    keys: tuple = (
+        "name",
+        "street",
+        "number",
+        "zip_code",
+        "city",
+        "country",
+        "bank_name",
+        "bank_owner",
+        "bank_IBAN",
+        "bank_BIC",
+        "web_link",
+        "extra_text",
+    )
+    for key in keys:
+        if data[key] is not None:
+            must_str(str_=data[key])
+
+    keys: tuple = (
+        "ID",
+        "contact_person",
+    )
+    for key in keys:
+        if data[key] is not None:
+            must_positive_int(int_=data[key], max_length=None)
 
 
 # global
