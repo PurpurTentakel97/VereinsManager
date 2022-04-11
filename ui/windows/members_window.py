@@ -13,7 +13,7 @@ import transition
 from ui.dialog.date_dialog import DateInput
 from ui.windows.base_window import BaseWindow
 from ui.windows import recover_window as r_w, member_table_window as m_t_w, window_manager as w, \
-    member_anniversary_window as m_a_w
+    member_anniversary_window as m_a_w, member_log_window as m_l_w
 from ui.frames.list_frame import ListItem, ListFrame
 from config import config_sheet as c
 import debug
@@ -96,9 +96,9 @@ class MembersWindow(BaseWindow):
         self._anniversary_btn: QPushButton = QPushButton()
         self._anniversary_btn.setText("Jubiläen")
         self._anniversary_btn.clicked.connect(self._anniversary)
-        self._letter_btn: QPushButton = QPushButton()
-        self._letter_btn.setText("Scheiben")
-        self._letter_btn.clicked.connect(self._letter)
+        self._log_btn: QPushButton = QPushButton()
+        self._log_btn.setText("Log")
+        self._log_btn.clicked.connect(self._display_log)
         self._member_card_btn: QPushButton = QPushButton()
         self._member_card_btn.setText("Mitliederkarte")
         self._member_card_btn.clicked.connect(self._member_card)
@@ -219,7 +219,7 @@ class MembersWindow(BaseWindow):
         label_members_hbox.addWidget(self._members_lb)
         label_members_hbox.addStretch()
         label_members_hbox.addWidget(self._member_card_btn)
-        label_members_hbox.addWidget(self._letter_btn)
+        label_members_hbox.addWidget(self._log_btn)
         label_members_hbox.addWidget(self._anniversary_btn)
         label_members_hbox.addWidget(self._table_btn)
 
@@ -698,8 +698,13 @@ class MembersWindow(BaseWindow):
             self.close()
             w.window_manger.member_anniversary_window = m_a_w.MemberAnniversaryWindow()
 
-    def _letter(self) -> None:
-        pass
+    def _display_log(self) -> None:
+        result, valid = w.window_manger.is_valid_member_log_window(ignore_member_window=True)
+        if not valid:
+            self.set_info_bar(message=result)
+        else:
+            self.close()
+            w.window_manger.member_log_window = m_l_w.MemberLogWindow(row_index=self._members_list.list.currentRow())
 
     def _member_card(self) -> None:
         current_member: ListItem = self._members_list.list.currentItem()

@@ -89,8 +89,8 @@ class MemberTableWindow(BaseWindow):
                 new_table.setHorizontalHeaderLabels(headers)
 
                 # member
-                for row_id, row in enumerate(data):
-                    column_id: int = 0
+                for row_index, row in enumerate(data):
+                    column_index: int = 0
                     member_data: dict = row["member"]
                     phone_data: list = row["phone"]
                     mail_data: list = row["mail"]
@@ -109,16 +109,16 @@ class MemberTableWindow(BaseWindow):
                     for key in keys:
                         entry = member_data[key]
                         new_item = QTableWidgetItem(entry if entry else "")
-                        new_table.setItem(row_id, column_id, new_item)
-                        column_id += 1
+                        new_table.setItem(row_index, column_index, new_item)
+                        column_index += 1
                     for _, entry in phone_data:
                         new_item = QTableWidgetItem(entry if entry else "")
-                        new_table.setItem(row_id, column_id, new_item)
-                        column_id += 1
+                        new_table.setItem(row_index, column_index, new_item)
+                        column_index += 1
                     for _, entry in mail_data:
                         new_item = QTableWidgetItem(entry if entry else "")
-                        new_table.setItem(row_id, column_id, new_item)
-                        column_id += 1
+                        new_table.setItem(row_index, column_index, new_item)
+                        column_index += 1
             else:
                 new_table.setRowCount(1)
                 new_table.setColumnCount(1)

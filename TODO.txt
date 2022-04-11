@@ -16,6 +16,15 @@ UI
     Global
         set Icon in Taskbar
         check for screen reader
+    member anniversary
+        dont open member window
+    log window
+        table
+            select hole line
+            read only
+            select cell
+        activate Buttons
+        set dimentions
 
 log
     show log in ui

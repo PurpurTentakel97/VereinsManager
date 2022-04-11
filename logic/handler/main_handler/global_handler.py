@@ -4,6 +4,8 @@
 
 from logic.handler.main_handler import member_handler, user_handler
 
+import debug
+
 debug_str: str = "Global Handler"
 
 

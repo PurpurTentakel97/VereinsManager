@@ -146,7 +146,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="member phone number")
 
     def get_phone_number_by_ID(self, ID: int) -> tuple:
-        sql_command: str = f"""SELECT number,type_id FROM member_phone WHERE ID is ?;"""
+        sql_command: str = f"""SELECT number,type_id,member_id FROM member_phone WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()
         except self.OperationalError:
@@ -162,7 +162,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="member mail address")
 
     def get_mail_member_by_ID(self, ID: int) -> tuple:
-        sql_command: str = f"""SELECT mail, type_id FROM member_mail WHERE ID is ?;"""
+        sql_command: str = f"""SELECT mail, type_id,member_id FROM member_mail WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()
         except self.OperationalError:
@@ -178,7 +178,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="member position")
 
     def get_position_member_by_ID(self, ID: int) -> tuple:
-        sql_command: str = f"""SELECT active,type_id FROM member_position WHERE ID is ?;"""
+        sql_command: str = f"""SELECT active,type_id,member_id FROM member_position WHERE ID is ?;"""
         try:
             return self.cursor.execute(sql_command, (ID,)).fetchone()
         except self.OperationalError:
@@ -232,6 +232,15 @@ class SelectHandler(Database):
         except self.OperationalError:
             debug.error(item=debug_str, keyword=f"get_organisation_data", error_=sys.exc_info())
             raise e.LoadingFailed(info="Organisationsdaten")
+
+    # log
+    def get_log_data(self) -> list:
+        sql_command: str = """SELECT target_table,target_id, log_date, target_column, old_data, new_data FROM log WHERE target_table Like 'member%' ORDER BY log_date DESC;"""
+        try:
+            return self.cursor.execute(sql_command).fetchall()
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"_get_log_data", error_=sys.exc_info())
+            raise e.LoadingFailed(info=f"Logdaten // Type: Mitglied")
 
 
 def create_select_handler() -> None:
