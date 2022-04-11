@@ -23,6 +23,7 @@ class Config:
         self.files: dict = dict()
         self.user: dict = dict()
         self.spacer: dict = dict()
+        self.letters: dict = dict()
 
         self.last_export_path: str = str()
         self._load_config()
@@ -39,7 +40,8 @@ class Config:
         self.dirs: dict = json_data["dirs"]
         self.files: dict = json_data["files"]
         self.user: dict = json_data["user"]
-        self.spacer:dict = json_data['spacer']
+        self.spacer: dict = json_data['spacer']
+        self.letters: dict = json_data['letters']
 
     def set_user(self, ID: int) -> [str | None, bool]:
         v.must_positive_int(int_=ID)

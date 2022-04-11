@@ -3,13 +3,15 @@
 # Python 3.10
 
 
-is_next: bool = True
-while is_next:
-    var_1 = float(input("0"))
-    if var_1 == 0.0:
-        is_next = False
-        continue
-    # other inputs
-    # rechnung
+test: str = "<name> ist ein Bauarbeiter"
+if "<name>" in test:
+    print("yes")
+else:
+    print("no")
+print(test)
+test = test.replace("<name>", "Hans-Peter")
+print(test)
+test = test.replace("<job>", "Müller")
+print(test)
 
-print("Progamm beendet")
+

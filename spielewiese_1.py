@@ -26,7 +26,7 @@ if __name__ == "__main__":
         leftMargin=1 * cm,
         rightMargin=1 * cm)
 
-    frameWidth = 4 * cm
+    frameWidth = 6 * cm
     frameHeight = doc.height - 0.05 * cm
     footerHeight = 1 * cm
 
@@ -49,23 +49,38 @@ if __name__ == "__main__":
     ]
     doc.addPageTemplates([PageTemplate(id='frames', frames=frame_list)])
 
-    story = [Paragraph("Name // Straße // plz / stadt // nummber // mail", style=style_1),
+    story = [Paragraph("Organisationsname (Title)", style=style_1),
+             Spacer(0, 0.5 * cm),
+             Paragraph("Organisationname (address)",style=style_1),
+             Paragraph("Name // Straße // plz / stadt // nummber // mail", style=style_1),
+             Spacer(0, 0.5 * cm),
              Paragraph("Name Empfänger<br/>Straße Enpfänger<br/>plz / stadt Empfänger", style=style_1),
-             Spacer(0, 1 * cm), Paragraph("Datum", style=style_1), Spacer(0, 0.5 * cm),
-             Paragraph("Eintrittsbestätigung", style=style_1), Spacer(0, 1 * cm),
-             Paragraph("<<Name>> wurde am <<Datum>> in den <<Vereinsname>> aufgenommen.", style_1), Spacer(0, 1 * cm),
+             Spacer(0, 1 * cm),
+             Paragraph("Datum", style=style_1),
+             Spacer(0, 0.5 * cm),
+             Paragraph("Eintrittsbestätigung", style=style_1),
+             Spacer(0, 1 * cm),
+             Paragraph("<<Name>> wurde am <<Datum>> in den <<Vereinsname>> aufgenommen.", style_1),
+             Spacer(0, 1 * cm),
              Paragraph("Informationen:", style_1), Spacer(0, 0.1 * cm),
-             Paragraph("Mitgliedsart:<<mitgliedsart>><br/>Jahresbeitrag:<<beitrag>>", style_1), Spacer(0, 1.5 * cm),
-             Paragraph("________________________", style_1), Paragraph("Vorstandsmitglied", style_1),
+             Paragraph("Mitgliedsart:<<mitgliedsart>><br/>Jahresbeitrag:<<beitrag>>", style_1),
+             Spacer(0, 1.5 * cm),
+             Paragraph("________________________", style_1),
+             Paragraph("Aktuelles Vorstandsmitglied name", style_1),
+             Paragraph("Aktuelles Vorstandsmitglied position", style_1),
              # next frame
              FrameBreak(),
-             Image(c.config.get_icon_path(), frameWidth, frameWidth), Spacer(0, 0.5 * cm), Paragraph(
-            "Vorstand name<br/>Vorstand Adresse<br/>Vorstand plz / Stadt<br/>Vorstand mail<br/>Vorstand nummer<br/>homepage"),
+             Image(c.config.get_icon_path(), 4 * cm, 4 * cm),
+             Spacer(0, 0.5 * cm),
+             Paragraph(
+                 "Organisation name<br/>Organisation Straße<br/>Organisation plz / City<br/>homepage"),
+             Spacer(0, 0.5 * cm),
+             Paragraph(
+                 "Vorstand position<br/>Vorstand name<br/>Vorstand Straße<br/>Vorstand plz / Stadt<br/>Vorstand mail<br/>Vorstand nummer"),
              Spacer(0, 0.5 * cm),
              Paragraph("Sondertext für den Briefkopf<br/>* Deutscher Meitser 1987 *<br/>* Bester Coder *"),
              # next frame
              FrameBreak(),
              Paragraph("Bankverbindung", style_1)]
-
 
     doc.build(story)

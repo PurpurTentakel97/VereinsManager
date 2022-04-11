@@ -9,7 +9,8 @@ pdf
 sql database
     let unser choose database name
     password
-    add country to member address
+    log country evry time (only member?)
+    add _updated to log
 
 UI
     Global
