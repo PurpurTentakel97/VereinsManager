@@ -48,7 +48,8 @@ class LogHandler(Database):
     def _log_member(self, target_id: int, old_data: dict, new_data: dict, log_date: int) -> None:
         old_data["birth_date"] = self.transform_none_date_to_none(old_data["birth_date"])
         old_data["entry_date"] = self.transform_none_date_to_none(old_data["entry_date"])
-        old_data = self.transform_membership_to_id(old_data)
+        old_data = self.transform_type_to_id(key="membership_type", data=old_data)
+        old_data = self.transform_type_to_id(key="country", data=old_data)
 
         keys: tuple = (
             "first_name",
@@ -167,13 +168,19 @@ class LogHandler(Database):
         return date
 
     @staticmethod
-    def transform_membership_to_id(data):
-        type_id = s_h.select_handler.get_id_by_type_name(raw_id=c.config.raw_type_id["membership"],
-                                                         name=data["membership_type"])
+    def transform_type_to_id(key: str, data: dict) -> dict:
+        type_id: tuple = tuple()
+        match key:
+            case "membership_type":
+                type_id = s_h.select_handler.get_id_by_type_name(raw_id=c.config.raw_type_id["membership"],
+                                                                 name=data[key])
+            case "country":
+                type_id = s_h.select_handler.get_id_by_type_name(raw_id=c.config.raw_type_id["country"],
+                                                                 name=data[key])
         if type_id:
-            data["membership_type"] = type_id[0]
+            data[key] = type_id[0]
         else:
-            data["membership_type"] = type_id
+            data[key] = type_id
         return data
 
 

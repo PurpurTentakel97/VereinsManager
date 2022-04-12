@@ -57,7 +57,6 @@ class MemberLogWindow(BaseWindow):
         self.load_single_member()
 
     def _set_table(self, data: tuple) -> None:
-        debug.debug(item=debug_str, keyword="_set_table", message=f"data = {data}")
         self._log_table.clear()
         self._log_table.setColumnCount(4)
         self._log_table.setRowCount(len(data))

@@ -106,7 +106,7 @@ class MainWindow(BaseWindow):
     def _open_members(self) -> None:
         result, valid = w_m.window_manger.is_valid_member_window()
         if not valid:
-            self.set_debug_bar(message=result)
+            self.set_info_bar(message=result)
             return
 
         w_m.window_manger.members_window = m_w.MembersWindow()
