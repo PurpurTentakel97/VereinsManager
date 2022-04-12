@@ -12,6 +12,7 @@ from config import config_sheet as c
 from ui.frames.current_anniversary_frame import CurrentAnniversaryFrame
 from ui.frames.other_anniversary_frame import OtherAnniversaryFrame
 import transition
+import debug
 
 debug_str: str = "Member Anniversary Window"
 

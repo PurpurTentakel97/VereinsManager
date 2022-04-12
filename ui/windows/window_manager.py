@@ -65,7 +65,7 @@ class WindowManager:
         elif self._is_window("member_anniversary", ignore_member_anniversary_window):
             return "Es können keine Mitglieder berabeitet werden, währen die Mitglieder-Jubiläen geöffnet ist.", False
 
-        elif self._is_window("member_anniversary", ignore_member_log_window):
+        elif self._is_window("member_log", ignore_member_log_window):
             return "Es können keine Mitglieder berabeitet werden, währen das Mitglieder-Log geöffnet ist.", False
 
         return True, True
@@ -174,6 +174,8 @@ class WindowManager:
                 dummy_window = self.member_table_window
             case "member_anniversary":
                 dummy_window = self.member_anniversary_window
+            case "member_log":
+                dummy_window = self.member_log_window
 
             case "user":
                 dummy_window = self.user_window
