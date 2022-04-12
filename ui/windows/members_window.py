@@ -711,7 +711,8 @@ class MembersWindow(BaseWindow):
         current_member: ListItem = self._members_list.list.currentItem()
         transition.create_default_dir("member_card")
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(c.config.dirs['save'], c.config.dirs['organisation'],
+                                                  os.path.join(os.getcwd(), c.config.dirs['save'],
+                                                               c.config.dirs['organisation'],
                                                                c.config.dirs['export'], c.config.dirs['member'],
                                                                c.config.dirs['member_card'],
                                                                f"{current_member.first_name}_{current_member.last_name}.pdf"),

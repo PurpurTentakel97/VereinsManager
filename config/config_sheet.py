@@ -29,7 +29,8 @@ class Config:
         self._load_config()
 
     def _load_config(self) -> None:
-        with open(os.path.join("config", "config.json"), encoding="utf-8") as json_file:
+        print(os.getcwd())
+        with open(os.path.join(os.getcwd(), "config", "config.json"), encoding="utf-8") as json_file:
             json_data = json.load(json_file)
 
         self.config: dict = json_data
@@ -72,10 +73,10 @@ class Config:
             self.user['easter_egg'] = str()
 
     def get_icon_path(self) -> str:
-        return os.path.join(self.dirs['save'], self.dirs['organisation'], self.files['icon'])
+        return os.path.join(os.getcwd(), self.dirs['save'], self.dirs['organisation'], self.files['icon'])
 
     def get_default_icon_path(self) -> str:
-        return os.path.join(self.dirs['config'], self.files['default_icon'])
+        return os.path.join(os.getcwd(), self.dirs['config'], self.files['default_icon'])
 
 
 def create_config():
