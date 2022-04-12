@@ -15,9 +15,7 @@ debug_str: str = "Log Handler"
 def get_log_member_data(target_id: int) -> [str | tuple, bool]:
     try:
         data = s_h.select_handler.get_log_data()
-        debug.debug(item=debug_str, keyword="get_log_member_data", message=f"data = {data}")
         new_data = _transform_member_data(data=data, target_id=target_id)
-        debug.debug(item=debug_str, keyword="get_log_member_data", message=f"new_data = {new_data}")
         return new_data, True
     except e.OperationalError as error:
         debug.error(item=debug_str, keyword=f"get_log_data", error_=sys.exc_info())

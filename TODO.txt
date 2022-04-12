@@ -20,6 +20,10 @@ UI
             read only
             select cell
         activate Buttons
+        remove delete button
+        add active
+        activate export button only by exportable rows
+        add inative members in list at first place
 
 log
     show log in ui
