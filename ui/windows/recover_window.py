@@ -5,7 +5,8 @@
 from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
 from ui.windows.base_window import BaseWindow
-from ui.windows import members_window as m_w, window_manager as w, user_window as u_w
+from ui.windows import window_manager as w, user_window as u_w
+from ui.windows.member_windows import members_window as m_w
 from ui.frames.list_frame import ListFrame
 
 import transition

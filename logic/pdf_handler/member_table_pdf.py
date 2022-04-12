@@ -106,12 +106,10 @@ class MemberTablePDF(BasePDF):
             mail_data = member["mail"]
             row_data: list = [
                 str(index) if not member_data["special_member"] else f"{str(index)} (E)",
-                [Paragraph(f"{member_data['first_name']} {member_data['last_name']}"),
-                 self.paragraph(member_data["street"]), self.paragraph(member_data["zip_code"]),
-                 self.paragraph(member_data["city"])],
-                [self.paragraph(["Alter", member_data["age"]]), self.paragraph(member_data["b_date"]),
-                 self.paragraph(["Eintritt", member_data["membership_years"]]),
-                 self.paragraph(member_data["entry_date"])],
+                [Paragraph(
+                    f"{member_data['first_name']} {member_data['last_name']}<br/>{member_data['street']}<br/>{member_data['zip_code']} {member_data['city']}<br/>{member_data['country']}")],
+                [Paragraph(f"Alter {member_data['age']}<br/>{member_data['b_date']}"), Spacer(0, 0.3*cm),
+                 Paragraph(f"Alter {member_data['membership_years']}<br/>{member_data['entry_date']}")],
                 [self.paragraph(x) for x in phone_data],
                 [self.paragraph(x) for x in mail_data],
             ]

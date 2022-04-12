@@ -4,6 +4,7 @@
 
 import json
 import os
+
 from helper import validation as v
 from logic.sqlite import select_handler as s_h
 
@@ -29,7 +30,6 @@ class Config:
         self._load_config()
 
     def _load_config(self) -> None:
-        print(os.getcwd())
         with open(os.path.join(os.getcwd(), "config", "config.json"), encoding="utf-8") as json_file:
             json_data = json.load(json_file)
 

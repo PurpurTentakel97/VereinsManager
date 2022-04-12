@@ -7,10 +7,10 @@ from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTabl
 import os
 
 from ui.windows.base_window import BaseWindow
-from ui.windows import members_window as m_w, window_manager as w
+from ui.windows import window_manager as w
+from ui.windows.member_windows import members_window as m_w
 from config import config_sheet as c
 import transition
-import debug
 
 debug_str: str = "MemberTableWindow"
 
@@ -79,6 +79,7 @@ class MemberTableWindow(BaseWindow):
                     "Straße",
                     "PLZ",
                     "Stadt",
+                    "Land",
                     "Geburstag",
                     "Alter",
                     "Eintritt",
@@ -101,6 +102,7 @@ class MemberTableWindow(BaseWindow):
                         "street",
                         "zip_code",
                         "city",
+                        "country",
                         "b_date",
                         "age",
                         "entry_date",

@@ -5,8 +5,9 @@
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMessageBox
 
 from ui.windows.base_window import BaseWindow
-from ui.windows import members_window as m_w, window_manager as w_m, types_window as t_w, user_window as u_w, \
+from ui.windows import window_manager as w_m, types_window as t_w, user_window as u_w, \
     user_verify_window as u_v_w, organisation_data_window as o_d_w
+from ui.windows.member_windows import members_window as m_w
 
 import debug
 

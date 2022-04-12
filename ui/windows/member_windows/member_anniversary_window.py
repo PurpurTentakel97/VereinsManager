@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPush
 import os
 
 from ui.windows.base_window import BaseWindow
-from ui.windows import members_window as m_w, window_manager as w
+from ui.windows import window_manager as w
+from ui.windows.member_windows import members_window as m_w
 from config import config_sheet as c
 from ui.frames.current_anniversary_frame import CurrentAnniversaryFrame
 from ui.frames.other_anniversary_frame import OtherAnniversaryFrame
