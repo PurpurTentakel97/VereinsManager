@@ -107,6 +107,7 @@ class UserVerifyWindow(BaseWindow):
     def _verify(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
         result, valid = transition.compare_password(current_user.ID, self._password_le.text().strip())
+
         if not valid:
             self.set_error_bar(message=result)
             return

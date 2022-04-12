@@ -28,11 +28,11 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [str
                 "lastname": lastname,
             }
             if b_day:
-                inner_b_day = inner
+                inner_b_day = inner.copy()
                 inner_b_day["date"] = _transform_timestamp_to_datetime(b_day)
                 b_day_data.append(inner_b_day)
             if entry_day:
-                inner_entry_day = inner
+                inner_entry_day = inner.copy()
                 inner_entry_day["date"] = _transform_timestamp_to_datetime(entry_day)
                 entry_day_data.append(inner_entry_day)
 
