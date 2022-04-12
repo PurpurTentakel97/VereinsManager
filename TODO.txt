@@ -9,7 +9,6 @@ pdf
 sql database
     let unser choose database name
     password
-    log country evry time (only member?)
 
 UI
     Global
@@ -21,7 +20,6 @@ UI
             read only
             select cell
         activate Buttons
-        set dimentions
 
 log
     show log in ui

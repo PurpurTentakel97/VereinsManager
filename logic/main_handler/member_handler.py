@@ -130,8 +130,6 @@ def _update_member(ID: int | None, data: dict, log_date: int | None) -> None:  #
     data = _transform_dates_for_save(data=data)
 
     reference_data = _get_member_data_by_id(ID=ID, active=True)
-    debug.debug(item=debug_str, keyword="_update_member", message=f"reference_data = {reference_data}")
-    debug.debug(item=debug_str, keyword="_update_member", message=f"data = {data}")
     u_h.update_handler.update_member(ID=ID, data=data)
     st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
                                        new_type_id=data["membership_type"],

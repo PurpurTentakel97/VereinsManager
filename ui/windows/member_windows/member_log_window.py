@@ -50,6 +50,7 @@ class MemberLogWindow(BaseWindow):
         widget: QWidget = QWidget()
         widget.setLayout(global_vbox)
         self.set_widget(widget=widget)
+        self.resize(900, 600)
         self.show()
 
     def _set_first_member(self, row_index: int) -> None:
