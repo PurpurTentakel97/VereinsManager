@@ -2,7 +2,7 @@
 # 11.04.2022
 # VereinsManager / Member Log Window
 
-from PyQt5.QtWidgets import QTableWidget, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidget, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableView
 
 from ui.windows.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
@@ -17,6 +17,7 @@ debug_str: str = "MemberLogWindow"
 class MemberLogWindow(BaseWindow):
     def __init__(self, row_index: int):
         super().__init__()
+        self.entries: list = list()
 
         self._set_window_information()
         self._create_ui()
@@ -29,9 +30,12 @@ class MemberLogWindow(BaseWindow):
     def _create_ui(self) -> None:
         self._delete: QPushButton = QPushButton("löschen")
         self._export: QPushButton = QPushButton("exportieren")
+        self._export.clicked.connect(self.test)
 
         self._members_list: ListFrame = ListFrame(window=self, type_="member", active=True)
         self._log_table: QTableWidget = QTableWidget()
+        self._log_table.setSelectionBehavior(QTableView.SelectRows)
+        self._log_table.setEditTriggers(QTableWidget.NoEditTriggers)
 
     def _create_layout(self) -> None:
         buttons: QHBoxLayout = QHBoxLayout()
@@ -70,8 +74,17 @@ class MemberLogWindow(BaseWindow):
         )
         self._log_table.setHorizontalHeaderLabels(headers)
 
+        keys: tuple = (
+            "log_date",
+            "display_name",
+            "old_data",
+            "new_data",
+        )
+
         for row_index, single_data in enumerate(data):
-            for column_index, entry in enumerate(single_data):
+            self.entries.append(single_data)
+            for column_index, key in enumerate(keys):
+                entry = single_data[key]
                 new_item: QTableWidgetItem = QTableWidgetItem(entry)
                 self._log_table.setItem(row_index, column_index, new_item)
 
@@ -90,3 +103,7 @@ class MemberLogWindow(BaseWindow):
         if valid:
             w_m.window_manger.members_window = m_w.MembersWindow()
         event.accept()
+
+    def test(self):
+        current_item = self._log_table.currentItem()
+        print(self.entries[current_item.row()])

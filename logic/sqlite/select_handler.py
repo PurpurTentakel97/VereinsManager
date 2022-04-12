@@ -235,7 +235,7 @@ class SelectHandler(Database):
 
     # log
     def get_log_data(self) -> list:
-        sql_command: str = """SELECT target_table,target_id, log_date, target_column, old_data, new_data FROM log WHERE target_table Like 'member%' ORDER BY log_date DESC;"""
+        sql_command: str = """SELECT ID,target_table,target_id, log_date, target_column, old_data, new_data FROM log WHERE target_table Like 'member%' ORDER BY log_date DESC;"""
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError:
