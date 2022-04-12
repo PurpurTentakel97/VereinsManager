@@ -3,8 +3,7 @@
 # VereinsManager / Global PDF Handler
 import os
 
-from logic.handler.pdf_handler import member_table_pdf as m_t_p, member_anniversary_pdf as m_a_p, \
-    member_card_pdf as m_c_p
+from logic.pdf_handler import member_table_pdf as m_t_p, member_card_pdf as m_c_p, member_anniversary_pdf as m_a_p
 from config import config_sheet as c
 
 

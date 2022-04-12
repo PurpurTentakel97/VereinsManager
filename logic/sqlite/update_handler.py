@@ -4,7 +4,7 @@
 
 import sys
 
-from sqlite.database import Database
+from logic.sqlite.database import Database
 from config import exception_sheet as e
 import debug
 

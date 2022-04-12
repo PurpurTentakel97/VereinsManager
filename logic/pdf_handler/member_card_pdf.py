@@ -10,9 +10,9 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 
-from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
-from logic.handler.data_handler import member_card_data_handler
-from logic.handler.main_handler import organisation_handler
+from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
+from logic.data_handler import member_card_data_handler
+from logic.main_handler import organisation_handler
 from helper import validation as v
 from config import exception_sheet as e, config_sheet as c
 

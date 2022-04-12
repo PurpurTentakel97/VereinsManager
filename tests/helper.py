@@ -8,7 +8,7 @@ import random
 import shutil
 
 from config import config_sheet as c
-from sqlite import select_handler, database
+from logic.sqlite import database, select_handler
 
 
 # config

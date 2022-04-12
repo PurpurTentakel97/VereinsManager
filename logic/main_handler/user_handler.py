@@ -5,7 +5,7 @@ import sys
 
 from helper import hasher, validation as v
 from config import exception_sheet as e, config_sheet as c
-from sqlite import add_handler as a_h, update_handler as u_h, select_handler as s_h, delete_handler as d_h
+from logic.sqlite import select_handler as s_h, delete_handler as d_h, update_handler as u_h, add_handler as a_h
 import debug
 
 debug_str: str = "User Handler"

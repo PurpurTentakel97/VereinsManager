@@ -4,7 +4,7 @@
 
 import sys
 
-from sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h
+from logic.sqlite import select_handler as s_h, update_handler as u_h, add_handler as a_h
 from config import config_sheet as c, exception_sheet as e
 from helper import validation as v
 import debug

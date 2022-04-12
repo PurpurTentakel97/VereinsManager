@@ -5,7 +5,7 @@ import sys
 from datetime import date, datetime
 
 from config import exception_sheet as e
-from sqlite.database import Database
+from logic.sqlite.database import Database
 import debug
 
 debug_str: str = "StatisticsHandler"

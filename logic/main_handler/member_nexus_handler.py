@@ -2,8 +2,8 @@
 # 28.03.2022
 # VereinsManager / Member Nexus Handler
 
-from sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h, log_handler as l_h, \
-    delete_handler as d_h, statistics_handler as st_h
+from logic.sqlite import select_handler as s_h, delete_handler as d_h, log_handler as l_h, update_handler as u_h, \
+    statistics_handler as st_h, add_handler as a_h
 from helper import validation as v
 from config import config_sheet as c
 

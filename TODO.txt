@@ -34,9 +34,6 @@ user
 
 organisation
     log
-    load
-    update
-    validation
 
 member
     export schreiben

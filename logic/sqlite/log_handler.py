@@ -4,10 +4,10 @@
 import sys
 import time
 
-from sqlite.database import Database
+from logic.sqlite.database import Database
 from config import exception_sheet as e, config_sheet as c
 from helper import validation as v
-from sqlite import select_handler as s_h
+from logic.sqlite import select_handler as s_h
 
 import debug
 

@@ -5,7 +5,7 @@
 import json
 
 from helper import validation as v
-from sqlite import select_handler as s_h
+from logic.sqlite import select_handler as s_h
 
 debug_str: str = "Config"
 

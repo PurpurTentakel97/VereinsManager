@@ -11,10 +11,10 @@ from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 
-from logic.handler.data_handler import member_table_data_handler
-from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
-from logic.handler.main_handler import organisation_handler
-from sqlite import select_handler as s_h
+from logic.data_handler import member_table_data_handler
+from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
+from logic.main_handler import organisation_handler
+from logic.sqlite import select_handler as s_h
 from config import config_sheet as c, exception_sheet as e
 import debug
 

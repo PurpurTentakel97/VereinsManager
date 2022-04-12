@@ -6,9 +6,9 @@
 import sys
 
 from config import config_sheet
-from sqlite import database, global_database_handler
-from logic.handler.pdf_handler import global_pdf_handler
-from logic.handler.main_handler import global_handler, window_handler
+from logic.sqlite import database, global_database_handler
+from logic.pdf_handler import global_pdf_handler
+from logic.main_handler import global_handler, window_handler
 
 import debug
 

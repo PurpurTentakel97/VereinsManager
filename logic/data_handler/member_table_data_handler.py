@@ -6,8 +6,8 @@ import datetime
 import sys
 
 from config import config_sheet as c, exception_sheet as e
-from sqlite import select_handler as s_h
-from logic.handler.main_handler import member_nexus_handler as m_n_h
+from logic.sqlite import select_handler as s_h
+from logic.main_handler import member_nexus_handler as m_n_h
 
 import debug
 

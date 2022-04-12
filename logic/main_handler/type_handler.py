@@ -5,8 +5,8 @@ import sys
 
 from helper import validation as v
 from config import config_sheet as c, exception_sheet as e
-from sqlite import add_handler as a_h, delete_handler as d_h, select_handler as s_h, update_handler as u_h, \
-    log_handler as l_h
+from logic.sqlite import select_handler as s_h, delete_handler as d_h, log_handler as l_h, update_handler as u_h, \
+    add_handler as a_h
 import debug
 
 debug_str: str = "Type Handler"

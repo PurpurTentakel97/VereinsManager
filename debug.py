@@ -5,7 +5,7 @@
 import json
 import traceback
 
-from logic.handler.main_handler import path_handler
+from logic.main_handler import path_handler
 from config import config_sheet as c
 from datetime import datetime
 

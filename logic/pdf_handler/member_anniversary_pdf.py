@@ -11,9 +11,9 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 
-from logic.handler.data_handler import member_anniversary_data_handler
-from logic.handler.pdf_handler.base_pdf import BasePDF, NumberedCanvas
-from logic.handler.main_handler import organisation_handler
+from logic.data_handler import member_anniversary_data_handler
+from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
+from logic.main_handler import organisation_handler
 from config import config_sheet as c, exception_sheet as e
 import debug
 

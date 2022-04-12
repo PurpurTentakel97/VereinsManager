@@ -2,9 +2,8 @@
 # 13.02.2022
 # VereinsManager / Global Handler
 
-from sqlite import select_handler as s_h, add_handler as a_h, update_handler as u_h, delete_handler as d_h, \
-    log_handler as l_h, statistics_handler as st_h
-import debug
+from logic.sqlite import select_handler as s_h, delete_handler as d_h, log_handler as l_h, update_handler as u_h, \
+    statistics_handler as st_h, add_handler as a_h
 
 debug_str: str = "GlobalHandler"
 

@@ -1,10 +1,10 @@
 # Purpur Tentakel
 # 18.02.2022L
 # VereinsManager / Validation
-from sqlite import select_handler as s_h
+from logic.sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
 from helper import password_validation as p_v
-from logic.handler.main_handler import type_handler as t_h
+from logic.main_handler import type_handler as t_h
 import debug
 
 debug_str: str = "Validation"

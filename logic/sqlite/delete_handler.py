@@ -3,8 +3,8 @@
 # VereinsManager / Add Handler
 import sys
 
-from sqlite.database import Database
-from sqlite import select_handler as s_h, log_handler as l_h
+from logic.sqlite.database import Database
+from logic.sqlite import select_handler as s_h, log_handler as l_h
 from config import exception_sheet as e
 import debug
 
