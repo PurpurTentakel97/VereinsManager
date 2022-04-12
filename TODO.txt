@@ -10,14 +10,11 @@ sql database
     let unser choose database name
     password
     log country evry time (only member?)
-    add _updated to log
 
 UI
     Global
         set Icon in Taskbar
         check for screen reader
-    member anniversary
-        dont open member window
     log window
         table
             select hole line

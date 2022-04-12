@@ -159,15 +159,22 @@ END;
 /* LOG */
 CREATE TABLE IF NOT EXISTS "main"."log" (
 "ID" INTEGER NOT NULL UNIQUE,
+"_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
+"_updated" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 "target_table" VARCHAR(10) NOT NULL,
 "target_id" INTEGER NOT NULL,
 "target_column" VARCHAR(10) NOT NULL,
 "old_data" BLOB DEFAULT NULL,
 "new_data" BLOB DEFAULT NULL,
 "log_date" INTEGER NOT NULL,
-"_created" INTEGER DEFAULT (CAST(strftime('%s', 'now') AS INTEGER)),
 PRIMARY KEY ("ID" AUTOINCREMENT)
 );
+/* date */
+CREATE TRIGGER IF NOT EXISTS "trigger_update_log"
+    AFTER UPDATE ON "log"
+BEGIN
+    UPDATE "log" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+END;
 
 /*USER*/
 CREATE TABLE IF NOT EXISTS "main"."user" (
