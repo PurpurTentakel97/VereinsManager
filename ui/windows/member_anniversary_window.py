@@ -3,6 +3,7 @@
 # VereinsManager / Member Anniversary Window
 
 from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QFileDialog
+import os
 
 from ui.windows.base_window import BaseWindow
 from ui.windows import members_window as m_w, window_manager as w
@@ -58,7 +59,10 @@ class MemberAnniversaryWindow(BaseWindow):
     def _export(self) -> None:
         transition.create_default_dir("member_anniversary")
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['export']}/{c.config.dirs['member']}/{c.config.dirs['member_anniversary']}/Geburtstage-Jubilaen.pdf",
+                                                  os.path.join(c.config.dirs['save'], c.config.dirs['organisation'],
+                                                               c.config.dirs['export'], c.config.dirs['member'],
+                                                               c.config.dirs['member_anniversary'],
+                                                               "Geburtstage-Jubilaen.pdf"),
                                                   "PDF (*.pdf);;All Files (*)")
         if not check:
             self.set_info_bar(message="Export abgebrochen")
