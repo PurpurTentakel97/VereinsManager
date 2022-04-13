@@ -23,25 +23,26 @@ class MemberLogWindow(BaseWindow):
         self._create_ui()
         self._create_layout()
         self._set_first_member(row_index=row_index)
+        self._set_export_entry_btn()
 
     def _set_window_information(self) -> None:
         self.setWindowTitle("Mitgliedslog")
 
     def _create_ui(self) -> None:
-        self._delete: QPushButton = QPushButton("löschen")
-        self._export: QPushButton = QPushButton("exportieren")
-        self._export.clicked.connect(self.test)
+        self._export_entry_btn: QPushButton = QPushButton("Eintrag exportieren")
+        self._export_btn: QPushButton = QPushButton("Tabelle exportieren")
 
         self._members_list: ListFrame = ListFrame(window=self, type_="member", active=True)
         self._log_table: QTableWidget = QTableWidget()
         self._log_table.setSelectionBehavior(QTableView.SelectRows)
         self._log_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self._log_table.itemClicked.connect(self._set_export_entry_btn)
 
     def _create_layout(self) -> None:
         buttons: QHBoxLayout = QHBoxLayout()
         buttons.addStretch()
-        buttons.addWidget(self._delete)
-        buttons.addWidget(self._export)
+        buttons.addWidget(self._export_entry_btn)
+        buttons.addWidget(self._export_btn)
 
         table_list: QHBoxLayout = QHBoxLayout()
         table_list.addWidget(self._members_list)
@@ -88,6 +89,24 @@ class MemberLogWindow(BaseWindow):
                 new_item: QTableWidgetItem = QTableWidgetItem(entry)
                 self._log_table.setItem(row_index, column_index, new_item)
 
+    def _set_export_entry_btn(self) -> None:
+        self._export_entry_btn.setEnabled(self._is_export_entry())
+
+    def _is_export_entry(self) -> bool:
+        current_row = self._log_table.currentItem()
+        if current_row is None:
+            return False
+        current_entry: dict = self.entries[current_row.row()]
+        match current_entry['target_table']:
+            case "member":
+                match current_entry['target_column']:
+                    case "active":
+                        return True
+                    case "membership_type":
+                        return True
+
+        return False
+
     def load_single_member(self) -> None:
         current_member: ListItem = self._members_list.list.currentItem()
         data, valid = transition.get_log_member_data(target_id=current_member.ID)
@@ -103,7 +122,3 @@ class MemberLogWindow(BaseWindow):
         if valid:
             w_m.window_manger.members_window = m_w.MembersWindow()
         event.accept()
-
-    def test(self):
-        current_item = self._log_table.currentItem()
-        print(self.entries[current_item.row()])

@@ -50,7 +50,7 @@ def _transform_to_dict(data: tuple) -> dict:
         "target_table": data[1],
         "target_id": data[2],
         "log_date": data[3],
-        "target_colum": data[4],
+        "target_column": data[4],
         "old_data": data[5],
         "new_data": data[6],
         "display_name": None,
@@ -76,9 +76,10 @@ def _transform_member(data_entry: dict, target_id: int) -> dict | None:
         ("membership_type", "Mitgliedsart"),
         ("special_member", "Ehrenmitglied"),
         ("comment_text", "Kommantar"),
+        ("active", "Aktiv"),
     )
     for reverence_entry in reverence_entries:
-        if data_entry['target_colum'] not in reverence_entry:
+        if data_entry['target_column'] not in reverence_entry:
             continue
         reverence_target_column, display_name = reverence_entry
         match reverence_target_column:
@@ -95,6 +96,9 @@ def _transform_member(data_entry: dict, target_id: int) -> dict | None:
                 data_entry['old_data'] = _transform_timestamp_to_date(timestamp=data_entry['old_data'])
                 data_entry['new_data'] = _transform_timestamp_to_date(timestamp=data_entry['new_data'])
             case "special_member":
+                data_entry['old_data'] = _transform_bool_to_text(entry=data_entry['old_data'])
+                data_entry['new_data'] = _transform_bool_to_text(entry=data_entry['new_data'])
+            case "active":
                 data_entry['old_data'] = _transform_bool_to_text(entry=data_entry['old_data'])
                 data_entry['new_data'] = _transform_bool_to_text(entry=data_entry['new_data'])
             case "comment_text":
