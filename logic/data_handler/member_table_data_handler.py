@@ -2,19 +2,19 @@
 # 06.03.2022
 # VereinsManager / Table Data Handler
 
-import datetime
 import sys
+import datetime
 
-from config import config_sheet as c, exception_sheet as e
 from logic.sqlite import select_handler as s_h
-from logic.main_handler import member_nexus_handler as m_n_h
+from logic.main_handler import member_nexus_handler
+from config import config_sheet as c, exception_sheet as e
 
 import debug
 
 debug_str: str = "table_data_handler"
 
 
-def get_member_table_data(active: bool) -> [str | dict, bool]:
+def get_member_table_data(active: bool) -> tuple[str | dict, bool]:
     # validation
     try:
         types = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id['membership'], active=True)
@@ -28,8 +28,8 @@ def get_member_table_data(active: bool) -> [str | dict, bool]:
 
             for member in member_data:
                 member_dict = _transform_member_data(member=member)
-                phone_data = m_n_h.get_phone_number_by_member_id(member_id=member_dict['ID'])
-                mail_data = m_n_h.get_mail_by_member_id(member_id=member_dict['ID'])
+                phone_data = member_nexus_handler.get_phone_number_by_member_id(member_id=member_dict['ID'])
+                mail_data = member_nexus_handler.get_mail_by_member_id(member_id=member_dict['ID'])
                 phone_list = _transform_nexus_data(nexus_data=phone_data)
                 mail_list = _transform_nexus_data(nexus_data=mail_data)
 
@@ -49,6 +49,17 @@ def get_member_table_data(active: bool) -> [str | dict, bool]:
     except e.OperationalError as error:
         debug.error(item=debug_str, keyword="get_member_table_data", error_=sys.exc_info())
         return error.message, False
+
+
+def _get_years_from_date_to_now(date: datetime.datetime) -> str or None:
+    if not date:
+        return
+
+    now = datetime.datetime.now()
+    years = now.year - date.year
+    if now.month < date.month or (now.month == date.month and now.day < date.day):
+        years -= 1
+    return str(years)
 
 
 def _transform_member_data(member: list) -> dict:
@@ -111,17 +122,6 @@ def _transform_nexus_data(nexus_data: tuple) -> list:
 def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
     if timestamp:
         return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
-
-
-def _get_years_from_date_to_now(date: datetime.datetime) -> str or None:
-    if not date:
-        return
-
-    now = datetime.datetime.now()
-    years = now.year - date.year
-    if now.month < date.month or (now.month == date.month and now.day < date.day):
-        years -= 1
-    return str(years)
 
 
 def _transform_date_to_str(date: datetime) -> str or None:

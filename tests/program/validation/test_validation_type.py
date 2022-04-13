@@ -18,7 +18,7 @@ def test_add_type_pass(name, raw_type_id, extra_value):
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.add_type(type_name=name, raw_type_id=raw_type_id, extra_value=extra_value)
+    v.check_add_type(type_name=name, raw_type_id=raw_type_id, extra_value=extra_value)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -28,7 +28,7 @@ def test_add_type_exception():
     helper.generate_select_handler()
     helper.add_generic_type()
     with pytest.raises(e.AlreadyExists):
-        v.add_type(type_name="type_2", raw_type_id=2, extra_value="string")
+        v.check_add_type(type_name="type_2", raw_type_id=2, extra_value="string")
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -41,7 +41,7 @@ def test_update_type_pass(extra_value):
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.update_type(1, "test", extra_value)
+    v.check_update_type(1, "test", extra_value)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -58,7 +58,7 @@ def test_update_type_exception(ID, new_name, extra_value, expexted):
     helper.generate_select_handler()
     helper.add_generic_type()
     with pytest.raises(expexted):
-        v.update_type(ID, new_name, extra_value)
+        v.check_update_type(ID, new_name, extra_value)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -67,7 +67,7 @@ def test_update_type_activity_pass():
     helper.generate_temp_database()
     helper.generate_select_handler()
     helper.add_generic_type()
-    v.update_type_activity(1, False)
+    v.check_update_type_activity(1, False)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -81,6 +81,6 @@ def test_update_type_activity_exception(ID, active, expexted):
     helper.generate_select_handler()
     helper.add_generic_type()
     with pytest.raises(expexted):
-        v.update_type_activity(ID, active)
+        v.check_update_type_activity(ID, active)
     helper.drop_select_handler()
     helper.delete_temp_database()

@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 29.03.2022
 # VereinsManager / Statistics Handler
+
 import sys
 from datetime import date, datetime
 
@@ -39,37 +40,6 @@ class StatisticsHandler(Database):
         except e.GeneralError:
             debug.info(item=debug_str, keyword="statistics", error_=sys.exc_info())
 
-    def _membership_statistics(self, raw_type_id: int, new_type_id: int | None, old_type_id: int | None) -> None:
-        if not self._is_valid_membership(new_membership_id=new_type_id, old_membership_id=old_type_id):
-            return
-
-        new_count, old_count = self._get_current_membership_counts(new_type_id=new_type_id, old_type_id=old_type_id)
-
-        self._statistics(raw_type_id=raw_type_id, type_id=new_type_id, count=new_count)
-        self._statistics(raw_type_id=raw_type_id, type_id=old_type_id, count=old_count)
-
-    def _member_nexus_statistics(self, type_: str, raw_type_id: int, new_type_id: int | None, old_data,
-                                 new_data) -> None:
-        if new_type_id is None:
-            return
-        if not self._is_valid_data(data_1=old_data, data_2=new_data):
-            return
-
-        count = self._get_current_nexus_count(type_=type_, type_id=new_type_id)
-
-        self._statistics(raw_type_id=raw_type_id, type_id=new_type_id, count=count)
-
-    def _statistics(self, raw_type_id: int, type_id: int, count: int) -> None:
-        if type_id is None:
-            return
-
-        current_entry = self._get_current_ID(type_id)
-
-        if not current_entry:
-            self._add(raw_type_id=raw_type_id, type_id=type_id, count=count)
-            return
-        self._update(ID=current_entry[0], count=count)
-
     def _add(self, raw_type_id: int, type_id: int, count: int) -> None:
         if type_id is None:
             return
@@ -87,14 +57,6 @@ class StatisticsHandler(Database):
         except self.OperationalError:
             debug.info(item=debug_str, keyword="_statistics", error_=sys.exc_info())
 
-    def _update(self, ID: int, count: int) -> None:
-        sql_command: str = """UPDATE statistics SET count = ? WHERE ID = ?;"""
-        try:
-            self.cursor.execute(sql_command, (count, ID))
-            self.connection.commit()
-        except self.OperationalError:
-            debug.info(item=debug_str, keyword="_statistics", error_=sys.exc_info())
-
     def _get_current_ID(self, type_id):
         sql_command: str = """SELECT * FROM statistics WHERE _log_date = ? and type_id = ?;"""
         try:
@@ -106,7 +68,7 @@ class StatisticsHandler(Database):
         except self.OperationalError:
             debug.info(item=debug_str, keyword="_statistics", error_=sys.exc_info())
 
-    def _get_current_membership_counts(self, new_type_id: int, old_type_id: int) -> [int]:
+    def _get_current_membership_counts(self, new_type_id: int, old_type_id: int) -> list[int]:
         sql_command: str = """SELECT membership_type FROM v_active_member WHERE membership_type is ?;"""
         try:
             counts: list = list()
@@ -140,7 +102,15 @@ class StatisticsHandler(Database):
             return counter
         except self.OperationalError:
             debug.info(item=debug_str, keyword="_get_current_nexus_count",
-                        error_=sys.exc_info())
+                       error_=sys.exc_info())
+
+    def _update(self, ID: int, count: int) -> None:
+        sql_command: str = """UPDATE statistics SET count = ? WHERE ID = ?;"""
+        try:
+            self.cursor.execute(sql_command, (count, ID))
+            self.connection.commit()
+        except self.OperationalError:
+            debug.info(item=debug_str, keyword="_statistics", error_=sys.exc_info())
 
     @staticmethod
     def _is_valid_data(data_1, data_2) -> bool:
@@ -156,7 +126,38 @@ class StatisticsHandler(Database):
             return True
         return False
 
+    def _membership_statistics(self, raw_type_id: int, new_type_id: int | None, old_type_id: int | None) -> None:
+        if not self._is_valid_membership(new_membership_id=new_type_id, old_membership_id=old_type_id):
+            return
 
-def create_statistics_handler() -> None:
+        new_count, old_count = self._get_current_membership_counts(new_type_id=new_type_id, old_type_id=old_type_id)
+
+        self._statistics(raw_type_id=raw_type_id, type_id=new_type_id, count=new_count)
+        self._statistics(raw_type_id=raw_type_id, type_id=old_type_id, count=old_count)
+
+    def _member_nexus_statistics(self, type_: str, raw_type_id: int, new_type_id: int | None, old_data,
+                                 new_data) -> None:
+        if new_type_id is None:
+            return
+        if not self._is_valid_data(data_1=old_data, data_2=new_data):
+            return
+
+        count = self._get_current_nexus_count(type_=type_, type_id=new_type_id)
+
+        self._statistics(raw_type_id=raw_type_id, type_id=new_type_id, count=count)
+
+    def _statistics(self, raw_type_id: int, type_id: int, count: int) -> None:
+        if type_id is None:
+            return
+
+        current_entry = self._get_current_ID(type_id)
+
+        if not current_entry:
+            self._add(raw_type_id=raw_type_id, type_id=type_id, count=count)
+            return
+        self._update(ID=current_entry[0], count=count)
+
+
+def create() -> None:
     global statistics_handler
     statistics_handler = StatisticsHandler()

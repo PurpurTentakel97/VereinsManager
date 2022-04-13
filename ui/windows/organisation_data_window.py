@@ -2,14 +2,13 @@
 # 08.04.2022
 # VereinsManager / Organisation Data Window
 
-
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel, QPushButton, QTextEdit, QGridLayout, QHBoxLayout, \
     QVBoxLayout, QWidget
 
 import transition
+from ui.windows import window_manager as w
 from ui.windows.base_window import BaseWindow
-from ui.windows import window_manager as w_m
 import debug
 
 debug_str: str = "OrganisationDataWindow"
@@ -26,9 +25,6 @@ class OrganisationDataWindow(BaseWindow):
         self._create_layout()
         self._set_contact_persons()
         self._set_organisation_data()
-
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Vereinsinformationen")
 
     def _create_ui(self) -> None:
         # buttons
@@ -127,6 +123,28 @@ class OrganisationDataWindow(BaseWindow):
         self.set_widget(widget=widget)
         self.show()
 
+    def _get_ID_from_contact_person(self) -> int | None:
+        current_entry: str = self._contact_person_box.currentText()
+
+        for ID, display_name in self.contact_persons:
+            if current_entry == display_name:
+                return ID
+
+        return None
+
+    @staticmethod
+    def _get_display_name(firstname: str, lastname: str) -> str:
+        if firstname and lastname:
+            return f"{firstname} {lastname}"
+        if firstname:
+            return firstname
+        if lastname:
+            return lastname
+        return "Kein Name vorhanden"
+
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Vereinsinformationen")
+
     def _set_contact_persons(self) -> None:
         data, valid = transition.get_all_user_name()  # TODO chance to without default when validation is ready
         if not valid:
@@ -139,16 +157,6 @@ class OrganisationDataWindow(BaseWindow):
             self._contact_person_box.addItem(display_name)
 
         self.contact_persons = contact_persons
-
-    @staticmethod
-    def _get_display_name(firstname: str, lastname: str) -> str:
-        if firstname and lastname:
-            return f"{firstname} {lastname}"
-        if firstname:
-            return firstname
-        if lastname:
-            return lastname
-        return "Kein Name vorhanden"
 
     def _set_organisation_data(self) -> None:
         data, valid = transition.get_organisation_data()
@@ -199,16 +207,7 @@ class OrganisationDataWindow(BaseWindow):
             self.ID = ID
             self.set_info_bar(message="saved")
 
-    def _get_ID_from_contact_person(self) -> int | None:
-        current_entry: str = self._contact_person_box.currentText()
-
-        for ID, display_name in self.contact_persons:
-            if current_entry == display_name:
-                return ID
-
-        return None
-
     def closeEvent(self, event) -> None:
         event.ignore()
-        w_m.window_manger.organisation_data_window = None
+        w.window_manger.organisation_data_window = None
         event.accept()

@@ -19,7 +19,7 @@ if __name__ == "__main__":
     try:
         config_sheet.create_config()
         database.crate_database()
-        global_database_handler.create_global_handler()
+        global_database_handler.create()
         global_pdf_handler.create_pdf_handler()
         window_handler.on_start()
         global_handler.delete_inactive_data()

@@ -5,12 +5,14 @@
 import datetime
 
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QFrame, QLabel, QTableWidget,QLineEdit, QPushButton,QHBoxLayout, QVBoxLayout, QTableWidgetItem
+from PyQt5.QtWidgets import QFrame, QLabel, QTableWidget, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, \
+    QTableWidgetItem
 
 import transition
 import debug
 
-debug_str:str= "OtherAnniversaryFrame"
+debug_str: str = "OtherAnniversaryFrame"
+
 
 class OtherAnniversaryFrame(QFrame):
     def __init__(self, window) -> None:
@@ -23,14 +25,14 @@ class OtherAnniversaryFrame(QFrame):
         self._other_b_day_data: list = list()
         self._other_entry_day_data: list = list()
 
-        self._set_ui()
-        self._set_layout()
+        self._create_ui()
+        self._create_layout()
 
         self._other_year_le.setText(str(datetime.datetime.now().year))
 
         self._get_other_data()
 
-    def _set_ui(self) -> None:
+    def _create_ui(self) -> None:
         self._other_b_day_lb: QLabel = QLabel()
         self._other_b_day_lb.setText("Geburtstage:")
 
@@ -51,7 +53,7 @@ class OtherAnniversaryFrame(QFrame):
         self._set_year_btn.setText("Jahr auswählen")
         self._set_year_btn.clicked.connect(self._get_other_data)
 
-    def _set_layout(self) -> None:
+    def _create_layout(self) -> None:
         # Label
         other_b_day_lb_hbox: QHBoxLayout = QHBoxLayout()
         other_b_day_lb_hbox.addWidget(self._other_b_day_lb)

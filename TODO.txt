@@ -31,6 +31,10 @@ UI
 log
     show log in ui
 
+validation
+    update type
+        no chance by only chancing extra value
+
 user
     log
     list -> frame

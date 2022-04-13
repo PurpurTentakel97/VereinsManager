@@ -2,11 +2,10 @@
 # 11.04.2022
 # VereinsManager / Log Handler
 
-import sys
 import datetime
 
+from config import config_sheet as c
 from logic.sqlite import select_handler as s_h
-from config import exception_sheet as e, config_sheet as c
 import debug
 
 debug_str: str = "Log Handler"
@@ -133,6 +132,25 @@ def _transform_member_nexus(data_entry: dict, type_id: int) -> dict:
 
 
 # helper
+def _get_reference_entries() -> tuple:
+    return (
+        ("first_name", "Vorname"),
+        ("last_name", "Nachname"),
+        ("street", "Straße"),
+        ("number", "Hausnummer"),
+        ("zip_code", "PLZ"),
+        ("city", "Stadt"),
+        ("country", "Land"),
+        ("maps", "Maps-Link"),
+        ("b_day", "Geburtstag"),
+        ("entry_day", "Eintritt"),
+        ("membership_type", "Mitgliedsart"),
+        ("special_member", "Ehrenmitglied"),
+        ("comment_text", "Kommantar"),
+        ("active", "Aktiv"),
+    )
+
+
 def _transform_timestamp_to_date(timestamp: int) -> str | None:
     if timestamp:
         return datetime.datetime.strftime(
@@ -172,22 +190,3 @@ def _transform_comment_text(old_entry: str, new_entry: str) -> [str | None, str 
             old_entry = old_entry[:20]
 
     return old_entry, new_entry
-
-
-def _get_reference_entries() -> tuple:
-    return (
-        ("first_name", "Vorname"),
-        ("last_name", "Nachname"),
-        ("street", "Straße"),
-        ("number", "Hausnummer"),
-        ("zip_code", "PLZ"),
-        ("city", "Stadt"),
-        ("country", "Land"),
-        ("maps", "Maps-Link"),
-        ("b_day", "Geburtstag"),
-        ("entry_day", "Eintritt"),
-        ("membership_type", "Mitgliedsart"),
-        ("special_member", "Ehrenmitglied"),
-        ("comment_text", "Kommantar"),
-        ("active", "Aktiv"),
-    )

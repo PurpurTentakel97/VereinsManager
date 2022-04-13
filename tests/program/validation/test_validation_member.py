@@ -28,7 +28,7 @@ def test_update_member_pass(member):
     helper.generate_temp_database()
     helper.add_generic_type()
     helper.generate_select_handler()
-    v.update_member(member)
+    v.check_update_member(member)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -79,7 +79,7 @@ def test_update_member_exception(member, expected):
     helper.add_generic_type()
     helper.generate_select_handler()
     with pytest.raises(expected):
-        v.update_member(member)
+        v.check_update_member(member)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -91,7 +91,7 @@ def test_update_member_exception(member, expected):
     ([None, 2, None, True], "position"),
 ])
 def test_update_member_nexus_pass(data, type_):
-    v.update_member_nexus(data, type_)
+    v.check_update_member_nexus(data, type_)
 
 
 @pytest.mark.parametrize(("data", "type_", "expected"), [
@@ -102,4 +102,4 @@ def test_update_member_nexus_pass(data, type_):
 ])
 def test_update_member_nexus_exception(data, type_, expected):
     with pytest.raises(expected):
-        v.update_member_nexus(data, type_)
+        v.check_update_member_nexus(data, type_)

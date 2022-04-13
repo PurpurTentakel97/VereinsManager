@@ -23,7 +23,7 @@ def add_user_ids_in_config() -> None:
 
 # handler
 def generate_select_handler() -> None:
-    select_handler.create_select_handler()
+    select_handler.create()
 
 
 def drop_select_handler() -> None:

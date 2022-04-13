@@ -4,8 +4,8 @@
 
 import sys
 
-from logic.sqlite.database import Database
 from config import exception_sheet as e
+from logic.sqlite.database import Database
 import debug
 
 debug_str: str = "UpdateHandler"
@@ -211,6 +211,6 @@ class UpdateHandler(Database):
             raise e.UpdateFailed(info="Organisation")
 
 
-def crate_update_handler() -> None:
+def crate() -> None:
     global update_handler
     update_handler = UpdateHandler()

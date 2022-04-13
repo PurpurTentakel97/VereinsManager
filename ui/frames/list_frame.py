@@ -44,9 +44,19 @@ class ListFrame(QFrame):
         self._window = window
 
         self._set_type()
-        self._set_ui()
-        self._set_layout()
+        self._create_ui()
+        self._create_layout()
         self.load_list_data()
+
+    def _create_ui(self) -> None:
+        self.list: QListWidget = QListWidget()
+        self.list.itemClicked.connect(self._list_method)
+
+    def _create_layout(self) -> None:
+        list_: QVBoxLayout = QVBoxLayout()
+        list_.addWidget(self.list)
+
+        self.setLayout(list_)
 
     def _set_type(self) -> None:
         match self._type:
@@ -66,20 +76,10 @@ class ListFrame(QFrame):
                 match self._active:
                     case True:
                         self._get_names_method = transition.get_all_user_name
-                        self._list_method = self._window.load_user_data
+                        self._list_method = self._window.get_user_data
                     case False:
                         self._get_names_method = transition.get_all_user_name
                         self._list_method = self._window.set_recover_enabled
-
-    def _set_ui(self) -> None:
-        self.list: QListWidget = QListWidget()
-        self.list.itemClicked.connect(self._list_method)
-
-    def _set_layout(self) -> None:
-        list_: QVBoxLayout = QVBoxLayout()
-        list_.addWidget(self.list)
-
-        self.setLayout(list_)
 
     def load_list_data(self) -> None:
         self.list.clear()

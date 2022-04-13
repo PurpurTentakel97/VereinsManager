@@ -4,16 +4,16 @@
 
 import sys
 
-from logic.sqlite import select_handler as s_h, update_handler as u_h, add_handler as a_h
+from helper import validation
 from config import config_sheet as c, exception_sheet as e
-from helper import validation as v
+from logic.sqlite import select_handler as s_h, update_handler as u_h, add_handler as a_h
 import debug
 
 debug_str: str = "Organisation Handler"
 
 
 # get
-def get_organisation_data() -> [tuple | str, bool]:
+def get_organisation_data() -> tuple[dict | str, bool]:
     try:
         data = s_h.select_handler.get_organisation_data()
         if not data:
@@ -36,10 +36,10 @@ def _add_organisation(data: dict, log_date: int) -> int:
 
 
 # add / update
-def add_update_organisation(data: dict, log_date: int = None) -> [int | str, bool]:
+def add_update_organisation(data: dict, log_date: int = None) -> tuple[int | str, bool]:
     try:
-        v.add_update_organisation(data=data)
-        v.must_default_user(c.config.user['ID'], False)
+        validation.check_add_update_organisation(data=data)
+        validation.must_default_user(c.config.user['ID'], False)
 
         if data['ID'] is None:
             data['ID'] = _add_organisation(data=data, log_date=log_date)

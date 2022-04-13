@@ -2,8 +2,7 @@
 # 13.02.2022
 # VereinsManager / Global Handler
 
-from logic.sqlite import select_handler as s_h, delete_handler as d_h, log_handler as l_h, update_handler as u_h, \
-    statistics_handler as st_h, add_handler as a_h
+from logic.sqlite import select_handler, delete_handler, log_handler, update_handler, statistics_handler,add_handler
 
 debug_str: str = "GlobalHandler"
 
@@ -16,14 +15,14 @@ class GlobalHandler:
 
     @staticmethod
     def create_handler() -> None:
-        s_h.create_select_handler()
-        a_h.create_add_handler()
-        u_h.crate_update_handler()
-        d_h.create_delete_handler()
-        l_h.create_log_handler()
-        st_h.create_statistics_handler()
+        select_handler.create()
+        add_handler.create()
+        update_handler.crate()
+        delete_handler.create()
+        log_handler.create()
+        statistics_handler.create()
 
 
-def create_global_handler() -> None:
+def create() -> None:
     global global_handler
     global_handler = GlobalHandler()

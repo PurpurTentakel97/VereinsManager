@@ -157,7 +157,7 @@ class WindowManager:
         self.organisation_data_window.close() if self.organisation_data_window else None
         self.organisation_data_window = None
 
-    # global
+    # helper
     def _is_window(self, window: str, ignore: bool = False) -> bool:
         dummy_window = False
         match window:

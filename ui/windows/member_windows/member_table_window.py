@@ -2,15 +2,15 @@
 # 06.03.2022
 # VereinsManager / Member Table Window
 
+import os
 from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableWidget, \
     QPushButton, QFileDialog
-import os
 
-from ui.windows.base_window import BaseWindow
-from ui.windows import window_manager as w
-from ui.windows.member_windows import members_window as m_w
-from config import config_sheet as c
 import transition
+from config import config_sheet as c
+from ui.windows import window_manager as w
+from ui.windows.base_window import BaseWindow
+from ui.windows.member_windows import members_window
 
 debug_str: str = "MemberTableWindow"
 
@@ -23,23 +23,20 @@ class MemberTableWindow(BaseWindow):
         self._type_id_name: list = list()
 
         self._set_window_information()
-        self._set_ui()
-        self._set_layout()
+        self._create_ui()
+        self._create_layout()
         self._get_member_data()
         self._get_type_names()
-        self._set_tabs()
+        self._create_tabs()
         self._set_tables()
 
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Mitglieder Tabelle - Vereinsmanager")
-
-    def _set_ui(self) -> None:
+    def _create_ui(self) -> None:
         self._export_btn: QPushButton = QPushButton()
         self._export_btn.setText("Exportieren")
         self._export_btn.clicked.connect(self._export)
         self._tabs_widget: QTabWidget = QTabWidget()
 
-    def _set_layout(self) -> None:
+    def _create_layout(self) -> None:
         hbox: QHBoxLayout = QHBoxLayout()
         hbox.addStretch()
         hbox.addWidget(self._export_btn)
@@ -54,11 +51,29 @@ class MemberTableWindow(BaseWindow):
 
         self.showMaximized()
 
-    def _set_tabs(self) -> None:
+    def _create_tabs(self) -> None:
         for ID, name in self._type_id_name:
             widget: QWidget = QWidget()
             self._widgets.append(widget)
             self._tabs_widget.addTab(widget, name)
+
+    def _get_member_data(self) -> None:
+        result, valid = transition.get_member_data_for_table()
+        if not valid:
+            self.set_error_bar(message=result)
+        else:
+            self._data = result
+
+    def _get_type_names(self) -> None:
+        for ID, _ in self._data.items():
+            result, valid = transition.get_type_name_by_ID(ID=ID)
+            if not valid:
+                self.set_error_bar(message=result)
+            else:
+                self._type_id_name.append([ID, result[0]])
+
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Mitglieder Tabelle - Vereinsmanager")
 
     def _set_tables(self) -> None:
         # table
@@ -131,21 +146,6 @@ class MemberTableWindow(BaseWindow):
             widget = self._widgets[table_id]
             widget.setLayout(hbox)
 
-    def _get_member_data(self) -> None:
-        result, valid = transition.get_member_data_for_table()
-        if not valid:
-            self.set_error_bar(message=result)
-        else:
-            self._data = result
-
-    def _get_type_names(self) -> None:
-        for ID, _ in self._data.items():
-            result, valid = transition.get_type_name_by_ID(ID=ID)
-            if not valid:
-                self.set_error_bar(message=result)
-            else:
-                self._type_id_name.append([ID, result[0]])
-
     def _export(self) -> None:
         transition.create_default_dir("member_list")
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
@@ -164,7 +164,7 @@ class MemberTableWindow(BaseWindow):
             self.set_error_bar(message=message)
             return
 
-        if self.open_permission():
+        if self.is_open_permission():
             transition.open_latest_export()
 
         self.set_info_bar(message="Export abgeschlossen")
@@ -177,6 +177,6 @@ class MemberTableWindow(BaseWindow):
             event.accept()
             return
 
-        w.window_manger.members_window = m_w.MembersWindow()
+        w.window_manger.members_window = members_window.MembersWindow()
         w.window_manger.member_table_window = None
         event.accept()

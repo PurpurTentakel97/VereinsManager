@@ -4,9 +4,8 @@
 
 from PyQt5.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QLabel, QWidget
 
-from ui.frames.current_anniversary_frame import CurrentAnniversaryFrame
 from ui.windows.base_window import BaseWindow
-from ui.windows import main_window
+from ui.frames.current_anniversary_frame import CurrentAnniversaryFrame
 import debug
 
 debug_str: str = "AlertWindow"
@@ -19,13 +18,10 @@ class AlertWindow(BaseWindow):
         super().__init__()
 
         self._set_window_information()
-        self._set_ui()
-        self._set_layout()
+        self._create_ui()
+        self._create_layout()
 
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Aktuelles")
-
-    def _set_ui(self) -> None:
+    def _create_ui(self) -> None:
         # Headline
         headline_font = self.font()
         headline_font.setPointSize(30)
@@ -42,7 +38,7 @@ class AlertWindow(BaseWindow):
         self.anniversary_lb.setText("Jubiläen:")
         self.anniversaries: CurrentAnniversaryFrame = CurrentAnniversaryFrame(self)
 
-    def _set_layout(self) -> None:
+    def _create_layout(self) -> None:
         # Headline
         headline_hbox: QHBoxLayout = QHBoxLayout()
         headline_hbox.addStretch()
@@ -77,7 +73,10 @@ class AlertWindow(BaseWindow):
         self.show()
         self.resize(750, 400)
 
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Aktuelles")
 
-def create_alert_window() -> None:
+
+def create() -> None:
     global alert_window
     alert_window = AlertWindow()

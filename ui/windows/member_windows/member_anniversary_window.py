@@ -2,16 +2,16 @@
 # 21.01.2022
 # VereinsManager / Member Anniversary Window
 
-from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QFileDialog
 import os
+from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QFileDialog
 
-from ui.windows.base_window import BaseWindow
-from ui.windows import window_manager as w
-from ui.windows.member_windows import members_window as m_w
-from config import config_sheet as c
-from ui.frames.current_anniversary_frame import CurrentAnniversaryFrame
-from ui.frames.other_anniversary_frame import OtherAnniversaryFrame
 import transition
+from config import config_sheet as c
+from ui.windows import window_manager as w
+from ui.windows.base_window import BaseWindow
+from ui.windows.member_windows import members_window
+from ui.frames.other_anniversary_frame import OtherAnniversaryFrame
+from ui.frames.current_anniversary_frame import CurrentAnniversaryFrame
 import debug
 
 debug_str: str = "Member Anniversary Window"
@@ -25,13 +25,10 @@ class MemberAnniversaryWindow(BaseWindow):
         self._other_frame: OtherAnniversaryFrame = OtherAnniversaryFrame(self)
 
         self._set_window_information()
-        self._set_ui()
-        self._set_layout()
+        self._create_ui()
+        self._create_layout()
 
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Jubiläen")
-
-    def _set_ui(self) -> None:
+    def _create_ui(self) -> None:
         self._export_btn: QPushButton = QPushButton()
         self._export_btn.setText("Exportieren")
         self._export_btn.clicked.connect(self._export)
@@ -40,7 +37,7 @@ class MemberAnniversaryWindow(BaseWindow):
         self._tabs.addTab(self._current_frame, "Aktuell")
         self._tabs.addTab(self._other_frame, "Andere")
 
-    def _set_layout(self) -> None:
+    def _create_layout(self) -> None:
 
         # global widget
         global_h_box: QHBoxLayout = QHBoxLayout()
@@ -57,6 +54,9 @@ class MemberAnniversaryWindow(BaseWindow):
         self.set_widget(widget)
         self.show()
         self.resize(700, 500)
+
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Jubiläen")
 
     def _export(self) -> None:
         transition.create_default_dir("member_anniversary")
@@ -81,7 +81,7 @@ class MemberAnniversaryWindow(BaseWindow):
             self.set_error_bar(message=message)
             return
 
-        if self.open_permission():
+        if self.is_open_permission():
             transition.open_latest_export()
 
         self.set_info_bar(message="Export abgeschlossen")
@@ -94,6 +94,6 @@ class MemberAnniversaryWindow(BaseWindow):
             event.accept()
             return
 
-        w.window_manger.members_window = m_w.MembersWindow()
+        w.window_manger.members_window = members_window.MembersWindow()
         w.window_manger.member_anniversary_window = None
         event.accept()

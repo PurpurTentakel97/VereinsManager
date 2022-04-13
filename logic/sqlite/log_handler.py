@@ -1,13 +1,14 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Log Handler
+
 import sys
 import time
 
+from helper import validation
 from logic.sqlite.database import Database
-from config import exception_sheet as e, config_sheet as c
-from helper import validation as v
 from logic.sqlite import select_handler as s_h
+from config import exception_sheet as e, config_sheet as c
 
 import debug
 
@@ -27,9 +28,9 @@ class LogHandler(Database):
         if old_data == new_data:
             return
 
-        v.must_positive_int(target_id, max_length=None)
-        v.must_int(int_=log_date)
-        v.must_str(target_column)
+        validation.must_positive_int(target_id, max_length=None)
+        validation.must_int(int_=log_date)
+        validation.must_str(target_column)
 
         self._log(target_table="type", target_id=target_id, target_column=target_column, old_data=old_data,
                   new_data=new_data, log_date=log_date)
@@ -38,7 +39,7 @@ class LogHandler(Database):
     def log_member(self, target_id: int, old_data: dict | None, new_data: dict, log_date: int | None) -> None:
         log_date = self.transform_log_none_date(none_date=log_date)
 
-        v.must_int(int_=log_date)
+        validation.must_int(int_=log_date)
 
         if old_data:
             self._log_member(target_id=target_id, old_data=old_data, new_data=new_data, log_date=log_date)
@@ -100,9 +101,9 @@ class LogHandler(Database):
     def log_member_activity(self, target_id: int, old_activity: bool, new_activity: bool, log_date: int) -> None:
         log_date = self.transform_log_none_date(none_date=log_date)
 
-        v.must_int(int_=log_date)
-        v.must_bool(old_activity)
-        v.must_bool(new_activity)
+        validation.must_int(int_=log_date)
+        validation.must_bool(old_activity)
+        validation.must_bool(new_activity)
 
         if old_activity != new_activity:
             self._log(target_id=target_id, target_table="member", target_column="active",
@@ -114,7 +115,7 @@ class LogHandler(Database):
                          log_date: int | None, type_: str) -> None:
         log_date = self.transform_log_none_date(none_date=log_date)
 
-        v.must_int(int_=log_date)
+        validation.must_int(int_=log_date)
 
         match type_:
             case "phone":
@@ -184,6 +185,6 @@ class LogHandler(Database):
         return data
 
 
-def create_log_handler() -> None:
+def create() -> None:
     global log_handler
     log_handler = LogHandler()

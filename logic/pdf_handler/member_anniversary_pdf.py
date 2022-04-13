@@ -5,16 +5,16 @@
 import sys
 from datetime import datetime
 
+from reportlab.lib.units import cm
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 
-from logic.data_handler import member_anniversary_data_handler
-from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 from logic.main_handler import organisation_handler
 from config import config_sheet as c, exception_sheet as e
+from logic.data_handler import member_anniversary_data_handler
+from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 import debug
 
 debug_str: str = "MemberAnniversaryPDF"
@@ -25,7 +25,7 @@ class MemberAnniversaryPDF(BasePDF):
     def __init__(self):
         super().__init__()
 
-    def create_pdf(self, path: str, year: int, active: bool = True) -> [None | str, bool]:
+    def create_pdf(self, path: str, year: int, active: bool = True) -> tuple[None | str, bool]:
         self._create_basics(path)
         doc: SimpleDocTemplate = self._get_doc()
         anniversary_data = self._get_data(year=year, active=active)
@@ -156,6 +156,6 @@ class MemberAnniversaryPDF(BasePDF):
         ]
 
 
-def create_member_anniversary_pdf() -> None:
+def create() -> None:
     global member_anniversary_pdf
     member_anniversary_pdf = MemberAnniversaryPDF()

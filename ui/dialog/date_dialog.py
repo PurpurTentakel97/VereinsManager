@@ -2,12 +2,12 @@
 # 24.03.2022
 # VereinsManager / Date Input Dialog
 
-from ui.windows.base_window import BaseWindow
 
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QDateEdit, QVBoxLayout, QLabel
-from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QDate
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QDateEdit, QVBoxLayout, QLabel
 
+from ui.windows.base_window import BaseWindow
 from config import config_sheet as c
 
 

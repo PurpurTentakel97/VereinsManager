@@ -1,10 +1,11 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Select Handler
+
 import sys
 
-from logic.sqlite.database import Database
 from config import exception_sheet as e
+from logic.sqlite.database import Database
 import debug
 
 debug_str: str = "SelectHandler"
@@ -243,6 +244,6 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info=f"Logdaten // Type: Mitglied")
 
 
-def create_select_handler() -> None:
+def create() -> None:
     global select_handler
     select_handler = SelectHandler()

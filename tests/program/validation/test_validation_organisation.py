@@ -42,7 +42,7 @@ from config import exception_sheet as e
     },
 ])
 def test_add_update_organisation_pass(data):
-    v.add_update_organisation(data=data)
+    v.check_add_update_organisation(data=data)
 
 
 @pytest.mark.parametrize(("data", "expected"), [
@@ -81,4 +81,4 @@ def test_add_update_organisation_pass(data):
 ])
 def test_add_update_organisation_exception(data, expected):
     with pytest.raises(expected):
-        v.add_update_organisation(data=data)
+        v.check_add_update_organisation(data=data)

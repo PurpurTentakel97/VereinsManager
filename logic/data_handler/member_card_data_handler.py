@@ -4,9 +4,9 @@
 
 import datetime
 
+from config import config_sheet as c
 from logic.main_handler import member_handler
 from logic.sqlite import select_handler as s_h
-from config import config_sheet as c
 
 debug_str: str = "Member Card Data Handler"
 none_str: str = "---"
@@ -19,6 +19,18 @@ def get_card_member_data(active: bool, ID: int) -> dict:
     data['mail'] = _transform_nexus_data(data['mail'])
     data['position'] = _transform_position_data(data['position'])
     return data
+
+
+def _get_years_from_timestamp(timestamp: int) -> str:
+    if timestamp == c.config.date_format['None_date']:
+        return none_str
+
+    now = datetime.datetime.now()
+    date = _transform_timestamp_to_date(timestamp)
+    years = now.year - date.year
+    if now.month < date.month or (now.month == date.month and now.day < date.day):
+        years -= 1
+    return str(years)
 
 
 def _transform_member_data(data: dict) -> dict:  # No need to transform membership_type
@@ -139,18 +151,6 @@ def _transform_date(timestamp: int) -> str:
     if timestamp == c.config.date_format['None_date']:
         return none_str
     return datetime.datetime.strftime(_transform_timestamp_to_date(timestamp), c.config.date_format['short'])
-
-
-def _get_years_from_timestamp(timestamp: int) -> str:
-    if timestamp == c.config.date_format['None_date']:
-        return none_str
-
-    now = datetime.datetime.now()
-    date = _transform_timestamp_to_date(timestamp)
-    years = now.year - date.year
-    if now.month < date.month or (now.month == date.month and now.day < date.day):
-        years -= 1
-    return str(years)
 
 
 def _transform_timestamp_to_date(timestamp: int) -> datetime.datetime:

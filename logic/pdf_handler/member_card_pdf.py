@@ -5,16 +5,16 @@
 import sys
 from datetime import datetime
 
+from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 
-from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
-from logic.data_handler import member_card_data_handler
+from helper import validation
 from logic.main_handler import organisation_handler
-from helper import validation as v
+from logic.data_handler import member_card_data_handler
 from config import exception_sheet as e, config_sheet as c
+from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 
 import debug
 
@@ -31,8 +31,8 @@ class MemberCardPDF(BasePDF):
     def __init__(self):
         super().__init__()
 
-    def create_pdf(self, path: str, active: bool, ID: int) -> [None | str, bool]:
-        result = self._validate_data(path=path, active=active, ID=ID)
+    def create_pdf(self, path: str, active: bool, ID: int) -> tuple[None | str, bool]:
+        result = self._check_data(path=path, active=active, ID=ID)
         if isinstance(result, str):
             return result, False
 
@@ -61,14 +61,6 @@ class MemberCardPDF(BasePDF):
         self.create_dir()
         self.style_sheet = getSampleStyleSheet()
 
-    def _set_column_width(self, data: dict) -> None:
-        global column_width
-        column_width = 2.9 * cm
-        length = self._get_longest_value(data=data)
-        new_column_width: float = 0.22 * length * cm
-        if new_column_width > column_width:
-            column_width = new_column_width
-
     @staticmethod
     def _get_longest_value(data: dict) -> int:
         longest: int = 0
@@ -88,14 +80,6 @@ class MemberCardPDF(BasePDF):
         return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
                                  leftMargin=1.5 * cm,
                                  topMargin=1.5 * cm, bottomMargin=1.5 * cm)
-
-    def _mo_data_return(self, doc: SimpleDocTemplate, elements: list) -> None:
-        elements.append(Paragraph(
-            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-            self.style_sheet["BodyText"]))
-        elements.append(Paragraph(
-            f"Keine Daten vorhanden", self.style_sheet["BodyText"]))
-        doc.build(elements)
 
     def _get_card_data(self, data: dict) -> list:
         elements: list = list()
@@ -200,7 +184,7 @@ class MemberCardPDF(BasePDF):
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
 
-        organisation_data,_ = organisation_handler.get_organisation_data()
+        organisation_data, _ = organisation_handler.get_organisation_data()
         if organisation_data['name']:
             elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
         elements.append(Paragraph(data['member_data']['name'], self.style_sheet["Title"]))
@@ -208,17 +192,33 @@ class MemberCardPDF(BasePDF):
 
         return elements
 
+    def _set_column_width(self, data: dict) -> None:
+        global column_width
+        column_width = 2.9 * cm
+        length = self._get_longest_value(data=data)
+        new_column_width: float = 0.22 * length * cm
+        if new_column_width > column_width:
+            column_width = new_column_width
+
     @staticmethod
-    def _validate_data(path: str, active: bool, ID: int) -> None | str:
+    def _check_data(path: str, active: bool, ID: int) -> None | str:
         try:
-            v.must_positive_int(int_=ID)
-            v.must_bool(bool_=active)
-            v.must_str(str_=path, length=None)
+            validation.must_positive_int(int_=ID)
+            validation.must_bool(bool_=active)
+            validation.must_str(str_=path, length=None)
         except e.InputError as error:
             debug.info(item=debug_str, keyword="_validate_data", error_=sys.exc_info())
             return error.message
 
+    def _mo_data_return(self, doc: SimpleDocTemplate, elements: list) -> None:
+        elements.append(Paragraph(
+            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+            self.style_sheet["BodyText"]))
+        elements.append(Paragraph(
+            f"Keine Daten vorhanden", self.style_sheet["BodyText"]))
+        doc.build(elements)
 
-def create_member_card_pdf() -> None:
+
+def create() -> None:
     global member_card_pdf
     member_card_pdf = MemberCardPDF()

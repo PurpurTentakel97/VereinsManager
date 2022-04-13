@@ -7,10 +7,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout, QWidget
 
-from ui.windows.base_window import BaseWindow
-from ui.windows import window_manager as w_m, recover_window as r_w
-from ui.frames.list_frame import ListFrame, ListItem
 import transition
+from ui.windows.base_window import BaseWindow
+from ui.frames.list_frame import ListFrame, ListItem
+from ui.windows import window_manager as w, recover_window
 import debug
 
 debug_str: str = "UserWindow"
@@ -27,17 +27,14 @@ class UserWindow(BaseWindow):
         super().__init__()
 
         self._set_window_information()
-        self._set_ui()
-        self._set_layout()
+        self._create_ui()
+        self._create_layout()
 
         self._is_edit: bool = bool()
         self._set_first_user()
         self._set_edit_mode(active=False)
 
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Benutzer bearbeiten")
-
-    def _set_ui(self) -> None:
+    def _create_ui(self) -> None:
         # Left
         self._user_lb: QLabel = QLabel()
         self._user_lb.setText("Benutzer:")
@@ -55,7 +52,7 @@ class UserWindow(BaseWindow):
 
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
-        self._break_btn.clicked.connect(self.load_user_data)
+        self._break_btn.clicked.connect(self.get_user_data)
         self._save_btn: QPushButton = QPushButton()
         self._save_btn.setText("Speichern")
         self._save_btn.clicked.connect(self._save)
@@ -130,7 +127,7 @@ class UserWindow(BaseWindow):
         self._password_2_le.textChanged.connect(lambda: self._set_el_input(type_=LineEditType.OTHER))
         self._password_2_le.returnPressed.connect(self._save)
 
-    def _set_layout(self) -> None:
+    def _create_layout(self) -> None:
         # Top
         top_hbox: QHBoxLayout = QHBoxLayout()
         top_hbox.addWidget(self._user_lb)
@@ -200,6 +197,36 @@ class UserWindow(BaseWindow):
         self.set_widget(widget)
         self.show()
 
+    def _add_user(self) -> None:
+        new_user: ListItem = ListItem(ID=None)
+        self._user_list.list.addItem(new_user)
+        self._user_list.list.setCurrentItem(new_user)
+        self._set_user_None()
+        self._set_edit_mode(True)
+
+    def get_user_data(self) -> None:
+        current_user: ListItem = self._user_list.list.currentItem()
+        data, valid = transition.get_user_data_by_id(ID=current_user.ID, active=True)
+        if not valid:
+            self.set_error_bar(message=data)
+            return
+
+        self._first_name_le.setText("" if data['firstname'] is None else data['firstname'])
+        self._last_name_le.setText("" if data['lastname'] is None else data['lastname'])
+        self._street_le.setText("" if data["street"] is None else data["street"])
+        self._number_le.setText("" if data["number"] is None else data["number"])
+        self._zip_code_le.setText("" if data["zip_code"] is None else data["zip_code"])
+        self._city_le.setText("" if data["city"] is None else data["city"])
+        self._county_le.setText("" if data["country"] is None else data["country"])
+        self._phone_number_le.setText("" if data["phone"] is None else data["phone"])
+        self._mail_le.setText("" if data["mail"] is None else data["mail"])
+        self._position_le.setText("" if data["position"] is None else data["position"])
+
+        self._set_edit_mode(active=False)
+
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Benutzer bearbeiten")
+
     def _set_edit_mode(self, active: bool) -> None:
         self._is_edit = active
         invert_edit = not self._is_edit
@@ -245,36 +272,13 @@ class UserWindow(BaseWindow):
     def _set_first_user(self) -> None:
         try:
             self._user_list.list.setCurrentRow(0)
-            self.load_user_data()
+            self.get_user_data()
         except AttributeError:
             self._add_user()
 
-    def _add_user(self) -> None:
-        new_user: ListItem = ListItem(ID=None)
-        self._user_list.list.addItem(new_user)
-        self._user_list.list.setCurrentItem(new_user)
-        self._set_user_None()
-        self._set_edit_mode(True)
-
-    def load_user_data(self) -> None:
+    def _set_current_user_id(self, user_id: int) -> None:
         current_user: ListItem = self._user_list.list.currentItem()
-        data, valid = transition.get_user_data_by_id(ID=current_user.ID, active=True)
-        if not valid:
-            self.set_error_bar(message=data)
-            return
-
-        self._first_name_le.setText("" if data['firstname'] is None else data['firstname'])
-        self._last_name_le.setText("" if data['lastname'] is None else data['lastname'])
-        self._street_le.setText("" if data["street"] is None else data["street"])
-        self._number_le.setText("" if data["number"] is None else data["number"])
-        self._zip_code_le.setText("" if data["zip_code"] is None else data["zip_code"])
-        self._city_le.setText("" if data["city"] is None else data["city"])
-        self._county_le.setText("" if data["country"] is None else data["country"])
-        self._phone_number_le.setText("" if data["phone"] is None else data["phone"])
-        self._mail_le.setText("" if data["mail"] is None else data["mail"])
-        self._position_le.setText("" if data["position"] is None else data["position"])
-
-        self._set_edit_mode(active=False)
+        current_user.ID = user_id
 
     def _save(self) -> None | bool:
         current_user: ListItem = self._user_list.list.currentItem()
@@ -308,16 +312,6 @@ class UserWindow(BaseWindow):
             self._set_current_user_id(user_id=result)
         return True
 
-    def _recover(self) -> None:
-        result, valid = w_m.window_manger.is_valid_recover_window(type_="user", ignore_user_window=True)
-        if not valid:
-            self.set_error_bar(message=result)
-            return
-
-        w_m.window_manger.recover_window = r_w.RecoverWindow(type_="user")
-        w_m.window_manger.user_window = None
-        self.close()
-
     def _delete(self) -> None:
         current_user: ListItem = self._user_list.list.currentItem()
         result, valid = transition.update_user_activity(ID=current_user.ID, active=False)
@@ -325,19 +319,25 @@ class UserWindow(BaseWindow):
             self.set_error_bar(message=result)
             return
 
-        self._user_list.load_list_data()
         self.set_info_bar(message="gelöscht")
+        self._user_list.load_list_data()
 
-    def _set_current_user_id(self, user_id: int) -> None:
-        current_user: ListItem = self._user_list.list.currentItem()
-        current_user.ID = user_id
+    def _recover(self) -> None:
+        result, valid = w.window_manger.is_valid_recover_window(type_="user", ignore_user_window=True)
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        w.window_manger.recover_window = recover_window.RecoverWindow(type_="user")
+        w.window_manger.user_window = None
+        self.close()
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        if self._is_edit and self.save_permission(window_name="Benutzerfenster"):
+        if self._is_edit and self.is_save_permission(window_name="Benutzerfenster"):
             if self._save():
-                w_m.window_manger.user_window = None
+                w.window_manger.user_window = None
                 event.accept()
         else:
-            w_m.window_manger.user_window = None
+            w.window_manger.user_window = None
             event.accept()

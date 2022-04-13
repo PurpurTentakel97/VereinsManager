@@ -2,8 +2,8 @@
 # 21.01.2022
 # VereinsManager / Config
 
-import json
 import os
+import json
 
 from helper import validation as v
 from logic.sqlite import select_handler as s_h
@@ -29,22 +29,13 @@ class Config:
         self.last_export_path: str = str()
         self._load_config()
 
-    def _load_config(self) -> None:
-        with open(os.path.join(os.getcwd(), "config", "config.json"), encoding="utf-8") as json_file:
-            json_data = json.load(json_file)
+    def get_icon_path(self) -> str:
+        return os.path.join(os.getcwd(), self.dirs['save'], self.dirs['organisation'], self.files['icon'])
 
-        self.config: dict = json_data
+    def get_default_icon_path(self) -> str:
+        return os.path.join(os.getcwd(), self.dirs['config'], self.files['default_icon'])
 
-        self.date_format: dict = json_data["date_format"]
-        self.raw_type_id: dict = json_data["raw_type_id"]
-        self.constant: dict = json_data["constant"]
-        self.dirs: dict = json_data["dirs"]
-        self.files: dict = json_data["files"]
-        self.user: dict = json_data["user"]
-        self.spacer: dict = json_data['spacer']
-        self.letters: dict = json_data['letters']
-
-    def set_user(self, ID: int) -> [str | None, bool]:
+    def set_user(self, ID: int) -> None:
         v.must_positive_int(int_=ID)
         data = s_h.select_handler.get_names_of_user(active=True)
 
@@ -72,11 +63,20 @@ class Config:
                     return
             self.user['easter_egg'] = str()
 
-    def get_icon_path(self) -> str:
-        return os.path.join(os.getcwd(), self.dirs['save'], self.dirs['organisation'], self.files['icon'])
+    def _load_config(self) -> None:
+        with open(os.path.join(os.getcwd(), "config", "config.json"), encoding="utf-8") as json_file:
+            json_data = json.load(json_file)
 
-    def get_default_icon_path(self) -> str:
-        return os.path.join(os.getcwd(), self.dirs['config'], self.files['default_icon'])
+        self.config: dict = json_data
+
+        self.date_format: dict = json_data["date_format"]
+        self.raw_type_id: dict = json_data["raw_type_id"]
+        self.constant: dict = json_data["constant"]
+        self.dirs: dict = json_data["dirs"]
+        self.files: dict = json_data["files"]
+        self.user: dict = json_data["user"]
+        self.spacer: dict = json_data['spacer']
+        self.letters: dict = json_data['letters']
 
 
 def create_config():

@@ -5,10 +5,10 @@
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListWidget, QListWidgetItem, QLineEdit
 
-from ui.windows.base_window import BaseWindow
-from ui.windows import window_manager as w
-from config import config_sheet as c
 import transition
+from config import config_sheet as c
+from ui.windows import window_manager as w
+from ui.windows.base_window import BaseWindow
 import debug
 
 debug_str: str = "TypesWindow"
@@ -56,21 +56,18 @@ class TypesWindow(BaseWindow):
 
         self._set_raw_types()
 
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Typen - Vereinsmanager")
-
     def _create_ui(self) -> None:
         self._types_box: QComboBox = QComboBox()
         self._types_box.currentTextChanged.connect(self._set_current_type)
 
         self._edit_type_le: QLineEdit = QLineEdit()
         self._edit_type_le.textChanged.connect(self._text_chanced)
-        self._edit_type_le.returnPressed.connect(self._add_edit_type)
+        self._edit_type_le.returnPressed.connect(self._add_update_type)
         self._edit_type_le.setPlaceholderText("Typ:")
 
         self._edit_extra_le: QLineEdit = QLineEdit()
         self._edit_extra_le.textChanged.connect(self._text_chanced)
-        self._edit_extra_le.returnPressed.connect(self._add_edit_type)
+        self._edit_extra_le.returnPressed.connect(self._add_update_type)
         self._edit_extra_le.setPlaceholderText("Zusatzinfo")
 
         self._types_list: QListWidget = QListWidget()
@@ -78,13 +75,13 @@ class TypesWindow(BaseWindow):
 
         self._add_edit_btn: QPushButton = QPushButton()
         self._add_edit_btn.setText("Typ hinzufügen")
-        self._add_edit_btn.clicked.connect(self._add_edit_type)
+        self._add_edit_btn.clicked.connect(self._add_update_type)
         self._activity_btn: QPushButton = QPushButton()
         self._activity_btn.setText("Typ deaktivieren")
         self._activity_btn.clicked.connect(self._set_type_activity)
         self._remove_btn: QPushButton = QPushButton()
         self._remove_btn.setText("Typ löschen")
-        self._remove_btn.clicked.connect(self._remove_type)
+        self._remove_btn.clicked.connect(self._delete_type)
 
         self._set_btn()
 
@@ -112,6 +109,31 @@ class TypesWindow(BaseWindow):
         widget.setLayout(grid)
         self.set_widget(widget=widget)
         self.show()
+
+    def _add_type(self) -> None:
+        if not self._is_input():
+            self.set_info_bar(message="Nicht alle Eingaben vorhanden")
+            return
+
+        result, valid = transition.add_type(type_name=self._edit_type_le.text().strip().title(),
+                                            raw_type_id=self._get_raw_id_from_name(
+                                                type_name=self._types_box.currentText()),
+                                            extra_value=None if self._edit_extra_le.text().strip() \
+                                                                == "" else self._edit_extra_le.text().strip())
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        self.set_info_bar(message="saved")
+        self._set_current_type()
+
+    def _get_raw_id_from_name(self, type_name: str) -> int:
+        for ID, type_ in self._raw_types:
+            if type_ == type_name:
+                return ID
+
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Typen - Vereinsmanager")
 
     def _set_current_type(self) -> None:
         self._edit_type_le.clear()
@@ -165,21 +187,52 @@ class TypesWindow(BaseWindow):
         for ID, text in self._raw_types:
             self._types_box.addItem(text)
 
-    def _row_chanced(self) -> None:
+    def _set_type_activity(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        if current_item is not None:
-            self._edit_type_le.setText(current_item.name)
-            self._edit_extra_le.setText(current_item.extra_entry)
-            self._set_btn()
+        result, valid = transition.update_type_activity(id_=current_item.ID,
+                                                        active=False if current_item.active else True)
+        if not valid:
+            self.set_error_bar(message=result)
+            return
 
-    def _text_chanced(self) -> None:
-        self._set_btn()
+        self.set_info_bar(message="saved")
+        self._set_current_type()
 
     def _set_btn(self) -> None:
         self._is_edit_mode()
         self._add_edit_btn.setEnabled(self._is_input())
         self._activity_btn.setEnabled(self._is_activity())
         self._remove_btn.setEnabled(self._is_remove())
+
+    def _add_update_type(self) -> None:
+        self._update_type() if self._is_edit_mode() else self._add_type()
+
+    def _update_type(self) -> None:
+        if not self._is_input():
+            self.set_info_bar(message="Nicht alle Eingaben vorhanden")
+            return
+        current_item: TypesListEntry = self._types_list.currentItem()
+        text: str = self._edit_type_le.text().strip().title()
+        result, valid = transition.update_type(id_=current_item.ID, name=text,
+                                               extra_value=None if self._edit_extra_le.text().strip() \
+                                                                   == "" else self._edit_extra_le.text().strip())
+        if not valid:
+            self.set_error_bar(message=result)
+            self._set_current_type()
+            return
+
+        self.set_info_bar(message="saved")
+        self._set_current_type()
+
+    def _delete_type(self) -> None:
+        current_item: TypesListEntry = self._types_list.currentItem()
+        result, valid = transition.delete_type(id_=current_item.ID)
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        self.set_info_bar(message="saved")
+        self._set_current_type()
 
     def _is_edit_mode(self) -> bool:
         if self._types_list.currentItem() is not None:
@@ -208,68 +261,15 @@ class TypesWindow(BaseWindow):
     def _is_remove(self) -> bool:
         return self._types_list.currentItem() is not None
 
-    def _add_edit_type(self) -> None:
-        self._edit_type() if self._is_edit_mode() else self._add_type()
-
-    def _get_raw_id_from_name(self, type_name: str) -> int:
-        for ID, type_ in self._raw_types:
-            if type_ == type_name:
-                return ID
-
-    def _add_type(self) -> None:
-        if not self._is_input():
-            self.set_info_bar(message="Nicht alle Eingaben vorhanden")
-            return
-
-        result, valid = transition.add_type(type_name=self._edit_type_le.text().strip().title(),
-                                            raw_type_id=self._get_raw_id_from_name(
-                                                type_name=self._types_box.currentText()),
-                                            extra_value=None if self._edit_extra_le.text().strip() \
-                                                                == "" else self._edit_extra_le.text().strip())
-        if not valid:
-            self.set_error_bar(message=result)
-            return
-
-        self.set_info_bar(message="saved")
-        self._set_current_type()
-
-    def _edit_type(self) -> None:
-        if not self._is_input():
-            self.set_info_bar(message="Nicht alle Eingaben vorhanden")
-            return
+    def _row_chanced(self) -> None:
         current_item: TypesListEntry = self._types_list.currentItem()
-        text: str = self._edit_type_le.text().strip().title()
-        result, valid = transition.update_type(id_=current_item.ID, name=text,
-                                               extra_value=None if self._edit_extra_le.text().strip() \
-                                                                   == "" else self._edit_extra_le.text().strip())
-        if not valid:
-            self.set_error_bar(message=result)
-            self._set_current_type()
-            return
+        if current_item is not None:
+            self._edit_type_le.setText(current_item.name)
+            self._edit_extra_le.setText(current_item.extra_entry)
+            self._set_btn()
 
-        self.set_info_bar(message="saved")
-        self._set_current_type()
-
-    def _set_type_activity(self) -> None:
-        current_item: TypesListEntry = self._types_list.currentItem()
-        result, valid = transition.update_type_activity(id_=current_item.ID,
-                                                        active=False if current_item.active else True)
-        if not valid:
-            self.set_error_bar(message=result)
-            return
-
-        self.set_info_bar(message="saved")
-        self._set_current_type()
-
-    def _remove_type(self) -> None:
-        current_item: TypesListEntry = self._types_list.currentItem()
-        result, valid = transition.delete_type(id_=current_item.ID)
-        if not valid:
-            self.set_error_bar(message=result)
-            return
-
-        self.set_info_bar(message="saved")
-        self._set_current_type()
+    def _text_chanced(self) -> None:
+        self._set_btn()
 
     def closeEvent(self, event) -> None:
         event.ignore()

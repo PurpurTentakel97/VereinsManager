@@ -5,36 +5,12 @@
 import math
 import sys
 
-from logic.main_handler import user_handler, window_handler
-from config import config_sheet as c, exception_sheet as e
 from helper import hasher, validation as v
+from config import config_sheet as c, exception_sheet as e
+from logic.main_handler import user_handler, window_handler
 import debug
 
 debug_str: str = "Password Validation"
-
-
-def must_password(password_1: str, password_2: str) -> None:
-    if not isinstance(password_1, str) or len(password_1.strip()) == 0:
-        raise e.NoPassword()
-
-    if password_1 != password_2:
-        raise e.DifferentPassword()
-
-    if len(password_1) < 8:
-        raise e.PasswordToShort()
-
-    if " " in password_1:
-        raise e.PasswordHasSpace()
-
-    count = get_count_for_password(password_1)
-    if count <= 0:
-        raise e.VeryLowPassword()
-    bits = math.log(count ** len(password_1), 2)
-
-    if bits < 20:
-        raise e.VeryLowPassword()
-    elif bits < 40:
-        raise e.LowPassword()
 
 
 def get_count_for_password(password_1):
@@ -89,3 +65,25 @@ def check_user_password(ID: int, password: str, main_window: bool = True) -> [st
         return False, False
 
 
+def must_password(password_1: str, password_2: str) -> None:
+    if not isinstance(password_1, str) or len(password_1.strip()) == 0:
+        raise e.NoPassword()
+
+    if password_1 != password_2:
+        raise e.DifferentPassword()
+
+    if len(password_1) < 8:
+        raise e.PasswordToShort()
+
+    if " " in password_1:
+        raise e.PasswordHasSpace()
+
+    count = get_count_for_password(password_1)
+    if count <= 0:
+        raise e.VeryLowPassword()
+    bits = math.log(count ** len(password_1), 2)
+
+    if bits < 20:
+        raise e.VeryLowPassword()
+    elif bits < 40:
+        raise e.LowPassword()

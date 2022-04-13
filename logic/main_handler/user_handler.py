@@ -3,7 +3,7 @@
 # VereinsManager / User Handler
 import sys
 
-from helper import hasher, validation as v
+from helper import hasher, validation
 from config import exception_sheet as e, config_sheet as c
 from logic.sqlite import select_handler as s_h, delete_handler as d_h, update_handler as u_h, add_handler as a_h
 import debug
@@ -14,7 +14,7 @@ debug_str: str = "User Handler"
 # get
 def get_names_of_user(active: bool = True) -> [str | tuple, bool]:
     try:
-        v.must_bool(bool_=active)
+        validation.must_bool(bool_=active)
         return s_h.select_handler.get_names_of_user(active=active), True
 
     except e.InputError as error:
@@ -46,8 +46,8 @@ def get_names_of_user_without_default(active: bool = True) -> [str | tuple, bool
 
 def get_data_of_user_by_ID(ID: int, active: bool) -> [str | dict, bool]:
     try:
-        v.must_positive_int(int_=ID)
-        v.must_bool(bool_=active)
+        validation.must_positive_int(int_=ID)
+        validation.must_bool(bool_=active)
 
         data = s_h.select_handler.get_data_of_user_by_ID(ID=ID, active=active)
         data_: dict = {
@@ -76,7 +76,7 @@ def get_data_of_user_by_ID(ID: int, active: bool) -> [str | dict, bool]:
 
 def get_hashed_password_by_ID(ID: int) -> bytes:
     try:
-        v.must_positive_int(int_=ID)
+        validation.must_positive_int(int_=ID)
 
         hashed = s_h.select_handler.get_hashed_password_by_ID(ID=ID)
 
@@ -88,7 +88,7 @@ def get_hashed_password_by_ID(ID: int) -> bytes:
 # add / update
 def add_update_user(data: dict) -> [str | int | None, bool]:
     try:
-        v.save_update_user(data=data)
+        validation.check_save_update_user(data=data)
 
         if not data["ID"]:
             data["password_hashed"] = hasher.hash_password(data["password_1"])
@@ -114,10 +114,10 @@ def add_update_user(data: dict) -> [str | int | None, bool]:
 # update
 def update_user_activity(ID: int, active: bool) -> [str, bool]:
     try:
-        v.must_positive_int(int_=ID)
-        v.must_bool(bool_=active)
-        v.must_current_user(ID=ID, same=False)
-        v.must_default_user(ID=ID, same=False)
+        validation.must_positive_int(int_=ID)
+        validation.must_bool(bool_=active)
+        validation.must_current_user(ID=ID, same=False)
+        validation.must_default_user(ID=ID, same=False)
         u_h.update_handler.update_user_activity(ID=ID, active=active)
         return None, True
 

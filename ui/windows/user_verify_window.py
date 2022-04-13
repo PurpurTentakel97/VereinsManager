@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QListWidget, QPushButton
 
 import transition
 from ui.windows.base_window import BaseWindow
-from ui.windows import alert_window
 import debug
 
 debug_str: str = "UserVerifyWindow"
@@ -40,14 +39,11 @@ class UserVerifyWindow(BaseWindow):
         super().__init__()
 
         self._set_window_information()
-        self._set_ui()
-        self._set_layout()
-        self._load_user_names()
+        self._create_ui()
+        self._create_layout()
+        self._get_user_names()
 
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Benutzer Identifikation")
-
-    def _set_ui(self) -> None:
+    def _create_ui(self) -> None:
         self._password_lb: QLabel = QLabel()
         self._password_lb.setText("Passwort:")
 
@@ -65,7 +61,7 @@ class UserVerifyWindow(BaseWindow):
         self._user_list: QListWidget = QListWidget()
         self._user_list.itemClicked.connect(self._set_focus)
 
-    def _set_layout(self) -> None:
+    def _create_layout(self) -> None:
         password_lb_hbox: QHBoxLayout = QHBoxLayout()
         password_lb_hbox.addWidget(self._password_lb)
         password_lb_hbox.addStretch()
@@ -89,10 +85,7 @@ class UserVerifyWindow(BaseWindow):
         self.set_widget(widget)
         self.show()
 
-    def _set_focus(self) -> None:
-        self._password_le.setFocus()
-
-    def _load_user_names(self) -> None:
+    def _get_user_names(self) -> None:
         data, valid = transition.get_all_user_name()
         if not valid:
             self.set_error_bar(message=data)
@@ -103,6 +96,12 @@ class UserVerifyWindow(BaseWindow):
             new_item: UserListItem = UserListItem(ID=ID, first_name=firstname, last_name=lastname)
             self._user_list.addItem(new_item)
         self._user_list.setCurrentRow(0)
+
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Benutzer Identifikation")
+
+    def _set_focus(self) -> None:
+        self._password_le.setFocus()
 
     def _verify(self) -> None:
         current_user: UserListItem = self._user_list.currentItem()
@@ -119,6 +118,6 @@ class UserVerifyWindow(BaseWindow):
         self.close()
 
 
-def create_user_verify_window() -> None:
+def create() -> None:
     global user_verify_window
     user_verify_window = UserVerifyWindow()

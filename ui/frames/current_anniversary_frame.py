@@ -17,12 +17,12 @@ class CurrentAnniversaryFrame(QFrame):
         self._current_b_day_data: list = list()
         self._current_entry_day_data: list = list()
 
-        self._set_ui()
-        self._set_layout()
+        self._create_ui()
+        self._create_layout()
 
         self._get_current_data()
 
-    def _set_ui(self) -> None:
+    def _create_ui(self) -> None:
         # Label
         self._current_b_day_lb: QLabel = QLabel()
         self._current_b_day_lb.setText("Geburtstage:")
@@ -35,7 +35,7 @@ class CurrentAnniversaryFrame(QFrame):
         self._current_entry_day_table: QTableWidget = QTableWidget()
         self._current_entry_day_table.setEditTriggers(QTableWidget.NoEditTriggers)
 
-    def _set_layout(self) -> None:
+    def _create_layout(self) -> None:
         # Label
         current_b_day_lb_hbox: QHBoxLayout = QHBoxLayout()
         current_b_day_lb_hbox.addWidget(self._current_b_day_lb)
@@ -58,6 +58,15 @@ class CurrentAnniversaryFrame(QFrame):
         current_h_box.addLayout(b_day_vbox)
         current_h_box.addLayout(entry_day_vbox)
         self.setLayout(current_h_box)
+
+    def _get_current_data(self) -> None:
+        data, valid = transition.get_anniversary_member_data(type_="current")
+        if not valid:
+            self.window_.set_error_bar(message=data)
+        else:
+            self._current_b_day_data = data["b_day"]
+            self._current_entry_day_data = data["entry_day"]
+            self._set_table()
 
     def _set_table(self) -> None:
         dummies: list = [
@@ -88,15 +97,6 @@ class CurrentAnniversaryFrame(QFrame):
                     item: QTableWidgetItem = QTableWidgetItem(str(entry['year']))
                     table.setItem(index, 2, item)
         self.window_.set_info_bar("Daten geladen")
-
-    def _get_current_data(self) -> None:
-        data, valid = transition.get_anniversary_member_data(type_="current")
-        if not valid:
-            self.window_.set_error_bar(message=data)
-        else:
-            self._current_b_day_data = data["b_day"]
-            self._current_entry_day_data = data["entry_day"]
-            self._set_table()
 
     @staticmethod
     def _transform_member_name(firstname: str, lastname: str) -> str:

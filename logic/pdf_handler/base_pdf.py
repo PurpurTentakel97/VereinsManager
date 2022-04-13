@@ -1,17 +1,17 @@
 # Purpur Tentakel
 # 06.03.2022
 # VereinsManager / Base PDF
-import sys
 
-from PIL import Image as image, UnidentifiedImageError
-from reportlab.lib.enums import TA_RIGHT
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.pdfgen import canvas
-from reportlab.platypus import Paragraph, Image
-from reportlab.lib.units import cm
-
-from datetime import datetime
 import os
+import sys
+from datetime import datetime
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
+from reportlab.lib.enums import TA_RIGHT
+from reportlab.platypus import Paragraph, Image
+from PIL import Image as image, UnidentifiedImageError
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 from config import config_sheet as c, exception_sheet as e
 import debug
@@ -29,31 +29,18 @@ class BasePDF:
         self.custom_styles: dict = dict()
         self._add_styles()
 
-    def transform_path(self, path: str) -> None:
-        now = datetime.now()
-        if path:
-            self.dir_name, file_name = os.path.split(path)
-            parts = file_name.split(".")
-            file_type = parts[-1]
-            name: str = str()
-            for _ in parts[:-1]:
-                name += _
-            self.file_name = f"{name}_{now.strftime(c.config.date_format['path'])}.{file_type}"
-        else:
-            self.dir_name = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['member']}/\
-                {c.config.dirs['export']}"
-            self.file_name = f"Mitglieder_{now.strftime(c.config.date_format['path'])}.pdf"
-
     def create_dir(self) -> None:
         if not os.path.exists(self.dir_name):
             os.mkdir(self.dir_name)
 
-    def paragraph(self, value) -> Paragraph:
-        if isinstance(value, list):
-            return Paragraph(str(value[0]) + ": " + str("---" if not value[1] else value[1]),
-                             self.styles["BodyText"])
-        else:
-            return Paragraph(str("---" if not value else value), self.styles["BodyText"])
+    def _add_styles(self) -> None:
+        self.custom_styles['CustomTitle'] = (ParagraphStyle(name='CustomTitle', parent=self.styles['Title'],
+                                                            fontSize=35))
+        self.custom_styles['CustomHeading'] = (ParagraphStyle(name='CustomHeading', parent=self.styles['Heading1'],
+                                                              fontSize=20))
+        self.custom_styles['CustomBodyTextRight'] = (ParagraphStyle(name='CustomBodyTextRight',
+                                                                    parent=self.styles['BodyText'], fontSize=10,
+                                                                    alignment=TA_RIGHT))
 
     def get_icon(self, type_: str) -> Image:
         try:
@@ -69,14 +56,24 @@ class BasePDF:
         width, height = image_.size
         return self._transform_width_height(type_=type_, width=width, height=height)
 
-    def _add_styles(self) -> None:
-        self.custom_styles['CustomTitle'] = (ParagraphStyle(name='CustomTitle', parent=self.styles['Title'],
-                                                            fontSize=35))
-        self.custom_styles['CustomHeading'] = (ParagraphStyle(name='CustomHeading', parent=self.styles['Heading1'],
-                                                              fontSize=20))
-        self.custom_styles['CustomBodyTextRight'] = (ParagraphStyle(name='CustomBodyTextRight',
-                                                                    parent=self.styles['BodyText'], fontSize=10,
-                                                                    alignment=TA_RIGHT))
+    @staticmethod
+    def set_last_export_path(path: str) -> None:
+        c.config.last_export_path = path
+
+    def transform_path(self, path: str) -> None:
+        now = datetime.now()
+        if path:
+            self.dir_name, file_name = os.path.split(path)
+            parts = file_name.split(".")
+            file_type = parts[-1]
+            name: str = str()
+            for _ in parts[:-1]:
+                name += _
+            self.file_name = f"{name}_{now.strftime(c.config.date_format['path'])}.{file_type}"
+        else:
+            self.dir_name = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['member']}/\
+                {c.config.dirs['export']}"
+            self.file_name = f"Mitglieder_{now.strftime(c.config.date_format['path'])}.pdf"
 
     @staticmethod
     def _transform_width_height(type_: str, width: int, height: int) -> tuple:
@@ -114,21 +111,24 @@ class BasePDF:
                 debug.info(item=debug_str, keyword="is_icon", error_=sys.exc_info())
         return False
 
-    @staticmethod
-    def set_last_export_path(path: str) -> None:
-        c.config.last_export_path = path
+    def paragraph(self, value) -> Paragraph:
+        if isinstance(value, list):
+            return Paragraph(str(value[0]) + ": " + str("---" if not value[1] else value[1]),
+                             self.styles["BodyText"])
+        else:
+            return Paragraph(str("---" if not value else value), self.styles["BodyText"])
 
 
 class NumberedCanvas(canvas.Canvas):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         canvas.Canvas.__init__(self, *args, **kwargs)
         self._saved_page_states = []
 
-    def showPage(self):
+    def showPage(self) -> None:
         self._saved_page_states.append(dict(self.__dict__))
         self._startPage()
 
-    def save(self):
+    def save(self) -> None:
         """add page info to each page (page x of y)"""
         num_pages = len(self._saved_page_states)
         for state in self._saved_page_states:
@@ -137,7 +137,7 @@ class NumberedCanvas(canvas.Canvas):
             canvas.Canvas.showPage(self)
         canvas.Canvas.save(self)
 
-    def draw_page_number(self, page_count):
+    def draw_page_number(self, page_count) -> None:
         self.setFont("Helvetica", 10)
         self.drawRightString(20 * cm, 2 * cm,
                              "Seite %d von %d" % (self._pageNumber, page_count))

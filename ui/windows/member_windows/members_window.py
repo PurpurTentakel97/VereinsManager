@@ -2,22 +2,21 @@
 # 21.01.2022
 # VereinsManager / Members Window
 
+import os
+import webbrowser
+from enum import Enum
 from PyQt5.QtCore import Qt, QDateTime
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit, QFileDialog
-from enum import Enum
-import webbrowser
-import os
 
 import transition
+from config import config_sheet as c
 from ui.dialog.date_dialog import DateInput
 from ui.windows.base_window import BaseWindow
-from ui.windows import recover_window as r_w, window_manager as w
-from ui.windows.member_windows import member_log_window as m_l_w, member_anniversary_window as m_a_w, \
-    member_table_window as m_t_w
 from ui.frames.list_frame import ListItem, ListFrame
-from config import config_sheet as c
+from ui.windows import recover_window as r_w, window_manager as w
+from ui.windows.member_windows import member_log_window, member_anniversary_window, member_table_window
 
 debug_str: str = "MembersWindow"
 
@@ -75,34 +74,31 @@ class MembersWindow(BaseWindow):
         self.positions: list[list[int, int, PositionListItem, None]] = list()
 
         self._set_window_information()
-        self._set_ui()
-        self._set_layout()
-        self._set_types()
+        self._create_ui()
+        self._create_layout()
+        self._create_types()
         self._set_first_member()
 
         self._set_edit_mode(active=False)
         self._set_maps()
         self._first_name_le.setFocus()
 
-    def _set_window_information(self) -> None:
-        self.setWindowTitle("Mitglieder - Vereinsmanager")
-
-    def _set_ui(self) -> None:
+    def _create_ui(self) -> None:
         # Left
         self._members_lb: QLabel = QLabel()
         self._members_lb.setText("Mitglieder:")
         self._table_btn: QPushButton = QPushButton()
         self._table_btn.setText("Tabelle")
-        self._table_btn.clicked.connect(self._table)
+        self._table_btn.clicked.connect(self._open_table_window)
         self._anniversary_btn: QPushButton = QPushButton()
         self._anniversary_btn.setText("Jubiläen")
-        self._anniversary_btn.clicked.connect(self._anniversary)
+        self._anniversary_btn.clicked.connect(self._open_anniversary_window)
         self._log_btn: QPushButton = QPushButton()
         self._log_btn.setText("Log")
-        self._log_btn.clicked.connect(self._display_log)
+        self._log_btn.clicked.connect(self._open_log_window)
         self._member_card_btn: QPushButton = QPushButton()
         self._member_card_btn.setText("Mitliederkarte")
-        self._member_card_btn.clicked.connect(self._member_card)
+        self._member_card_btn.clicked.connect(self._export_member_card)
 
         self._members_list: ListFrame = ListFrame(window=self, type_="member", active=True)
 
@@ -114,7 +110,7 @@ class MembersWindow(BaseWindow):
         self._remove_member_btn.clicked.connect(self._set_inactive)
         self._recover_member_btn: QPushButton = QPushButton()
         self._recover_member_btn.setText("Mitglied wieder herstellen")
-        self._recover_member_btn.clicked.connect(self._recover)
+        self._recover_member_btn.clicked.connect(self._open_recover)
 
         self._break_btn: QPushButton = QPushButton()
         self._break_btn.setText("Zurücksetzten")
@@ -214,7 +210,7 @@ class MembersWindow(BaseWindow):
         self._comment_text.textChanged.connect(lambda: self._set_el_input(LineEditType.OTHER))
         self._comment_text.setTabChangesFocus(True)
 
-    def _set_layout(self) -> None:
+    def _create_layout(self) -> None:
         # Top
         label_members_hbox: QHBoxLayout = QHBoxLayout()
         label_members_hbox.addWidget(self._members_lb)
@@ -309,7 +305,7 @@ class MembersWindow(BaseWindow):
         self.set_widget(widget)
         self.show()
 
-    def _set_types(self) -> None:
+    def _create_types(self) -> None:
         data, valid = transition.get_active_member_type()
         if not valid:
             self.set_error_bar(message=data)
@@ -346,6 +342,25 @@ class MembersWindow(BaseWindow):
             self._mail_address_le.setEnabled(False)
         if len(self.raw_membership_ids) == 0:
             self._special_member_cb.setEnabled(False)
+
+    def _add_member(self) -> None:
+        new_member: ListItem = ListItem(ID=None)
+        self._load_nexus_types(type_="phone")
+        self._load_nexus_types(type_="mail")
+        self._load_nexus_types(type_="position")
+        self._members_list.list.addItem(new_member)
+        self._members_list.list.setCurrentItem(new_member)
+        self._set_new_member()
+        self.member_counter += 1
+        self._set_edit_mode(active=True)
+
+    def _get_log_date(self) -> int:
+        dlg = DateInput(self)
+        if dlg.exec():
+            return QDateTime.toSecsSinceEpoch(QDateTime(dlg.get_date()))
+
+    def _set_window_information(self) -> None:
+        self.setWindowTitle("Mitglieder - Vereinsmanager")
 
     def _set_edit_mode(self, active: bool) -> None:
         self._is_edit = active
@@ -441,17 +456,6 @@ class MembersWindow(BaseWindow):
         except AttributeError:
             self._add_member()
 
-    def _add_member(self) -> None:
-        new_member: ListItem = ListItem(ID=None)
-        self._load_nexus_types(type_="phone")
-        self._load_nexus_types(type_="mail")
-        self._load_nexus_types(type_="position")
-        self._members_list.list.addItem(new_member)
-        self._members_list.list.setCurrentItem(new_member)
-        self._set_new_member()
-        self.member_counter += 1
-        self._set_edit_mode(active=True)
-
     def _set_new_member(self) -> None:
         self._set_phone_type()
         self._set_mail_type()
@@ -473,6 +477,47 @@ class MembersWindow(BaseWindow):
             position.set_active(active=False)
 
         self._set_edit_mode(active=False)
+
+    def _set_save_ids(self, ids: dict) -> None:
+        current_member: ListItem = self._members_list.list.currentItem()
+
+        new_member_id: int = ids["member_id"]
+        new_phone_ids: list = ids["phone"]
+        new_mail_ids: list = ids["mail"]
+        new_position_ids: list = ids["position"]
+
+        current_member.ID = new_member_id
+
+        for id_ in new_phone_ids:
+            if id_ is None:
+                continue
+            self.phone_numbers[new_phone_ids.index(id_)][0] = id_
+
+        for id_ in new_mail_ids:
+            if id_ is None:
+                continue
+            self.mail_addresses[new_mail_ids.index(id_)][0] = id_
+
+        for id_ in new_position_ids:
+            if id_ is None:
+                continue
+            self.positions[new_position_ids.index(id_)][0] = id_
+            self.positions[new_position_ids.index(id_)][2].ID = id_
+
+        self._set_edit_mode(active=False)
+
+    def _set_inactive(self) -> None:
+        current_member: ListItem = self._members_list.list.currentItem()
+        result, valid = transition.update_member_activity(ID=current_member.ID, active=False)
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+        self._members_list.load_list_data()
+        self._set_first_member()
+        self.set_info_bar(message="saved")
+
+    def _set_maps(self) -> None:
+        self._maps_btn.setEnabled(self._is_maps())
 
     def _load_nexus_types(self, type_: str) -> None:
         dummy: list = list()
@@ -572,6 +617,51 @@ class MembersWindow(BaseWindow):
                 position.ID = ID
                 position.set_active(active=new_active)
 
+    def _open_maps(self) -> None:
+        if self._is_maps():
+            if self._maps_le.text().strip():
+                webbrowser.open(self._maps_le.text().strip())
+            else:
+                webbrowser.open(
+                    f"""http://www.google.de/maps/place/{self._street_le.text().strip()}+{self._number_le.text().strip()}
+                    ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}+
+                    {self._country_box.currentText()}""".replace(" ", ""))
+
+    def _open_recover(self) -> None:
+        result, valid = w.window_manger.is_valid_recover_window(type_="member", ignore_member_window=True)
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        w.window_manger.recover_window = r_w.RecoverWindow(type_="member")
+        w.window_manger.members_window = None
+        self.close()
+
+    def _open_table_window(self) -> None:
+        result = w.window_manger.is_valid_member_table_window(ignore_member_window=True)
+        if isinstance(result, str):
+            self.set_info_bar(message=result)
+        elif result:
+            self.close()
+            w.window_manger.member_table_window = member_table_window.MemberTableWindow()
+
+    def _open_anniversary_window(self) -> None:
+        result = w.window_manger.is_valid_member_anniversary_window(ignore_member_window=True)
+        if isinstance(result, str):
+            self.set_info_bar(message=result)
+        elif result:
+            self.close()
+            w.window_manger.member_anniversary_window = member_anniversary_window.MemberAnniversaryWindow()
+
+    def _open_log_window(self) -> None:
+        result, valid = w.window_manger.is_valid_member_log_window(ignore_member_window=True)
+        if not valid:
+            self.set_info_bar(message=result)
+        else:
+            self.close()
+            w.window_manger.member_log_window = member_log_window.MemberLogWindow(
+                row_index=self._members_list.list.currentRow())
+
     def _save(self) -> None | bool:
 
         phone_list: list = list()
@@ -640,74 +730,7 @@ class MembersWindow(BaseWindow):
         self._set_save_ids(ids=result)
         return True
 
-    def _get_log_date(self) -> int:
-        dlg = DateInput(self)
-        if dlg.exec():
-            return QDateTime.toSecsSinceEpoch(QDateTime(dlg.get_date()))
-
-    def _set_save_ids(self, ids: dict) -> None:
-        current_member: ListItem = self._members_list.list.currentItem()
-
-        new_member_id: int = ids["member_id"]
-        new_phone_ids: list = ids["phone"]
-        new_mail_ids: list = ids["mail"]
-        new_position_ids: list = ids["position"]
-
-        current_member.ID = new_member_id
-
-        for id_ in new_phone_ids:
-            if id_ is None:
-                continue
-            self.phone_numbers[new_phone_ids.index(id_)][0] = id_
-
-        for id_ in new_mail_ids:
-            if id_ is None:
-                continue
-            self.mail_addresses[new_mail_ids.index(id_)][0] = id_
-
-        for id_ in new_position_ids:
-            if id_ is None:
-                continue
-            self.positions[new_position_ids.index(id_)][0] = id_
-            self.positions[new_position_ids.index(id_)][2].ID = id_
-
-        self._set_edit_mode(active=False)
-
-    def _recover(self) -> None:
-        result, valid = w.window_manger.is_valid_recover_window(type_="member", ignore_member_window=True)
-        if not valid:
-            self.set_error_bar(message=result)
-            return
-
-        w.window_manger.recover_window = r_w.RecoverWindow(type_="member")
-        w.window_manger.members_window = None
-        self.close()
-
-    def _table(self) -> None:
-        result = w.window_manger.is_valid_member_table_window(ignore_member_window=True)
-        if isinstance(result, str):
-            self.set_info_bar(message=result)
-        elif result:
-            self.close()
-            w.window_manger.member_table_window = m_t_w.MemberTableWindow()
-
-    def _anniversary(self) -> None:
-        result = w.window_manger.is_valid_member_anniversary_window(ignore_member_window=True)
-        if isinstance(result, str):
-            self.set_info_bar(message=result)
-        elif result:
-            self.close()
-            w.window_manger.member_anniversary_window = m_a_w.MemberAnniversaryWindow()
-
-    def _display_log(self) -> None:
-        result, valid = w.window_manger.is_valid_member_log_window(ignore_member_window=True)
-        if not valid:
-            self.set_info_bar(message=result)
-        else:
-            self.close()
-            w.window_manger.member_log_window = m_l_w.MemberLogWindow(row_index=self._members_list.list.currentRow())
-
-    def _member_card(self) -> None:
+    def _export_member_card(self) -> None:
         current_member: ListItem = self._members_list.list.currentItem()
         transition.create_default_dir("member_card")
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
@@ -727,20 +750,10 @@ class MembersWindow(BaseWindow):
             self.set_error_bar(message=message)
             return
 
-        if self.open_permission():
+        if self.is_open_permission():
             transition.open_latest_export()
 
         self.set_info_bar("export abgeschlossen")
-
-    def _set_inactive(self) -> None:
-        current_member: ListItem = self._members_list.list.currentItem()
-        result, valid = transition.update_member_activity(ID=current_member.ID, active=False)
-        if not valid:
-            self.set_error_bar(message=result)
-            return
-        self._members_list.load_list_data()
-        self._set_first_member()
-        self.set_info_bar(message="saved")
 
     def _is_maps(self) -> bool:
         if self._maps_le.text().strip():
@@ -752,22 +765,9 @@ class MembersWindow(BaseWindow):
         else:
             return False
 
-    def _set_maps(self) -> None:
-        self._maps_btn.setEnabled(self._is_maps())
-
-    def _open_maps(self) -> None:
-        if self._is_maps():
-            if self._maps_le.text().strip():
-                webbrowser.open(self._maps_le.text().strip())
-            else:
-                webbrowser.open(
-                    f"""http://www.google.de/maps/place/{self._street_le.text().strip()}+{self._number_le.text().strip()}
-                    ,+{self._zip_code_le.text().strip()}+{self._city_le.text().strip()}+
-                    {self._country_box.currentText()}""".replace(" ", ""))
-
     def closeEvent(self, event) -> None:
         event.ignore()
-        if self._is_edit and self.save_permission(window_name="Mitgliederfenster"):
+        if self._is_edit and self.is_save_permission(window_name="Mitgliederfenster"):
             if self._save():
                 w.window_manger.members_window = None
                 event.accept()

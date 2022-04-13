@@ -1,17 +1,18 @@
 # Purpur Tentakel
 # 18.02.2022L
 # VereinsManager / Validation
+
+from helper import password_validation
+from logic.main_handler import type_handler
 from logic.sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
-from helper import password_validation as p_v
-from logic.main_handler import type_handler as t_h
 import debug
 
 debug_str: str = "Validation"
 
 
 # type
-def add_type(type_name: str, raw_type_id: int, extra_value: str) -> None:
+def check_add_type(type_name: str, raw_type_id: int, extra_value: str) -> None:
     must_str(str_=type_name)
     must_positive_int(int_=raw_type_id, max_length=None)
     if extra_value is not None:
@@ -24,7 +25,7 @@ def add_type(type_name: str, raw_type_id: int, extra_value: str) -> None:
             raise e.AlreadyExists()
 
 
-def update_type(ID: int, new_name: str, extra_value: str) -> None:
+def check_update_type(ID: int, new_name: str, extra_value: str) -> None:
     must_str(new_name)
     must_positive_int(ID, max_length=None)
     if extra_value is not None:
@@ -43,7 +44,7 @@ def update_type(ID: int, new_name: str, extra_value: str) -> None:
         raise e.NotFound(info=new_name)
 
 
-def update_type_activity(ID: int, active: bool) -> None:
+def check_update_type_activity(ID: int, active: bool) -> None:
     must_positive_int(int_=ID, max_length=None)
     must_bool(bool_=active)
 
@@ -61,7 +62,7 @@ def update_type_activity(ID: int, active: bool) -> None:
 
 
 # member
-def update_member(data: dict) -> None:
+def check_update_member(data: dict) -> None:
     must_dict(dict_=data)
     _must_multiple_str_in_dict([
         "first_name",
@@ -93,7 +94,7 @@ def update_member(data: dict) -> None:
 
 
 # member nexus
-def update_member_nexus(data: list, type_: str) -> None:
+def check_update_member_nexus(data: list, type_: str) -> None:
     try:
         must_list(data)
         must_length(4, data)
@@ -109,34 +110,34 @@ def update_member_nexus(data: list, type_: str) -> None:
 
         match type_:
             case "phone":
-                _update_member_nexus_phone(phone=value)
+                _check_update_member_nexus_phone(phone=value)
             case "mail":
-                _update_member_nexus_mail(mail=value)
+                _check_update_member_nexus_mail(mail=value)
             case "position":
-                _update_member_nexus_position(active=value)
+                _check_update_member_nexus_position(active=value)
             case _:
                 raise e.CaseException(f"validation // type: {type_}")
     except e.GeneralError as error:
         debug.debug(item=debug_str, keyword="update_member_nexus", message=f"Error = {error.message}")
 
 
-def _update_member_nexus_phone(phone: str) -> None:
+def _check_update_member_nexus_phone(phone: str) -> None:
     if phone is not None:
         must_str(phone)
 
 
-def _update_member_nexus_mail(mail: str) -> None:
+def _check_update_member_nexus_mail(mail: str) -> None:
     if mail is not None:
         must_str(mail)
 
 
-def _update_member_nexus_position(active: bool) -> None:
+def _check_update_member_nexus_position(active: bool) -> None:
     if active is not None:
         must_bool(active)
 
 
 # User
-def save_update_user(data: dict) -> None:
+def check_save_update_user(data: dict) -> None:
     must_dict(dict_=data)
     if data["ID"] is not None:
         must_positive_int(int_=data["ID"], max_length=None)
@@ -144,7 +145,7 @@ def save_update_user(data: dict) -> None:
         must_current_user(ID=data["ID"], same=True)
 
     if data["ID"] is None or data["password_1"] is not None:
-        p_v.must_password(password_1=data["password_1"], password_2=data["password_2"])
+        password_validation.must_password(password_1=data["password_1"], password_2=data["password_2"])
 
     _must_multiple_str_in_dict([
         "firstname",
@@ -171,7 +172,7 @@ def must_default_user(ID: int, same: bool) -> None:
 
 
 # organisation
-def add_update_organisation(data: dict) -> None:
+def check_add_update_organisation(data: dict) -> None:
     must_dict(dict_=data)
     must_length(data=data, len_=14)
 
@@ -199,7 +200,7 @@ def add_update_organisation(data: dict) -> None:
             must_positive_int(int_=data[key], max_length=None)
 
 
-# global
+# helper
 def must_str(str_: str, length: int | None = 50) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:
         raise e.NoStr(info=str_)
@@ -211,7 +212,8 @@ def must_str(str_: str, length: int | None = 50) -> None:
 def must_membership_type(str_: str) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:
         raise e.NoMembership(info=str_)
-    reference_data, _ = t_h.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['membership'], active=True)
+    reference_data, _ = type_handler.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['membership'],
+                                                               active=True)
     not_found: bool = True
     for entry in reference_data:
         if str_ in entry:
@@ -220,12 +222,6 @@ def must_membership_type(str_: str) -> None:
 
     if not_found:
         raise e.NotFound(info=str_)
-
-
-def _must_multiple_str_in_dict(keys: list, data: dict) -> None:
-    for key in keys:
-        if data[key] is not None:
-            must_str(str_=data[key])
 
 
 def must_bool(bool_: bool) -> None:
@@ -267,3 +263,9 @@ def must_length(len_: int, data) -> None:
     must_positive_int(len_)
     if not len(data) == len_:
         raise e.WrongLength(str(len_) + " // " + str(data))
+
+
+def _must_multiple_str_in_dict(keys: list, data: dict) -> None:
+    for key in keys:
+        if data[key] is not None:
+            must_str(str_=data[key])

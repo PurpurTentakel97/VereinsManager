@@ -1,11 +1,12 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Add Handler
+
 import sys
 
+from config import exception_sheet as e
 from logic.sqlite.database import Database
 from logic.sqlite import select_handler as s_h, log_handler as l_h
-from config import exception_sheet as e
 import debug
 
 debug_str: str = "DeleteHandler"
@@ -82,6 +83,6 @@ class DeleteHandler(Database):
             debug.error(item=debug_str, keyword="delete_user", error_=sys.exc_info())
 
 
-def create_delete_handler() -> None:
+def create() -> None:
     global delete_handler
     delete_handler = DeleteHandler()

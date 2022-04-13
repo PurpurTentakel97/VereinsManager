@@ -1,9 +1,6 @@
 # Purpur Tentakel
 # 18.02.2022
-# VereinsManager / Error Code
-
-import debug
-
+# VereinsManager / Exception
 
 # 0
 class BaseException_(Exception):

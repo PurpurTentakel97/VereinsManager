@@ -4,11 +4,11 @@
 
 import sys
 
+from helper import validation
+from logic.main_handler import member_nexus_handler
 from config import config_sheet as c, exception_sheet as e
 from logic.sqlite import select_handler as s_h, delete_handler as d_h, log_handler as l_h, update_handler as u_h, \
     statistics_handler as st_h, add_handler as a_h
-from logic.main_handler import member_nexus_handler as m_n_h
-from helper import validation as v
 import debug
 
 debug_str: str = "Member Handler"
@@ -28,15 +28,15 @@ def _add_member(data: dict, log_date: int | None) -> int:  # No Validation
 
 
 # get
-def get_member_data(ID: int, active: bool = True) -> [str | dict, bool]:
+def get_member_data(ID: int, active: bool = True) -> tuple[str | dict, bool]:
     try:
-        v.must_positive_int(int_=ID)
-        v.must_bool(bool_=active)
+        validation.must_positive_int(int_=ID)
+        validation.must_bool(bool_=active)
 
         member_data = _get_member_data_by_id(ID=ID, active=active)
-        phone_data = m_n_h.get_phone_number_by_member_id(member_id=ID)
-        mail_data = m_n_h.get_mail_by_member_id(member_id=ID)
-        position_data = m_n_h.get_position_by_member_id(member_id=ID)
+        phone_data = member_nexus_handler.get_phone_number_by_member_id(member_id=ID)
+        mail_data = member_nexus_handler.get_mail_by_member_id(member_id=ID)
+        position_data = member_nexus_handler.get_position_by_member_id(member_id=ID)
 
         return {
                    "member_data": member_data,
@@ -56,7 +56,7 @@ def get_member_data(ID: int, active: bool = True) -> [str | dict, bool]:
 
 def get_names_of_member(active: bool = True) -> tuple:
     try:
-        v.must_bool(bool_=active)
+        validation.must_bool(bool_=active)
         return s_h.select_handler.get_names_of_member(active=active), True
 
     except e.InputError as error:
@@ -69,8 +69,8 @@ def get_names_of_member(active: bool = True) -> tuple:
 
 
 def _get_member_data_by_id(ID: int, active: bool = True) -> dict:
-    v.must_positive_int(int_=ID, max_length=None)
-    v.must_bool(bool_=active)
+    validation.must_positive_int(int_=ID, max_length=None)
+    validation.must_bool(bool_=active)
 
     data = s_h.select_handler.get_member_data_by_id(ID=ID, active=active)
     data = _transform_to_dict(data)
@@ -82,7 +82,7 @@ def _get_member_data_by_id(ID: int, active: bool = True) -> dict:
 
 
 def _get_member_activity_and_membership_by_id(ID: int) -> list:
-    v.must_positive_int(int_=ID, max_length=None)
+    validation.must_positive_int(int_=ID, max_length=None)
 
     data = s_h.select_handler.get_member_activity_and_membership_by_id(ID=ID)
     data = list(data)
@@ -92,25 +92,25 @@ def _get_member_activity_and_membership_by_id(ID: int) -> list:
     return data
 
 
-# update
-def add_update_member_data(ID: int, data: dict, log_date: int | None) -> [str | dict, bool]:
+# add / update
+def add_update_member_data(ID: int, data: dict, log_date: int | None) -> tuple[str | dict, bool]:
     try:
-        v.must_dict(dict_=data)
-        v.must_default_user(c.config.user['ID'], False)
+        validation.must_dict(dict_=data)
+        validation.must_default_user(c.config.user['ID'], False)
         if ID is not None:
-            v.must_positive_int(int_=ID, max_length=None)
+            validation.must_positive_int(int_=ID, max_length=None)
 
         member_data: dict = data["member_data"]
         member_nexus_data: dict = data["member_nexus_data"]
 
-        v.update_member(data=member_data)
+        validation.check_update_member(data=member_data)
 
         if ID is None:
             ID = _add_member(data=member_data, log_date=log_date)
         else:
             _update_member(ID=ID, data=member_data, log_date=log_date)
 
-        ids = m_n_h.update_add_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
+        ids = member_nexus_handler.update_add_member_nexus(data=member_nexus_data, member_id=ID, log_date=log_date)
 
         ids["member_id"] = ID
         return ids, True
@@ -121,6 +121,31 @@ def add_update_member_data(ID: int, data: dict, log_date: int | None) -> [str | 
 
     except e.OperationalError as error:
         debug.error(item=debug_str, keyword="update_member_data", error_=sys.exc_info())
+        return error.message, False
+
+
+# update
+def update_member_activity(ID: int, active: bool, log_date: int | None) -> tuple[str | None, bool]:
+    try:
+        validation.must_positive_int(int_=ID, max_length=None)
+        validation.must_bool(bool_=active)
+        validation.must_default_user(c.config.user['ID'], False)
+
+        reference_data = _get_member_activity_and_membership_by_id(ID=ID)
+        u_h.update_handler.update_member_activity(ID=ID, active=active)
+        member_nexus_handler.update_member_nexus_activity(member_id=ID, active=active)
+        l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data[0], new_activity=active,
+                                            log_date=log_date)
+        st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
+                                           new_type_id=reference_data[1], old_type_id=None)
+        return None, True
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="update_member_activity", error_=sys.exc_info())
+        return error.message, False
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="update_member_activity", error_=sys.exc_info())
         return error.message, False
 
 
@@ -138,36 +163,12 @@ def _update_member(ID: int | None, data: dict, log_date: int | None) -> None:  #
     l_h.log_handler.log_member(target_id=ID, old_data=reference_data, new_data=data, log_date=log_date)
 
 
-def update_member_activity(ID: int, active: bool, log_date: int | None) -> [str | None, bool]:
-    try:
-        v.must_positive_int(int_=ID, max_length=None)
-        v.must_bool(bool_=active)
-        v.must_default_user(c.config.user['ID'], False)
-
-        reference_data = _get_member_activity_and_membership_by_id(ID=ID)
-        u_h.update_handler.update_member_activity(ID=ID, active=active)
-        m_n_h.update_member_nexus_activity(member_id=ID, active=active)
-        l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data[0], new_activity=active,
-                                            log_date=log_date)
-        st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
-                                           new_type_id=reference_data[1], old_type_id=None)
-        return None, True
-
-    except e.InputError as error:
-        debug.info(item=debug_str, keyword="update_member_activity", error_=sys.exc_info())
-        return error.message, False
-
-    except e.OperationalError as error:
-        debug.error(item=debug_str, keyword="update_member_activity", error_=sys.exc_info())
-        return error.message, False
-
-
 # delete
 def delete_inactive_member() -> None:
     try:
         reference_data, _ = get_names_of_member(active=False)
         for ID, *_ in reference_data:
-            m_n_h.delete_inactive_member_nexus(member_id=ID)
+            member_nexus_handler.delete_inactive_member_nexus(member_id=ID)
             l_h.log_handler.delete_log(target_id=ID, target_table="member")
             d_h.delete_handler.delete_member(ID=ID)
 

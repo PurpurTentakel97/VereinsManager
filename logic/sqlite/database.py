@@ -2,9 +2,9 @@
 # 13.02.2022
 # VereinsManager / Database
 
-import sqlite3
 import os
 import sys
+import sqlite3
 
 from config import config_sheet as c
 import debug

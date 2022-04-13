@@ -1,12 +1,14 @@
 # Purpur Tentakel
 # 21.01.2022
 # VereinsManager / Base Window
+
+import sys
 import os.path
 
-from PIL import Image, UnidentifiedImageError
-import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtGui import QIcon
+from PIL import Image, UnidentifiedImageError
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+
 from config import config_sheet as c
 
 app: QApplication | None = None
@@ -16,16 +18,16 @@ class BaseWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self._set_base_window_information()
-        self._set_menu()
+        self._create_menu()
+
+    def _create_menu(self) -> None:
+        pass
 
     def _set_base_window_information(self) -> None:
         if self.is_ui_icon():
             self.setWindowIcon(QIcon(c.config.get_icon_path()))
         else:
             self.setWindowIcon(QIcon(c.config.get_default_icon_path()))
-
-    def _set_menu(self) -> None:
-        pass
 
     def set_widget(self, widget) -> None:
         self.setCentralWidget(widget)
@@ -48,7 +50,7 @@ class BaseWindow(QMainWindow):
             return False
 
     @staticmethod
-    def save_permission(window_name: str) -> bool:
+    def is_save_permission(window_name: str) -> bool:
         msg = QMessageBox()
         if BaseWindow.is_ui_icon(BaseWindow()):
             msg.setWindowIcon(QIcon(c.config.get_icon_path()))
@@ -62,7 +64,7 @@ class BaseWindow(QMainWindow):
         return msg.exec_() == QMessageBox.Yes
 
     @staticmethod
-    def open_permission() -> bool:
+    def is_open_permission() -> bool:
         msg = QMessageBox()
         if BaseWindow.is_ui_icon(BaseWindow()):
             msg.setWindowIcon(QIcon(c.config.get_icon_path()))

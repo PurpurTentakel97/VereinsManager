@@ -1,11 +1,12 @@
 # Purpur Tentakel
 # 13.02.2022
 # VereinsManager / Add Handler
+
 import sys
 
 from logic.sqlite.database import Database
-from logic.sqlite import select_handler as s_h, log_handler as l_h
 from config import exception_sheet as e, config_sheet as c
+from logic.sqlite import select_handler as s_h, log_handler as l_h
 import debug
 
 debug_str: str = "AddHandler"
@@ -147,7 +148,7 @@ class AddHandler(Database):
             raise e.AddFailed("Mitglied")
 
     # organisation
-    def add_organisation(self, data: dict, log_date:int) -> int:
+    def add_organisation(self, data: dict) -> int:
         sql_command: str = """INSERT INTO organisation (name,street,zip_code,city,country,bank_name,bank_owner,
                             bank_IBAN,bank_BIC,contact_person,web_link,extra_text) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"""
 
@@ -174,6 +175,6 @@ class AddHandler(Database):
             raise e.AddFailed(info="Organisationsdaten")
 
 
-def create_add_handler() -> None:
+def create() -> None:
     global add_handler
     add_handler = AddHandler()

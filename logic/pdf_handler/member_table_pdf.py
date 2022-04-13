@@ -6,16 +6,16 @@ import sys
 from datetime import datetime
 
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
 
-from logic.data_handler import member_table_data_handler
-from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
-from logic.main_handler import organisation_handler
 from logic.sqlite import select_handler as s_h
+from logic.main_handler import organisation_handler
+from logic.data_handler import member_table_data_handler
 from config import config_sheet as c, exception_sheet as e
+from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 import debug
 
 debug_str: str = "MemberTablePDF"
@@ -27,7 +27,7 @@ class MemberTablePDF(BasePDF):
     def __init__(self) -> None:
         super().__init__()
 
-    def create_pdf(self, path: str, active: bool) -> [str | None, bool]:
+    def create_pdf(self, path: str, active: bool) -> tuple[str | None, bool]:
         self._create_basics(path)
         doc: SimpleDocTemplate = self._get_doc()
         data = self._get_data(active)
@@ -39,7 +39,7 @@ class MemberTablePDF(BasePDF):
 
         if not data:
             self._no_data_return(doc, elements)
-            return
+            return None, True
 
         elements.extend(self._get_table_data(data, type_ids))
         elements = elements[:-1]
@@ -60,14 +60,6 @@ class MemberTablePDF(BasePDF):
         return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
                                  leftMargin=1.5 * cm,
                                  topMargin=1.5 * cm, bottomMargin=1.5 * cm)
-
-    def _no_data_return(self, doc: SimpleDocTemplate, elements: list):
-        elements.append(Paragraph(
-            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
-            self.style_sheet["BodyText"]))
-        elements.append(Paragraph(
-            f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
-        doc.build(elements)
 
     def _get_table_data(self, data: dict, type_ids: list) -> list:
         elements: list = list()
@@ -108,7 +100,7 @@ class MemberTablePDF(BasePDF):
                 str(index) if not member_data["special_member"] else f"{str(index)} (E)",
                 [Paragraph(
                     f"{member_data['first_name']} {member_data['last_name']}<br/>{member_data['street']}<br/>{member_data['zip_code']} {member_data['city']}<br/>{member_data['country']}")],
-                [Paragraph(f"Alter {member_data['age']}<br/>{member_data['b_date']}"), Spacer(0, 0.3*cm),
+                [Paragraph(f"Alter {member_data['age']}<br/>{member_data['b_date']}"), Spacer(0, 0.3 * cm),
                  Paragraph(f"Alter {member_data['membership_years']}<br/>{member_data['entry_date']}")],
                 [self.paragraph(x) for x in phone_data],
                 [self.paragraph(x) for x in mail_data],
@@ -172,7 +164,15 @@ class MemberTablePDF(BasePDF):
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
         ]
 
+    def _no_data_return(self, doc: SimpleDocTemplate, elements: list):
+        elements.append(Paragraph(
+            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+            self.style_sheet["BodyText"]))
+        elements.append(Paragraph(
+            f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
+        doc.build(elements)
 
-def create_member_table_pdf() -> None:
+
+def create() -> None:
     global member_table_pdf
     member_table_pdf = MemberTablePDF()

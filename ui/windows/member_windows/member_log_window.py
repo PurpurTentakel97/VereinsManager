@@ -5,11 +5,11 @@
 from PyQt5.QtWidgets import QTableWidget, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableView, \
     QTabWidget, QLabel
 
+import transition
+from ui.windows import window_manager as w_m
 from ui.windows.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
-from ui.windows import window_manager as w_m
-from ui.windows.member_windows import members_window as m_w
-import transition
+from ui.windows.member_windows import members_window
 import debug
 
 debug_str: str = "MemberLogWindow"
@@ -85,6 +85,14 @@ class MemberLogWindow(BaseWindow):
 
             self._tabs.addTab(widget, name)
 
+    def _get_current_member(self) -> ListItem:
+        current_tab: int = self._tabs.currentIndex()
+        match current_tab:
+            case 0:
+                return self._members_list_active.list.currentItem()
+            case 1:
+                return self._members_list_inactive.list.currentItem()
+
     def _set_first_member(self, row_index: int) -> None:
         self._members_list_active.list.setCurrentRow(row_index)
         self.load_single_member()
@@ -131,13 +139,15 @@ class MemberLogWindow(BaseWindow):
     def _set_export_entry_btn(self) -> None:
         self._export_entry_btn.setEnabled(self._is_export_entry())
 
-    def _get_current_member(self) -> ListItem:
-        current_tab: int = self._tabs.currentIndex()
-        match current_tab:
-            case 0:
-                return self._members_list_active.list.currentItem()
-            case 1:
-                return self._members_list_inactive.list.currentItem()
+    def load_single_member(self) -> None:
+        current_member: ListItem = self._get_current_member()
+        data, valid = transition.get_log_member_data(target_id=current_member.ID)
+        if not valid:
+            self.set_error_bar(message=data)
+            return
+
+        self._set_member_name()
+        self._set_table(data=data)
 
     def _is_export_entry(self) -> bool:
         current_row = self._log_table.currentItem()
@@ -154,20 +164,10 @@ class MemberLogWindow(BaseWindow):
 
         return False
 
-    def load_single_member(self) -> None:
-        current_member: ListItem = self._get_current_member()
-        data, valid = transition.get_log_member_data(target_id=current_member.ID)
-        if not valid:
-            self.set_error_bar(message=data)
-            return
-
-        self._set_member_name()
-        self._set_table(data=data)
-
     def closeEvent(self, event) -> None:
         event.ignore()
         w_m.window_manger.member_log_window = None
         message, valid = w_m.window_manger.is_valid_member_window(ignore_member_log_window=True)
         if valid:
-            w_m.window_manger.members_window = m_w.MembersWindow()
+            w_m.window_manger.members_window = members_window.MembersWindow()
         event.accept()

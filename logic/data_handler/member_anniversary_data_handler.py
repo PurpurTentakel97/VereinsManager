@@ -2,20 +2,20 @@
 # 13.02.2022
 # VereinsManager / Member Data Anniversary Handler
 
-import datetime
 import sys
+import datetime
 from datetime import timedelta
 
+from helper import validation
 from logic.sqlite import select_handler as s_h
 from config import config_sheet as c, exception_sheet as e
-from helper import validation as v
 
 import debug
 
 debug_str = "Member Data Anniversary Handler"
 
 
-def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [str | dict, bool]:
+def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> tuple[str | dict, bool]:
     # validation
     try:
         b_day_data: list = list()
@@ -50,6 +50,12 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> [str
     except e.InputError as error:
         debug.info(item=debug_str, keyword="get_anniversary_member_data", error_=sys.exc_info())
         return error.message, False
+
+
+def _get_years_from_date(date: datetime.datetime) -> int:
+    current_date = datetime.datetime.now()
+    age = current_date.year - date.year
+    return age
 
 
 def _transform_current_data(b_day: list, entry_day: list) -> dict:
@@ -93,7 +99,7 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
 
 
 def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
-    v.must_positive_int(year, max_length=4)
+    validation.must_positive_int(year, max_length=4)
 
     final_b_day_data: list = list()
     for entry in b_day:
@@ -125,9 +131,3 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
 def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
     if timestamp:
         return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
-
-
-def _get_years_from_date(date: datetime.datetime) -> int:
-    current_date = datetime.datetime.now()
-    age = current_date.year - date.year
-    return age
