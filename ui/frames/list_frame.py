@@ -15,20 +15,25 @@ class ListItem(QListWidgetItem):
         self.first_name: str or None = first_name
         self.last_name: str or None = last_name
 
-        self.set_name()
+        self.set_name(type_='set')
 
-    def set_name(self) -> None:
+    def set_name(self, type_: str = 'set') -> None | str:
+        text: str = str()
         if self.first_name or self.last_name:
-            text_: str = str()
             if self.first_name:
-                text_ += self.first_name.strip()
+                text += self.first_name.strip()
             if self.first_name and self.last_name:
-                text_ += " "
+                text += " "
             if self.last_name:
-                text_ += self.last_name.strip()
-            self.setText(text_)
+                text += self.last_name.strip()
         else:
-            self.setText("Kein Name vorhanden")
+            text = "Kein Name vorhanden"
+
+        match type_:
+            case 'get':
+                return text
+            case 'set':
+                self.setText(text)
 
 
 class ListFrame(QFrame):
@@ -53,6 +58,9 @@ class ListFrame(QFrame):
                     case False:
                         self._get_names_method = transition.get_all_member_name
                         self._list_method = self._window.set_recover_enabled
+            case "member_log":
+                self._get_names_method = transition.get_all_member_name
+                self._list_method = self._window.load_single_member
 
             case "user":
                 match self._active:
