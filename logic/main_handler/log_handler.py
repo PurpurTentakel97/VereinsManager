@@ -53,7 +53,7 @@ def _transform_to_dict(data: tuple) -> dict:
         "target_column": data[4],
         "old_data": data[5],
         "new_data": data[6],
-        "display_name": None,
+        "display_name": None,  # Allocation in other transform funktion
     }
 
 
@@ -62,52 +62,42 @@ def _transform_member(data_entry: dict, target_id: int) -> dict | None:
         return
     data_entry['log_date'] = _transform_timestamp_to_date(timestamp=data_entry['log_date'])
 
-    reverence_entries: tuple = (
-        ("first_name", "Vorname"),
-        ("last_name", "Nachname"),
-        ("street", "Straße"),
-        ("number", "Hausnummer"),
-        ("zip_code", "PLZ"),
-        ("city", "Stadt"),
-        ("country", "Land"),
-        ("maps", "Maps-Link"),
-        ("b_day", "Geburtstag"),
-        ("entry_day", "Eintritt"),
-        ("membership_type", "Mitgliedsart"),
-        ("special_member", "Ehrenmitglied"),
-        ("comment_text", "Kommantar"),
-        ("active", "Aktiv"),
-    )
+    reverence_entries: tuple = _get_reference_entries()
+
     for reverence_entry in reverence_entries:
         if data_entry['target_column'] not in reverence_entry:
             continue
-        reverence_target_column, display_name = reverence_entry
-        match reverence_target_column:
-            case 'country':
-                data_entry['old_data'] = _transform_type_id_into_name(entry=data_entry['old_data'])
-                data_entry['new_data'] = _transform_type_id_into_name(entry=data_entry['new_data'])
-            case 'membership_type':
-                data_entry['old_data'] = _transform_type_id_into_name(entry=data_entry['old_data'])
-                data_entry['new_data'] = _transform_type_id_into_name(entry=data_entry['new_data'])
-            case "b_day":
-                data_entry['old_data'] = _transform_timestamp_to_date(timestamp=data_entry['old_data'])
-                data_entry['new_data'] = _transform_timestamp_to_date(timestamp=data_entry['new_data'])
-            case "entry_day":
-                data_entry['old_data'] = _transform_timestamp_to_date(timestamp=data_entry['old_data'])
-                data_entry['new_data'] = _transform_timestamp_to_date(timestamp=data_entry['new_data'])
-            case "special_member":
-                data_entry['old_data'] = _transform_bool_to_text(entry=data_entry['old_data'])
-                data_entry['new_data'] = _transform_bool_to_text(entry=data_entry['new_data'])
-            case "active":
-                data_entry['old_data'] = _transform_bool_to_text(entry=data_entry['old_data'])
-                data_entry['new_data'] = _transform_bool_to_text(entry=data_entry['new_data'])
-            case "comment_text":
-                data_entry['old_data'], data_entry['new_data'] = _transform_comment_text(
-                    old_entry=data_entry['old_data'], new_entry=data_entry['new_entry'])
+        return transform_member_entry(data_entry=data_entry, reverence_entry=reverence_entry)
 
-        data_entry['display_name'] = display_name
 
-        return data_entry
+def transform_member_entry(data_entry: dict, reverence_entry: tuple) -> dict:
+    reverence_target_column, display_name = reverence_entry
+    match reverence_target_column:
+        case 'country':
+            data_entry['old_data'] = _transform_type_id_into_name(entry=data_entry['old_data'])
+            data_entry['new_data'] = _transform_type_id_into_name(entry=data_entry['new_data'])
+        case 'membership_type':
+            data_entry['old_data'] = _transform_type_id_into_name(entry=data_entry['old_data'])
+            data_entry['new_data'] = _transform_type_id_into_name(entry=data_entry['new_data'])
+        case "b_day":
+            data_entry['old_data'] = _transform_timestamp_to_date(timestamp=data_entry['old_data'])
+            data_entry['new_data'] = _transform_timestamp_to_date(timestamp=data_entry['new_data'])
+        case "entry_day":
+            data_entry['old_data'] = _transform_timestamp_to_date(timestamp=data_entry['old_data'])
+            data_entry['new_data'] = _transform_timestamp_to_date(timestamp=data_entry['new_data'])
+        case "special_member":
+            data_entry['old_data'] = _transform_bool_to_text(entry=data_entry['old_data'])
+            data_entry['new_data'] = _transform_bool_to_text(entry=data_entry['new_data'])
+        case "active":
+            data_entry['old_data'] = _transform_bool_to_text(entry=data_entry['old_data'])
+            data_entry['new_data'] = _transform_bool_to_text(entry=data_entry['new_data'])
+        case "comment_text":
+            data_entry['old_data'], data_entry['new_data'] = _transform_comment_text(
+                old_entry=data_entry['old_data'], new_entry=data_entry['new_entry'])
+
+    data_entry['display_name'] = display_name
+
+    return data_entry
 
 
 def _transform_member_phone(data_entry: dict, target_id: int) -> dict | None:
@@ -186,3 +176,22 @@ def _transform_comment_text(old_entry: str, new_entry: str) -> [str | None, str 
             old_entry = old_entry[:20]
 
     return old_entry, new_entry
+
+
+def _get_reference_entries() -> tuple:
+    return (
+        ("first_name", "Vorname"),
+        ("last_name", "Nachname"),
+        ("street", "Straße"),
+        ("number", "Hausnummer"),
+        ("zip_code", "PLZ"),
+        ("city", "Stadt"),
+        ("country", "Land"),
+        ("maps", "Maps-Link"),
+        ("b_day", "Geburtstag"),
+        ("entry_day", "Eintritt"),
+        ("membership_type", "Mitgliedsart"),
+        ("special_member", "Ehrenmitglied"),
+        ("comment_text", "Kommantar"),
+        ("active", "Aktiv"),
+    )
