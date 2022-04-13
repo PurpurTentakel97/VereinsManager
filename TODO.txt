@@ -2,6 +2,9 @@
 # 21.01.2022
 # VereinsManager // TODO
 
+soft delete
+    selete at date
+
 pdf
     dirfferent name for anniversary pdfs
     fix maps link with no data in member card pdf
@@ -53,3 +56,4 @@ test
         data
         pfd
 
+haftungsausschluss

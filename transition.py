@@ -3,8 +3,8 @@
 # VereinsManager / Transition
 
 from helper import password_validation
-from logic.main_handler import user_handler, type_handler, log_handler, path_handler, member_handler, \
-    organisation_handler
+from logic.main_handler import user_handler, type_handler, path_handler, member_handler, \
+    organisation_handler, log_handler
 from logic.data_handler import member_table_data_handler, member_anniversary_data_handler
 from logic.pdf_handler import global_pdf_handler, member_table_pdf as m_t_p, member_card_pdf as m_c_p, \
     member_anniversary_pdf as m_a_p
@@ -126,4 +126,4 @@ def add_update_organisation(data: dict) -> [int | str, bool]:
 
 # log
 def get_log_member_data(target_id: int) -> [tuple | str, bool]:
-    return log_handler.get_log_member_data(target_id=target_id)
+    return log_handler.get_single_member_log(target_id=target_id)
