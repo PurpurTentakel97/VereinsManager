@@ -6,8 +6,6 @@ import sys
 from datetime import datetime
 
 from reportlab.lib.units import cm
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 
 from helper import validation
@@ -45,16 +43,11 @@ class MemberCardPDF(BasePDF):
         elements.extend(self._get_header(data=data))
 
         if not data:
-            self._mo_data_return(doc=doc, elements=elements)
-            return e.NotFound(info="Keine Daten vorhanden").message, False
+            return self._mo_data_return(doc=doc, elements=elements)
+
         elements.extend(self._get_card_data(data=data))
-        try:
-            doc.build(elements, canvasmaker=NumberedCanvas)
-            self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
-            return None, True
-        except PermissionError:
-            debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())
-            return e.PermissionException(self.file_name).message, False
+
+        return self._export(doc=doc, elements=elements)
 
     @staticmethod
     def _get_longest_value(data: dict) -> int:
@@ -200,13 +193,14 @@ class MemberCardPDF(BasePDF):
             debug.info(item=debug_str, keyword="_validate_data", error_=sys.exc_info())
             return error.message
 
-    def _mo_data_return(self, doc: SimpleDocTemplate, elements: list) -> None:
+    def _mo_data_return(self, doc: SimpleDocTemplate, elements: list) -> tuple[str | None, bool]:
         elements.append(Paragraph(
             f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
             self.style_sheet["BodyText"]))
         elements.append(Paragraph(
             f"Keine Daten vorhanden", self.style_sheet["BodyText"]))
-        doc.build(elements)
+
+        return self._export(doc=doc, elements=elements)
 
 
 def create() -> None:

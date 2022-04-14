@@ -124,16 +124,6 @@ class MemberLogPDF(BasePDF):
         elements.append(Paragraph("Keine Daten vorhanden", self.style_sheet['BodyText']))
         return self._export(doc=doc, elements=elements)
 
-    def _export(self, doc: SimpleDocTemplate, elements: list) -> tuple[str | None, bool]:
-        try:
-            doc.build(elements, canvasmaker=NumberedCanvas)
-            self.set_last_export_path(path=os.path.join(self.dir_name, self.file_name))
-            return None, True
-
-        except PermissionError:
-            debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())
-            return e.PermissionException(info=self.file_name).message, False
-
 
 def create() -> None:
     global member_log_pdf

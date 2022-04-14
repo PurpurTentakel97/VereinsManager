@@ -36,18 +36,12 @@ class MemberTablePDF(BasePDF):
         elements.extend(self._get_header())
 
         if not data:
-            self._no_data_return(doc, elements)
-            return None, True
+            return self._no_data_return(doc, elements)
 
         elements.extend(self._get_table_data(data, type_ids))
         elements = elements[:-1]
-        try:
-            doc.build(elements, canvasmaker=NumberedCanvas)
-            self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
-            return None, True
-        except PermissionError:
-            debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())
-            return e.PermissionException(self.file_name).message, False
+
+        return self._export(doc=doc, elements=elements)
 
     def _get_table_data(self, data: dict, type_ids: list) -> list:
         elements: list = list()
@@ -152,13 +146,16 @@ class MemberTablePDF(BasePDF):
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
         ]
 
-    def _no_data_return(self, doc: SimpleDocTemplate, elements: list):
+    def _no_data_return(self, doc: SimpleDocTemplate, elements: list) -> tuple[str | None, bool]:
         elements.append(Paragraph(
             f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
             self.style_sheet["BodyText"]))
         elements.append(Paragraph(
             f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
-        doc.build(elements)
+
+        return self._export(doc=doc, elements=elements)
+
+
 
 
 def create() -> None:

@@ -35,13 +35,8 @@ class MemberAnniversaryPDF(BasePDF):
 
         elements = self._get_table_elements(anniversary_data, elements)
         elements = elements[:-1]
-        try:
-            doc.build(elements, canvasmaker=NumberedCanvas)
-            self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
-            return None, True
-        except PermissionError:
-            debug.info(item=debug_str, keyword="create_pdf", error_=sys.exc_info())
-            return e.PermissionException(self.file_name).message, False
+
+        return self._export(doc=doc, elements=elements)
 
     def _get_table_elements(self, data: dict, elements: list) -> list:
         keys: list = [
@@ -54,7 +49,9 @@ class MemberAnniversaryPDF(BasePDF):
             headers, elements = self._get_table_headers(elements, key)
 
             if not data[key]:
-                elements.append(Paragraph("Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
+                elements.append(
+                    Paragraph("Keine Geburtstage vorhanden" if key == "b_day" else "Keine Jubiläen vorhanden",
+                              self.style_sheet["BodyText"]))
                 elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
                 continue
 

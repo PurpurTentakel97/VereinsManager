@@ -9,7 +9,9 @@ pdf
     dirfferent name for anniversary pdfs
     fix maps link with no data in member card pdf
     fix last export path
-    fix not try cathc by early return
+
+    member_table
+        remove None
 
 sql database
     let unser choose database name

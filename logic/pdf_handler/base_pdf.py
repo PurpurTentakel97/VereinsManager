@@ -131,6 +131,18 @@ class BasePDF:
         else:
             return Paragraph(str("---" if not value else value), self.style_sheet["BodyText"])
 
+    def _export(self, doc: SimpleDocTemplate, elements: list, numbered: bool = True) -> tuple[str | None, bool]:
+        try:
+            if numbered:
+                doc.build(elements, canvasmaker=NumberedCanvas)
+            else:
+                doc.build(elements)
+            self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+            return None, True
+        except PermissionError:
+            debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())
+            return e.PermissionException(self.file_name).message, False
+
 
 class NumberedCanvas(canvas.Canvas):
     def __init__(self, *args, **kwargs) -> None:
