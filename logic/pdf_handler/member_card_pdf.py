@@ -35,7 +35,7 @@ class MemberCardPDF(BasePDF):
             return result, False
 
         self.create_basics(path)
-        doc: SimpleDocTemplate = self.get_doc()
+        doc: SimpleDocTemplate = self._get_doc()
         data = member_card_data_handler.get_card_member_data(active=active, ID=ID)
         self._set_column_width(data=data)
 
@@ -127,7 +127,7 @@ class MemberCardPDF(BasePDF):
     def _get_single_table(self, data: tuple, comment_break_count: bool = False) -> list:
         table_data: list = list()
         for _1 in data:
-            table_data.append([self.paragraph(_1)])
+            table_data.append([self._paragraph(_1)])
 
         if comment_break_count:
             row_count = self._get_comment_break_count(comment=data[1])
@@ -152,7 +152,7 @@ class MemberCardPDF(BasePDF):
     def _get_double_table(self, data: tuple) -> list:
         table_data: list = list()
         for _1, _2 in data:
-            table_data.append([self.paragraph(_1), self.paragraph(_2)])
+            table_data.append([self._paragraph(_1), self._paragraph(_2)])
         return [
             Table(table_data, colWidths=[column_width] + [None], rowHeights=[row_height] * len(data)),
             Spacer(0, c.config.spacer['0.5'] * cm),
@@ -161,8 +161,8 @@ class MemberCardPDF(BasePDF):
     def _get_header(self, data: dict) -> list:
         elements: list = list()
 
-        if self.is_icon():
-            elements.append(self.get_icon(type_="table"))
+        if self._is_icon():
+            elements.append(self._get_icon(type_="table"))
         elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))

@@ -12,7 +12,7 @@ debug_str: str = "Log Handler"
 
 
 def get_log_member_data(target_id: int) -> list:
-    data = s_h.select_handler.get_log_data()
+    data = s_h.select_handler.get_member_log_data()
     new_data = _transform_member_data(data=data, target_id=target_id)
     return new_data
 

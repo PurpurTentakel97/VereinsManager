@@ -149,6 +149,15 @@ class ToLong(InputError):
                          info=f"{str(text)} ({str(len(str(text)))} Zeichen)")
 
 
+class WrongLetterType(InputError):
+    def __init__(self, info: str = ""):
+        super().__init__()
+        self.error_code: str = "211"
+
+        self.set_message(message=f"Invalide Art des Schreibens",
+                         info=info)
+
+
 # 300
 class PasswordError(BaseException_):
     def __init__(self):

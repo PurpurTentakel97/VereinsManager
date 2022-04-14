@@ -27,7 +27,7 @@ class MemberAnniversaryPDF(BasePDF):
 
     def create_pdf(self, path: str, year: int, active: bool = True) -> tuple[None | str, bool]:
         self.create_basics(path)
-        doc: SimpleDocTemplate = self.get_doc()
+        doc: SimpleDocTemplate = self._get_doc()
         anniversary_data = self._get_data(year=year, active=active)
 
         elements: list = list()
@@ -96,8 +96,8 @@ class MemberAnniversaryPDF(BasePDF):
         return headers, elements
 
     def _get_header(self, year: int, elements: list) -> list:
-        if self.is_icon():
-            elements.append(self.get_icon(type_="table"))
+        if self._is_icon():
+            elements.append(self._get_icon(type_="table"))
 
         if year:
             elements.append(Paragraph(f"Stand: {year}", self.custom_styles["CustomBodyTextRight"]))

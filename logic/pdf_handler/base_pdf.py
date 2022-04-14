@@ -35,7 +35,7 @@ class BasePDF:
             os.mkdir(self.dir_name)
 
     def create_basics(self, path: str) -> None:
-        self.transform_path(path=path)
+        self._transform_path(path=path)
         self.create_dir()
 
     def _add_styles(self) -> None:
@@ -46,11 +46,21 @@ class BasePDF:
         self.custom_styles['CustomBodyTextRight'] = (ParagraphStyle(name='CustomBodyTextRight',
                                                                     parent=self.style_sheet['BodyText'], fontSize=10,
                                                                     alignment=TA_RIGHT))
+        self.custom_styles['CustomBodyTextCenter'] = (ParagraphStyle(name='CustomBodyTextCenter',
+                                                                     parent=self.style_sheet['BodyText'], fontSize=10,
+                                                                     alignment=TA_CENTER))
+        self.custom_styles['CustomBodyTextSmall'] = (ParagraphStyle(name='CustomBodyTextSmall',
+                                                                    parent=self.style_sheet['BodyText'], fontSize=6,
+                                                                    leading=0.23 * cm))
+        self.custom_styles['CustomBodyTextSmallCenter'] = (ParagraphStyle(name='CustomBodyTextSmallCenter',
+                                                                          parent=self.style_sheet['BodyText'],
+                                                                          fontSize=6, leading=0.23 * cm,
+                                                                          alignment=TA_CENTER))
         self.custom_styles['CustomCenterHeading3'] = (ParagraphStyle(name='CustomCenterHeading3',
                                                                      parent=self.style_sheet['Heading3'],
                                                                      alignment=TA_CENTER))
 
-    def get_icon(self, type_: str) -> Image:
+    def _get_icon(self, type_: str) -> Image:
         try:
             width, height = self._get_icon_ratio(type_=type_)
             icon: Image = Image(c.config.get_icon_path(), width=width * cm, height=height * cm)
@@ -64,16 +74,15 @@ class BasePDF:
         width, height = image_.size
         return self._transform_width_height(type_=type_, width=width, height=height)
 
-    def get_doc(self) -> SimpleDocTemplate:
-        return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
-                                 leftMargin=1.5 * cm,
-                                 topMargin=1.5 * cm, bottomMargin=1.5 * cm)
+    def _get_doc(self) -> SimpleDocTemplate:
+        return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", showBoundary=0, pagesize=A4, rightMargin=1.5 * cm,
+                                 leftMargin=1.5 * cm, topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
     @staticmethod
-    def set_last_export_path(path: str) -> None:
+    def _set_last_export_path(path: str) -> None:
         c.config.last_export_path = path
 
-    def transform_path(self, path: str) -> None:
+    def _transform_path(self, path: str) -> None:
         now = datetime.now()
         if path:
             self.dir_name, file_name = os.path.split(path)
@@ -100,8 +109,6 @@ class BasePDF:
             case _:
                 raise e.CaseException(type_)
 
-        if width == height:
-            return icon_height, icon_height
 
         ratio = width / height
         width_ratio = icon_height * ratio
@@ -115,7 +122,7 @@ class BasePDF:
         return width_ratio, height_ratio
 
     @staticmethod
-    def is_icon() -> bool:
+    def _is_icon() -> bool:
         if os.path.exists(c.config.get_icon_path()):
             try:
                 _ = image.open(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}")
@@ -124,7 +131,7 @@ class BasePDF:
                 debug.info(item=debug_str, keyword="is_icon", error_=sys.exc_info())
         return False
 
-    def paragraph(self, value) -> Paragraph:
+    def _paragraph(self, value) -> Paragraph:
         if isinstance(value, list):
             return Paragraph(str(value[0]) + ": " + str("---" if not value[1] else value[1]),
                              self.style_sheet["BodyText"])
@@ -137,7 +144,7 @@ class BasePDF:
                 doc.build(elements, canvasmaker=NumberedCanvas)
             else:
                 doc.build(elements)
-            self.set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
+            self._set_last_export_path(path=f"{self.dir_name}\{self.file_name}")
             return None, True
         except PermissionError:
             debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())

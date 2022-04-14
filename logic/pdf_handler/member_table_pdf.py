@@ -27,7 +27,7 @@ class MemberTablePDF(BasePDF):
 
     def create_pdf(self, path: str, active: bool) -> tuple[str | None, bool]:
         self.create_basics(path)
-        doc: SimpleDocTemplate = self.get_doc()
+        doc: SimpleDocTemplate = self._get_doc()
         data = self._get_data(active)
         type_ids = self._get_type_ids()
 
@@ -84,8 +84,8 @@ class MemberTablePDF(BasePDF):
                     f"{member_data['first_name']} {member_data['last_name']}<br/>{member_data['street']}<br/>{member_data['zip_code']} {member_data['city']}<br/>{member_data['country']}")],
                 [Paragraph(f"Alter {member_data['age']}<br/>{member_data['b_date']}"), Spacer(0, 0.3 * cm),
                  Paragraph(f"Alter {member_data['membership_years']}<br/>{member_data['entry_date']}")],
-                [self.paragraph(x) for x in phone_data],
-                [self.paragraph(x) for x in mail_data],
+                [self._paragraph(x) for x in phone_data],
+                [self._paragraph(x) for x in mail_data],
             ]
             table_data.append(row_data)
 
@@ -100,8 +100,8 @@ class MemberTablePDF(BasePDF):
 
     def _get_header(self) -> list:
         elements: list = list()
-        if self.is_icon():
-            elements.append(self.get_icon(type_="table"))
+        if self._is_icon():
+            elements.append(self._get_icon(type_="table"))
         elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))

@@ -188,9 +188,10 @@ def check_add_update_organisation(data: dict) -> None:
         "bank_IBAN",
         "bank_BIC",
         "web_link",
-        "extra_text",
     ], data=data)
 
+    if data["extra_text"] is not None:
+        must_str(data["extra_text"], length=3000)
     keys: tuple = (
         "ID",
         "contact_person",
@@ -198,6 +199,29 @@ def check_add_update_organisation(data: dict) -> None:
     for key in keys:
         if data[key] is not None:
             must_positive_int(int_=data[key], max_length=None)
+
+
+# pdf
+def check_member_entry_letter_export(log_data: dict) -> None:
+    must_dict(dict_=log_data)
+
+    allowed_target_columns: tuple = (
+        "membership_type",
+        "active",
+    )
+    allowed: bool = False
+    for allowed_target_column in allowed_target_columns:
+        if log_data['target_table'] == "member":
+            if log_data['target_column'] == allowed_target_column:
+                allowed = True
+                break
+
+    if not allowed:
+        raise e.WrongLetterType(info=log_data['display_name'])
+
+    if log_data['target_column'] == "membership_type":
+        if log_data['new_data'] is None or log_data['old_data'] is None:
+            raise e.NoChance(info=log_data['display_name'])
 
 
 # helper

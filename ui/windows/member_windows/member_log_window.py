@@ -34,7 +34,8 @@ class MemberLogWindow(BaseWindow):
 
     def _create_ui(self) -> None:
 
-        self._export_entry_btn: QPushButton = QPushButton("Eintrag exportieren")
+        self._export_letter_btn: QPushButton = QPushButton("Eintrag exportieren")
+        self._export_letter_btn.clicked.connect(self._export_letter)
         self._export_log_btn: QPushButton = QPushButton("Tabelle exportieren")
         self._export_log_btn.clicked.connect(self._export_log)
 
@@ -53,7 +54,7 @@ class MemberLogWindow(BaseWindow):
     def _create_layout(self) -> None:
         buttons: QHBoxLayout = QHBoxLayout()
         buttons.addStretch()
-        buttons.addWidget(self._export_entry_btn)
+        buttons.addWidget(self._export_letter_btn)
         buttons.addWidget(self._export_log_btn)
 
         table_vbox: QVBoxLayout = QVBoxLayout()
@@ -96,6 +97,18 @@ class MemberLogWindow(BaseWindow):
                 return self._members_list_active.list.currentItem()
             case 1:
                 return self._members_list_inactive.list.currentItem()
+
+    def _get_current_entry(self) -> dict | bool:
+        current_cell = self._log_table.currentItem()
+        if current_cell is None:
+            return False
+        return self.entries[current_cell.row()]
+
+    def _get_letter_data(self) -> dict | bool:
+        current_entry: dict = self._get_current_entry()
+        if not current_entry:
+            return False
+        return current_entry
 
     def _set_first_member(self, row_index: int) -> None:
         self._members_list_active.list.setCurrentRow(row_index)
@@ -141,7 +154,7 @@ class MemberLogWindow(BaseWindow):
         self._member_lb.setText(text)
 
     def _set_export_entry_btn(self) -> None:
-        self._export_entry_btn.setEnabled(self._is_export_entry())
+        self._export_letter_btn.setEnabled(self._is_export_entry())
 
     def load_single_member(self) -> None:
         current_member: ListItem = self._get_current_member()
@@ -154,10 +167,10 @@ class MemberLogWindow(BaseWindow):
         self._set_table(data=data)
 
     def _is_export_entry(self) -> bool:
-        current_row = self._log_table.currentItem()
-        if current_row is None:
+        current_entry = self._get_current_entry()
+        if not current_entry:
             return False
-        current_entry: dict = self.entries[current_row.row()]
+
         match current_entry['target_table']:
             case "member":
                 match current_entry['target_column']:
@@ -188,6 +201,36 @@ class MemberLogWindow(BaseWindow):
 
         message, valid = transition.get_member_log_pdf(ID=current_member.ID, path=file,
                                                        active=self._tabs.currentIndex() == 0)
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        if self.is_open_permission():
+            transition.open_latest_export()
+
+        self.set_info_bar(message="Export abgeschlossen")
+
+    def _export_letter(self) -> None:
+        transition.create_default_dir("member_letter")
+
+        current_member: ListItem = self._get_current_member()
+        name: str = current_member.set_name('get')
+        name = name.replace(" ", "_")
+
+        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
+                                                  os.path.join(os.getcwd(), c.config.dirs['save'],
+                                                               c.config.dirs['organisation'],
+                                                               c.config.dirs['export'], c.config.dirs['member'],
+                                                               c.config.dirs['member_letter'],
+                                                               f"{name}_letter.pdf"),
+                                                  "PDF (*.pdf);;All Files (*)")
+        if not check:
+            self.set_info_bar(message="Export abgebrochen")
+            return
+
+        message, valid = transition.get_member_entry_letter_pdf(ID=current_member.ID, path=file,
+                                                                active=self._tabs.currentIndex() == 0,
+                                                                log_id=self._get_letter_data()['ID'])
         if not valid:
             self.set_error_bar(message=message)
             return

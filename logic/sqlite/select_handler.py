@@ -235,13 +235,21 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="Organisationsdaten")
 
     # log
-    def get_log_data(self) -> list:
+    def get_member_log_data(self) -> list:
         sql_command: str = """SELECT ID,target_table,target_id, log_date, target_column, old_data, new_data FROM log WHERE target_table Like 'member%' ORDER BY log_date DESC;"""
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError:
             debug.error(item=debug_str, keyword=f"_get_log_data", error_=sys.exc_info())
             raise e.LoadingFailed(info=f"Logdaten // Type: Mitglied")
+
+    def get_log_by_ID(self, ID: int) -> tuple:
+        sql_command: str = """SELECT * FROM log WHERE ID is ?"""
+        try:
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"get_log_by_ID", error_=sys.exc_info())
+            raise e.LoadingFailed("Einzelner Logeintrag")
 
 
 def create() -> None:

@@ -19,8 +19,8 @@
     "hash_rounds": 12,
     "icon_height_table": 3,
     "icon_max_width_table": 16,
-    "icon_height_letter": 4,
-    "icon_max_width_letter": 4
+    "icon_height_letter": 10,
+    "icon_max_width_letter": 5
   },
   "dirs": {
     "save": "saves",
@@ -77,17 +77,22 @@
     "title": {
       "entry": "Eintrittsbestätigung",
       "chance": "Änderung der Mitgliedsart",
-      "leaving": "Austrittsbestätigung"
+      "exit": "Austrittsbestätigung"
     },
     "text": {
       "entry": "<member_name> wurde am <date> in den <organisation_name> aufgenommen.",
-      "chance": "Die Mitdgliedsart von <member_name> wurde am <date> von <old_membership_type> auf <new_membership_type> geändert. Mit der Änderung der Mitgliedsart ändert sich auch der Jahrenbeitrag.",
-      "leaving": "<member_name> ist am <date> aus dem <organisation_name> ausgetreten."
+      "chance": "Die Mitgliedsart von <member_name> wurde am <date> von <old_membership_type> auf <new_membership_type> geändert. Mit der Änderung der Mitgliedsart ändert sich auch der Beitrag.",
+      "exit": "<member_name> ist am <date> aus dem <organisation_name> ausgetreten."
     },
     "info": {
       "entry": "- Mitgliedsart: <membership_type><br/>- Monatsbeitrag: <amount>€",
       "chance": "- Neue Mitgliedsart: <membership_type><br/>- Neuer Monatsbeitrag: <amount>€",
-      "leaving": "- Alle vereinsgegenstände sind innerhalb von 4 Wochen abzugeben.<br/>- Dazu gehören beispielsweise Uniformen, Noten und ggf. das Instrument."
+      "exit": "- Alle vereinsgegenstände sind innerhalb von 4 Wochen abzugeben.<br/>- Dazu gehören beispielsweise Uniformen, Noten und ggf. das Instrument."
+    },
+    "keys": {
+      "entry": "entry",
+      "chance": "chance",
+      "exit": "exit"
     }
   }
 }

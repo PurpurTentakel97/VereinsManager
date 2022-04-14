@@ -27,7 +27,7 @@ class MemberLogPDF(BasePDF):
 
     def create_pdf(self, path: str, ID: int, active: bool) -> tuple[None | str, bool]:
         self.create_basics(path=path)
-        doc: SimpleDocTemplate = self.get_doc()
+        doc: SimpleDocTemplate = self._get_doc()
         data: list = self._get_data(target_id=ID)
 
         elements: list = list()
@@ -44,13 +44,12 @@ class MemberLogPDF(BasePDF):
     @staticmethod
     def _get_data(target_id: int) -> list:
         data = member_log_data_handler.get_log_member_data(target_id=target_id)
-        debug.debug(item=debug_str, keyword="_get_data", message=f"data = {data}")
         return data
 
     def _get_header(self, ID: int, active: bool) -> list:
         elements: list = list()
-        if self.is_icon():
-            elements.append(self.get_icon('table'))
+        if self._is_icon():
+            elements.append(self._get_icon('table'))
         elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))

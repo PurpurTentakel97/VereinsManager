@@ -6,7 +6,7 @@ soft delete
     selete at date
 
 pdf
-    dirfferent name for anniversary pdfs
+    refactor pdf names
     fix maps link with no data in member card pdf
     fix last export path
 
@@ -29,11 +29,9 @@ validation
         no chance by only chancing extra value
 
 user
-    log
+    set inactive
+        check in contact pernon
     list -> frame
-
-organisation
-    log
 
 member
     export schreiben
@@ -52,5 +50,7 @@ test
         type
         data
         pfd
+    validation
+        member letter export
 
 haftungsausschluss
