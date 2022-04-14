@@ -12,6 +12,8 @@ pdf
 
     member_table
         remove None
+    member letter
+        chance data tuple into dict
 
 sql database
     let unser choose database name

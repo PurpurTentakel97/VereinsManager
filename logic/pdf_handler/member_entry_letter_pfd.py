@@ -65,15 +65,11 @@ class MemberEntryLetterPDF(BasePDF):
     @staticmethod
     def _get_data(ID: int, active: bool, log_id: int) -> tuple:
         member_data, _ = member_handler.get_member_data(ID=ID, active=active)
-        debug.debug(item=debug_str, keyword="_get_data", message=f"member_data = {member_data}")
         organisation_data, _ = organisation_handler.get_organisation_data()
-        debug.debug(item=debug_str, keyword="_get_data", message=f"organisation_data = {organisation_data}")
         contact_person_data, _ = user_handler.get_data_of_user_by_ID(ID=organisation_data['contact_person'][0],
                                                                      active=True)
-        debug.debug(item=debug_str, keyword="_get_data", message=f"contact_person_data = {contact_person_data}")
         current_user_data, _ = user_handler.get_data_of_user_by_ID(ID=c.config.user['ID'], active=True)
         log_data, _ = log_handler.get_log_by_ID(ID=log_id)
-        debug.debug(item=debug_str, keyword="_get_data", message=f"log_data = {log_data}")
 
         return member_data, organisation_data, contact_person_data, current_user_data, log_data
 
@@ -187,9 +183,6 @@ class MemberEntryLetterPDF(BasePDF):
 
     def _get_sidebar_data(self, data: tuple) -> list:
         member_data, organisation_data, contact_person_data, current_user_data, log_data = data
-
-        debug.debug(item=debug_str, keyword="_get_sidebar_data",
-                    message=f"extra text = {organisation_data['extra_text']}")
 
         elements: list = list()
         if self._is_icon:
