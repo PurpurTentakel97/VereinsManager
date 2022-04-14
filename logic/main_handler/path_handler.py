@@ -46,7 +46,6 @@ def _get_default_path(type_: str) -> str:
                 c.config.dirs['member_card'],
             )
         case "member_letter":
-
             path: str = os.path.join(
                 os.getcwd(),
                 c.config.dirs['save'],
@@ -54,6 +53,15 @@ def _get_default_path(type_: str) -> str:
                 c.config.dirs['export'],
                 c.config.dirs['member'],
                 c.config.dirs['member_letter'],
+            )
+        case "member_log":
+            path: str = os.path.join(
+                os.getcwd(),
+                c.config.dirs['save'],
+                c.config.dirs['organisation'],
+                c.config.dirs['export'],
+                c.config.dirs['member'],
+                c.config.dirs['member_log'],
             )
         case "error_log":
             path: str = os.path.join(

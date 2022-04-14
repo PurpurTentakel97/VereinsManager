@@ -8,6 +8,8 @@ soft delete
 pdf
     dirfferent name for anniversary pdfs
     fix maps link with no data in member card pdf
+    fix last export path
+    fix not try cathc by early return
 
 sql database
     let unser choose database name
@@ -18,18 +20,7 @@ UI
         set Icon in Taskbar
         check for screen reader
     log window
-        table
-            select hole line
-            read only
-            select cell
-        activate Buttons
-        remove delete button
-        add active
-        activate export button only by exportable rows
-        add inative members in list at first place
-
-log
-    show log in ui
+        export letters
 
 validation
     update type

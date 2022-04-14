@@ -26,8 +26,8 @@ class MemberAnniversaryPDF(BasePDF):
         super().__init__()
 
     def create_pdf(self, path: str, year: int, active: bool = True) -> tuple[None | str, bool]:
-        self._create_basics(path)
-        doc: SimpleDocTemplate = self._get_doc()
+        self.create_basics(path)
+        doc: SimpleDocTemplate = self.get_doc()
         anniversary_data = self._get_data(year=year, active=active)
 
         elements: list = list()
@@ -42,11 +42,6 @@ class MemberAnniversaryPDF(BasePDF):
         except PermissionError:
             debug.info(item=debug_str, keyword="create_pdf", error_=sys.exc_info())
             return e.PermissionException(self.file_name).message, False
-
-    def _create_basics(self, path: str) -> None:
-        self.transform_path(path=path)
-        self.create_dir()
-        self.style_sheet = getSampleStyleSheet()
 
     def _get_table_elements(self, data: dict, elements: list) -> list:
         keys: list = [
@@ -102,11 +97,6 @@ class MemberAnniversaryPDF(BasePDF):
                     "Jahre",
                 ]
         return headers, elements
-
-    def _get_doc(self) -> SimpleDocTemplate:
-        return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
-                                 leftMargin=1.5 * cm,
-                                 topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
     def _get_header(self, year: int, elements: list) -> list:
         if self.is_icon():

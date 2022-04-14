@@ -36,8 +36,8 @@ class MemberCardPDF(BasePDF):
         if isinstance(result, str):
             return result, False
 
-        self._create_basics(path)
-        doc: SimpleDocTemplate = self._get_doc()
+        self.create_basics(path)
+        doc: SimpleDocTemplate = self.get_doc()
         data = member_card_data_handler.get_card_member_data(active=active, ID=ID)
         self._set_column_width(data=data)
 
@@ -56,11 +56,6 @@ class MemberCardPDF(BasePDF):
             debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())
             return e.PermissionException(self.file_name).message, False
 
-    def _create_basics(self, path: str) -> None:
-        self.transform_path(path=path)
-        self.create_dir()
-        self.style_sheet = getSampleStyleSheet()
-
     @staticmethod
     def _get_longest_value(data: dict) -> int:
         longest: int = 0
@@ -75,11 +70,6 @@ class MemberCardPDF(BasePDF):
                     longest = length
 
         return longest
-
-    def _get_doc(self) -> SimpleDocTemplate:
-        return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
-                                 leftMargin=1.5 * cm,
-                                 topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
     def _get_card_data(self, data: dict) -> list:
         elements: list = list()

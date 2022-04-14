@@ -7,7 +7,7 @@ from logic.main_handler import user_handler, type_handler, path_handler, member_
     organisation_handler, log_handler
 from logic.data_handler import member_table_data_handler, member_anniversary_data_handler
 from logic.pdf_handler import global_pdf_handler, member_table_pdf as m_t_p, member_card_pdf as m_c_p, \
-    member_anniversary_pdf as m_a_p
+    member_anniversary_pdf as m_a_p, member_log_pdf as m_l_p
 
 
 # global
@@ -109,6 +109,10 @@ def get_member_anniversary_pdf(path: str, year: int or None = None, active: bool
 
 def get_member_card_pdf(ID: int, path: str, active: bool = True) -> [None | str, bool]:
     return m_c_p.member_card_pdf.create_pdf(ID=ID, active=active, path=path)
+
+
+def get_member_log_pdf(ID: int, path: str, active: bool) -> tuple[str | None, bool]:
+    return m_l_p.member_log_pdf.create_pdf(path=path, ID=ID, active=active)
 
 
 def open_latest_export() -> None:

@@ -2,8 +2,13 @@
 # Spielewiese 3
 # Python 3.10
 
-import os
+entry = input("Hier input eingeben\n")
 
-print(os.getcwd())
+print(entry)
 
+try:
+    entry = int(entry)
+    print(entry)
 
+except ValueError:
+    print("invalider Input")

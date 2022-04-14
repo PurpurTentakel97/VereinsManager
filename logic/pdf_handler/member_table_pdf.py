@@ -7,8 +7,6 @@ from datetime import datetime
 
 from reportlab.lib import colors
 from reportlab.lib.units import cm
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
 
 from logic.sqlite import select_handler as s_h
@@ -28,8 +26,8 @@ class MemberTablePDF(BasePDF):
         super().__init__()
 
     def create_pdf(self, path: str, active: bool) -> tuple[str | None, bool]:
-        self._create_basics(path)
-        doc: SimpleDocTemplate = self._get_doc()
+        self.create_basics(path)
+        doc: SimpleDocTemplate = self.get_doc()
         data = self._get_data(active)
         type_ids = self._get_type_ids()
 
@@ -50,16 +48,6 @@ class MemberTablePDF(BasePDF):
         except PermissionError:
             debug.info(item=debug_str, keyword=f"create_pdf", error_=sys.exc_info())
             return e.PermissionException(self.file_name).message, False
-
-    def _create_basics(self, path: str) -> None:
-        self.transform_path(path=path)
-        self.create_dir()
-        self.style_sheet = getSampleStyleSheet()
-
-    def _get_doc(self) -> SimpleDocTemplate:
-        return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
-                                 leftMargin=1.5 * cm,
-                                 topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
     def _get_table_data(self, data: dict, type_ids: list) -> list:
         elements: list = list()

@@ -6,10 +6,11 @@ import os
 import sys
 from datetime import datetime
 
+from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
-from reportlab.lib.enums import TA_RIGHT
-from reportlab.platypus import Paragraph, Image
+from reportlab.lib.enums import TA_RIGHT, TA_CENTER
+from reportlab.platypus import Paragraph, Image, SimpleDocTemplate
 from PIL import Image as image, UnidentifiedImageError
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
@@ -25,7 +26,7 @@ class BasePDF:
     def __init__(self) -> None:
         self.dir_name: str = str()
         self.file_name: str = str()
-        self.styles = getSampleStyleSheet()
+        self.style_sheet = getSampleStyleSheet()
         self.custom_styles: dict = dict()
         self._add_styles()
 
@@ -33,14 +34,21 @@ class BasePDF:
         if not os.path.exists(self.dir_name):
             os.mkdir(self.dir_name)
 
+    def create_basics(self, path: str) -> None:
+        self.transform_path(path=path)
+        self.create_dir()
+
     def _add_styles(self) -> None:
-        self.custom_styles['CustomTitle'] = (ParagraphStyle(name='CustomTitle', parent=self.styles['Title'],
+        self.custom_styles['CustomTitle'] = (ParagraphStyle(name='CustomTitle', parent=self.style_sheet['Title'],
                                                             fontSize=35))
-        self.custom_styles['CustomHeading'] = (ParagraphStyle(name='CustomHeading', parent=self.styles['Heading1'],
+        self.custom_styles['CustomHeading'] = (ParagraphStyle(name='CustomHeading', parent=self.style_sheet['Heading1'],
                                                               fontSize=20))
         self.custom_styles['CustomBodyTextRight'] = (ParagraphStyle(name='CustomBodyTextRight',
-                                                                    parent=self.styles['BodyText'], fontSize=10,
+                                                                    parent=self.style_sheet['BodyText'], fontSize=10,
                                                                     alignment=TA_RIGHT))
+        self.custom_styles['CustomCenterHeading3'] = (ParagraphStyle(name='CustomCenterHeading3',
+                                                                     parent=self.style_sheet['Heading3'],
+                                                                     alignment=TA_CENTER))
 
     def get_icon(self, type_: str) -> Image:
         try:
@@ -55,6 +63,11 @@ class BasePDF:
         image_ = image.open(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}")
         width, height = image_.size
         return self._transform_width_height(type_=type_, width=width, height=height)
+
+    def get_doc(self) -> SimpleDocTemplate:
+        return SimpleDocTemplate(f"{self.dir_name}/{self.file_name}", pagesize=A4, rightMargin=1.5 * cm,
+                                 leftMargin=1.5 * cm,
+                                 topMargin=1.5 * cm, bottomMargin=1.5 * cm)
 
     @staticmethod
     def set_last_export_path(path: str) -> None:
@@ -114,9 +127,9 @@ class BasePDF:
     def paragraph(self, value) -> Paragraph:
         if isinstance(value, list):
             return Paragraph(str(value[0]) + ": " + str("---" if not value[1] else value[1]),
-                             self.styles["BodyText"])
+                             self.style_sheet["BodyText"])
         else:
-            return Paragraph(str("---" if not value else value), self.styles["BodyText"])
+            return Paragraph(str("---" if not value else value), self.style_sheet["BodyText"])
 
 
 class NumberedCanvas(canvas.Canvas):

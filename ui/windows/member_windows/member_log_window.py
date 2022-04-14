@@ -2,10 +2,13 @@
 # 11.04.2022
 # VereinsManager / Member Log Window
 
+import os
+
 from PyQt5.QtWidgets import QTableWidget, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableView, \
-    QTabWidget, QLabel
+    QTabWidget, QLabel, QFileDialog
 
 import transition
+from config import config_sheet as c
 from ui.windows import window_manager as w_m
 from ui.windows.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
@@ -32,7 +35,8 @@ class MemberLogWindow(BaseWindow):
     def _create_ui(self) -> None:
 
         self._export_entry_btn: QPushButton = QPushButton("Eintrag exportieren")
-        self._export_btn: QPushButton = QPushButton("Tabelle exportieren")
+        self._export_log_btn: QPushButton = QPushButton("Tabelle exportieren")
+        self._export_log_btn.clicked.connect(self._export_log)
 
         self._member_lb: QLabel = QLabel("Mitgliedsname")
         self._members_list_active: ListFrame = ListFrame(window=self, type_="member_log", active=True)
@@ -50,7 +54,7 @@ class MemberLogWindow(BaseWindow):
         buttons: QHBoxLayout = QHBoxLayout()
         buttons.addStretch()
         buttons.addWidget(self._export_entry_btn)
-        buttons.addWidget(self._export_btn)
+        buttons.addWidget(self._export_log_btn)
 
         table_vbox: QVBoxLayout = QVBoxLayout()
         table_vbox.addWidget(self._member_lb)
@@ -163,6 +167,35 @@ class MemberLogWindow(BaseWindow):
                         return True
 
         return False
+
+    def _export_log(self) -> None:
+        transition.create_default_dir("member_log")
+
+        current_member: ListItem = self._get_current_member()
+        name: str = current_member.set_name('get')
+        name = name.replace(" ", "_")
+
+        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
+                                                  os.path.join(os.getcwd(), c.config.dirs['save'],
+                                                               c.config.dirs['organisation'],
+                                                               c.config.dirs['export'], c.config.dirs['member'],
+                                                               c.config.dirs['member_log'],
+                                                               f"{name}_log.pdf"),
+                                                  "PDF (*.pdf);;All Files (*)")
+        if not check:
+            self.set_info_bar(message="Export abgebrochen")
+            return
+
+        message, valid = transition.get_member_log_pdf(ID=current_member.ID, path=file,
+                                                       active=self._tabs.currentIndex() == 0)
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        if self.is_open_permission():
+            transition.open_latest_export()
+
+        self.set_info_bar(message="Export abgeschlossen")
 
     def closeEvent(self, event) -> None:
         event.ignore()
