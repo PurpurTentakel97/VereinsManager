@@ -8,12 +8,10 @@ soft delete
 pdf
     refactor pdf names
     fix maps link with no data in member card pdf
-    fix last export path
+    move filenames into config
 
     member_table
         remove None
-    member letter
-        chance data tuple into dict
 
 sql database
     let unser choose database name
@@ -23,8 +21,6 @@ UI
     Global
         set Icon in Taskbar
         check for screen reader
-    log window
-        export letters
 
 validation
     update type
@@ -34,9 +30,6 @@ user
     set inactive
         check in contact pernon
     list -> frame
-
-member
-    export schreiben
 
 
 test
