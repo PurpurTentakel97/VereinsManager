@@ -31,8 +31,8 @@ def get_organisation_data() -> tuple[dict | str, bool]:
 
 
 # add
-def _add_organisation(data: dict, log_date: int) -> int:
-    return a_h.add_handler.add_organisation(data=data, log_date=log_date)
+def _add_organisation(data: dict) -> int:
+    return a_h.add_handler.add_organisation(data=data)
 
 
 # add / update
@@ -42,7 +42,7 @@ def add_update_organisation(data: dict, log_date: int = None) -> tuple[int | str
         validation.must_default_user(c.config.user['ID'], False)
 
         if data['ID'] is None:
-            data['ID'] = _add_organisation(data=data, log_date=log_date)
+            data['ID'] = _add_organisation(data=data)
         else:
             _update_organisation(data=data)
 

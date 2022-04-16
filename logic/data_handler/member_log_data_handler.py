@@ -88,7 +88,7 @@ def _transform_member_entry(data_entry: dict, reverence_entry: tuple) -> dict:
             data_entry['new_data'] = _transform_bool_to_text(entry=data_entry['new_data'])
         case "comment_text":
             data_entry['old_data'], data_entry['new_data'] = _transform_comment_text(
-                old_entry=data_entry['old_data'], new_entry=data_entry['new_entry'])
+                old_entry=data_entry['old_data'], new_entry=data_entry['new_data'])
 
     data_entry['display_name'] = display_name
 

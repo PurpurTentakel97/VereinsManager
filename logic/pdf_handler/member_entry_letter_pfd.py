@@ -184,7 +184,7 @@ class MemberEntryLetterPDF(BasePDF):
 
     def _get_sidebar_data(self) -> list:
         elements: list = list()
-        if self._is_icon:
+        if self._is_icon():
             elements.append(self._get_icon('letter'))
             elements.append(Spacer(0, 0.5 * cm))
 
