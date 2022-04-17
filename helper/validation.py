@@ -20,23 +20,27 @@ def check_add_type(type_name: str, raw_type_id: int, extra_value: str) -> None:
 
     data = s_h.select_handler.get_all_single_type()
     type_name = type_name.strip().title()
-    for _, name, id_, _ in data:
+    for _, name, id_, *_ in data:
         if type_name == name and id_ == raw_type_id:
             raise e.AlreadyExists()
 
 
-def check_update_type(ID: int, new_name: str, extra_value: str) -> None:
+def check_update_type(ID: int, new_name: str, new_extra_value: str) -> None:
     must_str(new_name)
     must_positive_int(ID, max_length=None)
-    if extra_value is not None:
-        must_str(extra_value)
+    if new_extra_value is not None:
+        must_str(new_extra_value)
 
     data = s_h.select_handler.get_all_single_type()
     exists: bool = False
-    for old_id, old_name, *_ in data:
+    for old_id, old_name, _, _, old_extra_value in data:
         if ID == old_id:
             if new_name.strip().title() == old_name:
-                raise e.NoChance(info=new_name)
+                if new_extra_value is None:
+                    if new_extra_value == old_extra_value:
+                        raise e.NoChance(info=new_name)
+                if new_extra_value.strip().title() == old_extra_value:
+                    raise e.NoChance(info=new_name)
             exists = True
             break
 
@@ -50,7 +54,7 @@ def check_update_type_activity(ID: int, active: bool) -> None:
 
     data = s_h.select_handler.get_all_single_type()
     exists: bool = False
-    for old_id, _, _, old_active in data:
+    for old_id, _, _, old_active, _ in data:
         if old_id == ID:
             if old_active == active:
                 raise e.NoChance(info="Type Aktivität")

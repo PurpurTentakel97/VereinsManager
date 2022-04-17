@@ -22,9 +22,6 @@ UI
         set Icon in Taskbar
         check for screen reader
 
-validation
-    update type
-        no chance by only chancing extra value
 
 user
     set inactive

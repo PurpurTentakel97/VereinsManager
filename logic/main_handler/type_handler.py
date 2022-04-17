@@ -83,7 +83,7 @@ def get_type_name_by_ID(ID: int) -> tuple[str | tuple, bool]:
 # update
 def update_type(ID: int, name: str, extra_value: str) -> tuple[str | None, bool]:
     try:
-        validation.check_update_type(ID=ID, new_name=name, extra_value=extra_value)
+        validation.check_update_type(ID=ID, new_name=name, new_extra_value=extra_value)
         validation.must_default_user(c.config.user['ID'], False)
 
         name = name.strip().title()

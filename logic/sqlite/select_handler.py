@@ -26,7 +26,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="all raw types")
 
     def get_all_single_type(self) -> tuple:
-        sql_command: str = f"""SELECT ID,name,type_id,active FROM type ORDER BY name ASC;"""
+        sql_command: str = f"""SELECT ID,name,type_id,active,extra_value FROM type ORDER BY name ASC;"""
         try:
             return self.cursor.execute(sql_command).fetchall()
         except self.OperationalError:
