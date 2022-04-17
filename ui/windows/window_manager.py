@@ -43,8 +43,10 @@ class WindowManager:
     def is_main_window(self) -> bool:
         if self.main_window:
             return True
-        debug.debug(item=debug_str, keyword="is_main_window", message=f"main_window = {self.main_window}")
         return False
+
+    def close_main_window(self) -> None:
+        self.main_window.close() if self.main_window else None
 
     # Types
     def is_valid_types_window(self) -> [bool | str, bool]:
@@ -127,6 +129,22 @@ class WindowManager:
             return "Es können keine Benutzer berabeitet werden, währen das Ehmalige-Benutzer-Fenster geöffnet ist.", False
         return True, True
 
+    def is_valid_delete_user(self) -> bool:
+        windows: tuple = (
+            self.member_table_window,
+            self.member_anniversary_window,
+            self.recover_window,
+            self.member_log_window,
+            self.members_window,
+            self.types_window,
+            self.organisation_data_window,
+        )
+
+        for window in windows:
+            if window:
+                return False
+        return True
+
     # Organisation
     def is_valid_organisation_data_window(self) -> [bool | str, bool]:
         if self.organisation_data_window:
@@ -149,22 +167,22 @@ class WindowManager:
         return True, True
 
     # close window
-    def close_all_window(self) -> None:
-        self.member_table_window.close() if self.member_table_window else None
+    def close_all_window(self, close_user_window: bool = True) -> None:
+        windows: tuple = (
+            self.member_table_window,
+            self.member_anniversary_window,
+            self.recover_window,
+            self.member_log_window,
+            self.members_window,
+            self.types_window,
+            self.organisation_data_window,
+        )
 
-        self.member_anniversary_window.close() if self.member_anniversary_window else None
+        for window in windows:
+            window.close() if window else None
 
-        self.recover_window.close() if self.recover_window else None
-
-        self.member_log_window.close() if self.member_log_window else None
-
-        self.members_window.close() if self.members_window else None
-
-        self.types_window.close() if self.types_window else None
-
-        self.user_window.close() if self.user_window else None
-
-        self.organisation_data_window.close() if self.organisation_data_window else None
+        if close_user_window:
+            self.user_window.close() if self.user_window else None
 
     # helper
     def _is_window(self, window: str, ignore: bool = False) -> bool:

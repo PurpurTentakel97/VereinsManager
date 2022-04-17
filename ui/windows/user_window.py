@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QHBoxLayout, QVBoxLa
 import transition
 from ui.windows.base_window import BaseWindow
 from ui.frames.list_frame import ListFrame, ListItem
-from ui.windows import window_manager as w, recover_window
+from ui.windows import window_manager as w, recover_window, user_verify_window
 import debug
 
 debug_str: str = "UserWindow"
@@ -314,13 +314,28 @@ class UserWindow(BaseWindow):
 
     def _delete(self) -> None:
         current_user: ListItem = self._user_list.list.currentItem()
+
+        if not self.is_save_permission(window_name="Programm"):
+            self.set_info_bar(message="User Löschen abgebrochen")
+            return
+
+        w.window_manger.close_all_window(close_user_window=False)
+        if not w.window_manger.is_valid_delete_user():
+            self.set_info_bar(message="User Löschen abgebrochen")
+            return
+
         result, valid = transition.update_user_activity(ID=current_user.ID, active=False)
         if not valid:
             self.set_error_bar(message=result)
             return
 
-        self.set_info_bar(message="gelöscht")
-        self._user_list.load_list_data()
+        while w.window_manger.is_main_window():
+            w.window_manger.close_main_window()
+            self.set_error_bar("Programm konnte nicht geschlossen werden.")
+
+        user_verify_window.create()
+
+
 
     def _recover(self) -> None:
         result, valid = w.window_manger.is_valid_recover_window(type_="user", ignore_user_window=True)
