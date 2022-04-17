@@ -228,6 +228,13 @@ class DefaultUserException(UserError):
         self.set_message(message="Default Benutzer kann nicht bearbeitet werden", info=info)
 
 
+class CurrentContactPersonException(UserError):
+    def __init__(self, info: str = ""):
+        super().__init__()
+        self.error_code: str = "403"
+        self.set_message(message="Aktuelle Kontaktperson kann nicht gelöscht werden", info=info)
+
+
 # 900
 class GeneralError(BaseException_):
     def __init__(self):

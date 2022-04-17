@@ -3,7 +3,7 @@
 # VereinsManager / Validation
 
 from helper import password_validation
-from logic.main_handler import type_handler
+from logic.main_handler import type_handler, organisation_handler
 from logic.sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
 import debug
@@ -165,6 +165,14 @@ def check_add_update_user(data: dict) -> None:
     ], data)
 
 
+def check_delete_user(ID: int, active: bool) -> None:
+    must_positive_int(int_=ID)
+    must_bool(bool_=active)
+    must_current_user(ID=ID, same=not active)
+    must_default_user(ID=ID, same=False)
+    must_current_contact_person(ID=ID, same=False)
+
+
 def must_current_user(ID: int, same: bool) -> None:
     if (ID == c.config.user['ID']) != same:
         raise e.CurrentUserException()
@@ -173,6 +181,13 @@ def must_current_user(ID: int, same: bool) -> None:
 def must_default_user(ID: int, same: bool) -> None:
     if (ID == c.config.user['default_user_id']) != same:
         raise e.DefaultUserException()
+
+
+def must_current_contact_person(ID: int, same: bool) -> None:
+    reference_data, _ = organisation_handler.get_organisation_data()
+    if (ID == reference_data['contact_person'][0]) != same:
+        raise e.CurrentContactPersonException(info=_get_combined_str(str_1=reference_data['contact_person'][1],
+                                                                     str_2=reference_data['contact_person'][2]))
 
 
 # organisation
@@ -297,3 +312,14 @@ def _must_multiple_str_in_dict(keys: list, data: dict) -> None:
     for key in keys:
         if data[key] is not None:
             must_str(str_=data[key])
+
+
+def _get_combined_str(str_1: str, str_2: str) -> str:
+    if str_1 and str_2:
+        return f"{str_1} {str_2}"
+    elif str_1:
+        return str_1
+    elif str_2:
+        return str_2
+    else:
+        return "Kein Name vorhanden"

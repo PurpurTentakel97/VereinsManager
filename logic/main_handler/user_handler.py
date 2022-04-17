@@ -114,10 +114,7 @@ def add_update_user(data: dict) -> [str | int | None, bool]:
 # update
 def update_user_activity(ID: int, active: bool) -> [str, bool]:
     try:
-        validation.must_positive_int(int_=ID)
-        validation.must_bool(bool_=active)
-        validation.must_current_user(ID=ID, same=not active)
-        validation.must_default_user(ID=ID, same=False)
+        validation.check_delete_user(ID=ID, active=active)
         u_h.update_handler.update_user_activity(ID=ID, active=active)
         return None, True
 
