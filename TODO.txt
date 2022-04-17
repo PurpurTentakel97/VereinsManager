@@ -24,8 +24,6 @@ UI
 
 
 user
-    set inactive
-        check in contact person
     list -> frame
 
 

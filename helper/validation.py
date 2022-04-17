@@ -34,15 +34,22 @@ def check_update_type(ID: int, new_name: str, new_extra_value: str) -> None:
     data = s_h.select_handler.get_all_single_type()
     exists: bool = False
     for old_id, old_name, _, _, old_extra_value in data:
-        if ID == old_id:
-            if new_name.strip().title() == old_name:
-                if new_extra_value is None:
-                    if new_extra_value == old_extra_value:
-                        raise e.NoChance(info=new_name)
-                if new_extra_value.strip().title() == old_extra_value:
-                    raise e.NoChance(info=new_name)
-            exists = True
-            break
+        if ID != old_id:
+            continue
+        exists = True
+
+        if new_name.strip().title() != old_name:
+            continue
+
+        match new_extra_value:
+            case None:
+                if new_extra_value != old_extra_value:
+                    continue
+            case _:
+                if new_extra_value.strip().title() != old_extra_value:
+                    continue
+
+        raise e.NoChance(info=new_name)
 
     if not exists:
         raise e.NotFound(info=new_name)
