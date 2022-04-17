@@ -2,6 +2,10 @@
 # 21.01.2022
 # VereinsManager / Window Manager
 
+import debug
+
+debug_str: str = "WindowManager"
+
 window_manger: "WindowManager"
 
 
@@ -25,10 +29,22 @@ class WindowManager:
 
     # Main
     def is_valid_close_main_window(self) -> bool:
-        if self._is_window("member") or self._is_window("user"):
-            return False
-        else:
+        windows: tuple = (
+            "member",
+            "user",
+        )
+        valid = True
+        for window in windows:
+            if self._is_window(window=window):
+                valid = False
+                break
+        return valid
+
+    def is_main_window(self) -> bool:
+        if self.main_window:
             return True
+        debug.debug(item=debug_str, keyword="is_main_window", message=f"main_window = {self.main_window}")
+        return False
 
     # Types
     def is_valid_types_window(self) -> [bool | str, bool]:
@@ -135,27 +151,20 @@ class WindowManager:
     # close window
     def close_all_window(self) -> None:
         self.member_table_window.close() if self.member_table_window else None
-        self.member_table_window = None
 
         self.member_anniversary_window.close() if self.member_anniversary_window else None
-        self.member_anniversary_window = None
 
         self.recover_window.close() if self.recover_window else None
-        self.recover_window = None
 
         self.member_log_window.close() if self.member_log_window else None
-        self.member_log_window = None
 
         self.members_window.close() if self.members_window else None
 
         self.types_window.close() if self.types_window else None
-        self.types_window = None
 
         self.user_window.close() if self.user_window else None
-        self.user_window = None
 
         self.organisation_data_window.close() if self.organisation_data_window else None
-        self.organisation_data_window = None
 
     # helper
     def _is_window(self, window: str, ignore: bool = False) -> bool:

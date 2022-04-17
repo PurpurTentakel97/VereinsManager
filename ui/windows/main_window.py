@@ -12,8 +12,6 @@ import debug
 
 debug_str: str = "Main Window"
 
-main_window: "MainWindow"
-
 
 class MainWindow(BaseWindow):
     def __init__(self, default_user: bool):
@@ -149,8 +147,9 @@ class MainWindow(BaseWindow):
         debug.debug(item=debug_str, keyword="_open_export_pdf", message=f"pdf open")
 
     def _open_chance_user(self) -> None:
-        user_verify_window.create()
         self.close()
+        if not w.window_manger.is_main_window():
+            user_verify_window.create()
 
     def _open_chance_organization(self):
         debug.debug(item=debug_str, keyword="_open_chance_organization", message=f"chance database")
@@ -171,15 +170,16 @@ class MainWindow(BaseWindow):
                 while not w.window_manger.is_valid_close_main_window():
                     w.window_manger.close_all_window()
                     counter += 1
-                    if counter >= 5:
+                    if counter >= 3:
                         self.set_error_bar("Programm konnte nicht geschlossen werden.")
                         return
+                w.window_manger.main_window = None
                 event.accept()
         else:
             w.window_manger.close_all_window()
+            w.window_manger.main_window = None
             event.accept()
 
 
 def create(default_user: bool) -> None:
-    global main_window
-    main_window = MainWindow(default_user=default_user)
+    w.window_manger.main_window = MainWindow(default_user=default_user)
