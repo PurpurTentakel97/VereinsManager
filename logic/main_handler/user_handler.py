@@ -88,7 +88,7 @@ def get_hashed_password_by_ID(ID: int) -> bytes:
 # add / update
 def add_update_user(data: dict) -> [str | int | None, bool]:
     try:
-        validation.check_save_update_user(data=data)
+        validation.check_add_update_user(data=data)
 
         if not data["ID"]:
             data["password_hashed"] = hasher.hash_password(data["password_1"])
@@ -116,7 +116,7 @@ def update_user_activity(ID: int, active: bool) -> [str, bool]:
     try:
         validation.must_positive_int(int_=ID)
         validation.must_bool(bool_=active)
-        validation.must_current_user(ID=ID, same=False)
+        validation.must_current_user(ID=ID, same=not active)
         validation.must_default_user(ID=ID, same=False)
         u_h.update_handler.update_user_activity(ID=ID, active=active)
         return None, True

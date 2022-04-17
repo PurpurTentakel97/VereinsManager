@@ -25,8 +25,9 @@ UI
 
 user
     set inactive
-        check in contact pernon
+        check in contact person
     list -> frame
+    close program when own user is deleted
 
 
 test

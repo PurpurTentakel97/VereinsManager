@@ -69,7 +69,7 @@ from tests import helper
 ])
 def test_save_update_user_pass(user):
     helper.add_user_ids_in_config()
-    v.check_save_update_user(user)
+    v.check_add_update_user(user)
 
 
 @pytest.mark.parametrize(("user", "expected"), [
@@ -120,7 +120,7 @@ def test_save_update_user_pass(user):
 def test_save_update_user_exception(user, expected):
     helper.add_user_ids_in_config()
     with pytest.raises(expected):
-        v.check_save_update_user(user)
+        v.check_add_update_user(user)
 
 
 @pytest.mark.parametrize(("ID", "bool_"), [

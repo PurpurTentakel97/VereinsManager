@@ -141,7 +141,7 @@ def _check_update_member_nexus_position(active: bool) -> None:
 
 
 # User
-def check_save_update_user(data: dict) -> None:
+def check_add_update_user(data: dict) -> None:
     must_dict(dict_=data)
     if data["ID"] is not None:
         must_positive_int(int_=data["ID"], max_length=None)
