@@ -5,36 +5,38 @@
 import sys
 import datetime
 
+from helpers import helper
 from logic.sqlite import select_handler as s_h
 from logic.main_handler import member_nexus_handler
 from config import config_sheet as c, exception_sheet as e
 
 import debug
 
-debug_str: str = "table_data_handler"
+debug_str: str = "Table Data Handler"
 
 
 def get_member_table_data(active: bool) -> tuple[str | dict, bool]:
     # validation
     try:
-        types = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id['membership'], active=True)
+        types: tuple = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id['membership'], active=True)
         type_ids: list = [x[0] for x in types]
 
         final_data: dict = dict()
         for type_id in type_ids:
-            member_data = s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
-                                                                                        membership_type_id=type_id)
+            type_id: int
+            member_data: tuple = s_h.select_handler.get_data_from_member_by_membership_type_id(active=active,
+                                                                                               membership_type_id=type_id)
             final_members_list: list = list()
 
             for member in member_data:
-                member_dict = _transform_member_data(member=member)
-                phone_data = member_nexus_handler.get_phone_number_by_member_id(member_id=member_dict['ID'])
-                mail_data = member_nexus_handler.get_mail_by_member_id(member_id=member_dict['ID'])
-                phone_list = _transform_nexus_data(nexus_data=phone_data)
-                mail_list = _transform_nexus_data(nexus_data=mail_data)
+                member_data: dict = _transform_member_data(member=member)
+                phone_data: tuple = member_nexus_handler.get_phone_number_by_member_id(member_id=member_data['ID'])
+                mail_data: tuple = member_nexus_handler.get_mail_by_member_id(member_id=member_data['ID'])
+                phone_list: list = _transform_nexus_data(nexus_data=phone_data)
+                mail_list: list = _transform_nexus_data(nexus_data=mail_data)
 
                 single_member_data: dict = {
-                    'member': member_dict,
+                    'member': member_data,
                     'phone': phone_list,
                     'mail': mail_list,
                 }
@@ -51,19 +53,17 @@ def get_member_table_data(active: bool) -> tuple[str | dict, bool]:
         return error.message, False
 
 
-def _get_years_from_date_to_now(date: datetime.datetime) -> str or None:
+def _get_years_from_date_to_now(date: datetime.datetime) -> str:
     if not date:
-        return
+        return helper.None_str
 
-    now = datetime.datetime.now()
-    years = now.year - date.year
-    if now.month < date.month or (now.month == date.month and now.day < date.day):
-        years -= 1
+    years: int = helper.get_accurate_years_from_date_to_now(date=date)
+
     return str(years)
 
 
-def _transform_member_data(member: list) -> dict:
-    member_dict: dict = {
+def _get_member_dict(member):
+    member_data: dict = {
         'ID': member[0],
         'first_name': member[1],
         'last_name': member[2],
@@ -77,21 +77,27 @@ def _transform_member_data(member: list) -> dict:
         'entry_date': member[10],
         'special_member': member[12],
     }
+    return member_data
 
-    member_dict['street'] = _transform_street_and_number(street=member_dict['street'],
-                                                         number=member_dict['number'])
-    del member_dict['number']
-    member_dict['zip_code'] = None if not member_dict['zip_code'] else str(member_dict['zip_code'])
-    member_dict['b_date'] = _transform_timestamp_to_datetime(member_dict['b_date'])
-    member_dict['entry_date'] = _transform_timestamp_to_datetime(member_dict['entry_date'])
-    member_dict['age'] = _get_years_from_date_to_now(member_dict['b_date'])
-    member_dict['membership_years'] = _get_years_from_date_to_now(member_dict['entry_date'])
-    member_dict['b_date'] = _transform_date_to_str(member_dict['b_date'])
-    member_dict['entry_date'] = _transform_date_to_str(member_dict['entry_date'])
-    member_dict['special_member'] = 'X' if member_dict['special_member'] else ''
-    member_dict['country'] = _transform_country(member_dict['country'])
 
-    return member_dict
+def _transform_member_data(member: list) -> dict:
+    member_data = _get_member_dict(member)
+
+    member_data['b_date'] = helper.transform_timestamp_to_datetime(member_data['b_date'])
+    member_data['entry_date'] = helper.transform_timestamp_to_datetime(member_data['entry_date'])
+    member_data['age'] = _get_years_from_date_to_now(member_data['b_date'])
+    member_data['membership_years'] = _get_years_from_date_to_now(member_data['entry_date'])
+    member_data['b_date'] = _transform_date_to_str(member_data['b_date'])
+    member_data['entry_date'] = _transform_date_to_str(member_data['entry_date'])
+    member_data['special_member'] = helper.transform_int_to_str(integer=member_data['special_member'])
+    member_data['country'] = _transform_country(member_data['country'])
+    member_data['maps'] = _transform_maps(data=member_data)
+    member_data = _transform_strings(data=member_data)
+    member_data['street'] = _transform_street_and_number(street=member_data['street'],
+                                                         number=member_data['number'])
+    del member_data['number']
+
+    return member_data
 
 
 def _transform_country(country_id: int) -> str:
@@ -106,7 +112,7 @@ def _transform_nexus_data(nexus_data: tuple) -> list:
         nexus_dict: dict = {
             "ID": data[0],
             "type": data[1],
-            "number": data[2],
+            "number": helper.try_transform_to_None_string(string=data[2]),
         }
         type_name = s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=nexus_dict["type"])
 
@@ -119,22 +125,33 @@ def _transform_nexus_data(nexus_data: tuple) -> list:
     return nexus_list
 
 
-def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
-    if timestamp:
-        return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
-
-
-def _transform_date_to_str(date: datetime) -> str or None:
+def _transform_date_to_str(date: datetime) -> str:
     if not date:
-        return
+        return helper.None_str
 
     return date.strftime(c.config.date_format["short"])
 
 
-def _transform_street_and_number(street: str, number: str) -> str or None:
-    if street and number:
-        return f"{street} {number}"
-    elif street:
-        return street
-    elif number:
-        return number
+def _transform_street_and_number(street: str, number: str) -> str:
+    return helper.combine_strings(strings=(street, number))
+
+
+def _transform_strings(data: dict) -> dict:
+    keys: tuple = (
+        "first_name",
+        "last_name",
+        "zip_code",
+        "city",
+    )
+
+    key: str
+    for key in keys:
+        data[key] = helper.try_transform_to_None_string(string=data[key])
+
+    return data
+
+
+def _transform_maps(data: dict) -> str:
+    maps = helper.combine_maps_string(street=data['street'], number=data['number'], zip_code=data['zip_code'],
+                                      city=data['city'])
+    return maps

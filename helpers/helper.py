@@ -33,6 +33,12 @@ def transform_int_to_bool(integer: int) -> bool:
     return integer == 1
 
 
+def transform_int_to_str(integer: int) -> str:
+    if transform_int_to_bool(integer=integer):
+        return "Ja"
+    return "Nein"
+
+
 def transform_bool_to_int(bool_: bool) -> int:
     if bool_:
         return 1
