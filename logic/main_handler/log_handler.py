@@ -5,7 +5,7 @@
 import sys
 import datetime
 
-from helper import validation
+from helpers import validation
 from config import exception_sheet as e
 from logic.sqlite import select_handler as s_h
 from logic.data_handler import member_log_data_handler
@@ -40,7 +40,7 @@ def get_log_by_ID(ID: int) -> tuple[dict | str, bool]:
         return error.message, False
 
 
-# helper
+# helpers
 def _transform_single_entry(data: tuple) -> dict:
     data = _transform_to_dict(data=data)
     match data['target_column']:

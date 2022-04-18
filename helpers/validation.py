@@ -2,7 +2,7 @@
 # 18.02.2022L
 # VereinsManager / Validation
 
-from helper import password_validation
+from helpers import password_validation
 from logic.main_handler import type_handler, organisation_handler
 from logic.sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
@@ -250,7 +250,7 @@ def check_member_entry_letter_export(log_data: dict) -> None:
             raise e.NoChance(info=log_data['display_name'])
 
 
-# helper
+# helpers
 def must_str(str_: str, length: int | None = 50) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:
         raise e.NoStr(info=str_)

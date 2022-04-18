@@ -131,7 +131,7 @@ def _transform_member_nexus(data_entry: dict, type_id: int) -> dict:
     return data_entry
 
 
-# helper
+# helpers
 def _get_reference_entries() -> tuple:
     return (
         ("first_name", "Vorname"),

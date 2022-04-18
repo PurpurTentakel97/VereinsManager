@@ -2,7 +2,7 @@
 # 21.01.2022
 # VereinsManager / Window Handler
 
-from helper import validation
+from helpers import validation
 from config import config_sheet as c, exception_sheet as e
 from ui.windows import alert_window, base_window, window_manager, user_verify_window, main_window
 import debug

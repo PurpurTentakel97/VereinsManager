@@ -5,7 +5,7 @@
 import sys
 import time
 
-from helper import validation
+from helpers import validation
 from logic.sqlite.database import Database
 from logic.sqlite import select_handler as s_h
 from config import exception_sheet as e, config_sheet as c
@@ -155,7 +155,7 @@ class LogHandler(Database):
             debug.error(item=debug_str, keyword="delete_log",
                         error_=sys.exc_info())
 
-    # helper
+    # helpers
     @staticmethod
     def transform_log_none_date(none_date: int | None) -> int:
         if not none_date:

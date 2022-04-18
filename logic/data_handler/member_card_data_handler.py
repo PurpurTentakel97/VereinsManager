@@ -4,12 +4,12 @@
 
 import datetime
 
+from helpers import helper
 from config import config_sheet as c
 from logic.main_handler import member_handler
 from logic.sqlite import select_handler as s_h
 
 debug_str: str = "Member Card Data Handler"
-none_str: str = "---"
 
 
 def get_card_member_data(active: bool, ID: int) -> dict:
@@ -23,13 +23,9 @@ def get_card_member_data(active: bool, ID: int) -> dict:
 
 def _get_years_from_timestamp(timestamp: int) -> str:
     if timestamp == c.config.date_format['None_date']:
-        return none_str
-
-    now = datetime.datetime.now()
-    date = _transform_timestamp_to_date(timestamp)
-    years = now.year - date.year
-    if now.month < date.month or (now.month == date.month and now.day < date.day):
-        years -= 1
+        return helper.None_str
+    date = helper.transform_timestamp_to_datetime(timestamp)
+    years: int = helper.get_accurate_years_from_date_to_now(date=date)
     return str(years)
 
 
@@ -49,27 +45,24 @@ def _transform_member_strings(data: dict) -> dict:
         'maps',
         'comment_text',
     ]
+    key: str
     for key in keys:
-        data[key] = _transform_str(data[key])
+        data[key] = helper.try_transform_to_None_string(string=data[key])
     return data
 
 
 def _transform_maps(data: dict) -> dict:
-    if len(data['maps']) > 5:
-        return data
-    maps = f"""http://www.google.de/maps/place/{data['street']}+{data['number']},+{data['zip_code']}+{data['city']}"""
-    data['maps'] = maps.replace(" ", "")
+    maps: str = helper.combine_maps_string(street=data['street'], number=data['number'], zip_code=data['zip_code'],
+                                           city=data['city'])
+    data['maps'] = maps
     return data
 
 
 def _transform_street(data: dict) -> dict:
-    street, number = data['street'], data['number']
-    if street and number:
-        address = f"{street} {number}"
-    elif street:
-        address = f"{street}"
-    else:
-        address = none_str
+    street: str = data['street']
+    number: str = data['number']
+
+    address: str = helper.combine_strings(strings=(street, number))
 
     del data['number']
     data['street'] = address
@@ -77,16 +70,10 @@ def _transform_street(data: dict) -> dict:
 
 
 def _transform_name(data: dict) -> dict:
-    firstname, lastname = data['first_name'], data['last_name']
+    firstname: str = data['first_name']
+    lastname: str = data['last_name']
 
-    if firstname and lastname:
-        name = f"{firstname} {lastname}"
-    elif firstname:
-        name = firstname
-    elif lastname:
-        name = lastname
-    else:
-        name = none_str
+    name: str = helper.combine_strings(strings=(firstname, lastname))
 
     del data['last_name']
     del data['first_name']
@@ -113,20 +100,23 @@ def _transform_nexus_data(data: dict) -> list:
 
 def _transform_single_nexus_data(entry: tuple) -> list:
     ID, type_id, value = entry
-    if value is None:
-        value = none_str
-    type_id = s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=type_id)[0]
+
+    value: str = helper.try_transform_to_None_string(string=value)
+    type_id: int = s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=type_id)[0]
+
     return [type_id, value]
 
 
 def _transform_position_data(data: dict) -> list:
     transformed: list = list()
     for entry in data:
-        result = _transform_single_position(entry=entry)
-        if result:
-            transformed.append(result)
+        entry: tuple
+        result: str = _transform_single_position(entry=entry)
+        if not result:
+            continue
+        transformed.append(result)
     if len(transformed) == 0:
-        transformed.append(none_str)
+        transformed.append(helper.None_str)
     transformed.sort()
     return transformed
 
@@ -137,21 +127,7 @@ def _transform_single_position(entry: tuple) -> str:
         return s_h.select_handler.get_type_name_and_extra_value_by_ID(ID=type_id)[0]
 
 
-def _transform_str(str_: str) -> str:
-    if str_ is None:
-        return none_str
-    return str_
-
-
-def _transform_bool(int_: int) -> bool:
-    return int_ == 1
-
-
 def _transform_date(timestamp: int) -> str:
     if timestamp == c.config.date_format['None_date']:
-        return none_str
-    return datetime.datetime.strftime(_transform_timestamp_to_date(timestamp), c.config.date_format['short'])
-
-
-def _transform_timestamp_to_date(timestamp: int) -> datetime.datetime:
-    return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)
+        return helper.None_str
+    return datetime.datetime.strftime(helper.transform_timestamp_to_datetime(timestamp), c.config.date_format['short'])

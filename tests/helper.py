@@ -50,7 +50,7 @@ def delete_temp_database():
     shutil.rmtree("temp_save", ignore_errors=False)
 
 
-# helper
+# helpers
 def random_with_N_digits(n):
     range_start = 10 ** (n - 1)
     range_end = (10 ** n) - 1

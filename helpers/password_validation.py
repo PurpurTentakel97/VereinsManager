@@ -5,7 +5,7 @@
 import math
 import sys
 
-from helper import hasher, validation as v
+from helpers import hasher, validation as v
 from config import config_sheet as c, exception_sheet as e
 from logic.main_handler import user_handler, window_handler
 import debug

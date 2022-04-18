@@ -4,7 +4,7 @@
 
 import sys
 
-from helper import validation
+from helpers import validation
 from logic.main_handler import member_nexus_handler
 from config import config_sheet as c, exception_sheet as e
 from logic.sqlite import select_handler as s_h, delete_handler as d_h, log_handler as l_h, update_handler as u_h, \
@@ -176,7 +176,7 @@ def delete_inactive_member() -> None:
         debug.error(item=debug_str, keyword="delete_inactive_member", error_=sys.exc_info())
 
 
-# helper
+# helpers
 def _transform_type_for_safe(data, raw_id, key) -> dict:
     type_id = s_h.select_handler.get_id_by_type_name(raw_id=raw_id, name=data[key])
     if type_id:

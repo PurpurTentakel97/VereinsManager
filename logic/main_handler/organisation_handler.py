@@ -4,7 +4,7 @@
 
 import sys
 
-from helper import validation
+from helpers import validation
 from config import config_sheet as c, exception_sheet as e
 from logic.sqlite import select_handler as s_h, update_handler as u_h, add_handler as a_h
 import debug
@@ -62,7 +62,7 @@ def _update_organisation(data: dict) -> None:
     u_h.update_handler.update_organisation(data=data)
 
 
-# helper
+# helpers
 def _transform_data_for_load(data: tuple) -> dict:
     data_dict: dict = {
         'ID': data[0],

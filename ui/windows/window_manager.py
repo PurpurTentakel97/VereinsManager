@@ -184,7 +184,7 @@ class WindowManager:
         if close_user_window:
             self.user_window.close() if self.user_window else None
 
-    # helper
+    # helpers
     def _is_window(self, window: str, ignore: bool = False) -> bool:
         dummy_window = False
         match window:

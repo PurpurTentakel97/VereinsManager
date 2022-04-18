@@ -6,7 +6,7 @@ import sys
 import datetime
 from datetime import timedelta
 
-from helper import validation
+from helpers import validation, helper
 from logic.sqlite import select_handler as s_h
 from config import config_sheet as c, exception_sheet as e
 
@@ -20,20 +20,27 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> tupl
     try:
         b_day_data: list = list()
         entry_day_data: list = list()
-        member_data = s_h.select_handler.get_name_and_dates_from_member(active=active)
+        member_data: tuple = s_h.select_handler.get_name_and_dates_from_member(active=active)
 
         for _, firstname, lastname, b_day, entry_day in member_data:
+            firstname: str
+            lastname: str
+            b_day: int
+            entry_day: int
+
             inner: dict = {
                 "firstname": firstname,
                 "lastname": lastname,
+                "date": None,  # assigned later
             }
+
             if b_day:
-                inner_b_day = inner.copy()
-                inner_b_day["date"] = _transform_timestamp_to_datetime(b_day)
+                inner_b_day: dict = inner.copy()
+                inner_b_day["date"]: datetime.datetime = helper.transform_timestamp_to_datetime(b_day)
                 b_day_data.append(inner_b_day)
             if entry_day:
-                inner_entry_day = inner.copy()
-                inner_entry_day["date"] = _transform_timestamp_to_datetime(entry_day)
+                inner_entry_day: dict = inner.copy()
+                inner_entry_day["date"]: datetime.datetime = helper.transform_timestamp_to_datetime(entry_day)
                 entry_day_data.append(inner_entry_day)
 
         match type_:
@@ -52,12 +59,6 @@ def get_anniversary_member_data(type_: str, active: bool, year: int = 0) -> tupl
         return error.message, False
 
 
-def _get_years_from_date(date: datetime.datetime) -> int:
-    current_date = datetime.datetime.now()
-    age = current_date.year - date.year
-    return age
-
-
 def _transform_current_data(b_day: list, entry_day: list) -> dict:
     reference_date_1: datetime.datetime = datetime.datetime.today() - timedelta(days=5)
     reference_date_2: datetime.datetime = datetime.datetime.today() + timedelta(days=31)
@@ -70,7 +71,7 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
 
     final_b_day_data: list = list()
     for entry in current_b_day:
-        entry["year"] = _get_years_from_date(entry["date"])
+        entry["year"] = helper.get_years_from_date_to_now(entry["date"])
         if entry["year"] % 10 == 0 or entry["year"] == 18:
             entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
             final_b_day_data.append(entry)
@@ -83,13 +84,13 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
 
     final_entry_date_data: list = list()
     for entry in current_entry_day:
-        entry["year"] = _get_years_from_date(entry["date"])
+        entry["year"] = helper.get_years_from_date_to_now(entry["date"])
         if entry["year"] % 5 == 0:
             entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
             final_entry_date_data.append(entry)
 
-    final_b_day_data = sorted(final_b_day_data, key=lambda x: [x["date"][-3:-1], x["date"][:2]])
-    final_entry_date_data = sorted(final_entry_date_data, key=lambda x: [x["date"][-3:-1], x["date"][:2]])
+    final_b_day_data: list = sorted(final_b_day_data, key=lambda x: [x["date"][-3:-1], x["date"][:2]])
+    final_entry_date_data: list = sorted(final_entry_date_data, key=lambda x: [x["date"][-3:-1], x["date"][:2]])
 
     data: dict = {
         "b_day": final_b_day_data,
@@ -126,8 +127,3 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
     }
 
     return data
-
-
-def _transform_timestamp_to_datetime(timestamp: int) -> datetime:
-    if timestamp:
-        return datetime.datetime(1970, 1, 1, 1, 0, 0) + datetime.timedelta(seconds=timestamp)

@@ -3,7 +3,7 @@
 # VereinsManager / User Handler
 import sys
 
-from helper import hasher, validation
+from helpers import hasher, validation
 from config import exception_sheet as e, config_sheet as c
 from logic.sqlite import select_handler as s_h, delete_handler as d_h, update_handler as u_h, add_handler as a_h
 import debug

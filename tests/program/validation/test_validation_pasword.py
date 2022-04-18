@@ -2,7 +2,7 @@
 # 03.04.2022
 # VereinsManager / Test Validation Password
 import pytest
-from helper import password_validation as p_v
+from helpers import password_validation as p_v
 from config import exception_sheet as e, config_sheet as c
 from tests import helper
 

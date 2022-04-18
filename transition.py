@@ -2,7 +2,7 @@
 # 08.02.2022
 # VereinsManager / Transition
 
-from helper import password_validation
+from helpers import password_validation
 from logic.main_handler import user_handler, type_handler, path_handler, member_handler, \
     organisation_handler, log_handler
 from logic.data_handler import member_table_data_handler, member_anniversary_data_handler

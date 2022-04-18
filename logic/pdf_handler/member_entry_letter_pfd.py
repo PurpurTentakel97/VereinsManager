@@ -9,7 +9,7 @@ from reportlab.platypus import SimpleDocTemplate, Frame, PageTemplate, Paragraph
 
 from logic.pdf_handler.base_pdf import BasePDF
 
-from helper import validation
+from helpers import validation
 from config import exception_sheet as e, config_sheet as c
 from logic.main_handler import member_handler, organisation_handler, user_handler, log_handler
 import debug

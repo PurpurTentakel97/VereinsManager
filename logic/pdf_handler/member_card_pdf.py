@@ -8,7 +8,7 @@ from datetime import datetime
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 
-from helper import validation
+from helpers import validation
 from logic.main_handler import organisation_handler
 from logic.data_handler import member_card_data_handler
 from config import exception_sheet as e, config_sheet as c
