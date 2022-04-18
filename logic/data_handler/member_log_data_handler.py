@@ -4,6 +4,7 @@
 
 import datetime
 
+from helpers import helper
 from config import config_sheet as c
 from logic.sqlite import select_handler as s_h
 import debug
@@ -12,8 +13,8 @@ debug_str: str = "Log Handler"
 
 
 def get_log_member_data(target_id: int) -> list:
-    data = s_h.select_handler.get_member_log_data()
-    new_data = _transform_member_data(data=data, target_id=target_id)
+    data: list = s_h.select_handler.get_member_log_data()
+    new_data: list = _transform_member_data(data=data, target_id=target_id)
     return new_data
 
 
@@ -22,7 +23,7 @@ def _transform_member_data(data: list, target_id: int) -> list:
     new_data: list = list()
     for entry_list in data:
         entry: dict = _transform_to_dict(data=entry_list)
-        result = None
+        result: dict = dict()
         match entry['target_table']:
             case "member":
                 result = _transform_member(data_entry=entry, target_id=target_id)
@@ -153,9 +154,8 @@ def _get_reference_entries() -> tuple:
 
 def _transform_timestamp_to_date(timestamp: int) -> str | None:
     if timestamp:
-        return datetime.datetime.strftime(
-            datetime.datetime(1970, 1, 1, 2, 0, 0) + datetime.timedelta(seconds=timestamp),
-            c.config.date_format['short'])
+        return datetime.datetime.strftime(helper.transform_timestamp_to_datetime(timestamp=timestamp),
+                                          c.config.date_format['short'])
 
 
 def _transform_type_id_into_name(entry: int) -> str | None:
@@ -166,11 +166,9 @@ def _transform_type_id_into_name(entry: int) -> str | None:
 
 
 def _transform_bool_to_text(entry: int) -> str:
-    if entry == 1:
-        entry = "Ja"
-    else:
-        entry = "Nein"
-    return entry
+    if helper.transform_int_to_bool(integer=entry):
+        return "Ja"
+    return "Nein"
 
 
 def _transform_comment_text(old_entry: str, new_entry: str) -> [str | None, str | None]:
