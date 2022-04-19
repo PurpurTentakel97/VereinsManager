@@ -335,8 +335,6 @@ class UserWindow(BaseWindow):
 
         user_verify_window.create()
 
-
-
     def _recover(self) -> None:
         result, valid = w.window_manger.is_valid_recover_window(type_="user", ignore_user_window=True)
         if not valid:

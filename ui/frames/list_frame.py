@@ -37,13 +37,13 @@ class ListItem(QListWidgetItem):
 
 
 class ListFrame(QFrame):
-    def __init__(self, window, type_: str, active: bool):
+    def __init__(self, window, get_names_method, list_method, active: bool):
         super().__init__()
-        self._type: str = type_
         self._active: bool = active
+        self._get_names_method = get_names_method
+        self._list_method = list_method
         self._window = window
 
-        self._set_type()
         self._create_ui()
         self._create_layout()
         self.load_list_data()
@@ -57,29 +57,6 @@ class ListFrame(QFrame):
         list_.addWidget(self.list)
 
         self.setLayout(list_)
-
-    def _set_type(self) -> None:
-        match self._type:
-            case "member":
-                match self._active:
-                    case True:
-                        self._get_names_method = transition.get_all_member_name
-                        self._list_method = self._window.load_single_member
-                    case False:
-                        self._get_names_method = transition.get_all_member_name
-                        self._list_method = self._window.set_recover_enabled
-            case "member_log":
-                self._get_names_method = transition.get_all_member_name
-                self._list_method = self._window.load_single_member
-
-            case "user":
-                match self._active:
-                    case True:
-                        self._get_names_method = transition.get_all_user_name
-                        self._list_method = self._window.get_user_data
-                    case False:
-                        self._get_names_method = transition.get_all_user_name
-                        self._list_method = self._window.set_recover_enabled
 
     def load_list_data(self) -> None:
         self.list.clear()
