@@ -4,7 +4,7 @@
 
 from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
-from ui.frames.list_frame import ListFrame
+from ui.frames.list_frame import ListFrame, ListItem
 from ui.windows.base_window import BaseWindow
 from ui.windows.member_windows import members_window
 from ui.windows import window_manager as w, user_window
@@ -25,7 +25,8 @@ class RecoverWindow(BaseWindow):
         self.set_recover_enabled()
 
     def _create_ui(self) -> None:
-        self.member_list: ListFrame = ListFrame(self, type_=self._type, active=False)
+        self.member_list: ListFrame = ListFrame(self, get_names_method=self._get_names_method,
+                                                list_method=self._recover, active=False)
 
         self._recover_btn: QPushButton = QPushButton()
         self._recover_btn.setText(self._recover_btn_name)
@@ -55,11 +56,13 @@ class RecoverWindow(BaseWindow):
                 self._recover_btn_name: str = "Mitglied wieder herstellen"
                 self._update_activity_method = transition.update_member_activity
                 self._valid_parent_window_method = w.window_manger.is_valid_member_window
+                self._get_names_method = transition.get_all_member_name
             case "user":
                 self._window_name: str = "ehmalige Benutzer - Vereinsmanager"
                 self._recover_btn_name: str = "Benutzer wieder herstellen"
                 self._update_activity_method = transition.update_user_activity
                 self._valid_parent_window_method = w.window_manger.is_valid_user_window
+                self._get_names_method = transition.get_all_user_name
 
     def set_recover_enabled(self) -> None:
         current_member = self.member_list.list.currentItem()
@@ -69,7 +72,7 @@ class RecoverWindow(BaseWindow):
             self._recover_btn.setEnabled(False)
 
     def _recover(self) -> None:
-        current_member = self.member_list.list.currentItem()
+        current_member: ListItem = self.member_list.list.currentItem()
         result, valid = self._update_activity_method(ID=current_member.ID, active=True)
         if not valid:
             self.set_error_bar(message=result)
