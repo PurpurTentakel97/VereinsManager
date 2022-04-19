@@ -67,8 +67,8 @@ class ListFrame(QFrame):
         for ID, first_name, last_name in data:
             new_member: ListItem = ListItem(ID=ID, first_name=first_name, last_name=last_name)
             self.list.addItem(new_member)
-            self.list.setCurrentItem(None)
         try:
+            self.list.setCurrentRow(0)
             self._list_method()
         except AttributeError:
             pass

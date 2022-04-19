@@ -38,7 +38,8 @@ class UserWindow(BaseWindow):
         # Left
         self._user_lb: QLabel = QLabel()
         self._user_lb.setText("Benutzer:")
-        self._user_list: ListFrame = ListFrame(window=self, type_="user", active=True)
+        self._user_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_user_name,
+                                               list_method=self.get_user_data, active=True)
 
         self._add_user_btn: QPushButton = QPushButton()
         self._add_user_btn.setText("Benutzer hinzufügen")
