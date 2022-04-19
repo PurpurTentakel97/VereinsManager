@@ -9,6 +9,7 @@ from reportlab.lib import colors
 from reportlab.lib.units import cm
 from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
 
+from helpers import helper
 from logic.sqlite import select_handler as s_h
 from logic.main_handler import organisation_handler
 from logic.data_handler import member_table_data_handler
@@ -81,9 +82,15 @@ class MemberTablePDF(BasePDF):
             row_data: list = [
                 str(index) if not member_data["special_member"] else f"{str(index)} (E)",
                 [Paragraph(
-                    f"{member_data['first_name']} {member_data['last_name']}<br/>{member_data['street']}<br/>{member_data['zip_code']} {member_data['city']}<br/>{member_data['country']}")],
-                [Paragraph(f"Alter {member_data['age']}<br/>{member_data['b_date']}"), Spacer(0, 0.3 * cm),
-                 Paragraph(f"Alter {member_data['membership_years']}<br/>{member_data['entry_date']}")],
+                    f"{helper.combine_strings(strings=(member_data['first_name'], member_data['last_name']))}<br/>"
+                    f"{helper.try_transform_to_None_string(string=member_data['street'])}<br/>"
+                    f"{helper.combine_strings(strings=(member_data['zip_code'], member_data['city']))}<br/>"
+                    f"{helper.try_transform_to_None_string(string=member_data['country'])}")],
+                [Paragraph(f"Alter {helper.try_transform_to_None_string(string=member_data['age'])}<br/>"
+                           f"{helper.try_transform_to_None_string(string=member_data['b_date'])}"),
+                 Spacer(0, 0.3 * cm),
+                 Paragraph(f"Jahre {helper.try_transform_to_None_string(string=member_data['membership_years'])}<br/>"
+                           f"{helper.try_transform_to_None_string(string=member_data['entry_date'])}")],
                 [self._paragraph(x) for x in phone_data],
                 [self._paragraph(x) for x in mail_data],
             ]
@@ -91,11 +98,17 @@ class MemberTablePDF(BasePDF):
 
             if member_data["special_member"]:
                 style_data.append(("BACKGROUND", (0, index), (0, index), colors.lightgrey))
-            if member_data["age"] is not None and (
-                    int(member_data["age"]) % 10 == 0 or int(member_data["age"]) == 18):
-                style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
-            if member_data["membership_years"] is not None and int(member_data["membership_years"]) % 5 == 0:
-                style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
+            try:
+                if member_data["age"] is not None and (
+                        int(member_data["age"]) % 10 == 0 or int(member_data["age"]) == 18):
+                    style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
+            except ValueError:
+                pass
+            try:
+                if member_data["membership_years"] is not None and int(member_data["membership_years"]) % 5 == 0:
+                    style_data.append(("BACKGROUND", (2, index), (2, index), colors.lightgrey))
+            except ValueError:
+                pass
         return table_data, style_data
 
     def _get_header(self) -> list:
@@ -154,8 +167,6 @@ class MemberTablePDF(BasePDF):
             f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
 
         return self._export(doc=doc, elements=elements)
-
-
 
 
 def create() -> None:

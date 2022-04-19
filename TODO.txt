@@ -21,10 +21,15 @@ UI
     Global
         set Icon in Taskbar
         check for screen reader
+        main window close open member window if member log window
 
 
 user
     list -> frame
+
+fatal error:
+    enter log when to member exists
+    export letter with no organisation data
 
 
 test

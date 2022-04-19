@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 14.04.2022
 # VereinsManager / Member Entry Letter PDF
+
 import datetime
 import sys
 
@@ -9,7 +10,7 @@ from reportlab.platypus import SimpleDocTemplate, Frame, PageTemplate, Paragraph
 
 from logic.pdf_handler.base_pdf import BasePDF
 
-from helpers import validation
+from helpers import validation, helper
 from config import exception_sheet as e, config_sheet as c
 from logic.main_handler import member_handler, organisation_handler, user_handler, log_handler
 import debug
@@ -63,7 +64,7 @@ class MemberEntryLetterPDF(BasePDF):
         self.member_data = member_data['member_data']
 
         self.organisation_data, _ = organisation_handler.get_organisation_data()
-
+        debug.debug(item=debug_str, keyword="_get_data", message=f"organisation_data = {self.organisation_data}")
         self.contact_person_data, _ = user_handler.get_data_of_user_by_ID(
             ID=self.organisation_data['contact_person'][0],
             active=True)
@@ -72,10 +73,10 @@ class MemberEntryLetterPDF(BasePDF):
 
     @staticmethod
     def _get_frames(doc: SimpleDocTemplate) -> dict:
-        header = 3 * cm  # height
-        address = 4 * cm  # height
-        side_bar = 5.5 * cm  # with
-        footer = 1 * cm  # height
+        header: float = 3 * cm  # height
+        address: float = 4 * cm  # height
+        side_bar: float = 5.5 * cm  # with
+        footer: float = 1 * cm  # height
         return {
             "header": Frame(
                 x1=doc.leftMargin,
@@ -134,26 +135,27 @@ class MemberEntryLetterPDF(BasePDF):
     def _get_header_data(self) -> list:
         elements: list = [
             Spacer(0, 0.5 * cm),
-            Paragraph(self.organisation_data['name'], style=self.style_sheet['Title']),
+            Paragraph(helper.try_transform_to_None_string(string=self.organisation_data['name']),
+                      style=self.style_sheet['Title']),
         ]
 
         return elements
 
     def _get_address_data(self) -> list:
         elements: list = [
-            Paragraph(f"{self.organisation_data['name']}<br/>"
-                      f"{self._get_combined_str(str_1=self.current_user_data['firstname'], str_2=self.current_user_data['lastname'])} / "
-                      f"{self._get_combined_str(str_1=self.current_user_data['street'], str_2=self.current_user_data['number'])} / "
-                      f"{self._get_combined_str(str_1=self.current_user_data['zip_code'], str_2=self.current_user_data['city'])} / "
-                      f"{self.current_user_data['phone']} / "
-                      f"{self.current_user_data['mail']}",
+            Paragraph(f"{helper.try_transform_to_None_string(string=self.organisation_data['name'])}<br/>"
+                      f"{helper.combine_strings(strings=(self.current_user_data['firstname'], self.current_user_data['lastname']))} / "
+                      f"{helper.combine_strings(strings=(self.current_user_data['street'], self.current_user_data['number']))} / "
+                      f"{helper.combine_strings(strings=(self.current_user_data['zip_code'], self.current_user_data['city']))} / "
+                      f"{helper.try_transform_to_None_string(string=self.current_user_data['phone'])} / "
+                      f"{helper.try_transform_to_None_string(string=self.current_user_data['mail'])}",
                       style=self.custom_styles['CustomBodyTextSmall']),
             Spacer(0, 0.5),
             Paragraph(
-                f"<b>{self._get_combined_str(str_1=self.member_data['first_name'], str_2=self.member_data['last_name'])}</b><br/>"
-                f"<b>{self._get_combined_str(str_1=self.member_data['street'], str_2=self.member_data['number'])}</b><br/>"
-                f"<b>{self._get_combined_str(str_1=self.member_data['zip_code'], str_2=self.member_data['city'])}</b><br/>"
-                f"<b>{self.member_data['country']}</b>",
+                f"<b>{helper.combine_strings(strings=(self.member_data['first_name'], self.member_data['last_name']))}</b><br/>"
+                f"<b>{helper.combine_strings(strings=(self.member_data['street'], self.member_data['number']))}</b><br/>"
+                f"<b>{helper.combine_strings(strings=(self.member_data['zip_code'], self.member_data['city']))}</b><br/>"
+                f"<b>{helper.try_transform_to_None_string(string=self.member_data['country'])}</b>",
                 style=self.style_sheet['BodyText']),
         ]
         return elements
@@ -166,17 +168,18 @@ class MemberEntryLetterPDF(BasePDF):
             Paragraph(datetime.datetime.strftime(datetime.datetime.now(), c.config.date_format['short']),
                       style=self.style_sheet['BodyText']),
             Spacer(0, 1.5 * cm),
-            Paragraph(f"<b>{c.config.letters['title'][letter_key]}</b>", style=self.style_sheet['BodyText']),
+            Paragraph(f"<b>{helper.try_transform_to_None_string(string=c.config.letters['title'][letter_key])}</b>",
+                      style=self.style_sheet['BodyText']),
             Spacer(0, 0.5 * cm),
-            Paragraph(main_text, style=self.style_sheet['BodyText']),
+            Paragraph(helper.try_transform_to_None_string(string=main_text), style=self.style_sheet['BodyText']),
             Spacer(0, 3 * cm),
             Paragraph(f"{'_' * 40}<br/>"
-                      f"{self._get_combined_str(str_1=self.current_user_data['firstname'], str_2=self.current_user_data['lastname'])}<br/>"
-                      f"{self.current_user_data['position']}",
+                      f"{helper.combine_strings(strings=(self.current_user_data['firstname'], self.current_user_data['lastname']))}<br/>"
+                      f"{helper.try_transform_to_None_string(string=self.current_user_data['position'])}",
                       self.custom_styles['CustomBodyTextSmallCenter']),
             Spacer(0, 3 * cm),
             Paragraph("<b>Informationen:</b>", style=self.style_sheet['BodyText']),
-            Paragraph(info_text, style=self.style_sheet['BodyText']),
+            Paragraph(helper.try_transform_to_None_string(string=info_text), style=self.style_sheet['BodyText']),
 
         ]
 
@@ -189,56 +192,51 @@ class MemberEntryLetterPDF(BasePDF):
             elements.append(Spacer(0, 0.5 * cm))
 
         elements.extend([
-            Paragraph(f"{self.organisation_data['name']}<br/>"
-                      f"{self._get_combined_str(str_1=self.organisation_data['street'], str_2=self.organisation_data['number'])}<br/>"
-                      f"{self._get_combined_str(str_1=self.organisation_data['zip_code'], str_2=self.organisation_data['city'])}<br/>"
-                      f"{self.organisation_data['country']}<br/>"
-                      f"{self.organisation_data['web_link']}",
+            Paragraph(f"{helper.try_transform_to_None_string(string=self.organisation_data['name'])}<br/>"
+                      f"{helper.combine_strings(strings=(self.organisation_data['street'], self.organisation_data['number']))}<br/>"
+                      f"{helper.combine_strings(strings=(self.organisation_data['zip_code'], self.organisation_data['city']))}<br/>"
+                      f"{helper.try_transform_to_None_string(string=self.organisation_data['country'])}<br/>"
+                      f"{helper.try_transform_to_None_string(string=self.organisation_data['web_link'])}",
                       self.style_sheet['BodyText']),
             Spacer(0, 0.5 * cm),
-            Paragraph(f"{self.contact_person_data['position']}<br/>"
-                      f"{self._get_combined_str(str_1=self.contact_person_data['firstname'], str_2=self.contact_person_data['lastname'])}<br/>"
-                      f"{self._get_combined_str(str_1=self.contact_person_data['street'], str_2=self.contact_person_data['number'])}<br/>"
-                      f"{self._get_combined_str(str_1=self.contact_person_data['zip_code'], str_2=self.contact_person_data['city'])}<br/>"
-                      f"{self.contact_person_data['country']}<br/>"
-                      f"{self.contact_person_data['phone']}<br/>"
-                      f"{self.contact_person_data['mail']}<br/>",
+            Paragraph(f"{helper.try_transform_to_None_string(string=self.contact_person_data['position'])}<br/>"
+                      f"{helper.combine_strings(strings=(self.contact_person_data['firstname'], self.contact_person_data['lastname']))}<br/>"
+                      f"{helper.combine_strings(strings=(self.contact_person_data['street'], self.contact_person_data['number']))}<br/>"
+                      f"{helper.combine_strings(strings=(self.contact_person_data['zip_code'], self.contact_person_data['city']))}<br/>"
+                      f"{helper.try_transform_to_None_string(string=self.contact_person_data['country'])}<br/>"
+                      f"{helper.try_transform_to_None_string(string=self.contact_person_data['phone'])}<br/>"
+                      f"{helper.try_transform_to_None_string(string=self.contact_person_data['mail'])}<br/>",
                       self.style_sheet['BodyText']),
             Spacer(0, 0.5 * cm),
-            Paragraph(self._get_extra_text(), self.style_sheet['BodyText'])
+            Paragraph(helper.try_transform_to_None_string(string=self._get_extra_text()), self.style_sheet['BodyText'])
         ])
 
         return elements
 
     def _get_footer_data(self) -> list:
         elements: list = [
-            Paragraph(f"Bankverbindung: {self.organisation_data['bank_name']} "
-                      f"IBAN: {self.organisation_data['bank_IBAN']} "
-                      f"BIC: {self.organisation_data['bank_BIC']}",
-                      self.custom_styles['CustomBodyTextSmallCenter']),
+            Paragraph(
+                f"Bankverbindung: {helper.try_transform_to_None_string(string=self.organisation_data['bank_name'])} "
+                f"IBAN: {helper.try_transform_to_None_string(string=self.organisation_data['bank_IBAN'])} "
+                f"BIC: {helper.try_transform_to_None_string(string=self.organisation_data['bank_BIC'])}",
+                self.custom_styles['CustomBodyTextSmallCenter']),
         ]
         return elements
-
-    @staticmethod
-    def _get_combined_str(str_1: str, str_2: str) -> str:
-        if str_1 and str_2:
-            return f"{str_1} {str_2}"
-        elif str_1:
-            return str_1
-        elif str_2:
-            return str_2
 
     def _get_main_text(self, letter_key: str) -> str:
         date = datetime.datetime.strftime(self.log_data['log_date'], c.config.date_format['short'])
 
         main_text: str = c.config.letters['text'][letter_key]
-        main_text = main_text.replace("<member_name>", self._get_combined_str(str_1=self.member_data['first_name'],
-                                                                              str_2=self.member_data['last_name']))
+        main_text = main_text.replace("<member_name>", helper.combine_strings(strings=(self.member_data['first_name'],
+                                                                                       self.member_data['last_name'])))
         main_text = main_text.replace("<date>", date)
-        main_text = main_text.replace("<organisation_name>", f'"{self.organisation_data["name"]}"')
+        main_text = main_text.replace("<organisation_name>",
+                                      f'"{helper.try_transform_to_None_string(string=self.organisation_data["name"])}"')
         try:
-            main_text = main_text.replace("<old_membership_type>", self.log_data['old_data'])
-            main_text = main_text.replace("<new_membership_type>", self.log_data['new_data'])
+            main_text = main_text.replace("<old_membership_type>",
+                                          helper.try_transform_to_None_string(string=self.log_data['old_data']))
+            main_text = main_text.replace("<new_membership_type>",
+                                          helper.try_transform_to_None_string(string=self.log_data['new_data']))
         except TypeError:
             pass
 
@@ -246,13 +244,15 @@ class MemberEntryLetterPDF(BasePDF):
 
     def _get_info_text(self, letter_key: str) -> str:
         info_text: str = c.config.letters['info'][letter_key]
-        info_text = info_text.replace("<membership_type>", self.member_data['membership_type'])
-        info_text = info_text.replace("<amount>", self.member_data['membership_type_extra_value'])
+        info_text = info_text.replace("<membership_type>",
+                                      helper.try_transform_to_None_string(string=self.member_data['membership_type']))
+        info_text = info_text.replace("<amount>", helper.try_transform_to_None_string(
+            string=self.member_data['membership_type_extra_value']))
 
         return info_text
 
     def _get_extra_text(self) -> str:
-        extra_text: str = self.organisation_data['extra_text']
+        extra_text: str = helper.try_transform_to_None_string(string=self.organisation_data['extra_text'])
         extra_text = extra_text.replace("\n", "<br/>")
         return extra_text
 
