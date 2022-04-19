@@ -100,7 +100,8 @@ class MembersWindow(BaseWindow):
         self._member_card_btn.setText("Mitliederkarte")
         self._member_card_btn.clicked.connect(self._export_member_card)
 
-        self._members_list: ListFrame = ListFrame(window=self, type_="member", active=True)
+        self._members_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_member_name,
+                                                  list_method=self.load_single_member, active=True)
 
         self._add_member_btn: QPushButton = QPushButton()
         self._add_member_btn.setText("Mitglied hinzufügen")
