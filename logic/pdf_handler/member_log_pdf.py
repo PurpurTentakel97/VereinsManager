@@ -3,6 +3,7 @@
 # VereinsManager / Log Handler
 
 from _datetime import datetime
+from typing import Tuple
 
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
@@ -27,7 +28,9 @@ class MemberLogPDF(BasePDF):
     def create_pdf(self, path: str, ID: int, active: bool) -> tuple[None | str, bool]:
         self.create_basics(path=path)
         doc: SimpleDocTemplate = self._get_doc()
-        data: list = self._get_data(target_id=ID)
+        data, valid = self._get_data(target_id=ID)
+        if not valid:
+            return data, valid
 
         elements: list = list()
 
@@ -41,9 +44,9 @@ class MemberLogPDF(BasePDF):
         return self._export(doc=doc, elements=elements)
 
     @staticmethod
-    def _get_data(target_id: int) -> list:
-        data = member_log_data_handler.get_log_member_data(target_id=target_id)
-        return data
+    def _get_data(target_id: int) -> tuple[str | list, bool]:
+        data, valid = member_log_data_handler.get_log_member_data(target_id=target_id)
+        return data, valid
 
     def _get_header(self, ID: int, active: bool) -> list:
         elements: list = list()

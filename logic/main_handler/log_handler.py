@@ -18,7 +18,7 @@ debug_str: str = "Log Handler"
 def get_single_member_log(target_id: int) -> tuple[list | str, bool]:
     try:
         validation.must_positive_int(int_=target_id, max_length=None)
-        return member_log_data_handler.get_log_member_data(target_id=target_id), True
+        return member_log_data_handler.get_log_member_data(target_id=target_id)
 
     except e.InputError as error:
         debug.info(item=debug_str, keyword=f"get_single_member_log", error_=sys.exc_info())

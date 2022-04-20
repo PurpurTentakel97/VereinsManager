@@ -2,20 +2,25 @@
 # 11.04.2022
 # VereinsManager / Log Handler
 
+import sys
 import datetime
 
 from helpers import helper
-from config import config_sheet as c
+from config import config_sheet as c, exception_sheet as e
 from logic.sqlite import select_handler as s_h
 import debug
 
 debug_str: str = "Log Handler"
 
 
-def get_log_member_data(target_id: int) -> list:
-    data: list = s_h.select_handler.get_member_log_data()
-    new_data: list = _transform_member_data(data=data, target_id=target_id)
-    return new_data
+def get_log_member_data(target_id: int) -> tuple[str | list, bool]:
+    try:
+        data: list = s_h.select_handler.get_member_log_data()
+        new_data: list = _transform_member_data(data=data, target_id=target_id)
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"get_log_member_data", error_=sys.exc_info())
+        return error.message, False
+    return new_data, True
 
 
 # transform
