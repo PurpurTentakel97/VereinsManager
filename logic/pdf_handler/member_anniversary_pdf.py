@@ -2,19 +2,16 @@
 # 06.03.2022
 # VereinsManager / Member Anniversary PDF
 
-import sys
 from datetime import datetime
 
-from reportlab.lib.units import cm
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 
+from config import config_sheet as c
+from logic.pdf_handler.base_pdf import BasePDF
 from logic.main_handler import organisation_handler
-from config import config_sheet as c, exception_sheet as e
 from logic.data_handler import member_anniversary_data_handler
-from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 import debug
 
 debug_str: str = "MemberAnniversaryPDF"
@@ -28,10 +25,15 @@ class MemberAnniversaryPDF(BasePDF):
     def create_pdf(self, path: str, year: int, active: bool = True) -> tuple[None | str, bool]:
         self.create_basics(path)
         doc: SimpleDocTemplate = self._get_doc()
-        anniversary_data = self._get_data(year=year, active=active)
+        anniversary_data, valid = self._get_data(year=year, active=active)
+        if not valid:
+            return anniversary_data, valid
 
         elements: list = list()
-        elements = self._get_header(year=year, elements=elements)
+        result, valid = self._get_header(year=year)
+        if not valid:
+            return result, valid
+        elements.extend(result)
 
         elements = self._get_table_elements(anniversary_data, elements)
         elements = elements[:-1]
@@ -95,7 +97,8 @@ class MemberAnniversaryPDF(BasePDF):
                 ]
         return headers, elements
 
-    def _get_header(self, year: int, elements: list) -> list:
+    def _get_header(self, year: int) -> tuple[str | list, bool]:
+        elements: list = list()
         if self._is_icon():
             elements.append(self._get_icon(type_="table"))
 
@@ -106,26 +109,31 @@ class MemberAnniversaryPDF(BasePDF):
                                       self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
 
-        organisation_data, _ = organisation_handler.get_organisation_data()
+        organisation_data, valid = organisation_handler.get_organisation_data()
+        if not valid:
+            return organisation_data, valid
 
         if organisation_data['name']:
             elements.append(Paragraph(organisation_data['name'], self.style_sheet['Title']))
 
         elements.append(Paragraph("Geburtstage / Jubiläen", self.style_sheet['Title']))
         elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
-        return elements
+        return elements, True
 
     @staticmethod
-    def _get_data(year: int | None, active: bool) -> dict:
+    def _get_data(year: int | None, active: bool) -> tuple[str | dict, bool]:
         if year:
-            data, _ = member_anniversary_data_handler.get_anniversary_member_data(
+            data, valid = member_anniversary_data_handler.get_anniversary_member_data(
                 type_="other", active=active, year=year)
 
         else:
-            data, _ = member_anniversary_data_handler.get_anniversary_member_data(
+            data, valid = member_anniversary_data_handler.get_anniversary_member_data(
                 type_="current", active=active)
 
-        return data
+        if not valid:
+            return data, valid
+
+        return data, True
 
     @staticmethod
     def _get_style_data() -> list:
