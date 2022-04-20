@@ -11,10 +11,10 @@ from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
 
 from helpers import helper
 from logic.sqlite import select_handler as s_h
+from logic.pdf_handler.base_pdf import BasePDF
 from logic.main_handler import organisation_handler
 from logic.data_handler import member_table_data_handler
 from config import config_sheet as c, exception_sheet as e
-from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
 import debug
 
 debug_str: str = "MemberTablePDF"
@@ -29,8 +29,12 @@ class MemberTablePDF(BasePDF):
     def create_pdf(self, path: str, active: bool) -> tuple[str | None, bool]:
         self.create_basics(path)
         doc: SimpleDocTemplate = self._get_doc()
-        data = self._get_data(active)
-        type_ids = self._get_type_ids()
+        data, valid = self._get_data(active)
+        if not valid:
+            return data, valid
+        type_ids, valid = self._get_type_ids()
+        if not valid:
+            return type_ids, valid
 
         elements: list = list()
 
@@ -134,14 +138,18 @@ class MemberTablePDF(BasePDF):
         return default_width + character_width * length
 
     @staticmethod
-    def _get_data(active: bool) -> dict:
-        data, _ = member_table_data_handler.get_member_table_data(active=active)
-        return data
+    def _get_data(active: bool) -> tuple[str | dict, bool]:
+        data, valid = member_table_data_handler.get_member_table_data(active=active)
+        return data, valid
 
     @staticmethod
-    def _get_type_ids() -> list:
-        type_ids = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
-        return [[x[0], x[1]] for x in type_ids]
+    def _get_type_ids() -> tuple[str | list, bool]:
+        try:
+            type_ids = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
+            return [[x[0], x[1]] for x in type_ids], True
+        except e.OperationalError as error:
+            debug.error(item=debug_str, keyword=f"_get_type_ids", error_=sys.exc_info())
+            return error.message, False
 
     @staticmethod
     def _get_default_table_data() -> list:
