@@ -4,6 +4,7 @@
 
 import datetime
 import sys
+from typing import Tuple
 
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Frame, PageTemplate, Paragraph, FrameBreak, Spacer
@@ -43,7 +44,9 @@ class MemberEntryLetterPDF(BasePDF):
         self.create_basics(path=path)
         doc: SimpleDocTemplate = self._get_doc()
         frames: dict = self._get_frames(doc=doc)
-        self._get_data(ID=ID, active=active, log_id=log_id)
+        result, valid = self._get_data(ID=ID, active=active, log_id=log_id)
+        if not valid:
+            return result, valid
 
         try:
             validation.check_member_entry_letter_export(log_data=self.log_data)
@@ -59,17 +62,30 @@ class MemberEntryLetterPDF(BasePDF):
 
         return self._export(doc=doc, elements=elements, numbered=False)
 
-    def _get_data(self, ID: int, active: bool, log_id: int) -> None:
-        member_data, _ = member_handler.get_member_data(ID=ID, active=active)
+    def _get_data(self, ID: int, active: bool, log_id: int) -> tuple[None | str, bool]:
+        member_data, valid = member_handler.get_member_data(ID=ID, active=active)
+        if not valid:
+            return member_data, valid
         self.member_data = member_data['member_data']
 
-        self.organisation_data, _ = organisation_handler.get_organisation_data()
-        debug.debug(item=debug_str, keyword="_get_data", message=f"organisation_data = {self.organisation_data}")
-        self.contact_person_data, _ = user_handler.get_data_of_user_by_ID(
-            ID=self.organisation_data['contact_person'][0],
-            active=True)
-        self.current_user_data, _ = user_handler.get_data_of_user_by_ID(ID=c.config.user['ID'], active=True)
-        self.log_data, _ = log_handler.get_log_by_ID(ID=log_id)
+        self.organisation_data, valid = organisation_handler.get_organisation_data()
+        if not valid:
+            return self.organisation_data, valid
+
+        self.contact_person_data, valid = user_handler.get_data_of_user_by_ID(
+            ID=int(self.organisation_data['contact_person'][0]), active=True)
+        if not valid:
+            return self.contact_person_data, valid
+
+        self.current_user_data, valid = user_handler.get_data_of_user_by_ID(ID=c.config.user['ID'], active=True)
+        if not valid:
+            return self.current_user_data, valid
+
+        self.log_data, valid = log_handler.get_log_by_ID(ID=log_id)
+        if not valid:
+            return self.log_data, valid
+
+        return None, True
 
     @staticmethod
     def _get_frames(doc: SimpleDocTemplate) -> dict:
