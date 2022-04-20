@@ -40,8 +40,10 @@ class MemberLogWindow(BaseWindow):
         self._export_log_btn.clicked.connect(self._export_log)
 
         self._member_lb: QLabel = QLabel("Mitgliedsname")
-        self._members_list_active: ListFrame = ListFrame(window=self, type_="member_log", active=True)
-        self._members_list_inactive: ListFrame = ListFrame(window=self, type_="member_log", active=False)
+        self._members_list_active: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_member_name,
+                                                         list_method=self.load_single_member, active=True)
+        self._members_list_inactive: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_member_name,
+                                                           list_method=self.load_single_member, active=False)
 
         self._tabs: QTabWidget = QTabWidget()
         self._create_tabs()

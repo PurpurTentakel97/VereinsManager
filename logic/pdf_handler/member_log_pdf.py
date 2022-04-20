@@ -3,17 +3,16 @@
 # VereinsManager / Log Handler
 
 from _datetime import datetime
-import os
-import sys
 
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 from reportlab.lib.units import cm
 
-from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
+from helpers import helper
+from logic.pdf_handler.base_pdf import BasePDF
 from logic.data_handler import member_log_data_handler
 from logic.main_handler import organisation_handler, member_handler
-from config import config_sheet as c, exception_sheet as e
+from config import config_sheet as c
 import debug
 
 debug_str: str = "Log Handler"
@@ -66,17 +65,11 @@ class MemberLogPDF(BasePDF):
         member_data, _ = member_handler.get_member_data(ID=ID, active=active)
         member_data: dict = member_data['member_data']
 
-        if member_data['first_name'] and member_data['last_name']:
-            return f"{member_data['first_name']} {member_data['last_name']}"
-        elif member_data['first_name']:
-            return member_data['first_name']
-        elif member_data['last_name']:
-            return member_data['last_name']
-        else:
-            return "Kein Name vorhanden"
+        name = helper.combine_strings(strings=(member_data['first_name'], member_data['last_name']))
+        return name
 
     def _get_table(self, data: list) -> list:
-        table_data: list = self._get_table_date(data=data)
+        table_data: list = self._get_table_data(data=data)
         style_data: list = self._get_default_style_data()
 
         table: Table = Table(table_data, style=style_data, repeatRows=1)
@@ -86,7 +79,7 @@ class MemberLogPDF(BasePDF):
             table,
         ]
 
-    def _get_table_date(self, data: list) -> list:
+    def _get_table_data(self, data: list) -> list:
         table_data: list = self._get_default_table_data()
 
         for row_id, entry in enumerate(data, start=1):

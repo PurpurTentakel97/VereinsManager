@@ -10,9 +10,6 @@ pdf
     fix maps link with no data in member card pdf
     move filenames into config
 
-    member_table
-        remove None
-
 sql database
     let unser choose database name
     password

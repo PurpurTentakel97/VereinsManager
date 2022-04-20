@@ -172,19 +172,27 @@ def _transform_bool_to_text(entry: int) -> str:
 
 
 def _transform_comment_text(old_entry: str, new_entry: str) -> [str | None, str | None]:
-    if old_entry or new_entry is None:
+    if old_entry is None or new_entry is None:
+        if old_entry and len(old_entry) > 20:
+            old_entry = old_entry[:20] + "..."
+        if new_entry and len(new_entry) > 20:
+            new_entry = new_entry[:20] + "..."
         return old_entry, new_entry
+
+    index: int = 0
     if len(new_entry) > 20:
-        index: int = 0
         for new_character, old_character in zip(new_entry, old_entry):
             if old_character != new_character:
-                index = new_entry.index(new_character)
+                index -= 5
+                if index < 0:
+                    index = 0
                 break
-        new_entry = new_entry[index:]
-        old_entry = old_entry[index:]
-        if len(new_entry) > 20:
-            new_entry = new_entry[:20]
-        if len(old_entry) > 20:
-            old_entry = old_entry[:20]
+            index += 1
+    new_entry = new_entry[index:]
+    old_entry = old_entry[index:]
+    if len(new_entry) > 20:
+        new_entry = new_entry[:20] + "..."
+    if len(old_entry) > 20:
+        old_entry = old_entry[:20] + "..."
 
     return old_entry, new_entry
