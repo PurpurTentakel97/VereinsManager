@@ -12,7 +12,7 @@ from helpers import validation
 from logic.main_handler import organisation_handler
 from logic.data_handler import member_card_data_handler
 from config import exception_sheet as e, config_sheet as c
-from logic.pdf_handler.base_pdf import BasePDF, NumberedCanvas
+from logic.pdf_handler.base_pdf import BasePDF
 
 import debug
 
@@ -36,7 +36,9 @@ class MemberCardPDF(BasePDF):
 
         self.create_basics(path)
         doc: SimpleDocTemplate = self._get_doc()
-        data = member_card_data_handler.get_card_member_data(active=active, ID=ID)
+        data, valid = member_card_data_handler.get_card_member_data(active=active, ID=ID)
+        if not valid:
+            return data, valid
         self._set_column_width(data=data)
 
         elements: list = list()

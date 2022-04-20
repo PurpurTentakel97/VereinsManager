@@ -3,6 +3,7 @@
 # VereinsManager / Member Card Data Handler
 
 import datetime
+from typing import Tuple
 
 from helpers import helper
 from config import config_sheet as c
@@ -12,13 +13,15 @@ from logic.sqlite import select_handler as s_h
 debug_str: str = "Member Card Data Handler"
 
 
-def get_card_member_data(active: bool, ID: int) -> dict:
-    data, _ = member_handler.get_member_data(ID=ID, active=active)
+def get_card_member_data(active: bool, ID: int) -> tuple[str | dict, bool]:
+    data, valid = member_handler.get_member_data(ID=ID, active=active)
+    if not valid:
+        return data, valid
     data['member_data'] = _transform_member_data(data['member_data'])
     data['phone'] = _transform_nexus_data(data['phone'])
     data['mail'] = _transform_nexus_data(data['mail'])
     data['position'] = _transform_position_data(data['position'])
-    return data
+    return data, True
 
 
 def _get_years_from_timestamp(timestamp: int) -> str:
