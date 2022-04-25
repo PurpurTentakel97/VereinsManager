@@ -3,12 +3,12 @@
 # VereinsManager / Member Card Data Handler
 
 import datetime
-from typing import Tuple
 
 from helpers import helper
 from config import config_sheet as c
 from logic.main_handler import member_handler
 from logic.sqlite import select_handler as s_h
+import debug
 
 debug_str: str = "Member Card Data Handler"
 
@@ -33,8 +33,8 @@ def _get_years_from_timestamp(timestamp: int) -> str:
 
 
 def _transform_member_data(data: dict) -> dict:  # No need to transform membership_type
-    data = _transform_member_strings(data=data)
     data = _transform_maps(data=data)
+    data = _transform_member_strings(data=data)
     data = _transform_street(data=data)
     data = _transform_name(data=data)
     data = _transform_member_dates(data=data)
@@ -45,7 +45,6 @@ def _transform_member_strings(data: dict) -> dict:
     keys: list = [
         'zip_code',
         'city',
-        'maps',
         'comment_text',
     ]
     key: str
@@ -55,6 +54,9 @@ def _transform_member_strings(data: dict) -> dict:
 
 
 def _transform_maps(data: dict) -> dict:
+    if data['maps']:
+        return data
+
     maps: str = helper.combine_maps_string(street=data['street'], number=data['number'], zip_code=data['zip_code'],
                                            city=data['city'])
     data['maps'] = maps

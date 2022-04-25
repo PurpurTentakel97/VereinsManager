@@ -7,7 +7,6 @@ soft delete
 
 pdf
     refactor pdf names
-    fix maps link with no data in member card pdf
     move filenames into config
 
 sql database
@@ -22,8 +21,8 @@ UI
 
 
 fatal error:
-    enter log when to member exists
-    export letter with no organisation data
+    enter log window when no member exists
+    export letter pdf with no organisation data
 
 
 test
