@@ -79,7 +79,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="typ name")
 
     # member
-    def get_names_of_member(self, active: bool) -> tuple:
+    def get_names_of_member(self, active: bool) -> list:
         table: str = "v_active_member" if active else "v_inactive_member"
         sql_command: str = f"""SELECT ID,first_name,last_name FROM {table} ORDER BY last_name ASC,first_name ASC;"""
         try:
@@ -137,6 +137,15 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword="get_all_IDs_from_member", error_=sys.exc_info())
             raise e.LoadingFailed(info="all member IDs")
 
+    def get_all_IDs_and_updated_from_member(self, active: bool) -> tuple:
+        sql_command: str = """SELECT ID,_updated FROM member WHERE active is ?;"""
+
+        try:
+            return self.cursor.execute(sql_command, (active,)).fetchall()
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"get_all_IDs_and_updated_from_member", error_=sys.exc_info())
+            raise e.OperationalError()
+
     # member nexus
     def get_phone_number_by_member_id(self, member_id: int) -> tuple:
         sql_command: str = f"""SELECT ID,type_id,number FROM member_phone WHERE member_id is ? ORDER BY type_id ASC;"""
@@ -187,7 +196,7 @@ class SelectHandler(Database):
             raise e.LoadingFailed(info="single position")
 
     # user
-    def get_names_of_user(self, active: bool) -> tuple:
+    def get_names_of_user(self, active: bool) -> list:
         table: str = "v_active_user" if active else "v_inactive_user"
         sql_command: str = f"""SELECT ID,first_name,last_name FROM {table} ORDER BY last_name ASC,first_name ASC;"""
         try:
@@ -223,6 +232,15 @@ class SelectHandler(Database):
         except self.OperationalError:
             debug.error(item=debug_str, keyword="get_hashed_password_by_ID", error_=sys.exc_info())
             raise e.LoadingFailed(info="user passsword")
+
+    def get_all_IDs_and_updated_from_user(self, active: bool) -> tuple:
+        sql_command: str = """SELECT ID,_updated FROM user WHERE _active is ?;"""
+
+        try:
+            return self.cursor.execute(sql_command, (active,)).fetchall()
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"get_all_IDs_and_updated_from_user", error_=sys.exc_info())
+            raise e.OperationalError()
 
     # organisation
     def get_organisation_data(self) -> tuple:

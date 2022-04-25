@@ -634,7 +634,7 @@ class MembersWindow(BaseWindow):
             self.set_error_bar(message=result)
             return
 
-        w.window_manger.recover_window = r_w.RecoverWindow(type_="member")
+        w.window_manger.recover_member_window = r_w.RecoverWindow(type_="member")
         w.window_manger.members_window = None
         self.close()
 

@@ -20,12 +20,12 @@ class WindowManager:
         self.member_table_window = None
         self.member_anniversary_window = None
         self.member_log_window = None
+        self.recover_member_window = None
         # User
         self.user_window = None
+        self.recover_user_window = None
         # Organisation
         self.organisation_data_window = None
-        # global
-        self.recover_window = None
 
     # Main
     def is_valid_close_main_window(self) -> bool:
@@ -64,7 +64,8 @@ class WindowManager:
         return True, True
 
     # Member
-    def is_valid_member_window(self, ignore_recover_window: bool = False,
+    def is_valid_member_window(self, ignore_recover_member_window: bool = False,
+                               ignore_recover_user_window: bool = False,
                                ignore_member_table_window: bool = False,
                                ignore_member_anniversary_window: bool = False,
                                ignore_member_log_window: bool = False) -> [bool | str, bool]:
@@ -74,8 +75,11 @@ class WindowManager:
         elif self._is_window("type"):
             return "Es können keine Mitglieder berabeitet werden, währen das Typ-Fenster geöffnet ist.", False
 
-        elif self._is_window("recover", ignore_recover_window):
+        elif self._is_window("recover_member", ignore_recover_member_window):
             return "Es können keine Mitglieder berabeitet werden, währen das Ehmalige-Mitglieder-Fenster geöffnet ist.", False
+
+        elif self._is_window("recover_user", ignore_recover_user_window):
+            return "Es können keine Mitglieder berabeitet werden, währen das Ehmalige-Benutzer-Fenster geöffnet ist.", False
 
         elif self._is_window("member_table", ignore_member_table_window):
             return "Es können keine Mitglieder berabeitet werden, währen die Mitglieder-Tabelle geöffnet ist.", False
@@ -122,10 +126,10 @@ class WindowManager:
         return True, True
 
     # User
-    def is_valid_user_window(self, ignore_recover_window: bool = False) -> [str | bool, bool]:
+    def is_valid_user_window(self, ignore_recover_user_window: bool = False) -> [str | bool, bool]:
         if self._is_window("user"):
             return "Benutzer Fenster bereits geöffnet.", False
-        elif self._is_window("recover", ignore_recover_window):
+        elif self._is_window("recover_user", ignore_recover_user_window):
             return "Es können keine Benutzer berabeitet werden, währen das Ehmalige-Benutzer-Fenster geöffnet ist.", False
         return True, True
 
@@ -133,7 +137,8 @@ class WindowManager:
         windows: tuple = (
             self.member_table_window,
             self.member_anniversary_window,
-            self.recover_window,
+            self.recover_member_window,
+            self.recover_user_window,
             self.member_log_window,
             self.members_window,
             self.types_window,
@@ -154,15 +159,17 @@ class WindowManager:
     # Global
     def is_valid_recover_window(self, type_: str, ignore_member_window: bool = False,
                                 ignore_user_window: bool = False) -> [bool | str, bool]:
-        if self._is_window("recover"):
-            return "Wiederherstellen Fenster bereits geöffnet.", False
         match type_:
             case "member":
                 if self._is_window("member", ignore_member_window):
                     return "Es können keine Ehmaligen Mitglider berabeitet werden, währen das Mitglieder-Fenster geöffnet ist.", False
+                if self._is_window("recover_member"):
+                    return "Wiederherstellen Fenster bereits geöffnet.", False
             case "user":
                 if self._is_window("user", ignore_user_window):
                     return "Es können keine Ehmaligen Benutzer berabeitet werden, währen das Benutzer-Fenster geöffnet ist.", False
+                if self._is_window("recover_user"):
+                    return "Wiederherstellen Fenster bereits geöffnet.", False
 
         return True, True
 
@@ -171,7 +178,8 @@ class WindowManager:
         windows: tuple = (
             self.member_table_window,
             self.member_anniversary_window,
-            self.recover_window,
+            self.recover_member_window,
+            self.recover_user_window,
             self.member_log_window,
             self.members_window,
             self.types_window,
@@ -190,8 +198,10 @@ class WindowManager:
         match window:
             case "main":
                 dummy_window = self.main_window
-            case "recover":
-                dummy_window = self.recover_window
+            case "recover_member":
+                dummy_window = self.recover_member_window
+            case "recover_user":
+                dummy_window = self.recover_user_window
             case "type":
                 dummy_window = self.types_window
 

@@ -342,7 +342,7 @@ class UserWindow(BaseWindow):
             self.set_error_bar(message=result)
             return
 
-        w.window_manger.recover_window = recover_window.RecoverWindow(type_="user")
+        w.window_manger.recover_user_window = recover_window.RecoverWindow(type_="user")
         w.window_manger.user_window = None
         self.close()
 

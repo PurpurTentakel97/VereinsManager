@@ -77,6 +77,10 @@ def update_member_activity(ID: int, active: bool, log_date: int | None = None) -
     return member_handler.update_member_activity(ID=ID, active=active, log_date=log_date)
 
 
+def delete_member(ID: int) -> tuple[str, bool]:
+    return member_handler.delete_member(ID=ID)
+
+
 # user
 def save_update_user(data: dict) -> [str | int | None, bool]:
     return user_handler.add_update_user(data=data)
@@ -96,6 +100,10 @@ def get_all_user_name_without_default(active: bool = True) -> [str | dict, bool]
 
 def get_user_data_by_id(ID: int, active: bool) -> [str | dict, bool]:
     return user_handler.get_data_of_user_by_ID(ID=ID, active=active)
+
+
+def delete_user(ID: int) -> tuple[str, bool]:
+    return user_handler.delete_user(ID=ID)
 
 
 # pdf_handler

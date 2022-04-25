@@ -22,7 +22,6 @@ if __name__ == "__main__":
         global_database_handler.create()
         global_pdf_handler.create_pdf_handler()
         window_handler.on_start()
-        global_handler.delete_inactive_data()
         debug.export_error()
     except:
         debug.error(item=debug_str, keyword="main", error_=sys.exc_info())

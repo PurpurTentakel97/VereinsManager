@@ -5,8 +5,8 @@
 import sys
 
 from helpers import validation
-from logic.main_handler import member_nexus_handler
 from config import config_sheet as c, exception_sheet as e
+from logic.main_handler import member_nexus_handler, global_handler
 from logic.sqlite import select_handler as s_h, delete_handler as d_h, log_handler as l_h, update_handler as u_h, \
     statistics_handler as st_h, add_handler as a_h
 import debug
@@ -54,10 +54,13 @@ def get_member_data(ID: int, active: bool = True) -> tuple[str | dict, bool]:
         return error.message, False
 
 
-def get_names_of_member(active: bool = True) -> tuple:
+def get_names_of_member(active: bool = True) -> tuple[list | str, bool]:
     try:
         validation.must_bool(bool_=active)
-        return s_h.select_handler.get_names_of_member(active=active), True
+        data = s_h.select_handler.get_names_of_member(active=active)
+        if not active:
+            data = _get_old_bool(data=data)
+        return data, True
 
     except e.InputError as error:
         debug.info(item=debug_str, keyword="get_names_of_member", error_=sys.exc_info())
@@ -90,6 +93,14 @@ def _get_member_activity_and_membership_by_id(ID: int) -> list:
         data[0] = data[0] == 1
 
     return data
+
+
+def get_all_member_IDs_and_updated(active: bool) -> tuple[tuple | str, bool]:
+    try:
+        return s_h.select_handler.get_all_IDs_and_updated_from_member(active=active), True
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"get_member_ID_and_updated", error_=sys.exc_info())
+        return error.message, False
 
 
 # add / update
@@ -164,20 +175,49 @@ def _update_member(ID: int | None, data: dict, log_date: int | None) -> None:  #
 
 
 # delete
-def delete_inactive_member() -> None:
+def delete_member(ID: int) -> tuple[str, bool]:
     try:
-        reference_data, _ = get_names_of_member(active=False)
-        for ID, *_ in reference_data:
-            member_nexus_handler.delete_inactive_member_nexus(member_id=ID)
-            l_h.log_handler.delete_log(target_id=ID, target_table="member")
-            d_h.delete_handler.delete_member(ID=ID)
+        validation.must_positive_int(int_=ID, max_length=None)
 
-    except e.OperationalError:
+        member_nexus_handler.delete_inactive_member_nexus(member_id=ID)
+        l_h.log_handler.delete_log(target_id=ID, target_table="member")
+        d_h.delete_handler.delete_member(ID=ID)
+        return "", True
+
+    except e.OperationalError as error:
         debug.error(item=debug_str, keyword="delete_inactive_member", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"delete_member", error_=sys.exc_info())
+        return error.message, False
 
 
 # helpers
-def _transform_type_for_safe(data, raw_id, key) -> dict:
+def _get_old_bool(data: list) -> list:
+    reference_data = s_h.select_handler.get_all_IDs_and_updated_from_member(active=False)
+    new_data: list = list()
+
+    for ID, firstname, lastname in data:
+        for ref_ID, updated in reference_data:
+
+            if not ref_ID == ID:
+                continue
+
+            entry: tuple = (
+                ID,
+                firstname,
+                lastname,
+                global_handler.get_is_delete_bool(updated=updated)
+            )
+
+            new_data.append(entry)
+            break
+
+    return new_data
+
+
+def _transform_type_for_safe(data: dict, raw_id: int, key: str) -> dict:
     type_id = s_h.select_handler.get_id_by_type_name(raw_id=raw_id, name=data[key])
     if type_id:
         data[key] = type_id[0]
@@ -186,7 +226,7 @@ def _transform_type_for_safe(data, raw_id, key) -> dict:
     return data
 
 
-def _transform_type_for_load(data: dict, key) -> dict:
+def _transform_type_for_load(data: dict, key: str) -> dict:
     if isinstance(data[key], int):
         type_name, extra_value = s_h.select_handler.get_type_name_and_extra_value_by_ID(data[key])
         data[key] = type_name
@@ -194,7 +234,7 @@ def _transform_type_for_load(data: dict, key) -> dict:
     return data
 
 
-def _transform_dates_for_save(data) -> dict:
+def _transform_dates_for_save(data: dict) -> dict:
     if data["birth_date"] == c.config.date_format["None_date"]:
         data["birth_date"] = None
     if data["entry_date"] == c.config.date_format["None_date"]:
@@ -202,7 +242,7 @@ def _transform_dates_for_save(data) -> dict:
     return data
 
 
-def _transform_dates_for_load(data) -> dict:
+def _transform_dates_for_load(data: dict) -> dict:
     if data["birth_date"] is None:
         data["birth_date"] = c.config.date_format["None_date"]
     if data["entry_date"] is None:
@@ -210,7 +250,7 @@ def _transform_dates_for_load(data) -> dict:
     return data
 
 
-def _transform_to_dict(data) -> dict:
+def _transform_to_dict(data: list) -> dict:
     return {
         "ID": data[0],
         "first_name": data[1],

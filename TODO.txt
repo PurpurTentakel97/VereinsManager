@@ -2,12 +2,9 @@
 # 21.01.2022
 # VereinsManager // TODO
 
-soft delete
-    selete at date
-
 pdf
     refactor pdf names
-    print letter for size
+    print letter for size // does address match window
 
 sql database
     let unser choose database name
@@ -42,3 +39,4 @@ test
         member letter export
 
 haftungsausschluss
+    list tooltiptext in recover window

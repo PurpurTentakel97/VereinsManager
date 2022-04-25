@@ -1,10 +1,12 @@
 # Purpur Tentakel
 # 21.03.2022
 # VereinsManager / User Handler
+
 import sys
 
 from helpers import hasher, validation
 from config import exception_sheet as e, config_sheet as c
+from logic.main_handler import global_handler
 from logic.sqlite import select_handler as s_h, delete_handler as d_h, update_handler as u_h, add_handler as a_h
 import debug
 
@@ -15,7 +17,10 @@ debug_str: str = "User Handler"
 def get_names_of_user(active: bool = True) -> [str | tuple, bool]:
     try:
         validation.must_bool(bool_=active)
-        return s_h.select_handler.get_names_of_user(active=active), True
+        data = s_h.select_handler.get_names_of_user(active=active)
+        if not active:
+            data = _get_old_bool(data=data)
+        return data, True
 
     except e.InputError as error:
         debug.info(item=debug_str, keyword="get_names_of_user", error_=sys.exc_info())
@@ -85,6 +90,14 @@ def get_hashed_password_by_ID(ID: int) -> bytes:
         debug.error(item=debug_str, keyword="get_hashed_password_by_ID", error_=sys.exc_info())
 
 
+def get_all_user_IDs_and_updated(active: bool) -> tuple[tuple | str, bool]:
+    try:
+        return s_h.select_handler.get_all_IDs_and_updated_from_user(active=active), True
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"get_all_user_IDs_and_updated", error_=sys.exc_info())
+        return error.message, False
+
+
 # add / update
 def add_update_user(data: dict) -> [str | int | None, bool]:
     try:
@@ -128,10 +141,41 @@ def update_user_activity(ID: int, active: bool) -> [str, bool]:
 
 
 # delete
-def delete_inactive_user() -> None:
+def delete_user(ID: int) -> tuple[str, bool]:
     try:
-        reference_data, _ = get_names_of_user(active=False)
-        for ID, *_ in reference_data:
-            d_h.delete_handler.delete_user(ID=ID)
-    except e.OperationalError:
+        validation.must_positive_int(int_=ID)
+
+        d_h.delete_handler.delete_user(ID=ID)
+        return "", True
+
+    except e.OperationalError as error:
         debug.error(item=debug_str, keyword="delete_inactive_user", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"delete_user", error_=sys.exc_info())
+        return error.message, False
+
+
+# helper
+def _get_old_bool(data: list) -> list:
+    reference_data = s_h.select_handler.get_all_IDs_and_updated_from_user(active=False)
+    new_data: list = list()
+
+    for ID, firstname, lastname in data:
+        for ref_ID, updated in reference_data:
+
+            if not ref_ID == ID:
+                continue
+
+            entry: tuple = (
+                ID,
+                firstname,
+                lastname,
+                global_handler.get_is_delete_bool(updated=updated)
+            )
+
+            new_data.append(entry)
+            break
+
+    return new_data

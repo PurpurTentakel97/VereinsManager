@@ -5,7 +5,8 @@
     "long": "%d.%m.%Y // %H:%M:%S",
     "long_save": "%d_%m_%Y__%H_%M_%S",
     "path": "%Y-%m-%d",
-    "None_date": -2208992400
+    "None_date": -2208992400,
+    "delete_years": 10
   },
   "raw_type_id": {
     "membership": 1,

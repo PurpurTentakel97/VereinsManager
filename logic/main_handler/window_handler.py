@@ -3,8 +3,9 @@
 # VereinsManager / Window Handler
 
 from helpers import validation
+from logic.main_handler import global_handler
 from config import config_sheet as c, exception_sheet as e
-from ui.windows import alert_window, base_window, window_manager, user_verify_window, main_window
+from ui.windows import alert_window, base_window, window_manager, user_verify_window, main_window, recover_window
 import debug
 
 debug_str: str = "Window Handler"
@@ -22,6 +23,9 @@ def create_main_window() -> None:
     main_window.create(default_user)
     if not default_user:
         alert_window.create()
+        if global_handler.is_delete_inactive_data():
+            recover_window.create_recover_window(type_="member")
+            recover_window.create_recover_window(type_="user")
 
 
 def _is_default_user() -> bool:

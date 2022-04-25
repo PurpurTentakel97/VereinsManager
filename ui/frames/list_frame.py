@@ -3,17 +3,22 @@
 # VereinsManager / List Frame
 
 from PyQt5.QtWidgets import QListWidgetItem, QListWidget, QFrame, QVBoxLayout
+from PyQt5.QtGui import QColor
 
-import transition
+import debug
+
+debug_str: str = "ListFrame"
 
 
 class ListItem(QListWidgetItem):
-    def __init__(self, ID: int or None, first_name: str or None = None, last_name: str or None = None):
+    def __init__(self, ID: int or None, first_name: str or None = None, last_name: str or None = None,
+                 old: bool = False):
         super().__init__()
 
         self.ID: int = ID
         self.first_name: str or None = first_name
         self.last_name: str or None = last_name
+        self.old: bool = old
 
         self.set_name(type_='set')
 
@@ -43,6 +48,7 @@ class ListFrame(QFrame):
         self._get_names_method = get_names_method
         self._list_method = list_method
         self._window = window
+        self._list_items: list = list()
 
         self._create_ui()
         self._create_layout()
@@ -58,15 +64,34 @@ class ListFrame(QFrame):
 
         self.setLayout(list_)
 
+    def set_item_backgrounds(self) -> None:
+        for item in self._list_items:
+            item: ListItem
+            if item.old:
+                item.setBackground(QColor(255, 0, 0, 180))
+
     def load_list_data(self) -> None:
         self.list.clear()
+        self._list_items.clear()
         data, valid = self._get_names_method(active=self._active)
+        debug.debug(item=debug_str, keyword="load_list_data", message=f"window = {self._window} // data = {data}")
         if not valid:
             self._window.set_error_bar(data)
             return
-        for ID, first_name, last_name in data:
-            new_member: ListItem = ListItem(ID=ID, first_name=first_name, last_name=last_name)
-            self.list.addItem(new_member)
+        for entry in data:
+            match len(entry):
+                case 4:
+                    ID, first_name, last_name, old = entry
+                    new_member: ListItem = ListItem(ID=ID, first_name=first_name, last_name=last_name, old=old)
+                    self.list.addItem(new_member)
+                    self._list_items.append(new_member)
+                case 3:
+                    ID, first_name, last_name = entry
+                    new_member: ListItem = ListItem(ID=ID, first_name=first_name, last_name=last_name)
+                    self.list.addItem(new_member)
+                    self._list_items.append(new_member)
+
+        self.set_item_backgrounds()
         try:
             self.list.setCurrentRow(0)
             self._list_method()
