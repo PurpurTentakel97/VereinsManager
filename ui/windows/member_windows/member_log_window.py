@@ -189,13 +189,17 @@ class MemberLogWindow(BaseWindow):
         current_member: ListItem = self._get_current_member()
         name: str = current_member.set_name('get')
         name = name.replace(" ", "_")
+        file = c.config.files['member_log_pdf']
+        file = file.replace('<name>', name)
 
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(os.getcwd(), c.config.dirs['save'],
+                                                  os.path.join(os.getcwd(),
+                                                               c.config.dirs['save'],
                                                                c.config.dirs['organisation'],
-                                                               c.config.dirs['export'], c.config.dirs['member'],
+                                                               c.config.dirs['export'],
+                                                               c.config.dirs['member'],
                                                                c.config.dirs['member_log'],
-                                                               f"{name}_log.pdf"),
+                                                               file),
                                                   "PDF (*.pdf);;All Files (*)")
         if not check:
             self.set_info_bar(message="Export abgebrochen")
@@ -218,13 +222,17 @@ class MemberLogWindow(BaseWindow):
         current_member: ListItem = self._get_current_member()
         name: str = current_member.set_name('get')
         name = name.replace(" ", "_")
+        file: str = c.config.files['member_letter_pdf']
+        file = file.replace('<name>', name)
 
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(os.getcwd(), c.config.dirs['save'],
+                                                  os.path.join(os.getcwd(),
+                                                               c.config.dirs['save'],
                                                                c.config.dirs['organisation'],
-                                                               c.config.dirs['export'], c.config.dirs['member'],
+                                                               c.config.dirs['export'],
+                                                               c.config.dirs['member'],
                                                                c.config.dirs['member_letter'],
-                                                               f"{name}_letter.pdf"),
+                                                               file),
                                                   "PDF (*.pdf);;All Files (*)")
         if not check:
             self.set_info_bar(message="Export abgebrochen")

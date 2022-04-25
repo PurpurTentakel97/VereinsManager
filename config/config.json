@@ -38,7 +38,12 @@
   "files": {
     "database": "default_database.vm",
     "icon": "icon.png",
-    "default_icon": "default_icon.png"
+    "default_icon": "default_icon.png",
+    "member_card_pdf": "<first_name>_<last_name>.pdf",
+    "member_table_pdf": "Mitglieder.pdf",
+    "member_letter_pdf": "<name>_letter.pdf",
+    "member_log_pdf": "<name>_log.pdf",
+    "member_anniversary_pdf": "Geburtstage-Jubilaen.pdf"
   },
   "user": {
     "ID": 0,

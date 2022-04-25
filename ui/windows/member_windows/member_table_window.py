@@ -151,8 +151,10 @@ class MemberTableWindow(BaseWindow):
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                                   os.path.join(os.getcwd(), c.config.dirs['save'],
                                                                c.config.dirs['organisation'],
-                                                               c.config.dirs['export'], c.config.dirs['member'],
-                                                               c.config.dirs['member_list'], "Mitglieder.pdf"),
+                                                               c.config.dirs['export'],
+                                                               c.config.dirs['member'],
+                                                               c.config.dirs['member_list'],
+                                                               c.config.files['member_table_pdf']),
                                                   "PDF (*.pdf);;All Files (*)")
         if not check:
             self.set_info_bar(message="Export abgebrochen")

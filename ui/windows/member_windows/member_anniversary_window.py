@@ -60,12 +60,15 @@ class MemberAnniversaryWindow(BaseWindow):
 
     def _export(self) -> None:
         transition.create_default_dir("member_anniversary")
+        file = c.config.files['member_anniversary_pdf']
         file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(os.getcwd(), c.config.dirs['save'],
+                                                  os.path.join(os.getcwd(),
+                                                               c.config.dirs['save'],
                                                                c.config.dirs['organisation'],
-                                                               c.config.dirs['export'], c.config.dirs['member'],
+                                                               c.config.dirs['export'],
+                                                               c.config.dirs['member'],
                                                                c.config.dirs['member_anniversary'],
-                                                               "Geburtstage-Jubilaen.pdf"),
+                                                               file),
                                                   "PDF (*.pdf);;All Files (*)")
         if not check:
             self.set_info_bar(message="Export abgebrochen")

@@ -7,7 +7,7 @@ soft delete
 
 pdf
     refactor pdf names
-    move filenames into config
+    print letter for size
 
 sql database
     let unser choose database name
