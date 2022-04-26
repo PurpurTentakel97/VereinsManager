@@ -14,7 +14,6 @@ UI
     Global
         set Icon in Taskbar
         check for screen reader
-        main window close open member window if member log window
 
 
 fatal error:
@@ -22,21 +21,6 @@ fatal error:
     export letter pdf with no organisation data
 
 
-test
-    handler
-        add
-        update
-        select
-        delete
-        statistics
-        log
-        member
-        user
-        type
-        data
-        pfd
-    validation
-        member letter export
-
 haftungsausschluss
     list tooltiptext in recover window
+    datenschutz

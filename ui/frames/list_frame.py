@@ -74,7 +74,6 @@ class ListFrame(QFrame):
         self.list.clear()
         self._list_items.clear()
         data, valid = self._get_names_method(active=self._active)
-        debug.debug(item=debug_str, keyword="load_list_data", message=f"window = {self._window} // data = {data}")
         if not valid:
             self._window.set_error_bar(data)
             return

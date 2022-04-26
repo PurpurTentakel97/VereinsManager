@@ -181,11 +181,16 @@ class WindowManager:
             self.recover_member_window,
             self.recover_user_window,
             self.member_log_window,
-            self.members_window,
             self.types_window,
             self.organisation_data_window,
         )
 
+        for window in windows:
+            window.close() if window else None
+
+        windows: tuple = (
+            self.members_window,
+        )
         for window in windows:
             window.close() if window else None
 
