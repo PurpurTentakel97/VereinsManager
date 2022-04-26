@@ -24,6 +24,7 @@ class MemberExportFrame(QFrame):
 
         self._create_ui()
         self._create_layout()
+        self._set_enable_complete_UI()
 
     def _create_ui(self) -> None:
         self.member_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_member_name,
@@ -48,6 +49,8 @@ class MemberExportFrame(QFrame):
         self._export_other_anniversary_le.setValidator(QIntValidator())
         self._export_other_anniversary_le.setPlaceholderText("zu exportierendes Jahr")
         self._export_other_anniversary_le.setText(str(datetime.now().year))
+        self._export_other_anniversary_le.textChanged.connect(self._set_enable_other_anniversary_btn)
+        self._export_other_anniversary_le.returnPressed.connect(self._export_other_anniversary)
 
         self._member_log_table: QTableWidget = QTableWidget()
         self._export_member_letter_btn: QPushButton = QPushButton("Schreiben exportieren")
@@ -76,6 +79,43 @@ class MemberExportFrame(QFrame):
 
     def set_current_member(self) -> None:
         debug.debug(item=debug_str, keyword="set_current_member", message=f"None Method")
+
+    def _set_enable_other_anniversary_btn(self) -> None:
+        self._export_other_anniversary_btn.setEnabled(self._is_export_other_anniversary())
+
+    def _set_enable_complete_UI(self) -> None:
+        is_member: bool = self._is_member()
+        elements: tuple = (
+            self._export_member_table_btn,
+            self._export_member_card_btn,
+            self._export_member_log_btn,
+            self._export_current_anniversary_btn,
+            self._export_other_anniversary_btn,
+            self._export_other_anniversary_le,
+            self._member_log_table,
+            self._export_member_letter_btn,
+        )
+
+        for element in elements:
+            element.setEnabled(is_member)
+
+    def _is_export_other_anniversary(self) -> bool:
+        number = self._export_other_anniversary_le.text().strip()
+
+        if len(number) < 1:
+            return False
+
+        elif number in ("+", "-"):
+            return False
+
+        elif len(number) > 4:
+            return False
+
+        return True
+
+    def _is_member(self) -> bool:
+        first_member: ListItem = self.member_list.list.item(0)
+        return first_member is not None
 
     def _export_table(self) -> None:
         message, valid = export_manager.export_member_table()
