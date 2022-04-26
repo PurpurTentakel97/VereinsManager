@@ -35,6 +35,9 @@ class MemberExportFrame(QFrame):
         self._export_member_card_btn: QPushButton = QPushButton("Mitglieder Karte")
         self._export_member_card_btn.clicked.connect(self._export_card)
 
+        self._export_member_log_btn: QPushButton = QPushButton("Mitglieds Log")
+        self._export_member_log_btn.clicked.connect(self._export_log)
+
         self._export_current_anniversary_btn: QPushButton = QPushButton("Aktuelle Jubiläen")
         self._export_current_anniversary_btn.clicked.connect(self._export_current_anniversary)
 
@@ -47,14 +50,15 @@ class MemberExportFrame(QFrame):
         self._export_other_anniversary_le.setText(str(datetime.now().year))
 
         self._member_log_table: QTableWidget = QTableWidget()
-        self._export_member_log_btn: QPushButton = QPushButton("Schreiben exportieren")
-        self._export_member_log_btn.clicked.connect(self._export_letter)
+        self._export_member_letter_btn: QPushButton = QPushButton("Schreiben exportieren")
+        self._export_member_letter_btn.clicked.connect(self._export_letter)
 
     def _create_layout(self) -> None:
         grid: QGridLayout = QGridLayout()
         row: int = 0
         grid.addWidget(self._export_member_table_btn, row, 0, 1, 1)
         grid.addWidget(self._export_member_card_btn, row, 1, 1, 1)
+        grid.addWidget(self._export_member_log_btn, row, 2, 1, 1)
         row += 1
         grid.addWidget(self._export_current_anniversary_btn, row, 0, 1, 1)
         grid.addWidget(self._export_other_anniversary_btn, row, 1, 1, 1)
@@ -62,7 +66,7 @@ class MemberExportFrame(QFrame):
         row += 1
         grid.addWidget(self._member_log_table, row, 0, 10, -1)
         row += 10
-        grid.addWidget(self._export_member_log_btn, row, 3, 1, -1)
+        grid.addWidget(self._export_member_letter_btn, row, 3, 1, -1)
 
         global_hox: QHBoxLayout = QHBoxLayout()
         global_hox.addWidget(self.member_list)
@@ -86,6 +90,18 @@ class MemberExportFrame(QFrame):
         current_member: ListItem = self.member_list.list.currentItem()
         message, valid = export_manager.export_member_card(first_name=current_member.first_name,
                                                            last_name=current_member.last_name, ID=current_member.ID)
+
+        if not valid:
+            self.window.set_error_bar(message=message)
+            return
+
+        self.window.set_info_bar(message=message)
+
+    def _export_log(self) -> None:
+        current_member: ListItem = self.member_list.list.currentItem()
+        name: str = current_member.set_name('get')
+
+        message, valid = export_manager.export_member_log(name=name, ID=current_member.ID, active=True)
 
         if not valid:
             self.window.set_error_bar(message=message)
