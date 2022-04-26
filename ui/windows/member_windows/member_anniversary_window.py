@@ -2,13 +2,10 @@
 # 21.01.2022
 # VereinsManager / Member Anniversary Window
 
-import os
-from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
-import transition
-from ui import window_manager as w
-from config import config_sheet as c
 from ui.windows.base_window import BaseWindow
+from ui import window_manager as w, export_manager
 from ui.windows.member_windows import members_window
 from ui.frames.other_anniversary_frame import OtherAnniversaryFrame
 from ui.frames.current_anniversary_frame import CurrentAnniversaryFrame
@@ -58,35 +55,14 @@ class MemberAnniversaryWindow(BaseWindow):
         self.setWindowTitle("Jubiläen")
 
     def _export(self) -> None:
-        transition.create_default_dir("member_anniversary")
-        file = c.config.files['member_anniversary_pdf']
-        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(os.getcwd(),
-                                                               c.config.dirs['save'],
-                                                               c.config.dirs['organisation'],
-                                                               c.config.dirs['export'],
-                                                               c.config.dirs['member'],
-                                                               c.config.dirs['member_anniversary'],
-                                                               file),
-                                                  "PDF (*.pdf);;All Files (*)")
-        if not check:
-            self.set_info_bar(message="Export abgebrochen")
-            return
-        message, result = "", True
-        match self._tabs.currentIndex():
-            case 0:
-                message, result = transition.get_member_anniversary_pdf(path=file)
-            case 1:
-                message, result = transition.get_member_anniversary_pdf(path=file, year=self._other_frame.other_year)
+        message, valid = export_manager.export_member_anniversary(index=self._tabs.currentIndex(),
+                                                                  year=self._other_frame.other_year)
 
-        if not result:
+        if not valid:
             self.set_error_bar(message=message)
             return
 
-        if self.is_open_permission():
-            transition.open_latest_export()
-
-        self.set_info_bar(message="Export abgeschlossen")
+        self.set_info_bar(message=message)
 
     def closeEvent(self, event) -> None:
         event.ignore()

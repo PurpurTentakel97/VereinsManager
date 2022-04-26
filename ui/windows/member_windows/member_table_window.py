@@ -2,14 +2,12 @@
 # 06.03.2022
 # VereinsManager / Member Table Window
 
-import os
 from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableWidget, \
-    QPushButton, QFileDialog
+    QPushButton
 
 import transition
-from ui import window_manager as w
-from config import config_sheet as c
 from ui.windows.base_window import BaseWindow
+from ui import window_manager as w, export_manager
 from ui.windows.member_windows import members_window
 
 debug_str: str = "MemberTableWindow"
@@ -147,29 +145,13 @@ class MemberTableWindow(BaseWindow):
             widget.setLayout(hbox)
 
     def _export(self) -> None:
-        transition.create_default_dir("member_list")
-        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(os.getcwd(), c.config.dirs['save'],
-                                                               c.config.dirs['organisation'],
-                                                               c.config.dirs['export'],
-                                                               c.config.dirs['member'],
-                                                               c.config.dirs['member_list'],
-                                                               c.config.files['member_table_pdf']),
-                                                  "PDF (*.pdf);;All Files (*)")
-        if not check:
-            self.set_info_bar(message="Export abgebrochen")
-            return
+        message, valid = export_manager.export_member_table()
 
-        message, result = transition.get_member_table_pdf(file)
-
-        if not result:
+        if not valid:
             self.set_error_bar(message=message)
             return
 
-        if self.is_open_permission():
-            transition.open_latest_export()
-
-        self.set_info_bar(message="Export abgeschlossen")
+        self.set_info_bar(message=message)
 
     def closeEvent(self, event) -> None:
         event.ignore()

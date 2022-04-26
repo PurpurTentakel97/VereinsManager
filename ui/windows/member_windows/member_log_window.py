@@ -2,15 +2,12 @@
 # 11.04.2022
 # VereinsManager / Member Log Window
 
-import os
-
 from PyQt5.QtWidgets import QTableWidget, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QTableWidgetItem, QTableView, \
-    QTabWidget, QLabel, QFileDialog
+    QTabWidget, QLabel
 
 import transition
-from ui import window_manager as w_m
-from config import config_sheet as c
 from ui.windows.base_window import BaseWindow
+from ui import window_manager as w_m, export_manager
 from ui.frames.list_frame import ListItem, ListFrame
 from ui.windows.member_windows import members_window
 
@@ -183,71 +180,33 @@ class MemberLogWindow(BaseWindow):
         return False
 
     def _export_log(self) -> None:
-        transition.create_default_dir("member_log")
-
         current_member: ListItem = self._get_current_member()
-        name: str = current_member.set_name('get')
-        name = name.replace(" ", "_")
-        file = c.config.files['member_log_pdf']
-        file = file.replace('<name>', name)
+        name = current_member.set_name(type_='get')
 
-        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(os.getcwd(),
-                                                               c.config.dirs['save'],
-                                                               c.config.dirs['organisation'],
-                                                               c.config.dirs['export'],
-                                                               c.config.dirs['member'],
-                                                               c.config.dirs['member_log'],
-                                                               file),
-                                                  "PDF (*.pdf);;All Files (*)")
-        if not check:
-            self.set_info_bar(message="Export abgebrochen")
-            return
+        message, valid = export_manager.export_member_log(name=name, ID=current_member.ID,
+                                                          active=self._tabs.currentIndex() == 0)
 
-        message, valid = transition.get_member_log_pdf(ID=current_member.ID, path=file,
-                                                       active=self._tabs.currentIndex() == 0)
         if not valid:
             self.set_error_bar(message=message)
             return
 
-        if self.is_open_permission():
-            transition.open_latest_export()
-
-        self.set_info_bar(message="Export abgeschlossen")
+        self.set_info_bar(message=message)
 
     def _export_letter(self) -> None:
-        transition.create_default_dir("member_letter")
-
         current_member: ListItem = self._get_current_member()
+
         name: str = current_member.set_name('get')
         name = name.replace(" ", "_")
-        file: str = c.config.files['member_letter_pdf']
-        file = file.replace('<name>', name)
 
-        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(os.getcwd(),
-                                                               c.config.dirs['save'],
-                                                               c.config.dirs['organisation'],
-                                                               c.config.dirs['export'],
-                                                               c.config.dirs['member'],
-                                                               c.config.dirs['member_letter'],
-                                                               file),
-                                                  "PDF (*.pdf);;All Files (*)")
-        if not check:
-            self.set_info_bar(message="Export abgebrochen")
-            return
+        message, valid = export_manager.export_member_letter(name=name, ID=current_member.ID,
+                                                             active=self._tabs.currentIndex() == 0,
+                                                             log_id=self._get_letter_data()['ID'])
 
-        message, valid = transition.get_member_entry_letter_pdf(ID=current_member.ID, path=file,
-                                                                active=self._tabs.currentIndex() == 0,
-                                                                log_id=self._get_letter_data()['ID'])
         if not valid:
             self.set_error_bar(message=message)
             return
 
-        if self.is_open_permission():
-            transition.open_latest_export()
-
-        self.set_info_bar(message="Export abgeschlossen")
+        self.set_info_bar(message=message)
 
     def closeEvent(self, event) -> None:
         event.ignore()

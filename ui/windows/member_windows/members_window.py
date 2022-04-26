@@ -2,21 +2,21 @@
 # 21.01.2022
 # VereinsManager / Members Window
 
-import os
 import webbrowser
 from enum import Enum
+
 from PyQt5.QtCore import Qt, QDateTime
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QComboBox, QCheckBox, QTextEdit, \
-    QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit, QFileDialog
+    QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit
 
 import transition
-from ui import window_manager as w
 from config import config_sheet as c
 from ui.dialog.date_dialog import DateInput
-from ui.windows.base_window import BaseWindow
-from ui.frames.list_frame import ListItem, ListFrame
 from ui.windows import recover_window as r_w
+from ui.windows.base_window import BaseWindow
+from ui import window_manager as w, export_manager
+from ui.frames.list_frame import ListItem, ListFrame
 from ui.windows.member_windows import member_log_window, member_anniversary_window, member_table_window
 
 debug_str: str = "MembersWindow"
@@ -734,33 +734,15 @@ class MembersWindow(BaseWindow):
 
     def _export_member_card(self) -> None:
         current_member: ListItem = self._members_list.list.currentItem()
-        transition.create_default_dir("member_card")
-        file: str = c.config.files['member_card_pdf']
-        file = file.replace('<first_name>', current_member.first_name)
-        file = file.replace('<last_name>', current_member.last_name)
-        file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
-                                                  os.path.join(os.getcwd(),
-                                                               c.config.dirs['save'],
-                                                               c.config.dirs['organisation'],
-                                                               c.config.dirs['export'],
-                                                               c.config.dirs['member'],
-                                                               c.config.dirs['member_card'],
-                                                               file),
-                                                  "PDF (*.pdf);;All Files (*)")
-        if not check:
-            self.set_info_bar("Export abgebrochen")
-            return
 
-        message, result = transition.get_member_card_pdf(current_member.ID, path=file)
+        message, valid = export_manager.export_member_card(first_name=current_member.first_name,
+                                                           last_name=current_member.last_name, ID=current_member.ID)
 
-        if not result:
+        if not valid:
             self.set_error_bar(message=message)
             return
 
-        if self.is_open_permission():
-            transition.open_latest_export()
-
-        self.set_info_bar("export abgeschlossen")
+        self.set_info_bar(message=message)
 
     def _is_maps(self) -> bool:
         if self._maps_le.text().strip():
