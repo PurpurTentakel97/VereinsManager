@@ -21,13 +21,12 @@ class ExportWindow(BaseWindow):
         self._create_layout()
 
     def _create_ui(self) -> None:
-        self._member_frame: MemberExportFrame = MemberExportFrame()
+        self._member_frame: MemberExportFrame = MemberExportFrame(window=self)
 
         self._tabs: QTabWidget = QTabWidget()
         self._tabs.addTab(self._member_frame, "Mitglieder")
 
     def _create_layout(self) -> None:
-
         global_vbox: QVBoxLayout = QVBoxLayout()
         global_vbox.addWidget(self._tabs)
 
