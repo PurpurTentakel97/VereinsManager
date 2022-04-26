@@ -7,8 +7,8 @@ from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTabl
     QPushButton, QFileDialog
 
 import transition
+from ui import window_manager as w
 from config import config_sheet as c
-from ui.windows import window_manager as w
 from ui.windows.base_window import BaseWindow
 from ui.windows.member_windows import members_window
 

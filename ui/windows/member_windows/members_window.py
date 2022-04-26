@@ -11,11 +11,12 @@ from PyQt5.QtWidgets import QLabel, QListWidget, QListWidgetItem, QLineEdit, QCo
     QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QPushButton, QDateEdit, QFileDialog
 
 import transition
+from ui import window_manager as w
 from config import config_sheet as c
 from ui.dialog.date_dialog import DateInput
 from ui.windows.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
-from ui.windows import recover_window as r_w, window_manager as w
+from ui.windows import recover_window as r_w
 from ui.windows.member_windows import member_log_window, member_anniversary_window, member_table_window
 
 debug_str: str = "MembersWindow"

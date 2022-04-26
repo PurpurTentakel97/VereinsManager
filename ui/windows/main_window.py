@@ -4,9 +4,11 @@
 
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMessageBox
 
+from ui import window_manager as w
 from ui.windows.base_window import BaseWindow
 from ui.windows.member_windows import members_window as m_w
-from ui.windows import window_manager as w, types_window, user_window, user_verify_window, organisation_data_window
+from ui.windows import types_window, user_window, user_verify_window, organisation_data_window, \
+    export_window
 
 import debug
 

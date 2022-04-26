@@ -2,11 +2,11 @@
 # 21.01.2022
 # VereinsManager / Window Handler
 
+from ui import window_manager
 from helpers import validation
 from logic.main_handler import global_handler
 from config import config_sheet as c, exception_sheet as e
-from ui.windows import alert_window, base_window, window_manager, user_verify_window, main_window, recover_window
-import debug
+from ui.windows import alert_window, base_window, user_verify_window, main_window, recover_window
 
 debug_str: str = "Window Handler"
 

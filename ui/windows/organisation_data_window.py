@@ -7,9 +7,8 @@ from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel, QPushButton, QTextEdit
     QVBoxLayout, QWidget
 
 import transition
-from ui.windows import window_manager as w
+from ui import window_manager as w
 from ui.windows.base_window import BaseWindow
-import debug
 
 debug_str: str = "OrganisationDataWindow"
 

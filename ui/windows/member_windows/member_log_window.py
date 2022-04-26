@@ -8,12 +8,11 @@ from PyQt5.QtWidgets import QTableWidget, QPushButton, QHBoxLayout, QVBoxLayout,
     QTabWidget, QLabel, QFileDialog
 
 import transition
+from ui import window_manager as w_m
 from config import config_sheet as c
-from ui.windows import window_manager as w_m
 from ui.windows.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
 from ui.windows.member_windows import members_window
-import debug
 
 debug_str: str = "MemberLogWindow"
 

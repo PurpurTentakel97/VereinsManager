@@ -6,10 +6,9 @@ from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListWidget, QListWidgetItem, QLineEdit
 
 import transition
+from ui import window_manager as w
 from config import config_sheet as c
-from ui.windows import window_manager as w
 from ui.windows.base_window import BaseWindow
-import debug
 
 debug_str: str = "TypesWindow"
 

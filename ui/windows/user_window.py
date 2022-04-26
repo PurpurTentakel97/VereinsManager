@@ -8,10 +8,10 @@ from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout, QWidget
 
 import transition
+from ui import window_manager as w
 from ui.windows.base_window import BaseWindow
 from ui.frames.list_frame import ListFrame, ListItem
-from ui.windows import window_manager as w, recover_window, user_verify_window
-import debug
+from ui.windows import recover_window, user_verify_window
 
 debug_str: str = "UserWindow"
 
