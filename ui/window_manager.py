@@ -26,6 +26,8 @@ class WindowManager:
         self.recover_user_window = None
         # Organisation
         self.organisation_data_window = None
+        # Other
+        self.export_window = None
 
     # Main
     def is_valid_close_main_window(self) -> bool:
@@ -173,6 +175,11 @@ class WindowManager:
 
         return True, True
 
+    def is_valid_export_window(self) -> tuple[bool or str, bool]:
+        if self._is_window(window="export"):
+            return "Exportfesnter bereits geöffnte", False
+        return True, True
+
     # close window
     def close_all_window(self, close_user_window: bool = True) -> None:
         windows: tuple = (
@@ -183,6 +190,7 @@ class WindowManager:
             self.member_log_window,
             self.types_window,
             self.organisation_data_window,
+            self.export_window,
         )
 
         for window in windows:
@@ -224,6 +232,9 @@ class WindowManager:
 
             case "organisation_data":
                 dummy_window = self.organisation_data_window
+
+            case "export":
+                dummy_window = self.export_window
 
         if dummy_window:
             return not ignore

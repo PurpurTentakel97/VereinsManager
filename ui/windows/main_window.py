@@ -146,7 +146,12 @@ class MainWindow(BaseWindow):
         w.window_manger.user_window = user_window.UserWindow()
 
     def _open_export_pdf(self) -> None:
-        debug.debug(item=debug_str, keyword="_open_export_pdf", message=f"pdf open")
+        result, valid = w.window_manger.is_valid_export_window()
+        if not valid:
+            self.set_error_bar(message=result)
+            return
+
+        w.window_manger.export_window = export_window.ExportWindow()
 
     def _open_chance_user(self) -> None:
         self.close()
