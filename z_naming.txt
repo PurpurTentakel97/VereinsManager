@@ -1,0 +1,20 @@
+main funktion -> if ther is a main funktion
+on -> event funktion / method
+create -> deklarieren
+add -> add Data
+get -> geschaffung von Daten
+set -> setzten von Daten
+add_update -> switch method / funktion
+update -> update
+delete -> delete
+load -> laden file
+open -> open file
+save -> save file
+export -> export file
+transform -> get data / edit data / return data
+combine -> get multipale data / edit data / return single data
+try -> add for trying operation
+is -> prüfung mit bool ergebnis
+check -> validate all data
+must -> validate single entry
+others
