@@ -6,7 +6,7 @@ from datetime import datetime
 
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QGridLayout, QPushButton, QLineEdit, QTableWidgetItem, \
-    QTableWidget
+    QTableWidget, QTableView
 
 import transition
 from ui import export_manager
@@ -21,10 +21,13 @@ class MemberExportFrame(QFrame):
     def __init__(self, window: BaseWindow):
         super().__init__()
         self.window: BaseWindow = window
+        self.entries: list = list()
 
         self._create_ui()
         self._create_layout()
         self._set_enable_complete_UI()
+        self._set_enable_export_letter_btn()
+        self.set_current_member()
 
     def _create_ui(self) -> None:
         self.member_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_member_name,
@@ -53,6 +56,10 @@ class MemberExportFrame(QFrame):
         self._export_other_anniversary_le.returnPressed.connect(self._export_other_anniversary)
 
         self._member_log_table: QTableWidget = QTableWidget()
+        self._member_log_table.setSelectionBehavior(QTableView.SelectRows)
+        self._member_log_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self._member_log_table.itemClicked.connect(self._set_enable_export_letter_btn)
+
         self._export_member_letter_btn: QPushButton = QPushButton("Schreiben exportieren")
         self._export_member_letter_btn.clicked.connect(self._export_letter)
 
@@ -77,8 +84,40 @@ class MemberExportFrame(QFrame):
 
         self.setLayout(global_hox)
 
+    def _get_log_data(self, ID: int) -> list | None:
+        data, valid = transition.get_log_member_data(target_id=ID)
+        if not valid:
+            self.window.set_error_bar(message=data)
+            return
+
+        new_data: list = list()
+        target_columns: list = [
+            "active",
+            "membership_type"
+        ]
+
+        for entry in data:
+            if entry['target_column'] in target_columns:
+                new_data.append(entry)
+
+        return new_data
+
+    def _get_current_log_item(self) -> dict | None:
+        current_item: QTableWidgetItem = self._member_log_table.currentItem()
+        if current_item is None:
+            return
+        return self.entries[current_item.row()]
+
     def set_current_member(self) -> None:
-        debug.debug(item=debug_str, keyword="set_current_member", message=f"None Method")
+        current_member: ListItem = self.member_list.list.currentItem()
+        if not current_member:
+            return
+
+        data = self._get_log_data(ID=current_member.ID)
+        if not data:
+            return
+
+        self._set_log_table(data=data)
 
     def _set_enable_other_anniversary_btn(self) -> None:
         self._export_other_anniversary_btn.setEnabled(self._is_export_other_anniversary())
@@ -99,6 +138,36 @@ class MemberExportFrame(QFrame):
         for element in elements:
             element.setEnabled(is_member)
 
+    def _set_enable_export_letter_btn(self) -> None:
+        self._export_member_letter_btn.setEnabled(self._is_export_letter())
+
+    def _set_log_table(self, data: list) -> None:
+        self._member_log_table.clear()
+        self._member_log_table.setColumnCount(4)
+        self._member_log_table.setRowCount(len(data))
+
+        headers: tuple = (
+            "Datum",
+            "Art",
+            "Alte Daten",
+            "Neue Daten",
+        )
+        self._member_log_table.setHorizontalHeaderLabels(headers)
+
+        keys: tuple = (
+            "log_date",
+            "display_name",
+            "old_data",
+            "new_data",
+        )
+
+        for row_index, single_data in enumerate(data):
+            self.entries.append(single_data)
+            for column_index, key in enumerate(keys):
+                entry = single_data[key]
+                new_item: QTableWidgetItem = QTableWidgetItem(entry)
+                self._member_log_table.setItem(row_index, column_index, new_item)
+
     def _is_export_other_anniversary(self) -> bool:
         number = self._export_other_anniversary_le.text().strip()
 
@@ -116,6 +185,12 @@ class MemberExportFrame(QFrame):
     def _is_member(self) -> bool:
         first_member: ListItem = self.member_list.list.item(0)
         return first_member is not None
+
+    def _is_export_letter(self) -> bool:
+        current_item = self._get_current_log_item()
+        if not current_item:
+            return False
+        return True
 
     def _export_table(self) -> None:
         message, valid = export_manager.export_member_table()
@@ -174,4 +249,16 @@ class MemberExportFrame(QFrame):
         self.window.set_info_bar(message=message)
 
     def _export_letter(self) -> None:
-        debug.debug(item=debug_str, keyword="_export_letter", message=f"TODO")
+        current_member: ListItem = self.member_list.list.currentItem()
+
+        name: str = current_member.set_name('get')
+        name = name.replace(" ", "_")
+
+        message, valid = export_manager.export_member_letter(name=name, ID=current_member.ID,
+                                                             active=True,log_id=self._get_current_log_item()['ID'])
+
+        if not valid:
+            self.window.set_error_bar(message=message)
+            return
+
+        self.window.set_info_bar(message=message)

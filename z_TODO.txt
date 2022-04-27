@@ -4,7 +4,6 @@
 
 pdf
     refactor pdf names
-    print letter for size // does address match window
 
 sql database
     let unser choose database name
@@ -15,6 +14,8 @@ UI
         set Icon in Taskbar
         check for screen reader
 
+default User
+    check enabled Buttons in main menue
 
 fatal error:
     enter log window when no member exists
