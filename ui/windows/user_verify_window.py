@@ -6,8 +6,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout
 
 import transition
 from ui.frames.list_frame import ListItem, ListFrame
-from ui.windows.base_window import BaseWindow
-import debug
+from ui.base_window import BaseWindow
 
 debug_str: str = "UserVerifyWindow"
 

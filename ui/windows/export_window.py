@@ -2,12 +2,11 @@
 # 26.04.2022
 # VereinsManager / Export Window
 
-from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QTabWidget, QWidget, QVBoxLayout
 
 from ui import window_manager as w_m
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 from ui.frames.member_export_frame import MemberExportFrame
-import debug
 
 debug_str: str = "ExportWindow"
 

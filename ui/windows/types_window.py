@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QPushButton, QGridLayout, QWidget, QComboBox, QListW
 import transition
 from ui import window_manager as w
 from config import config_sheet as c
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 
 debug_str: str = "TypesWindow"
 

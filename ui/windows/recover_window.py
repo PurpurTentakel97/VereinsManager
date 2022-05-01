@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
 from ui import window_manager as w
 from ui.windows import user_window
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListFrame, ListItem
 from ui.windows.member_windows import members_window
 

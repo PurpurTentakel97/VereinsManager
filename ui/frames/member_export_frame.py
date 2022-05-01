@@ -10,9 +10,8 @@ from PyQt5.QtWidgets import QFrame, QHBoxLayout, QGridLayout, QPushButton, QLine
 
 import transition
 from ui import export_manager
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListFrame, ListItem
-import debug
 
 debug_str: str = "MemberExportFrame"
 

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QTabWidget, QHBoxLayout, QVBoxLayout, QWidget, QTabl
     QPushButton
 
 import transition
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 from ui import window_manager as w, export_manager
 from ui.windows.member_windows import members_window
 

@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QFileDialog
 
 import transition
 from config import config_sheet as c
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 
 
 def export_member_anniversary(index: int, year: int) -> tuple[str, bool]:

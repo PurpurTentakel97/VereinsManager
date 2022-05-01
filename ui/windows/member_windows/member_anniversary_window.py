@@ -4,7 +4,7 @@
 
 from PyQt5.QtWidgets import QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 from ui import window_manager as w, export_manager
 from ui.windows.member_windows import members_window
 from ui.frames.other_anniversary_frame import OtherAnniversaryFrame

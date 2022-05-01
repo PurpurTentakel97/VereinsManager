@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QHBoxLayout, QVBoxLa
 
 import transition
 from ui import window_manager as w
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListFrame, ListItem
 from ui.windows import recover_window, user_verify_window
 

@@ -4,9 +4,8 @@
 
 from PyQt5.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout, QLabel, QWidget
 
-from ui.windows.base_window import BaseWindow
+from ui.base_window import BaseWindow
 from ui.frames.current_anniversary_frame import CurrentAnniversaryFrame
-import debug
 
 debug_str: str = "AlertWindow"
 
