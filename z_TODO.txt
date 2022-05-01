@@ -3,7 +3,8 @@
 # VereinsManager // TODO
 
 pdf
-    refactor pdf names
+    current anniversary and other annoverary // same filename (Date)
+    specify letter file names
 
 sql database
     let unser choose database name

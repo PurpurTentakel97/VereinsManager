@@ -2,9 +2,7 @@
 # Spielewiese 1
 # Python 3.10
 
-import datetime
+import sqlite3
 
-date_1 = datetime.datetime(2010, 1, 1, 1, 1, 1)
-date_2 = datetime.datetime(2030, 1, 1, 1, 1, 1)
-
-print(abs(date_1 - date_2))
+connection = sqlite3.connect(database='test.tx')
+connection.execute("PRAGMA key = '123456'")

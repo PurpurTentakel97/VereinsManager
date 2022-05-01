@@ -86,16 +86,12 @@ class BasePDF:
         now = datetime.now()
         if path:
             self.dir_name, file_name = os.path.split(path)
-            parts = file_name.split(".")
-            file_type = parts[-1]
-            name: str = str()
-            for _ in parts[:-1]:
-                name += _
-            self.file_name = f"{name}_{now.strftime(c.config.date_format['path'])}.{file_type}"
+            file_name = file_name.replace(" ", "_")
+            self.file_name = f"{file_name}_{now.strftime(c.config.date_format['short_save'])}.pdf"
         else:
             self.dir_name = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['member']}/\
                 {c.config.dirs['export']}"
-            self.file_name = f"Mitglieder_{now.strftime(c.config.date_format['path'])}.pdf"
+            self.file_name = f"Mitglieder_{now.strftime(c.config.date_format['short_save'])}.pdf"
 
     @staticmethod
     def _transform_width_height(type_: str, width: int, height: int) -> tuple:
@@ -108,7 +104,6 @@ class BasePDF:
                 icon_max_width = c.config.constant['icon_max_width_table']
             case _:
                 raise e.CaseException(type_)
-
 
         ratio = width / height
         width_ratio = icon_height * ratio

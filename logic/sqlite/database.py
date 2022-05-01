@@ -34,9 +34,10 @@ class Database:
     def create_cursor_connection(self) -> None:
         if not os.path.exists(os.path.join(os.getcwd(), c.config.dirs['save'], c.config.dirs['organisation'])):
             os.makedirs(os.path.join(os.getcwd(), c.config.dirs['save'], c.config.dirs['organisation']))
+
         self.connection = sqlite3.connect(
-            os.path.join(os.getcwd(), c.config.dirs['save'], c.config.dirs['organisation'], c.config.files['database']),
-            detect_types=sqlite3.PARSE_DECLTYPES)
+            os.path.join(os.getcwd(), c.config.dirs['save'], c.config.dirs['organisation'], c.config.files['database']))
+
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.cursor = self.connection.cursor()
 
