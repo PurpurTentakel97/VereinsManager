@@ -105,12 +105,20 @@ class MainWindow(BaseWindow):
         self.setWindowTitle("Hauptfenster - Vereinsmanager")
 
     def _set_default_user(self) -> None:
-        self._members_btn.setEnabled(self.default_user)
-        # self._job_btn.setEnabled(self.default_user)
-        # self._my_job_btn.setEnabled(self.default_user)
-        # self._performance_btn.setEnabled(self.default_user)
-        self._edit_types_btn.setEnabled(self.default_user)
-        # self._export_pdf_btn.setEnabled(self.default_user)
+        buttons: tuple = (
+            self._members_btn,
+            self._job_btn,
+            self._my_job_btn,
+            self._performance_btn,
+            self._edit_types_btn,
+            self._export_pdf_btn,
+            self._organization_data_btn,
+            self._user_data_btn,
+        )
+
+        for button in buttons:
+            button: QPushButton
+            button.setEnabled(self.default_user)
 
     def _open_members(self) -> None:
         result, valid = w.window_manger.is_valid_member_window()
