@@ -156,6 +156,10 @@ class MemberLogWindow(BaseWindow):
 
     def load_single_member(self) -> None:
         current_member: ListItem = self._get_current_member()
+        if not current_member:
+            self.set_error_bar(message="Keine Mitglieder vorhanden.")
+            self._export_log_btn.setEnabled(False)
+            return
         data, valid = transition.get_log_member_data(target_id=current_member.ID)
         if not valid:
             self.set_error_bar(message=data)

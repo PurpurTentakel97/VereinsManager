@@ -17,9 +17,6 @@ UI
 current User
     select current user in user Window
 
-fatal error:
-    enter log window when no member exists
-    export letter pdf with no organisation data
 
 
 haftungsausschluss
