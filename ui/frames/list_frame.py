@@ -48,7 +48,7 @@ class ListFrame(QFrame):
         self._get_names_method = get_names_method
         self._list_method = list_method
         self._window = window
-        self._list_items: list = list()
+        self.list_items: list = list()
 
         self._create_ui()
         self._create_layout()
@@ -65,14 +65,14 @@ class ListFrame(QFrame):
         self.setLayout(list_)
 
     def set_item_backgrounds(self) -> None:
-        for item in self._list_items:
+        for item in self.list_items:
             item: ListItem
             if item.old:
                 item.setBackground(QColor(255, 0, 0, 180))
 
     def load_list_data(self) -> None:
         self.list.clear()
-        self._list_items.clear()
+        self.list_items.clear()
         data, valid = self._get_names_method(active=self._active)
         if not valid:
             self._window.set_error_bar(data)
@@ -83,12 +83,12 @@ class ListFrame(QFrame):
                     ID, first_name, last_name, old = entry
                     new_member: ListItem = ListItem(ID=ID, first_name=first_name, last_name=last_name, old=old)
                     self.list.addItem(new_member)
-                    self._list_items.append(new_member)
+                    self.list_items.append(new_member)
                 case 3:
                     ID, first_name, last_name = entry
                     new_member: ListItem = ListItem(ID=ID, first_name=first_name, last_name=last_name)
                     self.list.addItem(new_member)
-                    self._list_items.append(new_member)
+                    self.list_items.append(new_member)
 
         self.set_item_backgrounds()
         try:

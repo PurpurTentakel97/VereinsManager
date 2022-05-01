@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QHBoxLayout, QVBoxLa
 
 import transition
 from ui import window_manager as w
+from config import config_sheet as c
 from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListFrame, ListItem
 from ui.windows import recover_window, user_verify_window
@@ -272,7 +273,14 @@ class UserWindow(BaseWindow):
 
     def _set_first_user(self) -> None:
         try:
-            self._user_list.list.setCurrentRow(0)
+            index: int = 0
+            for item in self._user_list.list_items:
+                item: ListItem
+                if item.ID == c.config.user['ID']:
+                    index = self._user_list.list.indexFromItem(item).row()  # QModelIndex
+                    break
+
+            self._user_list.list.setCurrentRow(index)
             self.get_user_data()
         except AttributeError:
             self._add_user()
