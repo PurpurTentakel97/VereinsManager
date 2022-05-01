@@ -38,7 +38,10 @@ class MemberTablePDF(BasePDF):
 
         elements: list = list()
 
-        elements.extend(self._get_header())
+        header, valid = self._get_header()
+        if not valid:
+            return header, valid
+        elements.extend(header)
 
         if not data:
             return self._no_data_return(doc, elements)
@@ -115,7 +118,7 @@ class MemberTablePDF(BasePDF):
                 pass
         return table_data, style_data
 
-    def _get_header(self) -> list:
+    def _get_header(self) -> tuple[list | str, bool]:
         elements: list = list()
         if self._is_icon():
             elements.append(self._get_icon(type_="table"))
@@ -123,12 +126,14 @@ class MemberTablePDF(BasePDF):
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
 
-        organisation_data, _ = organisation_handler.get_organisation_data()
+        organisation_data, valid = organisation_handler.get_organisation_data()
+        if not valid:
+            return organisation_data, valid
         if organisation_data['name']:
             elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
         elements.append(Paragraph("Mitglieder", self.style_sheet["Title"]))
         elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
-        return elements
+        return elements, True
 
     @staticmethod
     def _get_first_column_with(data) -> float:

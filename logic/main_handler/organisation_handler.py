@@ -17,7 +17,7 @@ def get_organisation_data() -> tuple[dict | str, bool]:
     try:
         data = s_h.select_handler.get_organisation_data()
         if not data:
-            return "Keine Daten vorhanden", False
+            return "Keine Organisationsdaten vorhanden", False
         data = _transform_data_for_load(data=data)
         return data, True
 

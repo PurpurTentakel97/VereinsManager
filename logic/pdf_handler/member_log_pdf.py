@@ -33,8 +33,10 @@ class MemberLogPDF(BasePDF):
             return data, valid
 
         elements: list = list()
-
-        elements.extend(self._get_header(ID=ID, active=active))
+        header, valid = self._get_header(ID=ID, active=active)
+        if not valid:
+            return header, valid
+        elements.extend(header)
 
         if not data:
             return self._no_data_return(doc=doc, elements=elements)
@@ -48,7 +50,7 @@ class MemberLogPDF(BasePDF):
         data, valid = member_log_data_handler.get_log_member_data(target_id=target_id)
         return data, valid
 
-    def _get_header(self, ID: int, active: bool) -> list:
+    def _get_header(self, ID: int, active: bool) -> tuple[list | str, bool]:
         elements: list = list()
         if self._is_icon():
             elements.append(self._get_icon('table'))
@@ -56,12 +58,14 @@ class MemberLogPDF(BasePDF):
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
 
-        organisation_data, _ = organisation_handler.get_organisation_data()
+        organisation_data, valid = organisation_handler.get_organisation_data()
+        if not valid:
+            return organisation_data, valid
         if organisation_data['name']:
             elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
         elements.append(Paragraph(self._get_member_name(ID=ID, active=active), self.style_sheet["Title"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.3'] * cm))
-        return elements
+        return elements, True
 
     @staticmethod
     def _get_member_name(ID: int, active: bool) -> str:

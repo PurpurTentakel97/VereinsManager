@@ -42,7 +42,10 @@ class MemberCardPDF(BasePDF):
         self._set_column_width(data=data)
 
         elements: list = list()
-        elements.extend(self._get_header(data=data))
+        header, valid = self._get_header(data=data)
+        if not valid:
+            return header, valid
+        elements.extend(header)
 
         if not data:
             return self._mo_data_return(doc=doc, elements=elements)
@@ -160,7 +163,7 @@ class MemberCardPDF(BasePDF):
             Spacer(0, c.config.spacer['0.5'] * cm),
         ]
 
-    def _get_header(self, data: dict) -> list:
+    def _get_header(self, data: dict) -> tuple[list | str, bool]:
         elements: list = list()
 
         if self._is_icon():
@@ -169,13 +172,16 @@ class MemberCardPDF(BasePDF):
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
 
-        organisation_data, _ = organisation_handler.get_organisation_data()
+        organisation_data, valid = organisation_handler.get_organisation_data()
+        if not valid:
+            return organisation_data, valid
+
         if organisation_data['name']:
             elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
         elements.append(Paragraph(data['member_data']['name'], self.style_sheet["Title"]))
         elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
 
-        return elements
+        return elements, True
 
     def _set_column_width(self, data: dict) -> None:
         global column_width
