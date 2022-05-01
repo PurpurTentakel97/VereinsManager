@@ -268,3 +268,10 @@ class PermissionException(GeneralError):
         super().__init__()
         self.error_code: str = "904"
         self.set_message(message="Dateizugriff verweigert", info=info)
+
+
+class QuitException(GeneralError):
+    def __init__(self, info: str = ""):
+        super().__init__()
+        self.error_code: str = "905"
+        self.set_message(message="QuitError", info=info)

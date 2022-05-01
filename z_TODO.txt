@@ -14,8 +14,8 @@ UI
         set Icon in Taskbar
         check for screen reader
 
-default User
-    check enabled Buttons in main menue
+current User
+    select current user in user Window
 
 fatal error:
     enter log window when no member exists

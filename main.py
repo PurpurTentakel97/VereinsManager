@@ -5,10 +5,10 @@
 
 import sys
 
-from config import config_sheet
+from config import config_sheet, exception_sheet as e
 from logic.sqlite import database, global_database_handler
 from logic.pdf_handler import global_pdf_handler
-from logic.main_handler import global_handler, window_handler
+from logic.main_handler import window_handler
 
 import debug
 
@@ -23,7 +23,8 @@ if __name__ == "__main__":
         global_pdf_handler.create_pdf_handler()
         window_handler.on_start()
         debug.export_error()
+
     except:
         debug.error(item=debug_str, keyword="main", error_=sys.exc_info())
         debug.export_error()
-        exit()
+        raise e.QuitException()

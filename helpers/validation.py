@@ -75,16 +75,6 @@ def check_update_type_activity(ID: int, active: bool) -> None:
 # member
 def check_update_member(data: dict) -> None:
     must_dict(dict_=data)
-    _must_multiple_str_in_dict([
-        "first_name",
-        "last_name",
-        "street",
-        "number",
-        "city",
-        "country",
-        "maps",
-        "zip_code",
-    ], data)
 
     if data['membership_type'] is not None:
         must_membership_type(data['membership_type'])
@@ -102,6 +92,17 @@ def check_update_member(data: dict) -> None:
 
     if data["special_member"] is not None:
         must_bool(bool_=data["special_member"])
+
+    _must_multiple_str_in_dict([
+        "first_name",
+        "last_name",
+        "street",
+        "number",
+        "city",
+        "country",
+        "maps",
+        "zip_code",
+    ], data)
 
 
 # member nexus

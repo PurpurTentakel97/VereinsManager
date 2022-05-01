@@ -9,7 +9,11 @@ from PyQt5.QtGui import QIcon
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
-from config import config_sheet as c
+from config import config_sheet as c, exception_sheet as e
+
+import debug
+
+debug_str: str = "BaseWindow"
 
 app: QApplication | None = None
 
@@ -79,10 +83,22 @@ class BaseWindow(QMainWindow):
 
 
 def create_application():
-    global app
-    app = QApplication(sys.argv)
+    try:
+        global app
+        app = QApplication(sys.argv)
+
+    except:
+        debug.error(item=debug_str, keyword=f"create_application", error_=sys.exc_info())
+        debug.export_error()
+        raise e.QuitException()
 
 
 def run_application():
-    global app
-    app.exec_()
+    try:
+        global app
+        app.exec_()
+
+    except:
+        debug.error(item=debug_str, keyword=f"create_application", error_=sys.exc_info())
+        debug.export_error()
+        raise e.QuitException()
