@@ -8,7 +8,7 @@ from helpers import password_validation
 from config import exception_sheet as e
 from logic.data_handler import member_table_data_handler, member_anniversary_data_handler
 from logic.main_handler import user_handler, type_handler, path_handler, member_handler, \
-    organisation_handler, log_handler
+    organisation_handler, log_handler, location_handler
 from logic.pdf_handler import global_pdf_handler, member_table_pdf as m_t_p, member_card_pdf as m_c_p, \
     member_anniversary_pdf as m_a_p, member_log_pdf as m_l_p, member_entry_letter_pfd as m_e_l_p
 
@@ -244,6 +244,18 @@ def add_update_organisation(data: dict) -> [int | str, bool]:
 def get_log_member_data(target_id: int) -> [tuple | str, bool]:
     try:
         return log_handler.get_single_member_log(target_id=target_id)
+    except:
+        handle_error()
+
+
+# location
+def get_all_location_name(active: bool = True) -> [str | dict, bool]:
+    return "", False
+
+
+def save_location(data: dict) -> [str | int | None, bool]:
+    try:
+        return location_handler.save_location(data=data)
     except:
         handle_error()
 

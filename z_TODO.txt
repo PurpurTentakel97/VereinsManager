@@ -7,22 +7,28 @@ sql database
     password
     new database
 
+types
+    refacor get id from name (select handler -> type handler)
+
 UI
     Global
         set Icon in Taskbar
         check for screen reader
 
 locations
-    owner
-    name
-    street
-    number
-    zip code
-    city
-    country
-    link
-    42
-    comment
+    load
+    set active / inactive
+    delete
+    set location
+    export
+    recover
+    first location
+    add location if no location
+    is maps
+    create mapa link
+
+    window manager
+
 
 haftungsausschluss
     list tooltiptext in recover window

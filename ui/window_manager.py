@@ -26,6 +26,8 @@ class WindowManager:
         self.recover_user_window = None
         # Organisation
         self.organisation_data_window = None
+        # location
+        self.location_window = None
         # Other
         self.export_window = None
 
@@ -157,6 +159,10 @@ class WindowManager:
         if self.organisation_data_window:
             return "Fenster bereits geöffnet", False
         return True, True
+
+    # Location
+    def is_valid_location_window(self) -> [bool | str, bool]:
+        return True, True  # TODO
 
     # Global
     def is_valid_recover_window(self, type_: str, ignore_member_window: bool = False,

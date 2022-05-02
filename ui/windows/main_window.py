@@ -8,7 +8,7 @@ from ui import window_manager as w
 from ui.base_window import BaseWindow
 from ui.windows.member_windows import members_window as m_w
 from ui.windows import types_window, user_window, user_verify_window, organisation_data_window, \
-    export_window
+    export_window, location_window
 
 import debug
 
@@ -66,24 +66,28 @@ class MainWindow(BaseWindow):
         self._organization_data_btn.setText("Organisations Daten")
         self._organization_data_btn.clicked.connect(self._open_organisation_data)
 
+        self._location_btn: QPushButton = QPushButton("Orte")
+        self._location_btn.clicked.connect(self._open_locations)
+
     def _create_layout(self) -> None:
         row: int = 0
         grid: QGridLayout = QGridLayout()
         grid.addWidget(self._members_btn, row, 0)
         row += 1
+        grid.addWidget(self._performance_btn, row, 0)
+        grid.addWidget(self._export_pdf_btn, row, 1)
+        row += 1
+        grid.addWidget(self._location_btn, row, 0)
+        grid.addWidget(self._edit_types_btn, row, 1)
+        row += 1
         grid.addWidget(self._my_job_btn, row, 0)
         grid.addWidget(self._job_btn, row, 1)
         row += 1
-        grid.addWidget(self._performance_btn, row, 0)
-        grid.addWidget(self._edit_types_btn, row, 1)
-        row += 1
         grid.addWidget(self._user_data_btn, row, 0)
-        grid.addWidget(self._export_pdf_btn, row, 1)
-        row += 1
-        grid.addWidget(self._chance_user_btn, row, 0)
-        grid.addWidget(self._chance_organization_btn, row, 1)
+        grid.addWidget(self._chance_user_btn, row, 1)
         row += 1
         grid.addWidget(self._organization_data_btn, row, 0)
+        grid.addWidget(self._chance_organization_btn, row, 1)
 
         widget: QWidget = QWidget()
         widget.setLayout(grid)
@@ -135,6 +139,14 @@ class MainWindow(BaseWindow):
 
     def _open_performances(self) -> None:
         debug.debug(item=debug_str, keyword="_open_performances", message=f"performances open")
+
+    def _open_locations(self) -> None:
+        result, valid = w.window_manger.is_valid_location_window()
+        if not valid:
+            self.set_info_bar(message=result)
+            return
+
+        w.window_manger.location_window = location_window.LocationWindow()
 
     def _open_edit_types(self) -> None:
         result, valid = w.window_manger.is_valid_types_window()

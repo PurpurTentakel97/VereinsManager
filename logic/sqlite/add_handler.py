@@ -174,6 +174,30 @@ class AddHandler(Database):
             debug.error(item=debug_str, keyword=f"add_organisation", error_=sys.exc_info())
             raise e.AddFailed(info="Organisationsdaten")
 
+    # location
+    def add_location(self, data: dict) -> int:
+        sql_command: str = """INSERT INTO location (owner, name, street, number, zip_code, city, country, maps_link, 
+        comment) VALUES(?,?,?,?,?,?,?,?,?)"""
+
+        try:
+            self.cursor.execute(sql_command, (
+                data['owner'],
+                data['name'],
+                data['street'],
+                data['number'],
+                data['zip_code'],
+                data['city'],
+                data['country'],
+                data['maps_link'],
+                data['comment'],
+            ))
+            self.connection.commit()
+            return self.cursor.lastrowid
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"add_location", error_=sys.exc_info())
+            raise e.AddFailed(info="add new location")
+
 
 def create() -> None:
     global add_handler

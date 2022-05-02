@@ -210,6 +210,31 @@ class UpdateHandler(Database):
             debug.error(item=debug_str, keyword=f"update_organisation", error_=sys.exc_info())
             raise e.UpdateFailed(info="Organisation")
 
+    # location
+    def update_location(self, data: dict) -> None:
+        sql_command: str = """UPDATE location SET owner = ?, name = ?, street = ?, number = ?, zip_code = ?, city = ?, 
+        country = ?, maps_link = ?, comment = ? WHERE ID is ?;"""
+
+        try:
+            self.cursor.execute(sql_command, (
+                data['owner'],
+                data['name'],
+                data['street'],
+                data['number'],
+                data['zip_code'],
+                data['city'],
+                data['country'],
+                data['maps_link'],
+                data['comment'],
+                data['ID'],
+            ))
+            self.connection.commit()
+            return
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"update_location", error_=sys.exc_info())
+            raise e.UpdateFailed("Update location")
+
 
 def crate() -> None:
     global update_handler

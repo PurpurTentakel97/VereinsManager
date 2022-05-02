@@ -77,7 +77,7 @@ def check_update_member(data: dict) -> None:
     must_dict(dict_=data)
 
     if data['membership_type'] is not None:
-        must_membership_type(data['membership_type'])
+        must_specfic_type(data['membership_type'], c.config.raw_type_id['membership'])
 
     if data["comment_text"] is not None:
         must_str(str_=data["comment_text"], length=2000)
@@ -251,6 +251,29 @@ def check_member_entry_letter_export(log_data: dict) -> None:
             raise e.NoChance(info=log_data['display_name'])
 
 
+# location
+def check_save_location(data: dict) -> None:
+    must_dict(dict_=data)
+
+    if data['ID'] is not None:
+        must_positive_int(int_=data['ID'], max_length=None)
+
+    if data['comment'] is not None:
+        must_str(str_=data['comment'], length=2000)
+
+    _must_multiple_str_in_dict(keys=[
+        "owner",
+        "name",
+        "street",
+        "number",
+        "zip_code",
+        "city",
+        "maps_link",
+    ], data=data)
+
+    must_specfic_type(str_=data['country'], raw_type_id=c.config.raw_type_id['country'])
+
+
 # helpers
 def must_str(str_: str, length: int | None = 50) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:
@@ -260,10 +283,10 @@ def must_str(str_: str, length: int | None = 50) -> None:
             raise e.ToLong(max_length=length, text=str_)
 
 
-def must_membership_type(str_: str) -> None:
+def must_specfic_type(str_: str, raw_type_id: int) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:
         raise e.NoMembership(info=str_)
-    reference_data, _ = type_handler.get_single_raw_type_types(raw_type_id=c.config.raw_type_id['membership'],
+    reference_data, _ = type_handler.get_single_raw_type_types(raw_type_id=raw_type_id,
                                                                active=True)
     not_found: bool = True
     for entry in reference_data:
