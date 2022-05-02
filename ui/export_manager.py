@@ -12,13 +12,41 @@ from config import config_sheet as c
 from ui.base_window import BaseWindow
 
 
+def _add_date_to_filename(file_name: str, first_name: str = None, last_name: str = None, name: str = None) -> str:
+    if first_name:
+        first_name = first_name.replace(" ", "_")
+        file_name = file_name.replace('<first_name>', first_name)
+    if last_name:
+        last_name = last_name.replace(" ", "_")
+        file_name = file_name.replace('<last_name>', last_name)
+    if name:
+        name = name.replace(" ", "_")
+        file_name = file_name.replace('<name>', name)
+
+    file_name += "_" + datetime.strftime(datetime.now(), c.config.date_format['short_save'])
+    file_name = file_name.replace(" ", "_")
+    return file_name
+
+
+def _delete_date_from_filename(file_name: str) -> str:
+    file_type = file_name.split(".")[-1]
+    file_name = file_name[:-(len(file_type) + 1)]  # remove filetype
+
+    if file_name[-c.config.date_format['short_length']:] == datetime.strftime(datetime.now(),
+                                                                              c.config.date_format['short_save']):
+        file_name = file_name[:-(c.config.date_format['short_length'] + 1)]
+
+    return file_name
+
+
 def export_member_anniversary(index: int, year: int) -> tuple[str, bool]:
     transition.create_default_dir("member_anniversary")
+
     file = c.config.files['member_anniversary_pdf']
     if index == 1:
         file += "_" + str(year)
-    file += "_" + datetime.strftime(datetime.now(), c.config.date_format['short_save'])
-    file = file.replace(" ", "_")
+    file = _add_date_to_filename(file_name=file)
+
     file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                               os.path.join(os.getcwd(),
                                                            c.config.dirs['save'],
@@ -31,7 +59,7 @@ def export_member_anniversary(index: int, year: int) -> tuple[str, bool]:
     if not check:
         return "Export abgebrochen", False
 
-    file = file[:-(c.config.date_format['short_length'] + 1 + 4)]  # date length + _ + .pdf
+    file = _delete_date_from_filename(file_name=file)
     message, result = "", True
     match index:
         case 0:
@@ -50,13 +78,7 @@ def export_member_anniversary(index: int, year: int) -> tuple[str, bool]:
 
 def export_member_log(name: str, ID: int, active: bool) -> tuple[str, bool]:
     transition.create_default_dir("member_log")
-
-    name = name.replace(" ", "_")
-    file = c.config.files['member_log_pdf']
-    if name:
-        file = file.replace('<name>', name)
-    file += "_" + datetime.strftime(datetime.now(), c.config.date_format['short_save'])
-    file = file.replace(" ", "_")
+    file = _add_date_to_filename(file_name=c.config.files['member_log_pdf'], name=name)
 
     file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                               os.path.join(os.getcwd(),
@@ -70,7 +92,7 @@ def export_member_log(name: str, ID: int, active: bool) -> tuple[str, bool]:
     if not check:
         return "Export abgebrochen", False
 
-    file = file[:-(c.config.date_format['short_length'] + 1 + 4)]  # date length + _ + .pdf
+    file = _delete_date_from_filename(file_name=file)
     message, valid = transition.get_member_log_pdf(ID=ID, path=file,
                                                    active=active)
     if not valid:
@@ -84,12 +106,7 @@ def export_member_log(name: str, ID: int, active: bool) -> tuple[str, bool]:
 
 def export_member_letter(name: str, ID: int, active: bool, log_id: int) -> tuple[str, bool]:
     transition.create_default_dir("member_letter")
-
-    file: str = c.config.files['member_letter_pdf']
-    if name:
-        file = file.replace('<name>', name)
-    file += "_" + datetime.strftime(datetime.now(), c.config.date_format['short_save'])
-    file = file.replace(" ", "_")
+    file = _add_date_to_filename(file_name=c.config.files['member_letter_pdf'], name=name)
 
     file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                               os.path.join(os.getcwd(),
@@ -103,7 +120,7 @@ def export_member_letter(name: str, ID: int, active: bool, log_id: int) -> tuple
     if not check:
         return "Export abgebrochen", False
 
-    file = file[:-(c.config.date_format['short_length'] + 1 + 4)]  # date length + _ + .pdf
+    file = _delete_date_from_filename(file_name=file)
     message, valid = transition.get_member_entry_letter_pdf(ID=ID, path=file, active=active, log_id=log_id)
     if not valid:
         return message, False
@@ -116,9 +133,8 @@ def export_member_letter(name: str, ID: int, active: bool, log_id: int) -> tuple
 
 def export_member_table() -> tuple[str, bool]:
     transition.create_default_dir("member_list")
-    file = c.config.files['member_table_pdf'] + "_" + datetime.strftime(datetime.now(),
-                                                                        c.config.date_format['short_save'])
-    file = file.replace(" ", "_")
+    file = _add_date_to_filename(file_name=c.config.files['member_table_pdf'])
+
     file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                               os.path.join(os.getcwd(), c.config.dirs['save'],
                                                            c.config.dirs['organisation'],
@@ -130,7 +146,7 @@ def export_member_table() -> tuple[str, bool]:
     if not check:
         return "Export abgebrochen", False
 
-    file = file[:-(c.config.date_format['short_length'] + 1 + 4)]  # date length + _ + .pdf
+    file = _delete_date_from_filename(file_name=file)
     message, result = transition.get_member_table_pdf(file)
 
     if not result:
@@ -144,13 +160,9 @@ def export_member_table() -> tuple[str, bool]:
 
 def export_member_card(first_name: str, last_name: str, ID: int) -> tuple[str, bool]:
     transition.create_default_dir("member_card")
-    file: str = c.config.files['member_card_pdf']
-    if first_name:
-        file = file.replace('<first_name>', first_name)
-    if last_name:
-        file = file.replace('<last_name>', last_name)
-    file += "_" + datetime.strftime(datetime.now(), c.config.date_format['short_save'])
-    file = file.replace(" ", "_")
+    file = _add_date_to_filename(file_name=c.config.files['member_card_pdf'], first_name=first_name,
+                                 last_name=last_name)
+
     file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                               os.path.join(os.getcwd(),
                                                            c.config.dirs['save'],
@@ -163,7 +175,7 @@ def export_member_card(first_name: str, last_name: str, ID: int) -> tuple[str, b
     if not check:
         return "Export abgebrochen", False
 
-    file = file[:-(c.config.date_format['short_length'] + 1 + 4)]  # date length + _ + .pdf
+    file = _delete_date_from_filename(file_name=file)
     message, result = transition.get_member_card_pdf(ID=ID, path=file)
 
     if not result:
