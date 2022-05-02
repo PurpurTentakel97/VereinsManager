@@ -10,8 +10,7 @@ INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (1,"Mitgliedsart");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (2,"E-Mail");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (3,"Telefon");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (4,"Position");
-INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (5,"Job");
-INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (6,"Land");
+INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (5,"Land");
 
 /* TYPE */
 CREATE TABLE IF NOT EXISTS "main"."type" (
@@ -269,4 +268,41 @@ CREATE TRIGGER IF NOT EXISTS "trigger_update_organisation"
     AFTER UPDATE ON "organisation"
 BEGIN
     UPDATE "organisation" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+END;
+
+/* Location */
+CREATE TABLE IF NOT EXISTS "main"."location" (
+"ID" INTEGER NOT NULL UNIQUE,
+"_created" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
+"_updated" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
+"owner" VARCHAR(30),
+"name" VARCHAR(30),
+"street" VARCHAR(30),
+"number" VARCHAR(10),
+"zip_code" VARCHAR(10),
+"city" VARCHAR(10),
+"country" INTEGER(1),
+"maps_link" VARCHAR(30),
+"comment" VARCHAR,
+"_active" INTEGER(1) Default 1,
+PRIMARY KEY ("ID" AUTOINCREMENT),
+FOREIGN KEY ("country") REFERENCES "type"
+);
+/* Active Member */
+CREATE VIEW IF NOT EXISTS "main"."v_active_location" AS
+SELECT ID,owner,name,street,number,zip_code,city,country,maps_link,comment
+FROM location
+WHERE _active = 1;
+
+/* Inactive Member */
+CREATE VIEW IF NOT EXISTS "main"."v_inactive_location" AS
+SELECT ID,owner,name,street,number,zip_code,city,country,maps_link,comment
+FROM location
+WHERE _active = 0;
+
+/* date */
+CREATE TRIGGER IF NOT EXISTS "trigger_update_location"
+    AFTER UPDATE ON "location"
+BEGIN
+    UPDATE "location" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
 END;

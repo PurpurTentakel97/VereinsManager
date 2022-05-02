@@ -14,8 +14,7 @@
     "mail": 2,
     "phone": 3,
     "position": 4,
-    "job": 5,
-    "country": 6
+    "country": 5
   },
   "constant": {
     "hash_rounds": 12,

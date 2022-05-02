@@ -5,13 +5,24 @@
 sql database
     let unser choose database name
     password
+    new database
 
 UI
     Global
         set Icon in Taskbar
         check for screen reader
 
-
+locations
+    owner
+    name
+    street
+    number
+    zip code
+    city
+    country
+    link
+    42
+    comment
 
 haftungsausschluss
     list tooltiptext in recover window
