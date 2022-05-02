@@ -2,9 +2,6 @@
 # 21.01.2022
 # VereinsManager // TODO
 
-pdf
-    specify letter file names
-
 sql database
     let unser choose database name
     password

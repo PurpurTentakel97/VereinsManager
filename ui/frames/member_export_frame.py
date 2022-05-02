@@ -107,6 +107,19 @@ class MemberExportFrame(QFrame):
             return
         return self.entries[current_item.row()]
 
+    def _get_letter_id(self) -> int:
+        current_entry = self._get_current_log_item()
+        if not current_entry:
+            return False
+
+        match current_entry['target_table']:
+            case "member":
+                match current_entry['target_column']:
+                    case "active":
+                        return 1
+                    case "membership_type":
+                        return 2
+
     def set_current_member(self) -> None:
         current_member: ListItem = self.member_list.list.currentItem()
         if not current_member:
@@ -254,7 +267,8 @@ class MemberExportFrame(QFrame):
         name = name.replace(" ", "_")
 
         message, valid = export_manager.export_member_letter(name=name, ID=current_member.ID,
-                                                             active=True,log_id=self._get_current_log_item()['ID'])
+                                                             active=True, log_id=self._get_current_log_item()['ID'],
+                                                             letter_id=self._get_letter_id())
 
         if not valid:
             self.window.set_error_bar(message=message)

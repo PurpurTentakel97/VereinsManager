@@ -2,16 +2,13 @@
 # Spielewiese 1
 # Python 3.10
 
-file = "12233.52415.pdf52634"
+from datetime import datetime
+from config import config_sheet as c
 
-file_parts = file.split(".")
+c.create_config()
 
-print(file_parts)
+print(c.config.date_format['long_save'])
 
-file_type = file_parts[-1]
+print(datetime.strftime(datetime.now(), c.config.date_format['long_save']))
 
-print(file_type)
-
-file = file[:-(len(file_type) + 1)]
-
-print(file)
+print(len(datetime.strftime(datetime.now(), c.config.date_format['long_save'])))

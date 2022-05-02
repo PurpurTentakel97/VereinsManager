@@ -43,7 +43,8 @@
     "default_icon": "default_icon.png",
     "member_card_pdf": "<first_name>_<last_name>",
     "member_table_pdf": "Mitglieder",
-    "member_letter_pdf": "<name>_letter",
+    "member_letter_active_pdf": "<name>_letter_active",
+    "member_letter_membership_pdf": "<name>_letter_membership",
     "member_log_pdf": "<name>_log",
     "member_anniversary_pdf": "Geburtstage_Jubilaen"
   },

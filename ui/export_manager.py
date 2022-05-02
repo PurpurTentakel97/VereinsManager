@@ -104,9 +104,16 @@ def export_member_log(name: str, ID: int, active: bool) -> tuple[str, bool]:
     return "Export abgeschlossen", True
 
 
-def export_member_letter(name: str, ID: int, active: bool, log_id: int) -> tuple[str, bool]:
+def export_member_letter(name: str, ID: int, active: bool, log_id: int, letter_id: int) -> tuple[str, bool]:
     transition.create_default_dir("member_letter")
-    file = _add_date_to_filename(file_name=c.config.files['member_letter_pdf'], name=name)
+
+    match letter_id:
+        case 1:
+            file: str = _add_date_to_filename(file_name=c.config.files['member_letter_active_pdf'], name=name)
+        case 2:
+            file: str = _add_date_to_filename(file_name=c.config.files['member_letter_membership_pdf'], name=name)
+        case _:
+            file: str = "No filename found"
 
     file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
                                               os.path.join(os.getcwd(),

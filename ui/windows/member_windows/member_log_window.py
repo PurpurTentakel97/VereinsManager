@@ -108,6 +108,19 @@ class MemberLogWindow(BaseWindow):
             return False
         return current_entry
 
+    def _get_letter_id(self) -> int:
+        current_entry = self._get_current_entry()
+        if not current_entry:
+            return False
+
+        match current_entry['target_table']:
+            case "member":
+                match current_entry['target_column']:
+                    case "active":
+                        return 1
+                    case "membership_type":
+                        return 2
+
     def _set_first_member(self, row_index: int) -> None:
         self._members_list_active.list.setCurrentRow(row_index)
         self.load_single_member()
@@ -204,7 +217,8 @@ class MemberLogWindow(BaseWindow):
 
         message, valid = export_manager.export_member_letter(name=name, ID=current_member.ID,
                                                              active=self._tabs.currentIndex() == 0,
-                                                             log_id=self._get_letter_data()['ID'])
+                                                             log_id=self._get_letter_data()['ID'],
+                                                             letter_id=self._get_letter_id())
 
         if not valid:
             self.set_error_bar(message=message)
