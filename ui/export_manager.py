@@ -15,6 +15,8 @@ from ui.base_window import BaseWindow
 def export_member_anniversary(index: int, year: int) -> tuple[str, bool]:
     transition.create_default_dir("member_anniversary")
     file = c.config.files['member_anniversary_pdf']
+    if index == 1:
+        file += "_" + str(year)
     file += "_" + datetime.strftime(datetime.now(), c.config.date_format['short_save'])
     file = file.replace(" ", "_")
     file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",

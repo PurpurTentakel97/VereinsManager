@@ -3,7 +3,6 @@
 # VereinsManager // TODO
 
 pdf
-    current anniversary and other annoverary // same filename (Date)
     specify letter file names
 
 sql database

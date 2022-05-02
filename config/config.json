@@ -45,7 +45,7 @@
     "member_table_pdf": "Mitglieder",
     "member_letter_pdf": "<name>_letter",
     "member_log_pdf": "<name>_log",
-    "member_anniversary_pdf": "Geburtstage-Jubilaen"
+    "member_anniversary_pdf": "Geburtstage_Jubilaen"
   },
   "user": {
     "ID": 0,
