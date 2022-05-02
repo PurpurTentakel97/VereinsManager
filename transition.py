@@ -25,7 +25,7 @@ def create_default_dir(type_) -> None:
         handle_error()
 
 
-def compare_password(ID: int, password: str) -> [str | bool, bool]:
+def compare_password(ID: int, password: str) -> tuple[str | bool, bool]:
     try:
         return password_validation.check_user_password(ID=ID, password=password)
     except:
@@ -33,56 +33,56 @@ def compare_password(ID: int, password: str) -> [str | bool, bool]:
 
 
 # type
-def get_raw_types() -> [tuple | str, bool]:
+def get_raw_types() -> tuple[tuple | str, bool]:
     try:
         return type_handler.get_raw_types()
     except:
         handle_error()
 
 
-def get_single_type(raw_type_id: int, active: bool) -> [tuple | str, bool]:
+def get_single_type(raw_type_id: int, active: bool) -> tuple[tuple | str, bool]:
     try:
         return type_handler.get_single_raw_type_types(raw_type_id=raw_type_id, active=active)
     except:
         handle_error()
 
 
-def get_active_member_type() -> [tuple | str, bool]:
+def get_active_member_type() -> tuple[tuple | str, bool]:
     try:
         return type_handler.get_active_member_type()
     except:
         handle_error()
 
 
-def get_type_name_by_ID(ID: int) -> [tuple | str, bool]:
+def get_type_name_by_ID(ID: int) -> tuple[tuple | str, bool]:
     try:
         return type_handler.get_type_name_by_ID(ID=ID)
     except:
         handle_error()
 
 
-def add_type(type_name: str, raw_type_id: int, extra_value) -> [str | None, bool]:
+def add_type(type_name: str, raw_type_id: int, extra_value) -> tuple[str | None, bool]:
     try:
         return type_handler.add_type(type_name=type_name, raw_type_id=raw_type_id, extra_value=extra_value)
     except:
         handle_error()
 
 
-def update_type(id_: int, name: str, extra_value: str) -> [str | None, bool]:
+def update_type(id_: int, name: str, extra_value: str) -> tuple[str | None, bool]:
     try:
         return type_handler.update_type(ID=id_, name=name, extra_value=extra_value)
     except:
         handle_error()
 
 
-def update_type_activity(id_: int, active: bool) -> [str | None, bool]:
+def update_type_activity(id_: int, active: bool) -> tuple[str | None, bool]:
     try:
         return type_handler.update_type_activity(ID=id_, active=active)
     except:
         handle_error()
 
 
-def delete_type(id_: int) -> [str | None, bool]:
+def delete_type(id_: int) -> tuple[str | None, bool]:
     try:
         return type_handler.delete_type(ID=id_)
     except:
@@ -90,42 +90,42 @@ def delete_type(id_: int) -> [str | None, bool]:
 
 
 # member
-def get_all_member_name(active: bool = True) -> [tuple | str, bool]:
+def get_all_member_name(active: bool = True) -> tuple[tuple | str, bool]:
     try:
         return member_handler.get_names_of_member(active=active)
     except:
         handle_error()
 
 
-def get_anniversary_member_data(type_: str | int, active: bool = True, year: int = 0) -> [dict | str, bool]:
+def get_anniversary_member_data(type_: str | int, active: bool = True, year: int = 0) -> tuple[dict | str, bool]:
     try:
         return member_anniversary_data_handler.get_anniversary_member_data(active=active, type_=type_, year=year)
     except:
         handle_error()
 
 
-def get_member_data_by_id(id_: int, active: bool = True) -> [dict | str, bool]:
+def get_member_data_by_id(id_: int, active: bool = True) -> tuple[dict | str, bool]:
     try:
         return member_handler.get_member_data(ID=id_, active=active)
     except:
         handle_error()
 
 
-def get_member_data_for_table(active: bool = True) -> [dict | str, bool]:
+def get_member_data_for_table(active: bool = True) -> tuple[dict | str, bool]:
     try:
         return member_table_data_handler.get_member_table_data(active=active)
     except:
         handle_error()
 
 
-def update_member_data(id_: int, data: dict, log_date: int | None = None) -> [str | dict, bool]:
+def update_member_data(id_: int, data: dict, log_date: int | None = None) -> tuple[str | dict, bool]:
     try:
         return member_handler.add_update_member_data(ID=id_, data=data, log_date=log_date)
     except:
         handle_error()
 
 
-def update_member_activity(ID: int, active: bool, log_date: int | None = None) -> [str | None, bool]:
+def update_member_activity(ID: int, active: bool, log_date: int | None = None) -> tuple[str | None, bool]:
     try:
         return member_handler.update_member_activity(ID=ID, active=active, log_date=log_date)
     except:
@@ -140,35 +140,35 @@ def delete_member(ID: int) -> tuple[str, bool]:
 
 
 # user
-def save_update_user(data: dict) -> [str | int | None, bool]:
+def save_update_user(data: dict) -> tuple[str | int | None, bool]:
     try:
         return user_handler.add_update_user(data=data)
     except:
         handle_error()
 
 
-def update_user_activity(ID: int, active: bool) -> [str | None, bool]:
+def update_user_activity(ID: int, active: bool) -> tuple[str | None, bool]:
     try:
         return user_handler.update_user_activity(ID=ID, active=active)
     except:
         handle_error()
 
 
-def get_all_user_name(active: bool = True) -> [str | dict, bool]:
+def get_all_user_name(active: bool = True) -> tuple[str | dict, bool]:
     try:
         return user_handler.get_names_of_user(active=active)
     except:
         handle_error()
 
 
-def get_all_user_name_without_default(active: bool = True) -> [str | dict, bool]:
+def get_all_user_name_without_default(active: bool = True) -> tuple[str | dict, bool]:
     try:
         return user_handler.get_names_of_user_without_default(active=active)
     except:
         handle_error()
 
 
-def get_user_data_by_id(ID: int, active: bool) -> [str | dict, bool]:
+def get_user_data_by_id(ID: int, active: bool) -> tuple[str | dict, bool]:
     try:
         return user_handler.get_data_of_user_by_ID(ID=ID, active=active)
     except:
@@ -183,21 +183,21 @@ def delete_user(ID: int) -> tuple[str, bool]:
 
 
 # pdf_handler
-def get_member_table_pdf(path: str, active: bool = True) -> [None | str, bool]:
+def get_member_table_pdf(path: str, active: bool = True) -> tuple[None | str, bool]:
     try:
         return m_t_p.member_table_pdf.create_pdf(path=path, active=active)
     except:
         handle_error()
 
 
-def get_member_anniversary_pdf(path: str, year: int or None = None, active: bool = True) -> [None | str, bool]:
+def get_member_anniversary_pdf(path: str, year: int or None = None, active: bool = True) -> tuple[None | str, bool]:
     try:
         return m_a_p.member_anniversary_pdf.create_pdf(path=path, year=year, active=active)
     except:
         handle_error()
 
 
-def get_member_card_pdf(ID: int, path: str, active: bool = True) -> [None | str, bool]:
+def get_member_card_pdf(ID: int, path: str, active: bool = True) -> tuple[None | str, bool]:
     try:
         return m_c_p.member_card_pdf.create_pdf(ID=ID, active=active, path=path)
     except:
@@ -226,14 +226,14 @@ def open_latest_export() -> None:
 
 
 # organisation
-def get_organisation_data() -> [tuple | str, bool]:
+def get_organisation_data() -> tuple[tuple | str, bool]:
     try:
         return organisation_handler.get_organisation_data()
     except:
         handle_error()
 
 
-def add_update_organisation(data: dict) -> [int | str, bool]:
+def add_update_organisation(data: dict) -> tuple[int | str, bool]:
     try:
         return organisation_handler.add_update_organisation(data=data)
     except:
@@ -241,7 +241,7 @@ def add_update_organisation(data: dict) -> [int | str, bool]:
 
 
 # log
-def get_log_member_data(target_id: int) -> [tuple | str, bool]:
+def get_log_member_data(target_id: int) -> tuple[tuple | str, bool]:
     try:
         return log_handler.get_single_member_log(target_id=target_id)
     except:
@@ -249,11 +249,11 @@ def get_log_member_data(target_id: int) -> [tuple | str, bool]:
 
 
 # location
-def get_all_location_name(active: bool = True) -> [str | dict, bool]:
-    return "", False
+def get_all_location_name(active: bool = True) -> tuple[str | dict, bool]:
+    return location_handler.get_all_location_names(active=active)
 
 
-def save_location(data: dict) -> [str | int | None, bool]:
+def save_location(data: dict) -> tuple[str | int | None, bool]:
     try:
         return location_handler.save_location(data=data)
     except:

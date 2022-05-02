@@ -2,8 +2,6 @@
 # 05.02.2022
 # VereinsManager // Location Window
 
-from enum import Enum
-
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QComboBox, QTextEdit, QHBoxLayout, QVBoxLayout, QGridLayout, \
     QWidget
 

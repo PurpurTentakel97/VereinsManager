@@ -16,6 +16,31 @@ def _add_location(data: dict) -> int:
     return a_h.add_handler.add_location(data=data)
 
 
+def get_all_location_names(active: bool = True) -> tuple[list | str, bool]:
+    try:
+        validation.must_bool(bool_=active)
+
+        data = s_h.select_handler.get_all_location_names(active=active)
+
+        new_data: list = list()
+        for ID, name in data:
+            new_data.append((
+                ID,
+                name,
+                None,
+            ))
+
+        return new_data, True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"get_all_location_names", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"get_all_location_names", error_=sys.exc_info())
+        return error.message, False
+
+
 def _update_location(data: dict) -> None:
     return u_h.update_handler.update_location(data=data)
 

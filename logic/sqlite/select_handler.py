@@ -252,6 +252,18 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword=f"get_organisation_data", error_=sys.exc_info())
             raise e.LoadingFailed(info="Organisationsdaten")
 
+    # location
+    def get_all_location_names(self, active: bool) -> list:
+        table = "v_active_location" if active else "v_inactive_location"
+        sql_command: str = f"""SELECT ID, name FROM {table} ORDER BY name ASC;"""
+
+        try:
+            return self.cursor.execute(sql_command).fetchall()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"get_all_location_names", error_=sys.exc_info())
+            raise e.LoadingFailed("loading all location names")
+
     # log
     def get_member_log_data(self) -> list:
         sql_command: str = """SELECT ID,target_table,target_id, log_date, target_column, old_data, new_data FROM log WHERE target_table Like 'member%' ORDER BY log_date DESC;"""
