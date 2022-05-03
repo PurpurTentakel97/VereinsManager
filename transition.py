@@ -253,6 +253,10 @@ def get_all_location_name(active: bool = True) -> tuple[str | dict, bool]:
     return location_handler.get_all_location_names(active=active)
 
 
+def get_single_location_ID(ID: int, active: bool = True) -> tuple[str or tuple, bool]:
+    return location_handler.get_single_location_by_ID(ID=ID, active=active)
+
+
 def save_location(data: dict) -> tuple[str | int | None, bool]:
     try:
         return location_handler.save_location(data=data)

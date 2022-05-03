@@ -10,20 +10,19 @@ sql database
 types
     refacor get id from name (select handler -> type handler)
 
+exception
+    no memerehip -> no type
+
 UI
     Global
         set Icon in Taskbar
         check for screen reader
 
 locations
-    load
     set active / inactive
     delete
-    set location
     export
     recover
-    first location
-    add location if no location
     is maps
     create mapa link
 

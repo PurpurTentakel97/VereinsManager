@@ -26,14 +26,14 @@ class LocationWindow(BaseWindow):
         self._create_layout()
         self._set_window_information()
         self._load_countries()
-        self._set_edite_mode(is_edit=False)
+        self._set_first_location()
 
     def _create_ui(self) -> None:
         self._location_lb: QLabel = QLabel("Orte:")
         self._export_location_btn: QPushButton = QPushButton("Ort Exportieren")
 
         self._location_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_location_name,
-                                                   list_method=self.list_method, active=True)
+                                                   list_method=self.load_location, active=True)
 
         self._add_location_btn: QPushButton = QPushButton("Ort hinzufügen")
         self._add_location_btn.clicked.connect(self._add_location)
@@ -140,6 +140,8 @@ class LocationWindow(BaseWindow):
         self._location_list.list.addItem(new_location)
         self._location_list.list.setCurrentItem(new_location)
 
+        self._set_location_None()
+
         self._set_edite_mode()
 
     def _set_window_information(self) -> None:
@@ -159,9 +161,22 @@ class LocationWindow(BaseWindow):
 
     def _set_name_le(self) -> None:
         current_location: ListItem = self._location_list.list.currentItem()
-        current_location.first_name = self._name_le.text().strip().title()
+        current_location.first_name = self._name_le.text().strip()
         current_location.set_name()
         self._set_edite_mode()
+
+    def _set_first_location(self) -> None:
+        self.load_location()
+
+    def _set_location_None(self) -> None:
+        self._owner_le.setText("")
+        self._name_le.setText("")
+        self._street_le.setText("")
+        self._number_le.setText("")
+        self._zip_code_le.setText("")
+        self._city_le.setText("")
+        self._maps_link_le.setText("")
+        self._comment_text.setText("")
 
     def _load_countries(self) -> None:
         data, valid = transition.get_single_type(raw_type_id=c.config.raw_type_id['country'], active=True)
@@ -171,6 +186,29 @@ class LocationWindow(BaseWindow):
         for ID, name, *_ in data:
             self._raw_country_ids.append((ID, name))
             self._country_box.addItem(name)
+
+    def load_location(self) -> None:
+        current_location: ListItem = self._location_list.list.currentItem()
+        if current_location is None:
+            self._add_location()
+            return
+
+        data, valid = transition.get_single_location_ID(ID=current_location.ID)
+        if not valid:
+            self.set_error_bar(message=data)
+            return
+
+        self._owner_le.setText(data['owner'] if not None else "")
+        self._name_le.setText(data['name'] if not None else "")
+        self._street_le.setText(data['street'] if not None else "")
+        self._number_le.setText(data['number'] if not None else "")
+        self._zip_code_le.setText(data['zip_code'] if not None else "")
+        self._city_le.setText(data['city'] if not None else "")
+        self._country_box.setCurrentText(data['country'])
+        self._maps_link_le.setText(data['maps_link'] if not None else "")
+        self._comment_text.setText(data['comment'] if not None else "")
+
+        self._set_edite_mode(is_edit=False)
 
     def _save(self) -> None:
         current_location: ListItem = self._location_list.list.currentItem()
@@ -196,9 +234,6 @@ class LocationWindow(BaseWindow):
             current_location.ID = ID
         self.set_info_bar(message="saved")
         self._set_edite_mode(is_edit=False)
-
-    def list_method(self) -> None:
-        pass  # TODO
 
     def closeEvent(self, event) -> None:
         event.ignore()
