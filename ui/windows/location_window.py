@@ -27,6 +27,7 @@ class LocationWindow(BaseWindow):
         self._set_window_information()
         self._load_countries()
         self._set_first_location()
+        self._set_maps_btn()
 
     def _create_ui(self) -> None:
         self._location_lb: QLabel = QLabel("Orte:")
@@ -57,22 +58,22 @@ class LocationWindow(BaseWindow):
         self._address_lb: QLabel = QLabel("Adresse:")
         self._street_le: QLineEdit = QLineEdit()
         self._street_le.setPlaceholderText("Straße")
-        self._street_le.textChanged.connect(lambda: self._set_edite_mode(is_edit=True))
+        self._street_le.textChanged.connect(self._set_maps_le)
         self._number_le: QLineEdit = QLineEdit()
         self._number_le.setPlaceholderText("Hausnummer")
         self._number_le.textChanged.connect(lambda: self._set_edite_mode(is_edit=True))
         self._zip_code_le: QLineEdit = QLineEdit()
         self._zip_code_le.setPlaceholderText("PLZ")
-        self._zip_code_le.textChanged.connect(lambda: self._set_edite_mode(is_edit=True))
+        self._zip_code_le.textChanged.connect(self._set_maps_le)
         self._city_le: QLineEdit = QLineEdit()
         self._city_le.setPlaceholderText("Stadt")
-        self._city_le.textChanged.connect(lambda: self._set_edite_mode(is_edit=True))
+        self._city_le.textChanged.connect(self._set_maps_le)
         self._country_box: QComboBox = QComboBox()
         self._country_box.currentTextChanged.connect(lambda: self._set_edite_mode(is_edit=True))
 
         self._maps_link_le: QLineEdit = QLineEdit()
         self._maps_link_le.setPlaceholderText("Google Maps URL (falls nötig // nicht empfohlen)")
-        self._maps_link_le.textChanged.connect(lambda: self._set_edite_mode(is_edit=True))
+        self._maps_link_le.textChanged.connect(self._set_maps_le)
         self._maps_link_btn: QPushButton = QPushButton("Google Maps")
 
         self._comment_lb: QLabel = QLabel("Kommantar:")
@@ -178,6 +179,13 @@ class LocationWindow(BaseWindow):
         self._maps_link_le.setText("")
         self._comment_text.setText("")
 
+    def _set_maps_le(self) -> None:
+        self._set_maps_btn()
+        self._set_edite_mode()
+
+    def _set_maps_btn(self) -> None:
+        self._maps_link_btn.setEnabled(self._is_maps())
+
     def _load_countries(self) -> None:
         data, valid = transition.get_single_type(raw_type_id=c.config.raw_type_id['country'], active=True)
         if not valid:
@@ -234,6 +242,17 @@ class LocationWindow(BaseWindow):
             current_location.ID = ID
         self.set_info_bar(message="saved")
         self._set_edite_mode(is_edit=False)
+
+    def _is_maps(self) -> bool:
+        if self._maps_link_le.text().strip():
+            return True
+
+        if self._street_le.text().strip() or \
+                self._zip_code_le.text().strip() or \
+                self._city_le.text().strip():
+            return True
+
+        return False
 
     def closeEvent(self, event) -> None:
         event.ignore()
