@@ -6,11 +6,10 @@ import sys
 
 from helpers import password_validation
 from config import exception_sheet as e
+from logic.pdf_handler import global_pdf_handler
 from logic.data_handler import member_table_data_handler, member_anniversary_data_handler
 from logic.main_handler import user_handler, type_handler, path_handler, member_handler, \
     organisation_handler, log_handler, location_handler
-from logic.pdf_handler import global_pdf_handler, member_table_pdf as m_t_p, member_card_pdf as m_c_p, \
-    member_anniversary_pdf as m_a_p, member_log_pdf as m_l_p, member_entry_letter_pfd as m_e_l_p
 
 import debug
 
@@ -90,6 +89,34 @@ def delete_type(id_: int) -> tuple[str | None, bool]:
 
 
 # member
+def create_member_card_pdf(ID: int, path: str, active: bool = True) -> tuple[None | str, bool]:
+    try:
+        return global_pdf_handler.create_member_card(ID=ID, active=active, path=path)
+    except:
+        handle_error()
+
+
+def create_member_table_pdf(path: str, active: bool = True) -> tuple[None | str, bool]:
+    try:
+        return global_pdf_handler.create_member_table_pdf(path=path, active=active)
+    except:
+        handle_error()
+
+
+def create_member_anniversary_pdf(path: str, year: int or None = None, active: bool = True) -> tuple[None | str, bool]:
+    try:
+        return global_pdf_handler.create_member_anniversary_pdf(path=path, year=year, active=active)
+    except:
+        handle_error()
+
+
+def create_member_entry_letter_pdf(ID: int, path: str, active: bool, log_id: int) -> tuple[str | None, bool]:
+    try:
+        return global_pdf_handler.create_member_entry_letter_pdf(ID=ID, path=path, active=active, log_id=log_id)
+    except:
+        handle_error()
+
+
 def get_all_member_name(active: bool = True) -> tuple[tuple | str, bool]:
     try:
         return member_handler.get_names_of_member(active=active)
@@ -182,49 +209,6 @@ def delete_user(ID: int) -> tuple[str, bool]:
         handle_error()
 
 
-# pdf_handler
-def get_member_table_pdf(path: str, active: bool = True) -> tuple[None | str, bool]:
-    try:
-        return m_t_p.member_table_pdf.create_pdf(path=path, active=active)
-    except:
-        handle_error()
-
-
-def get_member_anniversary_pdf(path: str, year: int or None = None, active: bool = True) -> tuple[None | str, bool]:
-    try:
-        return m_a_p.member_anniversary_pdf.create_pdf(path=path, year=year, active=active)
-    except:
-        handle_error()
-
-
-def get_member_card_pdf(ID: int, path: str, active: bool = True) -> tuple[None | str, bool]:
-    try:
-        return m_c_p.member_card_pdf.create_pdf(ID=ID, active=active, path=path)
-    except:
-        handle_error()
-
-
-def get_member_log_pdf(ID: int, path: str, active: bool) -> tuple[str | None, bool]:
-    try:
-        return m_l_p.member_log_pdf.create_pdf(path=path, ID=ID, active=active)
-    except:
-        handle_error()
-
-
-def get_member_entry_letter_pdf(ID: int, path: str, active: bool, log_id: int) -> tuple[str | None, bool]:
-    try:
-        return m_e_l_p.member_entry_letter_pdf.create_pdf(ID=ID, path=path, active=active, log_id=log_id)
-    except:
-        handle_error()
-
-
-def open_latest_export() -> None:
-    try:
-        global_pdf_handler.open_last_export()
-    except:
-        handle_error()
-
-
 # organisation
 def get_organisation_data() -> tuple[tuple | str, bool]:
     try:
@@ -241,6 +225,13 @@ def add_update_organisation(data: dict) -> tuple[int | str, bool]:
 
 
 # log
+def create_member_log_pdf(ID: int, path: str, active: bool) -> tuple[str | None, bool]:
+    try:
+        return global_pdf_handler.create_member_log_pdf(path=path, ID=ID, active=active)
+    except:
+        handle_error()
+
+
 def get_log_member_data(target_id: int) -> tuple[tuple | str, bool]:
     try:
         return log_handler.get_single_member_log(target_id=target_id)
@@ -249,6 +240,13 @@ def get_log_member_data(target_id: int) -> tuple[tuple | str, bool]:
 
 
 # location
+def create_location_pdf(ID: int, path: str) -> tuple[None or str, bool]:
+    try:
+        return global_pdf_handler.create_location_pdf(ID=ID, path=path)
+    except:
+        handle_error()
+
+
 def get_all_location_name(active: bool = True) -> tuple[str | dict, bool]:
     try:
         return location_handler.get_all_location_names(active=active)
@@ -270,7 +268,7 @@ def update_location_activity(ID: int, active: bool) -> tuple[None | str, bool]:
         handle_error()
 
 
-def delete_location(ID:int)->tuple[None or str,bool]:
+def delete_location(ID: int) -> tuple[None or str, bool]:
     try:
         return location_handler.delete_location(ID=ID)
     except:
@@ -280,6 +278,14 @@ def delete_location(ID:int)->tuple[None or str,bool]:
 def save_location(data: dict) -> tuple[str | int | None, bool]:
     try:
         return location_handler.save_location(data=data)
+    except:
+        handle_error()
+
+
+# pdf_handler
+def open_latest_export() -> None:
+    try:
+        global_pdf_handler.open_last_export()
     except:
         handle_error()
 

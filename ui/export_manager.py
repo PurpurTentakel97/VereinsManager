@@ -63,9 +63,9 @@ def export_member_anniversary(index: int, year: int) -> tuple[str, bool]:
     message, result = "", True
     match index:
         case 0:
-            message, result = transition.get_member_anniversary_pdf(path=file)
+            message, result = transition.create_member_anniversary_pdf(path=file)
         case 1:
-            message, result = transition.get_member_anniversary_pdf(path=file, year=year)
+            message, result = transition.create_member_anniversary_pdf(path=file, year=year)
 
     if not result:
         return message, False
@@ -93,8 +93,8 @@ def export_member_log(name: str, ID: int, active: bool) -> tuple[str, bool]:
         return "Export abgebrochen", False
 
     file = _delete_date_from_filename(file_name=file)
-    message, valid = transition.get_member_log_pdf(ID=ID, path=file,
-                                                   active=active)
+    message, valid = transition.create_member_log_pdf(ID=ID, path=file,
+                                                      active=active)
     if not valid:
         return message, False
 
@@ -128,7 +128,7 @@ def export_member_letter(name: str, ID: int, active: bool, log_id: int, letter_i
         return "Export abgebrochen", False
 
     file = _delete_date_from_filename(file_name=file)
-    message, valid = transition.get_member_entry_letter_pdf(ID=ID, path=file, active=active, log_id=log_id)
+    message, valid = transition.create_member_entry_letter_pdf(ID=ID, path=file, active=active, log_id=log_id)
     if not valid:
         return message, False
 
@@ -154,7 +154,7 @@ def export_member_table() -> tuple[str, bool]:
         return "Export abgebrochen", False
 
     file = _delete_date_from_filename(file_name=file)
-    message, result = transition.get_member_table_pdf(file)
+    message, result = transition.create_member_table_pdf(file)
 
     if not result:
         return message, False
@@ -183,7 +183,7 @@ def export_member_card(first_name: str, last_name: str, ID: int) -> tuple[str, b
         return "Export abgebrochen", False
 
     file = _delete_date_from_filename(file_name=file)
-    message, result = transition.get_member_card_pdf(ID=ID, path=file)
+    message, result = transition.create_member_card_pdf(ID=ID, path=file)
 
     if not result:
         return message, False

@@ -1,5 +1,5 @@
 # Purpur Tentakel
-# 05.02.2022
+# 02.05.2022
 # VereinsManager // Location Window
 
 import webbrowser
@@ -9,11 +9,11 @@ from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QComboBox, QTextEdit
 
 import transition
 from helpers import helper
+from ui import window_manager as w
 from config import config_sheet as c
 from ui.base_window import BaseWindow
-from ui.frames.list_frame import ListItem, ListFrame
-from ui import window_manager as w
 from ui.windows import recover_window as r_w
+from ui.frames.list_frame import ListItem, ListFrame
 import debug
 
 debug_str: str = "LocationWindow"
