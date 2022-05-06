@@ -44,7 +44,7 @@ class LocationWindow(BaseWindow):
         self._save_btn: QPushButton = QPushButton("Speichern")
         self._save_btn.clicked.connect(self._save)
         self._break_btn: QPushButton = QPushButton("Zurücksetzten")
-        self._break_btn.clicked.connect(lambda: self._set_edite_mode(is_edit=False))
+        self._break_btn.clicked.connect(self.load_location)
 
         self._owner_lb: QLabel = QLabel("Inhaber:")
         self._owner_le: QLineEdit = QLineEdit()
