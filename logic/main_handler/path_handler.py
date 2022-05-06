@@ -70,5 +70,13 @@ def _get_default_path(type_: str) -> str:
                 c.config.dirs['organisation'],
                 c.config.dirs['error'],
             )
+        case "location":
+            path: str = os.path.join(
+                os.getcwd(),
+                c.config.dirs['save'],
+                c.config.dirs['organisation'],
+                c.config.dirs['export'],
+                c.config.dirs['location'],
+            )
 
     return path

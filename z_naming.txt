@@ -1,5 +1,5 @@
-main funktion -> if ther is a main funktion
-on -> event funktion / method
+main function -> if ther is a main funktion
+on -> event function / method
 create -> deklarieren
 add -> add Data
 get -> geschaffung von Daten

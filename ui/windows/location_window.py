@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QComboBox, QTextEdit
 
 import transition
 from helpers import helper
-from ui import window_manager as w
+from ui import window_manager as w, export_manager
 from config import config_sheet as c
 from ui.base_window import BaseWindow
 from ui.windows import recover_window as r_w
@@ -36,6 +36,7 @@ class LocationWindow(BaseWindow):
     def _create_ui(self) -> None:
         self._location_lb: QLabel = QLabel("Orte:")
         self._export_location_btn: QPushButton = QPushButton("Ort Exportieren")
+        self._export_location_btn.clicked.connect(self._export)
 
         self._location_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_location_name,
                                                    list_method=self.load_location, active=True)
@@ -282,6 +283,23 @@ class LocationWindow(BaseWindow):
             current_location.ID = ID
         self.set_info_bar(message="saved")
         self._set_edite_mode(is_edit=False)
+
+    def _export(self) -> None:
+        current_location: ListItem = self._location_list.list.currentItem()
+        if current_location is None:
+            self.set_error_bar(message="Kein Ort vorhanden")
+            return
+
+        message,valid = export_manager.export_location(
+            name=current_location.first_name,
+            ID=current_location.ID,
+        )
+
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        self.set_info_bar(message=message)
 
     def _is_maps(self) -> bool:
         if self._maps_link_le.text().strip():

@@ -192,3 +192,30 @@ def export_member_card(first_name: str, last_name: str, ID: int) -> tuple[str, b
         transition.open_latest_export()
 
     return "Export abgeschlossen", True
+
+
+def export_location(name: str, ID: int) -> tuple[str, bool]:
+    transition.create_default_dir("location")
+    file = _add_date_to_filename(file_name=c.config.files['location_pdf'], name=name)
+
+    file, check = QFileDialog.getSaveFileName(None, "Mitglieder PDF exportieren",
+                                              os.path.join(os.getcwd(),
+                                                           c.config.dirs['save'],
+                                                           c.config.dirs['organisation'],
+                                                           c.config.dirs['export'],
+                                                           c.config.dirs['location'],
+                                                           file),
+                                              "PDF (*.pdf);;All Files (*)")
+    if not check:
+        return "Export abgebrochen", False
+
+    file = _delete_date_from_filename(file_name=file)
+    message, result = transition.create_location_pdf(ID=ID, path=file)
+
+    if not result:
+        return message, False
+
+    if BaseWindow.is_open_permission():
+        transition.open_latest_export()
+
+    return "Export abgeschlossen", True

@@ -34,6 +34,7 @@
     "member_card": "member_card",
     "member_letter": "member_letter",
     "member_log": "member_log",
+    "location": "location",
     "config": "config"
   },
   "files": {
@@ -45,7 +46,8 @@
     "member_letter_active_pdf": "<name>_letter_active",
     "member_letter_membership_pdf": "<name>_letter_membership",
     "member_log_pdf": "<name>_log",
-    "member_anniversary_pdf": "Geburtstage_Jubilaen"
+    "member_anniversary_pdf": "Geburtstage_Jubilaen",
+    "location_pdf": "<name>"
   },
   "user": {
     "ID": 0,
