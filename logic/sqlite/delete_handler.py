@@ -82,6 +82,18 @@ class DeleteHandler(Database):
         except self.OperationalError:
             debug.error(item=debug_str, keyword="delete_user", error_=sys.exc_info())
 
+    # location
+    def delete_location(self, ID: int) -> None:
+        sql_command: str = """DELETE from location WHERE ID IS ?;"""
+
+        try:
+            self.cursor.execute(sql_command, (ID,))
+            self.connection.commit()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword="delete_location", error_=sys.exc_info())
+            raise e.DeleteFailed("delete Location failed")
+
 
 def create() -> None:
     global delete_handler

@@ -10,6 +10,7 @@ from config import config_sheet as c
 from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
 from ui import window_manager as w
+from ui.windows import recover_window as r_w
 import debug
 
 debug_str: str = "LocationWindow"
@@ -41,6 +42,7 @@ class LocationWindow(BaseWindow):
         self._delete_location_btn: QPushButton = QPushButton("Ort löschen")
         self._delete_location_btn.clicked.connect(self._delete)
         self._recover_location_btn: QPushButton = QPushButton("Ort wieder herstellen")
+        self._recover_location_btn.clicked.connect(self._open_recover)
 
         self._save_btn: QPushButton = QPushButton("Speichern")
         self._save_btn.clicked.connect(self._save)
@@ -187,6 +189,19 @@ class LocationWindow(BaseWindow):
     def _set_maps_btn(self) -> None:
         self._maps_link_btn.setEnabled(self._is_maps())
 
+    def _delete(self) -> None:
+        current_location: ListItem = self._location_list.list.currentItem()
+        if current_location is None:
+            self.set_error_bar(message="Keine Location vorhanden.")
+            return
+
+        message, valid = transition.update_location_activity(ID=current_location.ID, active=False)
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        self._location_list.load_list_data()
+
     def _load_countries(self) -> None:
         data, valid = transition.get_single_type(raw_type_id=c.config.raw_type_id['country'], active=True)
         if not valid:
@@ -219,19 +234,15 @@ class LocationWindow(BaseWindow):
 
         self._set_edite_mode(is_edit=False)
 
-    def _delete(self) -> None:
-        current_location: ListItem = self._location_list.list.currentItem()
-        debug.debug(item=debug_str, keyword="_delete", message=current_location.ID)
-        if current_location is None:
-            self.set_error_bar(message="Keine Location vorhanden.")
-            return
-
-        message, valid = transition.update_location_activity(ID=current_location.ID, active=False)
+    def _open_recover(self) -> None:
+        result, valid = w.window_manger.is_valid_recover_window(type_="location", ignore_location_window=True)
         if not valid:
-            self.set_error_bar(message=message)
+            self.set_error_bar(message=result)
             return
 
-        self._location_list.load_list_data()
+        w.window_manger.recover_location_window = r_w.RecoverWindow(type_="location")
+        w.window_manger.location_window = None
+        self.close()
 
     def _save(self) -> None:
         current_location: ListItem = self._location_list.list.currentItem()

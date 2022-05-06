@@ -270,6 +270,13 @@ def update_location_activity(ID: int, active: bool) -> tuple[None | str, bool]:
         handle_error()
 
 
+def delete_location(ID:int)->tuple[None or str,bool]:
+    try:
+        return location_handler.delete_location(ID=ID)
+    except:
+        handle_error()
+
+
 def save_location(data: dict) -> tuple[str | int | None, bool]:
     try:
         return location_handler.save_location(data=data)

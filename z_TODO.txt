@@ -19,11 +19,8 @@ UI
         check for screen reader
 
 locations
-    set active
-    delete
     export
-    recover
-    create mapa link
+    create maps link
 
     window manager
 

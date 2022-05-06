@@ -5,7 +5,7 @@
 from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
 from ui import window_manager as w
-from ui.windows import user_window
+from ui.windows import user_window, location_window
 from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListFrame, ListItem
 from ui.windows.member_windows import members_window
@@ -60,7 +60,7 @@ class RecoverWindow(BaseWindow):
     def _set_type(self) -> None:
         match self._type:
             case "member":
-                self._window_name: str = "ehmalige Mitglieder - Vereinsmanager"
+                self._window_name: str = "ehmalige Mitglieder"
                 self._recover_btn_name: str = "Mitglied wieder herstellen"
                 self._delete_btn_name: str = "Mitglied löschen"
 
@@ -70,7 +70,7 @@ class RecoverWindow(BaseWindow):
                 self.delete_method = transition.delete_member
 
             case "user":
-                self._window_name: str = "ehmalige Benutzer - Vereinsmanager"
+                self._window_name: str = "ehmalige Benutzer"
                 self._recover_btn_name: str = "Benutzer wieder herstellen"
                 self._delete_btn_name: str = "Benutzer löschen"
 
@@ -78,6 +78,16 @@ class RecoverWindow(BaseWindow):
                 self._valid_parent_window_method = w.window_manger.is_valid_user_window
                 self._get_names_method = transition.get_all_user_name
                 self.delete_method = transition.delete_user
+
+            case "location":
+                self._window_name:str = "ehmalige Orte"
+                self._recover_btn_name:str = "Ort wieder herstelen"
+                self._delete_btn_name:str = "Ort löschen"
+
+                self._update_activity_method = transition.update_location_activity
+                self._valid_parent_window_method = w.window_manger.is_valid_location_window
+                self._get_names_method = transition.get_all_location_name
+                self.delete_method = transition.delete_location
 
     def set_recover_enabled(self) -> None:
         current_member = self.recover_list.list.currentItem()
@@ -90,8 +100,11 @@ class RecoverWindow(BaseWindow):
 
     def _delete(self) -> None:
         current_member = self.recover_list.list.currentItem()
-        message, result = self.delete_method(ID=current_member.ID)
+        if current_member is None:
+            self.set_error_bar(message="Keine Einträge vorhanden")
+            return
 
+        message, result = self.delete_method(ID=current_member.ID)
         if not result:
             self.set_error_bar(message=message)
             return
@@ -102,10 +115,15 @@ class RecoverWindow(BaseWindow):
 
     def _recover(self) -> None:
         current_member: ListItem = self.recover_list.list.currentItem()
+        if current_member is None:
+            self.set_error_bar(message="Keine Einträger vorhanden")
+            return
+
         result, valid = self._update_activity_method(ID=current_member.ID, active=True)
         if not valid:
             self.set_error_bar(message=result)
             return
+
         self.recover_list.load_list_data()
         self.set_recover_enabled()
         self.set_info_bar(message="saved")
@@ -119,18 +137,24 @@ class RecoverWindow(BaseWindow):
                     w.window_manger.recover_member_window = None
                 case "user":
                     w.window_manger.recover_user_window = None
+                case "location":
+                    w.window_manger.recover_location_window = None
             event.accept()
-        else:
-            match self._type:
-                case "member":
-                    w.window_manger.members_window = members_window.MembersWindow()
-                    w.window_manger.recover_member_window = None
 
-                case "user":
-                    w.window_manger.user_window = user_window.UserWindow()
-                    w.window_manger.recover_user_window = None
+        match self._type:
+            case "member":
+                w.window_manger.members_window = members_window.MembersWindow()
+                w.window_manger.recover_member_window = None
 
-            event.accept()
+            case "user":
+                w.window_manger.user_window = user_window.UserWindow()
+                w.window_manger.recover_user_window = None
+
+            case "location":
+                w.window_manger.location_window = location_window.LocationWindow()
+                w.window_manger.recover_location_window = None
+
+        event.accept()
 
     def null_method(self) -> None:
         pass

@@ -6,8 +6,7 @@ import sys
 
 from helpers import validation
 from config import exception_sheet as e, config_sheet as c
-from logic.main_handler import type_handler
-from logic.sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h
+from logic.sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h, delete_handler as d_h
 import debug
 
 debug_str: str = "Location Handler"
@@ -78,6 +77,22 @@ def update_location_activity(ID: int, active: bool) -> tuple[None | str, bool]:
 
 def _update_location(data: dict) -> None:
     return u_h.update_handler.update_location(data=data)
+
+
+def delete_location(ID: int) -> tuple[None or str, bool]:
+    try:
+        validation.must_positive_int(int_=ID, max_length=None)
+
+        d_h.delete_handler.delete_location(ID=ID)
+        return None,True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="delete_location", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="delete_location", error_=sys.exc_info())
+        return error.message, False
 
 
 def save_location(data: dict) -> tuple[str | int | None, bool]:

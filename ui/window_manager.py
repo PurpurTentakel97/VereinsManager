@@ -28,6 +28,7 @@ class WindowManager:
         self.organisation_data_window = None
         # location
         self.location_window = None
+        self.recover_location_window = None
         # Other
         self.export_window = None
 
@@ -161,22 +162,30 @@ class WindowManager:
         return True, True
 
     # Location
-    def is_valid_location_window(self) -> [bool | str, bool]:
+    def is_valid_location_window(self, ignore_recover_window:bool = False) -> [bool | str, bool]:
         return True, True  # TODO
 
     # Global
     def is_valid_recover_window(self, type_: str, ignore_member_window: bool = False,
-                                ignore_user_window: bool = False) -> [bool | str, bool]:
+                                ignore_user_window: bool = False,
+                                ignore_location_window: bool = False) -> [bool | str, bool]:
         match type_:
             case "member":
                 if self._is_window("member", ignore_member_window):
                     return "Es können keine Ehmaligen Mitglider berabeitet werden, währen das Mitglieder-Fenster geöffnet ist.", False
                 if self._is_window("recover_member"):
                     return "Wiederherstellen Fenster bereits geöffnet.", False
+
             case "user":
                 if self._is_window("user", ignore_user_window):
                     return "Es können keine Ehmaligen Benutzer berabeitet werden, währen das Benutzer-Fenster geöffnet ist.", False
                 if self._is_window("recover_user"):
+                    return "Wiederherstellen Fenster bereits geöffnet.", False
+
+            case "location":
+                if self._is_window("location", ignore_location_window):
+                    return "Es können keine Ehmaligen Orte berabeitet werden, währen das Orte-Fenster geöffnet ist.", False
+                if self._is_window("recover_location"):
                     return "Wiederherstellen Fenster bereits geöffnet.", False
 
         return True, True
@@ -221,6 +230,8 @@ class WindowManager:
                 dummy_window = self.recover_member_window
             case "recover_user":
                 dummy_window = self.recover_user_window
+            case "recover_location":
+                dummy_window = self.recover_location_window
             case "type":
                 dummy_window = self.types_window
 
@@ -238,6 +249,9 @@ class WindowManager:
 
             case "organisation_data":
                 dummy_window = self.organisation_data_window
+
+            case "location":
+                dummy_window = self.location_window
 
             case "export":
                 dummy_window = self.export_window
