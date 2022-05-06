@@ -218,6 +218,19 @@ class LocationWindow(BaseWindow):
 
         self._set_edite_mode(is_edit=False)
 
+    def _delete(self) -> None:
+        current_location: ListItem = self._location_list.list.currentItem()
+        if current_location is None:
+            self.set_error_bar(message="Keine Location vorhanden.")
+            return
+
+        message, valid = transition.update_location_activity(ID=current_location.ID, active=False)
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        # TODO
+
     def _save(self) -> None:
         current_location: ListItem = self._location_list.list.currentItem()
         output: dict = {

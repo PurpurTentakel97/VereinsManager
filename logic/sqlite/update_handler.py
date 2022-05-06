@@ -235,6 +235,15 @@ class UpdateHandler(Database):
             debug.error(item=debug_str, keyword=f"update_location", error_=sys.exc_info())
             raise e.UpdateFailed("Update location")
 
+    def update_location_activity(self, ID: int, active: bool) -> None:
+        sql_command: str = """UPDATE location SET _active = ? WHERE ID is ?;"""
+
+        try:
+            self.cursor.execute(sql_command, (active, ID))
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"update_location_activity", error_=sys.exc_info())
+            raise e.UpdateFailed("Update location activity")
+
 
 def crate() -> None:
     global update_handler

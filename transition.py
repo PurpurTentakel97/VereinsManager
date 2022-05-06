@@ -250,11 +250,24 @@ def get_log_member_data(target_id: int) -> tuple[tuple | str, bool]:
 
 # location
 def get_all_location_name(active: bool = True) -> tuple[str | dict, bool]:
-    return location_handler.get_all_location_names(active=active)
+    try:
+        return location_handler.get_all_location_names(active=active)
+    except:
+        handle_error()
 
 
 def get_single_location_ID(ID: int, active: bool = True) -> tuple[str or tuple, bool]:
-    return location_handler.get_single_location_by_ID(ID=ID, active=active)
+    try:
+        return location_handler.get_single_location_by_ID(ID=ID, active=active)
+    except:
+        handle_error()
+
+
+def update_location_activity(ID: int, active: bool) -> tuple[None | str, bool]:
+    try:
+        return location_handler.update_location_activity(ID=ID, active=active)
+    except:
+        handle_error()
 
 
 def save_location(data: dict) -> tuple[str | int | None, bool]:
