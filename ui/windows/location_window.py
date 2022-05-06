@@ -4,15 +4,16 @@
 
 import webbrowser
 
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QComboBox, QTextEdit, QHBoxLayout, QVBoxLayout, QGridLayout, \
     QWidget
 
 import transition
 from helpers import helper
-from ui import window_manager as w, export_manager
 from config import config_sheet as c
 from ui.base_window import BaseWindow
 from ui.windows import recover_window as r_w
+from ui import window_manager as w, export_manager
 from ui.frames.list_frame import ListItem, ListFrame
 import debug
 
@@ -72,6 +73,7 @@ class LocationWindow(BaseWindow):
         self._zip_code_le: QLineEdit = QLineEdit()
         self._zip_code_le.setPlaceholderText("PLZ")
         self._zip_code_le.textChanged.connect(self._set_maps_le)
+        self._zip_code_le.setValidator(QIntValidator())
         self._city_le: QLineEdit = QLineEdit()
         self._city_le.setPlaceholderText("Stadt")
         self._city_le.textChanged.connect(self._set_maps_le)
