@@ -2,10 +2,13 @@
 # 05.02.2022
 # VereinsManager // Location Window
 
+import webbrowser
+
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QComboBox, QTextEdit, QHBoxLayout, QVBoxLayout, QGridLayout, \
     QWidget
 
 import transition
+from helpers import helper
 from config import config_sheet as c
 from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
@@ -78,6 +81,7 @@ class LocationWindow(BaseWindow):
         self._maps_link_le.setPlaceholderText("Google Maps URL (falls nötig // nicht empfohlen)")
         self._maps_link_le.textChanged.connect(self._set_maps_le)
         self._maps_link_btn: QPushButton = QPushButton("Google Maps")
+        self._maps_link_btn.clicked.connect(self._open_maps)
 
         self._comment_lb: QLabel = QLabel("Kommantar:")
         self._comment_text: QTextEdit = QTextEdit()
@@ -243,6 +247,16 @@ class LocationWindow(BaseWindow):
         w.window_manger.recover_location_window = r_w.RecoverWindow(type_="location")
         w.window_manger.location_window = None
         self.close()
+
+    def _open_maps(self) -> None:
+        maps: str = helper.combine_maps_string(
+            street=self._street_le.text().strip(),
+            number=self._number_le.text().strip(),
+            zip_code=self._zip_code_le.text().strip(),
+            city=self._city_le.text().strip()
+        )
+
+        webbrowser.open(maps)
 
     def _save(self) -> None:
         current_location: ListItem = self._location_list.list.currentItem()

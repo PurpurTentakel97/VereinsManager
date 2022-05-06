@@ -20,7 +20,6 @@ UI
 
 locations
     export
-    create maps link
 
     window manager
 
