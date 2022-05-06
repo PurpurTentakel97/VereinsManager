@@ -18,9 +18,6 @@ UI
         set Icon in Taskbar
         check for screen reader
 
-locations
-    export
-
 
 haftungsausschluss
     list tooltiptext in recover window

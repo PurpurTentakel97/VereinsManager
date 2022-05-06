@@ -15,7 +15,8 @@ def get_location_data(ID: int) -> tuple[str | dict, bool]:
     if not valid:
         return data, valid
 
-    data['maps'] = _transform_maps_link(data=data)
+    data['maps_link'] = _transform_maps_link(data=data)
+    data = _try_transform_to_None_str(data=data)
 
     return data, True
 
@@ -30,3 +31,22 @@ def _transform_maps_link(data: dict) -> str:
         zip_code=data['zip_code'],
         city=data['city'],
     )
+
+
+def _try_transform_to_None_str(data: dict) -> dict:
+    keys:tuple =(
+        "owner",
+        "name",
+        "street",
+        "number",
+        "zip_code",
+        "city",
+        "country",
+        "maps_link",
+        "comment",
+    )
+
+    for key in keys:
+        data[key] = helper.try_transform_to_None_string(data[key])
+
+    return data

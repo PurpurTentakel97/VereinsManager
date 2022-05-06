@@ -6,7 +6,7 @@ import os
 
 from config import config_sheet as c
 from logic.pdf_handler import member_table_pdf, member_card_pdf, member_anniversary_pdf, member_log_pdf, \
-    member_entry_letter_pfd, location_pdf
+    member_entry_letter_pfd, location_pdf_handler
 
 
 def create_pdf_handler() -> None:
@@ -15,7 +15,7 @@ def create_pdf_handler() -> None:
     member_anniversary_pdf.create()
     member_log_pdf.create()
     member_entry_letter_pfd.create()
-    location_pdf.create()
+    location_pdf_handler.create()
 
 
 # member
@@ -41,7 +41,7 @@ def create_member_entry_letter_pdf(ID: int, path: str, active: bool, log_id: int
 
 # other
 def create_location_pdf(ID: int, path: str) -> tuple[None or str, bool]:
-    return location_pdf.location_pdf.create_PDF(ID=ID, path=path)
+    return location_pdf_handler.location_pdf.create_PDF(ID=ID, path=path)
 
 
 def open_last_export() -> None:

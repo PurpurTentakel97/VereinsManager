@@ -3,7 +3,6 @@
 # VereinsManager / Log Handler
 
 from _datetime import datetime
-from typing import Tuple
 
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
