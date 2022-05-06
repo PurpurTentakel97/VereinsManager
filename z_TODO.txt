@@ -19,7 +19,7 @@ UI
         check for screen reader
 
 locations
-    set active / inactive
+    set active
     delete
     export
     recover

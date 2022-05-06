@@ -39,6 +39,7 @@ class LocationWindow(BaseWindow):
         self._add_location_btn: QPushButton = QPushButton("Ort hinzufügen")
         self._add_location_btn.clicked.connect(self._add_location)
         self._delete_location_btn: QPushButton = QPushButton("Ort löschen")
+        self._delete_location_btn.clicked.connect(self._delete)
         self._recover_location_btn: QPushButton = QPushButton("Ort wieder herstellen")
 
         self._save_btn: QPushButton = QPushButton("Speichern")
@@ -220,6 +221,7 @@ class LocationWindow(BaseWindow):
 
     def _delete(self) -> None:
         current_location: ListItem = self._location_list.list.currentItem()
+        debug.debug(item=debug_str, keyword="_delete", message=current_location.ID)
         if current_location is None:
             self.set_error_bar(message="Keine Location vorhanden.")
             return
@@ -229,7 +231,7 @@ class LocationWindow(BaseWindow):
             self.set_error_bar(message=message)
             return
 
-        # TODO
+        self._location_list.load_list_data()
 
     def _save(self) -> None:
         current_location: ListItem = self._location_list.list.currentItem()

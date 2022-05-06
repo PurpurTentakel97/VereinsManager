@@ -288,13 +288,13 @@ CREATE TABLE IF NOT EXISTS "main"."location" (
 PRIMARY KEY ("ID" AUTOINCREMENT),
 FOREIGN KEY ("country") REFERENCES "type"
 );
-/* Active Member */
+/* Active Location */
 CREATE VIEW IF NOT EXISTS "main"."v_active_location" AS
 SELECT ID,owner,name,street,number,zip_code,city,country,maps_link,comment
 FROM location
 WHERE _active = 1;
 
-/* Inactive Member */
+/* Inactive Location */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_location" AS
 SELECT ID,owner,name,street,number,zip_code,city,country,maps_link,comment
 FROM location
