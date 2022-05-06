@@ -21,8 +21,6 @@ UI
 locations
     export
 
-    window manager
-
 
 haftungsausschluss
     list tooltiptext in recover window

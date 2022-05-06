@@ -37,6 +37,7 @@ class WindowManager:
         windows: tuple = (
             "member",
             "user",
+            "location",
         )
         valid = True
         for window in windows:
@@ -162,8 +163,10 @@ class WindowManager:
         return True, True
 
     # Location
-    def is_valid_location_window(self, ignore_recover_window:bool = False) -> [bool | str, bool]:
-        return True, True  # TODO
+    def is_valid_location_window(self, ignore_recover_window: bool = False) -> [bool | str, bool]:
+        if self._is_window(self.location_window, ignore=ignore_recover_window):
+            return "Fenster bereits geöffnet", False
+        return True, True
 
     # Global
     def is_valid_recover_window(self, type_: str, ignore_member_window: bool = False,
@@ -197,28 +200,28 @@ class WindowManager:
 
     # close window
     def close_all_window(self, close_user_window: bool = True) -> None:
-        windows: tuple = (
+        inner_windows: tuple = (
             self.member_table_window,
             self.member_anniversary_window,
             self.recover_member_window,
             self.recover_user_window,
+            self.recover_location_window,
             self.member_log_window,
+        )
+
+        for window in inner_windows:
+            window.close() if window else None
+
+        main_windows: tuple = (
+            self.members_window,
+            self.user_window,
+            self.location_window,
             self.types_window,
             self.organisation_data_window,
             self.export_window,
         )
-
-        for window in windows:
+        for window in main_windows:
             window.close() if window else None
-
-        windows: tuple = (
-            self.members_window,
-        )
-        for window in windows:
-            window.close() if window else None
-
-        if close_user_window:
-            self.user_window.close() if self.user_window else None
 
     # helpers
     def _is_window(self, window: str, ignore: bool = False) -> bool:
