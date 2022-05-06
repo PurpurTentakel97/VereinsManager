@@ -23,7 +23,6 @@ locations
     delete
     export
     recover
-    is maps
     create mapa link
 
     window manager
