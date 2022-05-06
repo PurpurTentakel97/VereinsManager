@@ -285,7 +285,7 @@ def must_str(str_: str, length: int | None = 50) -> None:
 
 def must_specfic_type(str_: str, raw_type_id: int) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:
-        raise e.NoMembership(info=str_)
+        raise e.NoType(info=str_)
     reference_data, _ = type_handler.get_single_raw_type_types(raw_type_id=raw_type_id,
                                                                active=True)
     not_found: bool = True

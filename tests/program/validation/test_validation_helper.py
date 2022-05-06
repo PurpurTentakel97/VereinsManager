@@ -57,16 +57,16 @@ def test_must_membership_type_pass(membership_type):
 
 @pytest.mark.parametrize(("membership_type", "expected"), [
     ("Type_2", e.NotFound),
-    ("", e.NoMembership),
-    (5, e.NoMembership),
-    (-9, e.NoMembership),
-    (5.6, e.NoMembership),
-    (-9.6, e.NoMembership),
-    (str(), e.NoMembership),
-    (bool(), e.NoMembership),
-    (list(), e.NoMembership),
-    (tuple(), e.NoMembership),
-    (dict(), e.NoMembership),
+    ("", e.NoType),
+    (5, e.NoType),
+    (-9, e.NoType),
+    (5.6, e.NoType),
+    (-9.6, e.NoType),
+    (str(), e.NoType),
+    (bool(), e.NoType),
+    (list(), e.NoType),
+    (tuple(), e.NoType),
+    (dict(), e.NoType),
 ])
 def test_must_membership_type_pass(membership_type,expected):
     helper.generate_temp_database()

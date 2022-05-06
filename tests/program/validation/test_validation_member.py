@@ -72,7 +72,7 @@ def test_update_member_pass(member):
       'membership_type': '',
       'special_member': True,
       'comment_text': f'Ich bin der weltbeste Kommtentar und sehr lang.',
-      'maps': 'www.bester_link.com'}, e.NoMembership)
+      'maps': 'www.bester_link.com'}, e.NoType)
 ])
 def test_update_member_exception(member, expected):
     helper.generate_temp_database()

@@ -75,11 +75,11 @@ class NoStr(InputError):
         self.set_message(message="Keine Eingabe", info=info)
 
 
-class NoMembership(InputError):
+class NoType(InputError):
     def __init__(self, info: str = ""):
         super().__init__()
         self.error_code: str = "202"
-        self.set_message(message="Keine Mitgliedsart vorhanden", info=info)
+        self.set_message(message="Min. ein Typ fehlt", info=info)
 
 
 class NoBool(InputError):
