@@ -50,7 +50,7 @@ def test_must_membership_type_pass(membership_type):
     helper.generate_temp_database()
     helper.add_generic_type()
     helper.generate_select_handler()
-    v.must_specfic_type(membership_type)
+    v.must_specific_type(membership_type)
     helper.drop_select_handler()
     helper.delete_temp_database()
 
@@ -73,7 +73,7 @@ def test_must_membership_type_pass(membership_type,expected):
     helper.add_generic_type()
     helper.generate_select_handler()
     with pytest.raises(expected):
-        v.must_specfic_type(membership_type)
+        v.must_specific_type(membership_type)
     helper.drop_select_handler()
     helper.delete_temp_database()
 

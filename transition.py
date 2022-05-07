@@ -282,6 +282,15 @@ def save_location(data: dict) -> tuple[str | int | None, bool]:
         handle_error()
 
 
+# schedule
+def get_all_schedule_days_names(active: bool = True):
+    return "pass",False
+
+
+def get_all_schedule_entry_names(active: bool = True):
+    return "pass",False
+
+
 # pdf_handler
 def open_latest_export() -> None:
     try:

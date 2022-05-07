@@ -1,7 +1,2 @@
 auftritsplan
 aufgaben
-schreiben
-    - Änderung mitgliedsart
-    - Eintritt
-    - Austritt
-    - Entschuldigung

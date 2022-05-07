@@ -8,7 +8,7 @@ from ui import window_manager as w
 from ui.base_window import BaseWindow
 from ui.windows.member_windows import members_window as m_w
 from ui.windows import types_window, user_window, user_verify_window, organisation_data_window, \
-    export_window, location_window
+    export_window, location_window, schedule_window
 
 import debug
 
@@ -30,9 +30,9 @@ class MainWindow(BaseWindow):
         self._members_btn.setText("Mitglieder")
         self._members_btn.clicked.connect(self._open_members)
 
-        self._performance_btn: QPushButton = QPushButton()
-        self._performance_btn.setText("Auftritte")
-        self._performance_btn.clicked.connect(self._open_performances)
+        self._schedule_btn: QPushButton = QPushButton()
+        self._schedule_btn.setText("Auftritte")
+        self._schedule_btn.clicked.connect(self._open_schedule)
 
         self._my_job_btn: QPushButton = QPushButton()
         self._my_job_btn.setText("Meine Aufgaben")
@@ -74,7 +74,7 @@ class MainWindow(BaseWindow):
         grid: QGridLayout = QGridLayout()
         grid.addWidget(self._members_btn, row, 0)
         row += 1
-        grid.addWidget(self._performance_btn, row, 0)
+        grid.addWidget(self._schedule_btn, row, 0)
         grid.addWidget(self._export_pdf_btn, row, 1)
         row += 1
         grid.addWidget(self._location_btn, row, 0)
@@ -113,7 +113,7 @@ class MainWindow(BaseWindow):
             self._members_btn,
             self._job_btn,
             self._my_job_btn,
-            self._performance_btn,
+            self._schedule_btn,
             self._edit_types_btn,
             self._export_pdf_btn,
             self._organization_data_btn,
@@ -137,8 +137,13 @@ class MainWindow(BaseWindow):
     def _open_jobs(self) -> None:
         debug.debug(item=debug_str, keyword="_open_jobs", message=f"open jobs")
 
-    def _open_performances(self) -> None:
-        debug.debug(item=debug_str, keyword="_open_performances", message=f"performances open")
+    def _open_schedule(self) -> None:
+        result, valid = w.window_manger.is_valid_schedule_window()
+        if not valid:
+            self.set_info_bar(message=result)
+            return
+
+        w.window_manger.schedule_window = schedule_window.ScheduleWindow()
 
     def _open_locations(self) -> None:
         result, valid = w.window_manger.is_valid_location_window()

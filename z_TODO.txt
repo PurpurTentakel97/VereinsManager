@@ -9,9 +9,11 @@ sql database
 
 types
     refacor get id from name (select handler -> type handler)
+    add schedule type
 
-exception
-    no memerehip -> no type
+locations
+    dont close in edit mode
+    window manager -> lock against other windows
 
 UI
     Global

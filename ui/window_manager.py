@@ -29,6 +29,8 @@ class WindowManager:
         # location
         self.location_window = None
         self.recover_location_window = None
+        # schedule
+        self.schedule_window = None
         # Other
         self.export_window = None
 
@@ -55,7 +57,7 @@ class WindowManager:
         self.main_window.close() if self.main_window else None
 
     # Types
-    def is_valid_types_window(self) -> [bool | str, bool]:
+    def is_valid_types_window(self) -> tuple[bool | str, bool]:
         if self._is_window("type"):
             return "Type Fenster bereits geöffnet.", False
         elif self._is_window("member"):
@@ -74,7 +76,7 @@ class WindowManager:
                                ignore_recover_user_window: bool = False,
                                ignore_member_table_window: bool = False,
                                ignore_member_anniversary_window: bool = False,
-                               ignore_member_log_window: bool = False) -> [bool | str, bool]:
+                               ignore_member_log_window: bool = False) -> tuple[bool | str, bool]:
         if self._is_window("member"):
             return "Mitgliederfenster bereits geöffnet.", False
 
@@ -98,7 +100,7 @@ class WindowManager:
 
         return True, True
 
-    def is_valid_member_table_window(self, ignore_member_window: bool = False) -> [bool | str, bool]:
+    def is_valid_member_table_window(self, ignore_member_window: bool = False) -> tuple[bool | str, bool]:
         if self._is_window("member_table"):
             return "Mitglieder Tabelle  bereits geöffnet.", False
         elif self._is_window("member", ignore_member_window):
@@ -109,7 +111,7 @@ class WindowManager:
 
         return True, True
 
-    def is_valid_member_anniversary_window(self, ignore_member_window: bool = False) -> [bool | str, bool]:
+    def is_valid_member_anniversary_window(self, ignore_member_window: bool = False) -> tuple[bool | str, bool]:
         if self._is_window("member_anniversary"):
             return "Type Fenster bereits geöffnet.", False
         elif self._is_window("member", ignore_member_window):
@@ -120,7 +122,7 @@ class WindowManager:
 
         return True, True
 
-    def is_valid_member_log_window(self, ignore_member_window: bool = False) -> [bool | str, bool]:
+    def is_valid_member_log_window(self, ignore_member_window: bool = False) -> tuple[bool | str, bool]:
         if self._is_window("member_anniversary"):
             return "Type Fenster bereits geöffnet.", False
         elif self._is_window("member", ignore_member_window):
@@ -132,7 +134,7 @@ class WindowManager:
         return True, True
 
     # User
-    def is_valid_user_window(self, ignore_recover_user_window: bool = False) -> [str | bool, bool]:
+    def is_valid_user_window(self, ignore_recover_user_window: bool = False) -> tuple[str | bool, bool]:
         if self._is_window("user"):
             return "Benutzer Fenster bereits geöffnet.", False
         elif self._is_window("recover_user", ignore_recover_user_window):
@@ -157,21 +159,25 @@ class WindowManager:
         return True
 
     # Organisation
-    def is_valid_organisation_data_window(self) -> [bool | str, bool]:
+    def is_valid_organisation_data_window(self) -> tuple[bool | str, bool]:
         if self.organisation_data_window:
             return "Fenster bereits geöffnet", False
         return True, True
 
     # Location
-    def is_valid_location_window(self, ignore_recover_window: bool = False) -> [bool | str, bool]:
+    def is_valid_location_window(self, ignore_recover_window: bool = False) -> tuple[bool | str, bool]:
         if self._is_window(self.location_window, ignore=ignore_recover_window):
             return "Fenster bereits geöffnet", False
         return True, True
 
+    # Schedule
+    def is_valid_schedule_window(self) -> tuple[bool | str, bool]:
+        return True, True # TODO
+
     # Global
     def is_valid_recover_window(self, type_: str, ignore_member_window: bool = False,
                                 ignore_user_window: bool = False,
-                                ignore_location_window: bool = False) -> [bool | str, bool]:
+                                ignore_location_window: bool = False) -> tuple[bool | str, bool]:
         match type_:
             case "member":
                 if self._is_window("member", ignore_member_window):

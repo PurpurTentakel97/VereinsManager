@@ -1,6 +1,0 @@
-member:
-    export schreiben
-        Änderung der Mtigliedsart
-        Member card
-        Eintritt
-        Autritt

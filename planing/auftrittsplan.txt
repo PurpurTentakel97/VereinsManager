@@ -3,22 +3,16 @@ Auftrittstag
 	datum
 	abfahrt
     ort
-    ort-link
 	uniform
 	zusaetztextfeld
 	Auftritte
 	
 	Auftritt
+		title
 		auftrittszeit
 		auftrittsart
 		ort
-		ort-link
 		zusatztextfeld
-
-Orte erstellen
-    Name
-    Addresse
-    Link
 		
 		
 def export to pdf

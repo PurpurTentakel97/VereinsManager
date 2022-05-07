@@ -77,7 +77,7 @@ def check_update_member(data: dict) -> None:
     must_dict(dict_=data)
 
     if data['membership_type'] is not None:
-        must_specfic_type(data['membership_type'], c.config.raw_type_id['membership'])
+        must_specific_type(data['membership_type'], c.config.raw_type_id['membership'])
 
     if data["comment_text"] is not None:
         must_str(str_=data["comment_text"], length=2000)
@@ -271,7 +271,7 @@ def check_save_location(data: dict) -> None:
         "maps_link",
     ], data=data)
 
-    must_specfic_type(str_=data['country'], raw_type_id=c.config.raw_type_id['country'])
+    must_specific_type(str_=data['country'], raw_type_id=c.config.raw_type_id['country'])
 
 
 # helpers
@@ -283,7 +283,7 @@ def must_str(str_: str, length: int | None = 50) -> None:
             raise e.ToLong(max_length=length, text=str_)
 
 
-def must_specfic_type(str_: str, raw_type_id: int) -> None:
+def must_specific_type(str_: str, raw_type_id: int) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:
         raise e.NoType(info=str_)
     reference_data, _ = type_handler.get_single_raw_type_types(raw_type_id=raw_type_id,
