@@ -306,3 +306,36 @@ CREATE TRIGGER IF NOT EXISTS "trigger_update_location"
 BEGIN
     UPDATE "location" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
 END;
+
+/* Schedule Day */
+CREATE TABLE IF NOT EXISTS "main"."schedule_day" (
+"ID" INTEGER NOT NULL UNIQUE,
+"_created" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
+"_updated" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
+"date" INTEGER NOT NULL,
+"time" INTEGER,
+"location" INTEGER(1) NOT NULL,
+"uniform" VARCHAR(10),
+"comment" VARCHAR,
+"_active" INTEGER(1) Default 1,
+PRIMARY KEY ("ID" AUTOINCREMENT),
+FOREIGN KEY ("location") REFERENCES "location"
+);
+/* Active Schedule Day */
+CREATE VIEW IF NOT EXISTS "main"."v_active_schedule_day" AS
+SELECT ID,date,time,location,uniform,comment
+FROM schedule_day
+WHERE _active = 1;
+
+/* Inactive Schedule Day */
+CREATE VIEW IF NOT EXISTS "main"."v_inactive_schedule_day" AS
+SELECT ID,date,time,location,uniform,comment
+FROM schedule_day
+WHERE _active = 0;
+
+/* date */
+CREATE TRIGGER IF NOT EXISTS "trigger_update_schedule_day"
+    AFTER UPDATE ON "schedule_day"
+BEGIN
+    UPDATE "schedule_day" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+END;

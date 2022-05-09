@@ -14,6 +14,9 @@ types
 locations
     window manager -> lock against other windows
 
+None Date
+    refactor -> remove None Date -> set today
+
 UI
     Global
         set Icon in Taskbar

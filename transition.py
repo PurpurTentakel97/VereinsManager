@@ -9,7 +9,7 @@ from config import exception_sheet as e
 from logic.pdf_handler import global_pdf_handler
 from logic.data_handler import member_table_data_handler, member_anniversary_data_handler
 from logic.main_handler import user_handler, type_handler, path_handler, member_handler, \
-    organisation_handler, log_handler, location_handler
+    organisation_handler, log_handler, location_handler, schedule_day_handler
 
 import debug
 
@@ -284,11 +284,22 @@ def save_location(data: dict) -> tuple[str | int | None, bool]:
 
 # schedule
 def get_all_schedule_days_names(active: bool = True):
-    return "pass",False
+    return "pass", False
 
 
 def get_all_schedule_entry_names(active: bool = True):
-    return "pass",False
+    return "pass", False
+
+
+def save_schedule_day(data: dict) -> tuple[str | int, bool]:
+    try:
+        return schedule_day_handler.save_schedule_day(data=data)
+    except:
+        handle_error()
+
+
+def save_schedule_entry(data: dict) -> tuple[str | int, bool]:
+    return "pass", False
 
 
 # pdf_handler

@@ -1,43 +1,66 @@
 # Purpur Tentakel
 # 06.05.2022L
 # VereinsManager / Schedule Window
+from datetime import datetime
+import locale
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QDateTime, QTime
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QLabel, QPushButton, QDateEdit, \
     QComboBox, QLineEdit, QTextEdit, QTimeEdit
 
+import debug
 import transition
 from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
 from ui import window_manager as w_m
+from config import config_sheet as c
+from helpers import helper
+
+debug_str: str = "ScheduleWindow"
+
+locale.setlocale(locale.LC_ALL, '')
 
 
 class ScheduleWindow(BaseWindow):
     def __init__(self) -> None:
         super().__init__()
 
+        self._is_edit_mode: bool = bool()
+        self._locations_ids: list = list()
+
         self._create_ui()
         self._create_layout()
         self._set_window_information()
+        self._load_locations()
+
+        self._set_edit_mode(set_edit=False)
 
     def _create_ui(self) -> None:
         self._open_list_btn: QPushButton = QPushButton("Zeitplan öffnen")
         self._day_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_days_names,
                                               list_method=self._day_list_method, active=True)
         self._add_day_btn: QPushButton = QPushButton("Tag hinzufügen")
+        self._add_day_btn.clicked.connect(self._add_day)
         self._remove_day_btn: QPushButton = QPushButton("Tag löschen")
         self._recover_day_btn: QPushButton = QPushButton("Tag wieder herstellen")
 
         self._save_btn: QPushButton = QPushButton("Speichern")
+        self._save_btn.clicked.connect(self._save)
         self._break_btn: QPushButton = QPushButton("Zurücksetzten")
+        self._break_btn.clicked.connect(lambda x: self._set_edit_mode(set_edit=False))
 
         self._date: QDateEdit = QDateEdit()
         self._date.setCalendarPopup(True)
+        self._date.dateChanged.connect(lambda x: self._set_date_edit())
         self._meeting_time: QTimeEdit = QTimeEdit()
         self._meeting_time.setCalendarPopup(True)
+        self._meeting_time.timeChanged.connect(lambda x: self._set_edit_mode())
         self._meeting_location_box: QComboBox = QComboBox()
+        self._meeting_location_box.currentTextChanged.connect(lambda x: self._set_edit_mode())
         self._uniform_le: QLineEdit = QLineEdit()
+        self._uniform_le.textChanged.connect(lambda x: self._set_edit_mode())
         self._day_comment_text: QTextEdit = QTextEdit()
+        self._day_comment_text.textChanged.connect(self._set_comment_edit)
 
         self.entry_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_entry_names,
                                                list_method=self._entry_list_method, active=True)
@@ -61,7 +84,7 @@ class ScheduleWindow(BaseWindow):
         left_top_grid: QGridLayout = QGridLayout()
         left_top_grid.addWidget(self._day_list, row, 0, 1, 4)
 
-        buttons_hbox:QHBoxLayout = QHBoxLayout()
+        buttons_hbox: QHBoxLayout = QHBoxLayout()
         buttons_hbox.addWidget(self._add_day_btn)
         buttons_hbox.addWidget(self._remove_day_btn)
         buttons_hbox.addWidget(self._recover_day_btn)
@@ -124,7 +147,6 @@ class ScheduleWindow(BaseWindow):
         global_vbox.addLayout(header_hbox)
         global_vbox.addLayout(top_hbox)
         global_vbox.addLayout(buttons_hbox)
-        global_vbox.addWidget(QLabel(""))
         global_vbox.addLayout(bottom_hbox)
         global_vbox.addLayout(footer_hbox)
 
@@ -133,14 +155,123 @@ class ScheduleWindow(BaseWindow):
         self.set_widget(widget=widget)
         self.show()
 
+    def _add_day(self) -> None:
+        new_day: ListItem = ListItem(ID=None)
+        self._day_list.list.addItem(new_day)
+        self._day_list.list_items.append(new_day)
+
+        self._day_list.list.setCurrentItem(new_day)
+        self._set_day_None()
+        self._set_day_name_in_day_list()
+
+        self._set_edit_mode()
+
     def _set_window_information(self) -> None:
         self.setWindowTitle("Zeitplan")
+
+    def _set_edit_mode(self, set_edit: bool = True) -> None:
+        edit: bool = set_edit
+        invert_edit: bool = not edit
+
+        self._save_btn.setEnabled(edit)
+        self._break_btn.setEnabled(edit)
+
+        self._day_list.list.setEnabled(invert_edit)
+        self._add_day_btn.setEnabled(invert_edit)
+        self._remove_day_btn.setEnabled(invert_edit)
+        self._recover_day_btn.setEnabled(invert_edit)
+        self.entry_list.list.setEnabled(invert_edit)
+        self._add_entry_btn.setEnabled(invert_edit)
+        self._remove_entry_btn.setEnabled(invert_edit)
+        self._open_list_btn.setEnabled(invert_edit)
+
+    def _set_day_None(self) -> None:
+        self._date.setDate(QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date())
+        self._meeting_time.setTime(QTime(0, 0, 0))
+        self._uniform_le.setText("")
+        self._day_comment_text.setText("")
+
+    def _set_day_name_in_day_list(self) -> None:
+        current_day: ListItem = self._day_list.list.currentItem()
+        current_date: datetime = self._date.dateTime().toPyDateTime()
+        current_timestamp: int = QDateTime.toSecsSinceEpoch(QDateTime(self._date.date()))
+
+        current_day.first_name = None
+        if current_timestamp != c.config.date_format['None_date']:
+            day: str = datetime.strftime(current_date, '%A')
+            first_name: str = f"{day}, {datetime.strftime(current_date, c.config.date_format['short'])}"
+            current_day.first_name = first_name
+
+        current_day.set_name()
+
+    def _set_comment_edit(self) -> None:
+        self._set_edit_mode()
+
+    def _set_date_edit(self) -> None:
+        self._set_day_name_in_day_list()
+        self._set_edit_mode()
+
+    def _load_locations(self) -> None:
+        locations, valid = transition.get_all_location_name()
+        if not valid:
+            self.set_error_bar(message=locations)
+            return
+
+        for ID, name, _ in locations:
+            self._locations_ids.append([ID, name])
+            self._meeting_location_box.addItem(name)
+            self._entry_location_box.addItem(name)
 
     def _day_list_method(self):
         pass  # TODO
 
     def _entry_list_method(self):
         pass  # TODO
+
+    def _save(self) -> None:
+        message, valid = self._save_day()
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        message, valid = self._save_entry()
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        self.set_info_bar(message="saved")
+
+    def _save_day(self) -> tuple[str, bool]:
+        current_day: ListItem = self._day_list.list.currentItem()
+        if current_day is None:
+            return "Kein Tag vorhanden", False
+
+        location = self._meeting_location_box.currentText()
+        for ID,name in self._locations_ids:
+            if name == location:
+                location = ID
+                break
+
+        data: dict = {
+            "ID": current_day.ID,
+            "date": QDateTime.toSecsSinceEpoch(QDateTime(self._date.date())),
+            "time": int(self._meeting_time.time().msecsSinceStartOfDay() / 60000),
+            "location": location,
+            "uniform": self._uniform_le.text().strip().title(),
+            "comment": self._day_comment_text.toPlainText(),
+        }
+
+        ID, valid = transition.save_schedule_day(data=data)
+        if not valid:
+            return ID, False
+
+        if isinstance(ID, int):
+            current_day.ID = ID
+
+        return "", True
+
+    def _save_entry(self) -> tuple[str, bool]:
+        return "", True
 
     def closeEvent(self, event) -> None:
         event.ignore()

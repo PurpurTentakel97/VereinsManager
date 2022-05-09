@@ -150,7 +150,7 @@ class AddHandler(Database):
     # organisation
     def add_organisation(self, data: dict) -> int:
         sql_command: str = """INSERT INTO organisation (name,street,zip_code,city,country,bank_name,bank_owner,
-                            bank_IBAN,bank_BIC,contact_person,web_link,extra_text) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"""
+                            bank_IBAN,bank_BIC,contact_person,web_link,extra_text) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"""
 
         try:
             self.cursor.execute(sql_command, (
@@ -197,6 +197,25 @@ class AddHandler(Database):
         except self.OperationalError:
             debug.error(item=debug_str, keyword=f"add_location", error_=sys.exc_info())
             raise e.AddFailed(info="add new location")
+
+    # schedule
+    def add_schedule_day(self, data: dict) -> int:
+        sql_command: str = """INSERT INTO schedule_day (date,time,location,uniform,comment) VALUES (?,?,?,?,?);"""
+
+        try:
+            self.cursor.execute(sql_command, (
+                data['date'],
+                data['time'],
+                data['location'],
+                data['uniform'],
+                data['comment'],
+            ))
+            self.connection.commit()
+            return self.cursor.lastrowid
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"add_schedule_day", error_=sys.exc_info())
+            raise e.AddFailed("Add Schedule Day")
 
 
 def create() -> None:

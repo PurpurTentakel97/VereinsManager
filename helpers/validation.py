@@ -274,6 +274,22 @@ def check_save_location(data: dict) -> None:
     must_specific_type(str_=data['country'], raw_type_id=c.config.raw_type_id['country'])
 
 
+# schedule
+
+def check_save_schedule_day(data: dict) -> None:
+    must_dict(dict_=data)
+
+    must_str(str_=data['uniform'])
+    must_str(str_=data['comment'], length=2000)
+
+    must_int(int_=data['date'])
+    must_int(int_=data['time'])
+
+    if data['ID'] is not None:
+        must_positive_int(int_=data['ID'], max_length=None)
+    must_positive_int(int_=data['location'], max_length=None)
+
+
 # helpers
 def must_str(str_: str, length: int | None = 50) -> None:
     if not isinstance(str_, str) or len(str_.strip()) == 0:

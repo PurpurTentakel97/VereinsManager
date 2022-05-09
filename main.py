@@ -21,7 +21,7 @@ if __name__ == "__main__":
         database.crate_database()
         global_database_handler.create()
         global_pdf_handler.create_pdf_handler()
-        window_handler.on_start()
+        window_handler.on_start(True)
         debug.export_error()
 
     except:

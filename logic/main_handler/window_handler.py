@@ -11,10 +11,13 @@ from ui.windows import alert_window, user_verify_window, main_window, recover_wi
 debug_str: str = "Window Handler"
 
 
-def on_start() -> None:
+def on_start(skip: bool = False) -> None:
     window_manager.create_window_manager()
     base_window.create_application()
-    user_verify_window.create()
+    if not skip:
+        user_verify_window.create()
+    else:
+        main_window.create(default_user=False)
     base_window.run_application()
 
 
