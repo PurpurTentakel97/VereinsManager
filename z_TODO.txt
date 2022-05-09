@@ -12,7 +12,6 @@ types
     add schedule type
 
 locations
-    dont close in edit mode
     window manager -> lock against other windows
 
 UI

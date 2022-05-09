@@ -261,7 +261,7 @@ class LocationWindow(BaseWindow):
 
         webbrowser.open(maps)
 
-    def _save(self) -> None:
+    def _save(self) -> [bool, None]:
         current_location: ListItem = self._location_list.list.currentItem()
         output: dict = {
             "ID": current_location.ID,
@@ -285,6 +285,7 @@ class LocationWindow(BaseWindow):
             current_location.ID = ID
         self.set_info_bar(message="saved")
         self._set_edite_mode(is_edit=False)
+        return True
 
     def _export(self) -> None:
         current_location: ListItem = self._location_list.list.currentItem()
@@ -292,7 +293,7 @@ class LocationWindow(BaseWindow):
             self.set_error_bar(message="Kein Ort vorhanden")
             return
 
-        message,valid = export_manager.export_location(
+        message, valid = export_manager.export_location(
             name=current_location.first_name,
             ID=current_location.ID,
         )
@@ -316,5 +317,11 @@ class LocationWindow(BaseWindow):
 
     def closeEvent(self, event) -> None:
         event.ignore()
-        w.window_manger.location_window = None
-        event.accept()
+        if self._is_edit and self.is_save_permission(window_name="Orte"):
+            if self._save():
+                w.window_manger.location_window = None
+                event.accept()
+        else:
+            w.window_manger.location_window = None
+            event.accept()
+
