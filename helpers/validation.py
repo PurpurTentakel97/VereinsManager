@@ -280,7 +280,8 @@ def check_save_schedule_day(data: dict) -> None:
     must_dict(dict_=data)
 
     must_str(str_=data['uniform'])
-    must_str(str_=data['comment'], length=2000)
+    if data['comment'] is not None:
+        must_str(str_=data['comment'], length=2000)
 
     must_int(int_=data['date'])
     must_int(int_=data['time'])

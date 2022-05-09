@@ -276,6 +276,17 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword="get_single_member_by_ID", error_=sys.exc_info())
             raise e.LoadingFailed("load sinle location")
 
+    # schedule
+    def get_all_schedule_day_dates(self, active: bool) -> list:
+        table: str = "v_active_schedule_day" if active else "v_inactive_schedule_day"
+        sql_command: str = f"""SELECT ID,date FROM {table} ORDER BY date ASC;"""
+
+        try:
+            return self.cursor.execute(sql_command).fetchall()
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"get_all_schedule_day_dates", error_=sys.exc_info())
+            raise e.LoadingFailed("Load Schedule Day Dates")
+
     # log
     def get_member_log_data(self) -> list:
         sql_command: str = """SELECT ID,target_table,target_id, log_date, target_column, old_data, new_data FROM log WHERE target_table Like 'member%' ORDER BY log_date DESC;"""

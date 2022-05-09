@@ -1,6 +1,7 @@
 # Purpur Tentakel
 # 06.05.2022L
 # VereinsManager / Schedule Window
+
 from datetime import datetime
 import locale
 
@@ -37,7 +38,7 @@ class ScheduleWindow(BaseWindow):
 
     def _create_ui(self) -> None:
         self._open_list_btn: QPushButton = QPushButton("Zeitplan öffnen")
-        self._day_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_days_names,
+        self._day_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_days_dates,
                                               list_method=self._day_list_method, active=True)
         self._add_day_btn: QPushButton = QPushButton("Tag hinzufügen")
         self._add_day_btn.clicked.connect(self._add_day)
@@ -239,6 +240,8 @@ class ScheduleWindow(BaseWindow):
             self.set_error_bar(message=message)
             return
 
+        self._set_edit_mode(set_edit=False)
+
         self.set_info_bar(message="saved")
 
     def _save_day(self) -> tuple[str, bool]:
@@ -247,7 +250,7 @@ class ScheduleWindow(BaseWindow):
             return "Kein Tag vorhanden", False
 
         location = self._meeting_location_box.currentText()
-        for ID,name in self._locations_ids:
+        for ID, name in self._locations_ids:
             if name == location:
                 location = ID
                 break
@@ -257,8 +260,9 @@ class ScheduleWindow(BaseWindow):
             "date": QDateTime.toSecsSinceEpoch(QDateTime(self._date.date())),
             "time": int(self._meeting_time.time().msecsSinceStartOfDay() / 60000),
             "location": location,
-            "uniform": self._uniform_le.text().strip().title(),
-            "comment": self._day_comment_text.toPlainText(),
+            "uniform": self._uniform_le.text().strip().title() if self._uniform_le.text().strip() != "" else None,
+            "comment": self._day_comment_text.toPlainText().strip() \
+                if self._day_comment_text.toPlainText().strip() != "" else None,
         }
 
         ID, valid = transition.save_schedule_day(data=data)

@@ -283,8 +283,8 @@ def save_location(data: dict) -> tuple[str | int | None, bool]:
 
 
 # schedule
-def get_all_schedule_days_names(active: bool = True):
-    return "pass", False
+def get_all_schedule_days_dates(active: bool = True) -> tuple[str | list, bool]:
+    return schedule_day_handler.get_schedule_day_dates(active=active)
 
 
 def get_all_schedule_entry_names(active: bool = True):

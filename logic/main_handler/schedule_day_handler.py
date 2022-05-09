@@ -3,17 +3,45 @@
 # VereinsManager / Schedule Day Handler
 
 import sys
+import locale
+from datetime import datetime, timedelta
 
-from logic.sqlite import add_handler as a_h
-from helpers import validation
-from config import exception_sheet as e
+from logic.sqlite import add_handler as a_h, select_handler as s_h
+from helpers import validation, helper
+from config import exception_sheet as e, config_sheet as c
 import debug
+
+locale.setlocale(locale.LC_ALL, '')
 
 debug_str: str = "Schedule Day Handler"
 
 
 def _add_schedule_day(data: dict) -> int:
     return a_h.add_handler.add_schedule_day(data=data)
+
+
+def get_schedule_day_dates(active: bool = True) -> tuple[str | list, bool]:
+    try:
+        validation.must_bool(bool_=active)
+
+        ret_data: list = list()
+        data = s_h.select_handler.get_all_schedule_day_dates(active=active)
+        today: int = int(datetime.timestamp(datetime.today() - timedelta(days=5)))
+        for ID, timestamp in data:
+            if today > timestamp:
+                continue
+            date = helper.transform_timestamp_to_datetime(timestamp=timestamp)
+            day = f"{datetime.strftime(date, '%A')}, {datetime.strftime(date, c.config.date_format['short'])}"
+            ret_data.append((ID, day, None))
+        return ret_data, True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"get_schedule_day_dates", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"get_schedule_day_dates", error_=sys.exc_info())
+        return error.message, False
 
 
 def _update_schedule_day(data: dict) -> None:
@@ -38,4 +66,3 @@ def save_schedule_day(data: dict) -> tuple[str | int | None, bool]:
     except e.InputError as error:
         debug.info(item=debug_str, keyword=f"save_schedule_day", error_=sys.exc_info())
         return error.message, False
-    return "pass", False
