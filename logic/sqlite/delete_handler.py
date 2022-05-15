@@ -94,6 +94,18 @@ class DeleteHandler(Database):
             debug.error(item=debug_str, keyword="delete_location", error_=sys.exc_info())
             raise e.DeleteFailed("delete Location failed")
 
+    # schedule
+    def delete_schedule_day(self, ID: int) -> None:
+        sql_command: str = """DELETE FROM schedule_day WHERE ID IS ?;"""
+
+        try:
+            self.cursor.execute(sql_command, (ID,))
+            self.connection.commit()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"delete_schedule_day", error_=sys.exc_info())
+            raise e.DeleteFailed("Delete Schedule Day")
+
 
 def create() -> None:
     global delete_handler

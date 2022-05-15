@@ -15,7 +15,6 @@ from ui.frames.list_frame import ListItem, ListFrame
 from ui import window_manager as w_m
 from ui.windows import recover_window
 from config import config_sheet as c
-from helpers import helper
 import debug
 
 debug_str: str = "ScheduleWindow"

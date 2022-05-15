@@ -317,7 +317,7 @@ def save_schedule_entry(data: dict) -> tuple[str | int, bool]:
 
 
 def delete_schedule_day(ID: int) -> tuple[None | str, bool]:
-    return "TODO", False
+    return schedule_day_handler.delete_schedule_day(ID=ID)
 
 
 # pdf_handler

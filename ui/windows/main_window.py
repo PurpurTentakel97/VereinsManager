@@ -31,7 +31,7 @@ class MainWindow(BaseWindow):
         self._members_btn.clicked.connect(self._open_members)
 
         self._schedule_btn: QPushButton = QPushButton()
-        self._schedule_btn.setText("Auftritte")
+        self._schedule_btn.setText("Plan")
         self._schedule_btn.clicked.connect(self._open_schedule)
 
         self._my_job_btn: QPushButton = QPushButton()

@@ -6,7 +6,7 @@ import sys
 import locale
 from datetime import datetime, timedelta
 
-from logic.sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h
+from logic.sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h, delete_handler as d_h
 from helpers import validation, helper
 from config import exception_sheet as e, config_sheet as c
 import debug
@@ -14,6 +14,8 @@ import debug
 locale.setlocale(locale.LC_ALL, '')
 
 debug_str: str = "Schedule Day Handler"
+
+last_ID: int = 0
 
 
 def _add_schedule_day(data: dict) -> int:
@@ -51,6 +53,8 @@ def get_schedule_day_by_ID(ID: int, active: bool = True) -> tuple[str | dict, bo
 
         data = s_h.select_handler.get_schedule_day_by_ID(ID=ID, active=active)
         ret_data = transform_schedule_day_data_to_dict(data=data)
+        global last_ID
+        last_ID = ID
         return ret_data, True
 
     except e.OperationalError as error:
@@ -100,6 +104,23 @@ def save_schedule_day(data: dict) -> tuple[str | int | None, bool]:
 
     except e.InputError as error:
         debug.info(item=debug_str, keyword=f"save_schedule_day", error_=sys.exc_info())
+        return error.message, False
+
+
+def delete_schedule_day(ID: int) -> tuple[None | str, bool]:
+    try:
+        validation.must_positive_int(int_=ID, max_length=None)
+
+        d_h.delete_handler.delete_schedule_day(ID=ID)
+
+        return None, True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"delete_schedule_day", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"delete_schedule_day", error_=sys.exc_info())
         return error.message, False
 
 
