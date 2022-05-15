@@ -251,7 +251,7 @@ class UpdateHandler(Database):
         uniform = ?, comment = ? WHERE ID IS ?;"""
 
         try:
-            self.cursor.execute(sql_command,(
+            self.cursor.execute(sql_command, (
                 data['date'],
                 data['hour'],
                 data['minute'],
@@ -265,6 +265,17 @@ class UpdateHandler(Database):
         except e.OperationalError:
             debug.error(item=debug_str, keyword=f"update_schedule_day", error_=sys.exc_info())
             raise e.UpdateFailed("Update Schdule Day")
+
+    def update_schedule_day_activity(self, ID: int, active: bool) -> None:
+        sql_command: str = """UPDATE schedule_day SET _active = ? WHERE ID IS ?;"""
+
+        try:
+            self.cursor.execute(sql_command, (active, ID))
+            self.connection.commit()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"update_schedule_day_activity", error_=sys.exc_info())
+            raise e.UpdateFailed("Updating Schedule Day Activity")
 
 
 def crate() -> None:

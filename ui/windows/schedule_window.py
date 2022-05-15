@@ -35,8 +35,6 @@ class ScheduleWindow(BaseWindow):
         self._load_locations()
         self._load_single_day()
 
-        self._set_edit_mode(set_edit=False)
-
     def _create_ui(self) -> None:
         self._open_list_btn: QPushButton = QPushButton("Zeitplan öffnen")
         self._day_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_days_dates,
@@ -44,6 +42,7 @@ class ScheduleWindow(BaseWindow):
         self._add_day_btn: QPushButton = QPushButton("Tag hinzufügen")
         self._add_day_btn.clicked.connect(self._add_day)
         self._remove_day_btn: QPushButton = QPushButton("Tag löschen")
+        self._remove_day_btn.clicked.connect(self._save_day_activity)
         self._recover_day_btn: QPushButton = QPushButton("Tag wieder herstellen")
 
         self._save_btn: QPushButton = QPushButton("Speichern")
@@ -227,10 +226,10 @@ class ScheduleWindow(BaseWindow):
     def _load_single_day(self):
         current_day: ListItem = self._day_list.list.currentItem()
         if current_day is None:
-            self.set_error_bar(message="Kein Tag vorhanden")
+            self._add_day()
             return
 
-        data, valid = transition.get_schedule_name_by_ID(ID=current_day.ID, active=True)
+        data, valid = transition.get_schedule_day_by_ID(ID=current_day.ID, active=True)
         if not valid:
             self.set_error_bar(message=data)
             return
@@ -296,6 +295,19 @@ class ScheduleWindow(BaseWindow):
             current_day.ID = ID
 
         return "", True
+
+    def _save_day_activity(self) -> None:
+        current_day: ListItem = self._day_list.list.currentItem()
+
+        message, valid = transition.save_schedule_day_activity(ID=current_day.ID, active=False)
+
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        self._day_list.load_list_data()
+        self._load_single_day()
+        self.set_info_bar(message="saved...")
 
     def _save_entry(self) -> tuple[str, bool]:
         return "", True

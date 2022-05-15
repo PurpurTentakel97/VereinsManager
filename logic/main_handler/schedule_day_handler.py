@@ -62,6 +62,23 @@ def get_schedule_day_by_ID(ID: int, active: bool = True) -> tuple[str | dict, bo
         return error.message, False
 
 
+def update_schedule_day_activity(ID: int, active: bool) -> tuple[None | str, bool]:
+    try:
+        validation.must_positive_int(int_=ID, max_length=None)
+        validation.must_bool(bool_=active)
+
+        u_h.update_handler.update_schedule_day_activity(ID=ID, active=active)
+        return None, True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"update_schedule_day_activity", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"update_schedule_day_activity", error_=sys.exc_info())
+        return error.message, False
+
+
 def _update_schedule_day(data: dict) -> None:
     return u_h.update_handler.update_schedule_day(data=data)
 
