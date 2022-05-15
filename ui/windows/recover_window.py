@@ -5,7 +5,7 @@
 from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
 from ui import window_manager as w
-from ui.windows import user_window, location_window
+from ui.windows import user_window, location_window, schedule_window
 from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListFrame, ListItem
 from ui.windows.member_windows import members_window
@@ -89,6 +89,16 @@ class RecoverWindow(BaseWindow):
                 self._get_names_method = transition.get_all_location_name
                 self.delete_method = transition.delete_location
 
+            case "schedule_day":
+                self._window_name: str = "ehmalige Tage"
+                self._recover_btn_name: str = "Tag wieder herstelen"
+                self._delete_btn_name: str = "Tag löschen"
+
+                self._update_activity_method = transition.save_schedule_day_activity
+                self._valid_parent_window_method = w.window_manger.is_valid_schedule_window
+                self._get_names_method = transition.get_all_schedule_days_dates
+                self.delete_method = transition.delete_schedule_day
+
     def set_recover_enabled(self) -> None:
         current_member = self.recover_list.list.currentItem()
         if current_member:
@@ -139,6 +149,8 @@ class RecoverWindow(BaseWindow):
                     w.window_manger.recover_user_window = None
                 case "location":
                     w.window_manger.recover_location_window = None
+                case "schedule_day":
+                    w.window_manger.recover_schedule_day_window = None
             event.accept()
 
         match self._type:
@@ -153,6 +165,10 @@ class RecoverWindow(BaseWindow):
             case "location":
                 w.window_manger.location_window = location_window.LocationWindow()
                 w.window_manger.recover_location_window = None
+
+            case "schedule_day":
+                w.window_manger.schedule_window = schedule_window.ScheduleWindow()
+                w.window_manger.recover_schedule_day_window = None
 
         event.accept()
 

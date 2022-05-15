@@ -316,6 +316,10 @@ def save_schedule_entry(data: dict) -> tuple[str | int, bool]:
     return "pass", False
 
 
+def delete_schedule_day(ID: int) -> tuple[None | str, bool]:
+    return "TODO", False
+
+
 # pdf_handler
 def open_latest_export() -> None:
     try:

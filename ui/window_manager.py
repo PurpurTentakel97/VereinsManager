@@ -31,6 +31,8 @@ class WindowManager:
         self.recover_location_window = None
         # schedule
         self.schedule_window = None
+        self.recover_schedule_day_window = None
+        self.recover_schedule_entry_window = None
         # Other
         self.export_window = None
 
@@ -40,6 +42,7 @@ class WindowManager:
             "member",
             "user",
             "location",
+            "schedule",
         )
         valid = True
         for window in windows:
@@ -68,6 +71,9 @@ class WindowManager:
 
         elif self._is_window("member_anniversary"):
             return "Es können keine Typen berabeitet werden, währen die Mitglieder-Jubiläen geöffnet sind.", False
+
+        elif self._is_window("schedule"):
+            return "Es können keine Typen berabeitet werden, währen dder Plan geöffnet sind.", False
 
         return True, True
 
@@ -171,13 +177,22 @@ class WindowManager:
         return True, True
 
     # Schedule
-    def is_valid_schedule_window(self) -> tuple[bool | str, bool]:
-        return True, True # TODO
+    def is_valid_schedule_window(self, ignore_recover_window:bool = False) -> tuple[bool | str, bool]:
+
+        if self._is_window("schedule"):
+            return "Fenster bereits geöffnet", False
+        elif self._is_window("recover_schedule_day", ignore_recover_window):
+            return "Der Plan kann nicht bearbeitet werden währen das Ehmalige Tage Fenster geöffnet ist", False
+        elif self._is_window("schedule_entry", ignore_recover_window):
+            return "Der Plan kann nicht bearbeitet werden währen das Ehmalige Eintrags Fenster geöffnet ist", False
+
+        return True, True
 
     # Global
     def is_valid_recover_window(self, type_: str, ignore_member_window: bool = False,
                                 ignore_user_window: bool = False,
-                                ignore_location_window: bool = False) -> tuple[bool | str, bool]:
+                                ignore_location_window: bool = False,
+                                ignore_schedule_window: bool = False) -> tuple[bool | str, bool]:
         match type_:
             case "member":
                 if self._is_window("member", ignore_member_window):
@@ -197,6 +212,14 @@ class WindowManager:
                 if self._is_window("recover_location"):
                     return "Wiederherstellen Fenster bereits geöffnet.", False
 
+            case "schedule":
+                if self._is_window("schedule", ignore_schedule_window):
+                    return "Es können keine ehmaligen Tage bearbarbeitet werdenwährend das Plan Fenster geöffnet ist", False
+                if self._is_window("recover_schedule_day"):
+                    return "Wiederherstellen Fenster bereits geöffnet.", False
+                if self._is_window("recover_schedule_entry"):
+                    return "Wiederherstellen Fenster bereits geöffnet.", False
+
         return True, True
 
     def is_valid_export_window(self) -> tuple[bool or str, bool]:
@@ -213,6 +236,8 @@ class WindowManager:
             self.recover_user_window,
             self.recover_location_window,
             self.member_log_window,
+            self.recover_schedule_day_window,
+            self.recover_schedule_entry_window,
         )
 
         for window in inner_windows:
@@ -225,6 +250,7 @@ class WindowManager:
             self.types_window,
             self.organisation_data_window,
             self.export_window,
+            self.schedule_window,
         )
         for window in main_windows:
             window.close() if window else None
@@ -261,6 +287,13 @@ class WindowManager:
 
             case "location":
                 dummy_window = self.location_window
+
+            case "schedule":
+                dummy_window = self.schedule_window
+            case "recover_schedule_day":
+                dummy_window = self.recover_schedule_day_window
+            case "recover_schedule_entry":
+                dummy_window = self.recover_schedule_entry_window
 
             case "export":
                 dummy_window = self.export_window

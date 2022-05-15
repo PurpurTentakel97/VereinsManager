@@ -9,13 +9,14 @@ from PyQt5.QtCore import Qt, QDateTime, QTime
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QGridLayout, QWidget, QLabel, QPushButton, QDateEdit, \
     QComboBox, QLineEdit, QTextEdit, QTimeEdit
 
-import debug
 import transition
 from ui.base_window import BaseWindow
 from ui.frames.list_frame import ListItem, ListFrame
 from ui import window_manager as w_m
+from ui.windows import recover_window
 from config import config_sheet as c
 from helpers import helper
+import debug
 
 debug_str: str = "ScheduleWindow"
 
@@ -44,6 +45,7 @@ class ScheduleWindow(BaseWindow):
         self._remove_day_btn: QPushButton = QPushButton("Tag löschen")
         self._remove_day_btn.clicked.connect(self._save_day_activity)
         self._recover_day_btn: QPushButton = QPushButton("Tag wieder herstellen")
+        self._recover_day_btn.clicked.connect(self._recover_day)
 
         self._save_btn: QPushButton = QPushButton("Speichern")
         self._save_btn.clicked.connect(self._save)
@@ -311,6 +313,19 @@ class ScheduleWindow(BaseWindow):
 
     def _save_entry(self) -> tuple[str, bool]:
         return "", True
+
+    def _recover_day(self) -> None:
+        message, valid = w_m.window_manger.is_valid_recover_window("schedule", ignore_schedule_window=True)
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        self.close()
+        if w_m.window_manger.schedule_window is not None:
+            self.set_error_bar(message="Fenster konnte nicht geschlossen werden.")
+            return
+
+        w_m.window_manger.recover_schedule_day_window = recover_window.RecoverWindow("schedule_day")
 
     def closeEvent(self, event) -> None:
         event.ignore()
