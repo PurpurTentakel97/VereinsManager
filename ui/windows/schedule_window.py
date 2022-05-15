@@ -33,6 +33,7 @@ class ScheduleWindow(BaseWindow):
         self._create_layout()
         self._set_window_information()
         self._load_locations()
+        self._load_single_day()
 
         self._set_edit_mode(set_edit=False)
 
@@ -234,7 +235,6 @@ class ScheduleWindow(BaseWindow):
             self.set_error_bar(message=data)
             return
 
-        debug.debug(item=debug_str, keyword="_load_single_day", message=f"data = {data}")
         date = QDateTime.fromSecsSinceEpoch(data['date']).date()
         self._date.setDate(date)
         self._meeting_time.setTime(QTime(data['hour'], data['minute']))

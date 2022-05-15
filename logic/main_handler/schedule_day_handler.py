@@ -6,7 +6,7 @@ import sys
 import locale
 from datetime import datetime, timedelta
 
-from logic.sqlite import add_handler as a_h, select_handler as s_h
+from logic.sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h
 from helpers import validation, helper
 from config import exception_sheet as e, config_sheet as c
 import debug
@@ -63,7 +63,7 @@ def get_schedule_day_by_ID(ID: int, active: bool = True) -> tuple[str | dict, bo
 
 
 def _update_schedule_day(data: dict) -> None:
-    pass
+    return u_h.update_handler.update_schedule_day(data=data)
 
 
 def save_schedule_day(data: dict) -> tuple[str | int | None, bool]:

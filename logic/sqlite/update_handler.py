@@ -245,6 +245,27 @@ class UpdateHandler(Database):
             debug.error(item=debug_str, keyword=f"update_location_activity", error_=sys.exc_info())
             raise e.UpdateFailed("Update location activity")
 
+    # schedule day
+    def update_schedule_day(self, data: dict) -> None:
+        sql_command: str = """UPDATE schedule_day SET date = ?, hour = ?, minute = ?, location = ?,
+        uniform = ?, comment = ? WHERE ID IS ?;"""
+
+        try:
+            self.cursor.execute(sql_command,(
+                data['date'],
+                data['hour'],
+                data['minute'],
+                data['location'],
+                data['uniform'],
+                data['comment'],
+                data['ID'],
+            ))
+            self.connection.commit()
+
+        except e.OperationalError:
+            debug.error(item=debug_str, keyword=f"update_schedule_day", error_=sys.exc_info())
+            raise e.UpdateFailed("Update Schdule Day")
+
 
 def crate() -> None:
     global update_handler
