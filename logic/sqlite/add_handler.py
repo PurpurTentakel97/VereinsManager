@@ -200,7 +200,8 @@ class AddHandler(Database):
 
     # schedule
     def add_schedule_day(self, data: dict) -> int:
-        sql_command: str = """INSERT INTO schedule_day (date,hour,minute,location,uniform,comment) VALUES (?,?,?,?,?,?);"""
+        sql_command: str = """INSERT INTO schedule_day (date,hour,minute,location,uniform,comment) 
+        VALUES (?,?,?,?,?,?);"""
 
         try:
             self.cursor.execute(sql_command, (
@@ -217,6 +218,27 @@ class AddHandler(Database):
         except self.OperationalError:
             debug.error(item=debug_str, keyword=f"add_schedule_day", error_=sys.exc_info())
             raise e.AddFailed("Add Schedule Day")
+
+    def add_schedule_entry(self, data: dict, day_id: int) -> int:
+        sql_command:str = """INSERT INTO schedule_entry (day,title,hour,minute,entry_type,location,comment) 
+        VALUES (?,?,?,?,?,?,?);"""
+
+        try:
+            self.cursor.execute(sql_command,(
+                day_id,
+                data['title'],
+                data['hour'],
+                data['minute'],
+                data['entry_type'],
+                data['location'],
+                data['comment'],
+            ))
+            self.connection.commit()
+            return self.cursor.lastrowid
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"add_schedule_entry", error_=sys.exc_info())
+            raise e.AddFailed("Add Schedule Entry")
 
 
 def create() -> None:

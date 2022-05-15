@@ -11,6 +11,7 @@ INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (2,"E-Mail");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (3,"Telefon");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (4,"Position");
 INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (5,"Land");
+INSERT OR IGNORE INTO raw_type (ID,type_name) VALUES (6,"Plan Eintrag");
 
 /* TYPE */
 CREATE TABLE IF NOT EXISTS "main"."type" (
@@ -339,4 +340,41 @@ CREATE TRIGGER IF NOT EXISTS "trigger_update_schedule_day"
     AFTER UPDATE ON "schedule_day"
 BEGIN
     UPDATE "schedule_day" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
+END;
+
+/*Schedule Entry*/
+CREATE TABLE IF NOT EXISTS "main"."schedule_entry" (
+"ID" INTEGER NOT NULL UNIQUE,
+"_created" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
+"_updated" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
+"day" INTEGER(1) NOT NULL,
+"title" VARCHAR(10) NOT NULL,
+"hour" INTEGER(2),
+"minute" INTEGER(2),
+"entry_type" INTEGER(1) NOT NULL,
+"location" INTEGER(1) NOT NULL,
+"comment" VARCHAR,
+"_active" INTEGER(1) Default 1,
+PRIMARY KEY ("ID" AUTOINCREMENT),
+FOREIGN KEY ("entry_type") REFERENCES "type",
+FOREIGN KEY ("day") REFERENCES "schedule_day",
+FOREIGN KEY ("location") REFERENCES "location"
+);
+/* Active Schedule Entry */
+CREATE VIEW IF NOT EXISTS "main"."v_active_schedule_entry" AS
+SELECT ID,day,title,hour,minute,entry_type,location,comment
+FROM schedule_entry
+WHERE _active = 1;
+
+/* Inactive Schedule Entry */
+CREATE VIEW IF NOT EXISTS "main"."v_inactive_schedule_entry" AS
+SELECT ID,day,title,hour,minute,entry_type,location,comment
+FROM schedule_entry
+WHERE _active = 0;
+
+/* date */
+CREATE TRIGGER IF NOT EXISTS "trigger_update_schedule_entry"
+    AFTER UPDATE ON "schedule_entry"
+BEGIN
+    UPDATE "schedule_entry" SET _updated = CAST(strftime('%s', 'now') AS INTEGER) WHERE ID=OLD.id;
 END;

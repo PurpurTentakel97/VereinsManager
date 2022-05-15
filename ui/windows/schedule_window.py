@@ -35,6 +35,7 @@ class ScheduleWindow(BaseWindow):
         self._load_locations()
         self._load_single_day()
 
+    # global
     def _create_ui(self) -> None:
         self._open_list_btn: QPushButton = QPushButton("Zeitplan öffnen")
         self._day_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_days_dates,
@@ -49,25 +50,27 @@ class ScheduleWindow(BaseWindow):
         self._save_btn: QPushButton = QPushButton("Speichern")
         self._save_btn.clicked.connect(self._save)
         self._break_btn: QPushButton = QPushButton("Zurücksetzten")
-        self._break_btn.clicked.connect(lambda x: self._set_edit_mode(set_edit=False))
+        self._break_btn.clicked.connect(self._break)
 
         self._date: QDateEdit = QDateEdit()
         self._date.setCalendarPopup(True)
-        self._date.dateChanged.connect(lambda x: self._set_date_edit())
+        self._date.dateChanged.connect(lambda x: self._set_day_date_edit())
         self._meeting_time: QTimeEdit = QTimeEdit()
         self._meeting_time.setCalendarPopup(True)
-        self._meeting_time.timeChanged.connect(lambda x: self._set_edit_mode())
+        self._meeting_time.timeChanged.connect(lambda x: self._set_day_edit_mode())
         self._meeting_location_box: QComboBox = QComboBox()
-        self._meeting_location_box.currentTextChanged.connect(lambda x: self._set_edit_mode())
+        self._meeting_location_box.currentTextChanged.connect(lambda x: self._set_day_edit_mode())
         self._uniform_le: QLineEdit = QLineEdit()
-        self._uniform_le.textChanged.connect(lambda x: self._set_edit_mode())
+        self._uniform_le.textChanged.connect(lambda x: self._set_day_edit_mode())
         self._day_comment_text: QTextEdit = QTextEdit()
-        self._day_comment_text.textChanged.connect(self._set_comment_edit)
+        self._day_comment_text.textChanged.connect(self._set_day_comment_edit)
 
         self.entry_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_entry_names,
                                                list_method=self._entry_list_method, active=True)
         self._add_entry_btn: QPushButton = QPushButton("Eintrag hinzufügen")
+        self._add_entry_btn.clicked.connect(self._add_entry)
         self._remove_entry_btn: QPushButton = QPushButton("Eintrag löschen")
+        self._recover_entry_btn: QPushButton = QPushButton("Eintrag wieder herstellen")
 
         self._entry_title_le: QLineEdit = QLineEdit()
         self._entry_time: QTimeEdit = QTimeEdit()
@@ -141,6 +144,7 @@ class ScheduleWindow(BaseWindow):
         footer_hbox: QHBoxLayout = QHBoxLayout()
         footer_hbox.addWidget(self._add_entry_btn)
         footer_hbox.addWidget(self._remove_entry_btn)
+        footer_hbox.addWidget(self._recover_entry_btn)
         footer_hbox.addStretch()
         footer_hbox.addWidget(self._break_btn)
         footer_hbox.addWidget(self._save_btn)
@@ -157,22 +161,11 @@ class ScheduleWindow(BaseWindow):
         self.set_widget(widget=widget)
         self.show()
 
-    def _add_day(self) -> None:
-        new_day: ListItem = ListItem(ID=None)
-        self._day_list.list.addItem(new_day)
-        self._day_list.list_items.append(new_day)
-
-        self._day_list.list.setCurrentItem(new_day)
-        self._set_day_None()
-        self._set_day_name_in_day_list()
-
-        self._set_edit_mode()
-
     def _set_window_information(self) -> None:
         self.setWindowTitle("Zeitplan")
 
-    def _set_edit_mode(self, set_edit: bool = True) -> None:
-        edit: bool = set_edit
+    def _set_global_edit_mode(self) -> None:
+        edit: bool = False
         invert_edit: bool = not edit
 
         self._save_btn.setEnabled(edit)
@@ -182,10 +175,66 @@ class ScheduleWindow(BaseWindow):
         self._add_day_btn.setEnabled(invert_edit)
         self._remove_day_btn.setEnabled(invert_edit)
         self._recover_day_btn.setEnabled(invert_edit)
-        self.entry_list.list.setEnabled(invert_edit)
+
+        self.entry_list.setEnabled(invert_edit)
         self._add_entry_btn.setEnabled(invert_edit)
         self._remove_entry_btn.setEnabled(invert_edit)
+        self._recover_entry_btn.setEnabled(invert_edit)
+
         self._open_list_btn.setEnabled(invert_edit)
+
+        self._is_edit_mode = edit
+
+    def _save(self) -> None:
+        message, valid = self._save_day()
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        message, valid = self._save_entry()
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        self._set_global_edit_mode()
+
+        self.set_info_bar(message="saved")
+
+    def _break(self) -> None:
+        self._load_single_day()
+
+    def closeEvent(self, event) -> None:
+        event.ignore()
+        w_m.window_manger.schedule_window = None
+        event.accept()  # TODO
+
+    # day
+    def _add_day(self) -> None:
+        new_day: ListItem = ListItem(ID=None)
+        self._day_list.list.addItem(new_day)
+        self._day_list.list_items.append(new_day)
+
+        self._day_list.list.setCurrentItem(new_day)
+        self._set_day_None()
+        self._set_day_name_in_day_list()
+
+        self._set_day_edit_mode()
+
+    def _set_day_edit_mode(self) -> None:
+        edit: bool = True
+        invert_edit: bool = not edit
+
+        self._save_btn.setEnabled(edit)
+        self._break_btn.setEnabled(edit)
+
+        self._day_list.list.setEnabled(invert_edit)
+        self._add_day_btn.setEnabled(invert_edit)
+        self._remove_day_btn.setEnabled(invert_edit)
+        self._recover_day_btn.setEnabled(invert_edit)
+
+        self._open_list_btn.setEnabled(invert_edit)
+
+        self._is_edit_mode = edit
 
     def _set_day_None(self) -> None:
         self._date.setDate(QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date())
@@ -206,12 +255,12 @@ class ScheduleWindow(BaseWindow):
 
         current_day.set_name()
 
-    def _set_comment_edit(self) -> None:
-        self._set_edit_mode()
+    def _set_day_comment_edit(self) -> None:
+        self._set_day_edit_mode()
 
-    def _set_date_edit(self) -> None:
+    def _set_day_date_edit(self) -> None:
         self._set_day_name_in_day_list()
-        self._set_edit_mode()
+        self._set_day_edit_mode()
 
     def _load_locations(self) -> None:
         locations, valid = transition.get_all_location_name()
@@ -246,25 +295,7 @@ class ScheduleWindow(BaseWindow):
                 self._meeting_location_box.setCurrentText(name)
                 break
 
-        self._set_edit_mode(set_edit=False)
-
-    def _entry_list_method(self):
-        pass  # TODO
-
-    def _save(self) -> None:
-        message, valid = self._save_day()
-        if not valid:
-            self.set_error_bar(message=message)
-            return
-
-        message, valid = self._save_entry()
-        if not valid:
-            self.set_error_bar(message=message)
-            return
-
-        self._set_edit_mode(set_edit=False)
-
-        self.set_info_bar(message="saved")
+        self._set_global_edit_mode()
 
     def _save_day(self) -> tuple[str, bool]:
         current_day: ListItem = self._day_list.list.currentItem()
@@ -310,9 +341,6 @@ class ScheduleWindow(BaseWindow):
         self._load_single_day()
         self.set_info_bar(message="saved...")
 
-    def _save_entry(self) -> tuple[str, bool]:
-        return "", True
-
     def _recover_day(self) -> None:
         message, valid = w_m.window_manger.is_valid_recover_window("schedule", ignore_schedule_window=True)
         if not valid:
@@ -326,7 +354,46 @@ class ScheduleWindow(BaseWindow):
 
         w_m.window_manger.recover_schedule_day_window = recover_window.RecoverWindow("schedule_day")
 
-    def closeEvent(self, event) -> None:
-        event.ignore()
-        w_m.window_manger.schedule_window = None
-        event.accept()  # TODO
+    # entry
+    def _add_entry(self) -> None:
+        new_entry: ListItem = ListItem(ID=None)
+        self.entry_list.list.addItem(new_entry)
+        self.entry_list.list_items.append(new_entry)
+
+        self.entry_list.list.setCurrentItem(new_entry)
+        self._set_entry_None()
+
+        self._set_entry_edit_mode()
+
+    def _set_entry_edit_mode(self, edit: bool = True) -> None:
+        edit: bool = edit
+        invert_edit: bool = not edit
+
+        self.entry_list.setEnabled(invert_edit)
+        self._add_entry_btn.setEnabled(invert_edit)
+        self._remove_entry_btn.setEnabled(invert_edit)
+        self._recover_entry_btn.setEnabled(invert_edit)
+
+        if edit:
+            self._set_day_edit_mode()
+
+    def _set_entry_None(self) -> None:
+        self._entry_title_le.setText("")
+        self._entry_time.setTime(QTime(0, 0, 0))
+        self._entry_comment_text.setText("")
+
+    def _entry_list_method(self):
+        pass  # TODO
+
+    def _save_entry(self) -> tuple[str, bool]:
+        current_entry: ListItem = self.entry_list.list.currentItem()
+        if current_entry is None:
+            return "Kein Eintrag vorhanden", False
+
+        location = self._entry_location_box.currentText()
+        for ID, name in self._locations_ids:
+            if name == location:
+                location = ID
+                break
+
+        # TODO
