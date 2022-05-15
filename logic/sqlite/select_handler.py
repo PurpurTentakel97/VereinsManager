@@ -287,6 +287,17 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword=f"get_all_schedule_day_dates", error_=sys.exc_info())
             raise e.LoadingFailed("Load Schedule Day Dates")
 
+    def get_schedule_day_by_ID(self, ID: int, active: bool) -> tuple:
+        table: str = "v_active_schedule_day" if active else "v_inactive_schedule_day"
+        sql_command: str = f"""SELECT ID,date,hour,minute,location,uniform,comment FROM {table} WHERE ID is ?;"""
+
+        try:
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"get_schedule_day_by_ID", error_=sys.exc_info())
+            raise e.LoadingFailed("Load single Schedule Day")
+
     # log
     def get_member_log_data(self) -> list:
         sql_command: str = """SELECT ID,target_table,target_id, log_date, target_column, old_data, new_data FROM log WHERE target_table Like 'member%' ORDER BY log_date DESC;"""

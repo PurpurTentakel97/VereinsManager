@@ -44,6 +44,24 @@ def get_schedule_day_dates(active: bool = True) -> tuple[str | list, bool]:
         return error.message, False
 
 
+def get_schedule_day_by_ID(ID: int, active: bool = True) -> tuple[str | dict, bool]:
+    try:
+        validation.must_bool(bool_=active)
+        validation.must_positive_int(int_=ID, max_length=None)
+
+        data = s_h.select_handler.get_schedule_day_by_ID(ID=ID, active=active)
+        ret_data = transform_schedule_day_data_to_dict(data=data)
+        return ret_data, True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"get_schedule_day_by_ID", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"get_schedule_day_by_ID", error_=sys.exc_info())
+        return error.message, False
+
+
 def _update_schedule_day(data: dict) -> None:
     pass
 
@@ -66,3 +84,15 @@ def save_schedule_day(data: dict) -> tuple[str | int | None, bool]:
     except e.InputError as error:
         debug.info(item=debug_str, keyword=f"save_schedule_day", error_=sys.exc_info())
         return error.message, False
+
+
+def transform_schedule_day_data_to_dict(data: tuple) -> dict:
+    return {
+        "ID": data[0],
+        "date": data[1],
+        "hour": data[2],
+        "minute": data[3],
+        "location": data[4],
+        "uniform": data[5],
+        "comment": data[6],
+    }

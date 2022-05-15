@@ -284,11 +284,21 @@ def save_location(data: dict) -> tuple[str | int | None, bool]:
 
 # schedule
 def get_all_schedule_days_dates(active: bool = True) -> tuple[str | list, bool]:
-    return schedule_day_handler.get_schedule_day_dates(active=active)
+    try:
+        return schedule_day_handler.get_schedule_day_dates(active=active)
+    except:
+        handle_error()
 
 
 def get_all_schedule_entry_names(active: bool = True):
     return "pass", False
+
+
+def get_schedule_name_by_ID(ID: int, active: bool) -> tuple[str | dict, bool]:
+    try:
+        return schedule_day_handler.get_schedule_day_by_ID(ID=ID, active=active)
+    except:
+        handle_error()
 
 
 def save_schedule_day(data: dict) -> tuple[str | int, bool]:

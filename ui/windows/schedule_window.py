@@ -39,7 +39,7 @@ class ScheduleWindow(BaseWindow):
     def _create_ui(self) -> None:
         self._open_list_btn: QPushButton = QPushButton("Zeitplan öffnen")
         self._day_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_days_dates,
-                                              list_method=self._day_list_method, active=True)
+                                              list_method=self._load_single_day, active=True)
         self._add_day_btn: QPushButton = QPushButton("Tag hinzufügen")
         self._add_day_btn.clicked.connect(self._add_day)
         self._remove_day_btn: QPushButton = QPushButton("Tag löschen")
@@ -223,8 +223,30 @@ class ScheduleWindow(BaseWindow):
             self._meeting_location_box.addItem(name)
             self._entry_location_box.addItem(name)
 
-    def _day_list_method(self):
-        pass  # TODO
+    def _load_single_day(self):
+        current_day: ListItem = self._day_list.list.currentItem()
+        if current_day is None:
+            self.set_error_bar(message="Kein Tag vorhanden")
+            return
+
+        data, valid = transition.get_schedule_name_by_ID(ID=current_day.ID, active=True)
+        if not valid:
+            self.set_error_bar(message=data)
+            return
+
+        debug.debug(item=debug_str, keyword="_load_single_day", message=f"data = {data}")
+        date = QDateTime.fromSecsSinceEpoch(data['date']).date()
+        self._date.setDate(date)
+        self._meeting_time.setTime(QTime(data['hour'], data['minute']))
+        self._uniform_le.setText(data['uniform'] if data['uniform'] else "")
+        self._day_comment_text.setText(data['comment'] if data['comment'] else "")
+
+        for ID, name in self._locations_ids:
+            if ID == data['location']:
+                self._meeting_location_box.setCurrentText(name)
+                break
+
+        self._set_edit_mode(set_edit=False)
 
     def _entry_list_method(self):
         pass  # TODO
