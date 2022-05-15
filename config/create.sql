@@ -313,7 +313,8 @@ CREATE TABLE IF NOT EXISTS "main"."schedule_day" (
 "_created" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
 "_updated" INTEGER Default (CAST(strftime('%s','now')AS INTEGER)),
 "date" INTEGER NOT NULL,
-"time" INTEGER,
+"hour" INTEGER(2),
+"minute" INTEGER(2),
 "location" INTEGER(1) NOT NULL,
 "uniform" VARCHAR(10),
 "comment" VARCHAR,
@@ -323,13 +324,13 @@ FOREIGN KEY ("location") REFERENCES "location"
 );
 /* Active Schedule Day */
 CREATE VIEW IF NOT EXISTS "main"."v_active_schedule_day" AS
-SELECT ID,date,time,location,uniform,comment
+SELECT ID,date,hour,minute,location,uniform,comment
 FROM schedule_day
 WHERE _active = 1;
 
 /* Inactive Schedule Day */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_schedule_day" AS
-SELECT ID,date,time,location,uniform,comment
+SELECT ID,date,hour,minute,location,uniform,comment
 FROM schedule_day
 WHERE _active = 0;
 

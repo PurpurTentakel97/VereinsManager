@@ -258,7 +258,8 @@ class ScheduleWindow(BaseWindow):
         data: dict = {
             "ID": current_day.ID,
             "date": QDateTime.toSecsSinceEpoch(QDateTime(self._date.date())),
-            "time": int(self._meeting_time.time().msecsSinceStartOfDay() / 60000),
+            "hour": self._meeting_time.time().hour(),
+            "minute": self._meeting_time.time().minute(),
             "location": location,
             "uniform": self._uniform_le.text().strip().title() if self._uniform_le.text().strip() != "" else None,
             "comment": self._day_comment_text.toPlainText().strip() \

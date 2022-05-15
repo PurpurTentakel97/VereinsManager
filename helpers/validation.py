@@ -284,7 +284,15 @@ def check_save_schedule_day(data: dict) -> None:
         must_str(str_=data['comment'], length=2000)
 
     must_int(int_=data['date'])
-    must_int(int_=data['time'])
+
+    must_positive_int(int_=data['hour'], max_length=2)
+    if data['hour'] > 24:
+        raise e.WrongLength(str(data['hour']))
+
+    must_positive_int(int_=data['minute'], max_length=2)
+
+    if data['minute'] > 60:
+        raise e.WrongLength(str(data['minute']))
 
     if data['ID'] is not None:
         must_positive_int(int_=data['ID'], max_length=None)

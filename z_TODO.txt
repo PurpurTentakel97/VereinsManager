@@ -22,6 +22,8 @@ UI
         set Icon in Taskbar
         check for screen reader
 
+config
+    remove spacer
 
 haftungsausschluss
     list tooltiptext in recover window

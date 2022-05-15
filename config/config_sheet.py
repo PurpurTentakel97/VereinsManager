@@ -79,6 +79,6 @@ class Config:
         self.letters: dict = json_data['letters']
 
 
-def create_config():
+def create_config() -> None:
     global config
     config = Config()

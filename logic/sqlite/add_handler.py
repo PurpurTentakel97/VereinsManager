@@ -200,12 +200,13 @@ class AddHandler(Database):
 
     # schedule
     def add_schedule_day(self, data: dict) -> int:
-        sql_command: str = """INSERT INTO schedule_day (date,time,location,uniform,comment) VALUES (?,?,?,?,?);"""
+        sql_command: str = """INSERT INTO schedule_day (date,hour,minute,location,uniform,comment) VALUES (?,?,?,?,?,?);"""
 
         try:
             self.cursor.execute(sql_command, (
                 data['date'],
-                data['time'],
+                data['hour'],
+                data['minute'],
                 data['location'],
                 data['uniform'],
                 data['comment'],
