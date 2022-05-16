@@ -332,6 +332,13 @@ def save_schedule_entry(data: dict) -> tuple[str | int, bool]:
         handle_error()
 
 
+def save_schedule_entry_activity(ID: int, active: bool) -> tuple[str | None, bool]:
+    try:
+        return schedule_entry_handler.update_schedule_day_activity(ID=ID, active=active)
+    except:
+        handle_error()
+
+
 def delete_schedule_day(ID: int) -> tuple[None | str, bool]:
     try:
         return schedule_day_handler.delete_schedule_day(ID=ID)

@@ -76,6 +76,7 @@ class ScheduleWindow(BaseWindow):
         self._add_entry_btn: QPushButton = QPushButton("Eintrag hinzufügen")
         self._add_entry_btn.clicked.connect(self._add_entry)
         self._remove_entry_btn: QPushButton = QPushButton("Eintrag löschen")
+        self._remove_entry_btn.clicked.connect(self._save_entry_activity)
         self._recover_entry_btn: QPushButton = QPushButton("Eintrag wieder herstellen")
 
         self._entry_title_le: QLineEdit = QLineEdit()
@@ -477,3 +478,15 @@ class ScheduleWindow(BaseWindow):
             current_entry.ID = ID
 
         return "", True
+
+    def _save_entry_activity(self) -> None:
+        current_entry: ListItem = self.entry_list.list.currentItem()
+
+        message, valid = transition.save_schedule_entry_activity(ID=current_entry.ID, active=False)
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        self.entry_list.load_list_data()
+        self._load_single_entry()
+        self.set_info_bar(message="saved...")

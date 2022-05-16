@@ -297,6 +297,17 @@ class UpdateHandler(Database):
             debug.error(item=debug_str, keyword=f"update_schedule_entry", error_=sys.exc_info())
             raise e.UpdateFailed("Update Schedule Entry")
 
+    def update_schedule_entry_activity(self, ID: int, active: bool) -> None:
+        sql_command: str = """UPDATE schedule_entry SET _active = ? WHERE ID IS ?;"""
+
+        try:
+            self.cursor.execute(sql_command, (active, ID))
+            self.connection.commit()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"update_schedule_entry_activity", error_=sys.exc_info())
+            raise e.UpdateFailed("Update Schedule Entry Activity")
+
 
 def crate() -> None:
     global update_handler

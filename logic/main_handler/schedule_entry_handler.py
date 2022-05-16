@@ -50,6 +50,23 @@ def _add_schedule_day(data: dict) -> int:
     return a_h.add_handler.add_schedule_entry(data=data, day_id=schedule_day_handler.last_ID)
 
 
+def update_schedule_day_activity(ID: int, active: bool) -> tuple[str | None, bool]:
+    try:
+        validation.must_positive_int(int_=ID, max_length=None)
+        validation.must_bool(bool_=active)
+
+        u_h.update_handler.update_schedule_entry_activity(ID=ID, active=active)
+        return None, True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"update_schedule_day_activity", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"update_schedule_day_activity", error_=sys.exc_info())
+        return error.message, False
+
+
 def _update_schedule_day(data: dict) -> None:
     u_h.update_handler.update_schedule_entry(data=data)
 

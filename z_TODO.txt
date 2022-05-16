@@ -9,10 +9,9 @@ sql database
 
 types
     refacor get id from name (select handler -> type handler)
-    add schedule type
 
-locations
-    window manager -> lock against other windows
+schedule
+    delete all entry when delete day
 
 None Date
     refactor -> remove None Date -> set today
