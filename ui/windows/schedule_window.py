@@ -317,6 +317,8 @@ class ScheduleWindow(BaseWindow):
                 self._meeting_location_box.setCurrentText(name)
                 break
 
+        self.entry_list.load_list_data()
+
         self._set_global_edit_mode()
 
     def _save_day(self) -> tuple[str, bool]:

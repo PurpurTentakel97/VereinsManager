@@ -6,11 +6,26 @@ import sys
 
 from helpers import validation
 from logic.main_handler import schedule_day_handler
-from logic.sqlite import add_handler as a_h
+from logic.sqlite import add_handler as a_h, select_handler as s_h
 from config import exception_sheet as e
 import debug
 
 debug_str: str = "Schedule Entry Handler"
+
+
+def get_al_schedule_day_names(active: bool) -> tuple[str | tuple, bool]:
+    try:
+        validation.must_bool(bool_=active)
+
+        return s_h.select_handler.get_all_schedule_entry_names(active=active, day_id=schedule_day_handler.last_ID), True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword=f"get_al_schedule_day_names", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword=f"get_al_schedule_day_names", error_=sys.exc_info())
+        return error.message, False
 
 
 def _add_schedule_day(data: dict) -> int:

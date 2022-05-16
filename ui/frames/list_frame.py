@@ -89,6 +89,11 @@ class ListFrame(QFrame):
                     new_member: ListItem = ListItem(ID=ID, first_name=first_name, last_name=last_name)
                     self.list.addItem(new_member)
                     self.list_items.append(new_member)
+                case 2:
+                    ID, first_name = entry
+                    new_member: ListItem = ListItem(ID=ID, first_name=first_name)
+                    self.list.addItem(new_member)
+                    self.list_items.append(new_member)
 
         self.set_item_backgrounds()
         try:

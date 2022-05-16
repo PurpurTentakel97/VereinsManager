@@ -298,7 +298,7 @@ def get_schedule_day_by_ID(ID: int, active: bool) -> tuple[str | dict, bool]:
 
 
 def get_all_schedule_entry_names(active: bool = True):
-    return "pass", False
+    return schedule_entry_handler.get_al_schedule_day_names(active=active)
 
 
 def save_schedule_day(data: dict) -> tuple[str | int, bool]:
