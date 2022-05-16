@@ -346,6 +346,10 @@ def delete_schedule_day(ID: int) -> tuple[None | str, bool]:
         handle_error()
 
 
+def delete_schedule_entry(ID: int) -> tuple[None | str, bool]:
+    return "TODO", False
+
+
 # pdf_handler
 def open_latest_export() -> None:
     try:

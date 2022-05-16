@@ -99,6 +99,16 @@ class RecoverWindow(BaseWindow):
                 self._get_names_method = transition.get_all_schedule_days_dates
                 self.delete_method = transition.delete_schedule_day
 
+            case "schedule_entry":
+                self._window_name: str = "ehmalige Einträge"
+                self._recover_btn_name: str = "Eintrag wieder herstelen"
+                self._delete_btn_name: str = "Eintrag löschen"
+
+                self._update_activity_method = transition.save_schedule_entry_activity
+                self._valid_parent_window_method = w.window_manger.is_valid_schedule_window
+                self._get_names_method = transition.get_all_schedule_entry_names
+                self.delete_method = transition.delete_schedule_entry
+
     def set_recover_enabled(self) -> None:
         current_member = self.recover_list.list.currentItem()
         if current_member:
@@ -151,6 +161,8 @@ class RecoverWindow(BaseWindow):
                     w.window_manger.recover_location_window = None
                 case "schedule_day":
                     w.window_manger.recover_schedule_day_window = None
+                case "schedule_entry":
+                    w.window_manger.recover_schedule_entry_window = None
             event.accept()
 
         match self._type:
@@ -169,6 +181,10 @@ class RecoverWindow(BaseWindow):
             case "schedule_day":
                 w.window_manger.schedule_window = schedule_window.ScheduleWindow()
                 w.window_manger.recover_schedule_day_window = None
+
+            case "schedule_entry":
+                w.window_manger.schedule_window = schedule_window.ScheduleWindow()
+                w.window_manger.recover_schedule_entry_window = None
 
         event.accept()
 

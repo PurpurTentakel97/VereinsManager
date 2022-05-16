@@ -183,6 +183,8 @@ class WindowManager:
             return "Fenster bereits geöffnet", False
         elif self._is_window("recover_schedule_day", ignore_recover_window):
             return "Der Plan kann nicht bearbeitet werden währen das Ehmalige Tage Fenster geöffnet ist", False
+        elif self._is_window("recover_schedule_entry", ignore_recover_window):
+            return "Der Plan kann nicht bearbeitet werden währen das Ehmalige Einträge Fenster geöffnet ist", False
         elif self._is_window("schedule_entry", ignore_recover_window):
             return "Der Plan kann nicht bearbeitet werden währen das Ehmalige Eintrags Fenster geöffnet ist", False
 

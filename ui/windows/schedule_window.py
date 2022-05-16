@@ -78,6 +78,7 @@ class ScheduleWindow(BaseWindow):
         self._remove_entry_btn: QPushButton = QPushButton("Eintrag löschen")
         self._remove_entry_btn.clicked.connect(self._save_entry_activity)
         self._recover_entry_btn: QPushButton = QPushButton("Eintrag wieder herstellen")
+        self._recover_entry_btn.clicked.connect(self._recover_entry)
 
         self._entry_title_le: QLineEdit = QLineEdit()
         self._entry_title_le.textChanged.connect(self._set_entry_name)
@@ -490,3 +491,16 @@ class ScheduleWindow(BaseWindow):
         self.entry_list.load_list_data()
         self._load_single_entry()
         self.set_info_bar(message="saved...")
+
+    def _recover_entry(self) -> None:
+        message, valid = w_m.window_manger.is_valid_recover_window("schedule", ignore_schedule_window=True)
+        if not valid:
+            self.set_error_bar(message=message)
+            return
+
+        self.close()
+        if w_m.window_manger.schedule_window is not None:
+            self.set_error_bar(message="Fenster konnte nicht geschlossen werden.")
+            return
+
+        w_m.window_manger.recover_schedule_entry_window = recover_window.RecoverWindow("schedule_entry")
