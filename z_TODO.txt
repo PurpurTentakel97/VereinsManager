@@ -12,9 +12,13 @@ types
 
 schedule
     delete all entry when delete day
+    update entry list when delete last day
 
 None Date
     refactor -> remove None Date -> set today
+
+validation
+    specify error message -> important no Entry
 
 UI
     Global

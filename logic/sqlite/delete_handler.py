@@ -102,9 +102,20 @@ class DeleteHandler(Database):
             self.cursor.execute(sql_command, (ID,))
             self.connection.commit()
 
-        except self.OperationalError:
+        except (self.OperationalError, self.IntegrityError):
             debug.error(item=debug_str, keyword=f"delete_schedule_day", error_=sys.exc_info())
             raise e.DeleteFailed("Delete Schedule Day")
+
+    def delete_schedule_entry(self, ID: int) -> None:
+        sql_command: str = """DELETE FROM schedule_entry WHERE ID IS ?;"""
+
+        try:
+            self.cursor.execute(sql_command, (ID,))
+            self.connection.commit()
+
+        except (self.OperationalError, self.IntegrityError):
+            debug.error(item=debug_str, keyword=f"delete_schedule_entry", error_=sys.exc_info())
+            raise e.DeleteFailed("Delete Schedule Entry")
 
 
 def create() -> None:
