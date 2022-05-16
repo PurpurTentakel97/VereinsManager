@@ -145,7 +145,7 @@ class OrganisationDataWindow(BaseWindow):
         self.setWindowTitle("Vereinsinformationen")
 
     def _set_contact_persons(self) -> None:
-        data, valid = transition.get_all_user_name()  # TODO chance to without default when validation is ready
+        data, valid = transition.get_all_user_name()
         if not valid:
             self.set_error_bar(message=data)
 
@@ -158,6 +158,7 @@ class OrganisationDataWindow(BaseWindow):
         self.contact_persons = contact_persons
 
     def _set_organisation_data(self) -> None:
+        data: dict | str
         data, valid = transition.get_organisation_data()
         if not valid:
             self.set_error_bar(message=data)

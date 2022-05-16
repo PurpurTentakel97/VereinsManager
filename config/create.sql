@@ -46,12 +46,12 @@ WHERE type.active = 0;
 CREATE VIEW IF NOT EXISTS "main"."v_active_member_type" AS
 SELECT type.ID,type.name,type.type_id,raw_type.type_name
 FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
-WHERE type.active = 1 AND type_id IN (1,2,3,4,6);
+WHERE type.active = 1 AND type_id IN (1,2,3,4,5);
 /* Inactive Member Type */
 CREATE VIEW IF NOT EXISTS "main"."v_inactive_member_type" AS
 SELECT type.ID,type.name,type.type_id,raw_type.type_name
 FROM type INNER JOIN raw_type ON type.type_id = raw_type.ID
-WHERE type.active = 0 AND type_id IN (1,2,3,4,6);
+WHERE type.active = 0 AND type_id IN (1,2,3,4,5);
 
 
 /* MEMBER PHONE */

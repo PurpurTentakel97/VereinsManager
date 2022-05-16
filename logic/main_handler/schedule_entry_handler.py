@@ -4,6 +4,7 @@
 
 import sys
 
+from helpers import validation
 from logic.main_handler import schedule_day_handler
 from logic.sqlite import add_handler as a_h
 from config import exception_sheet as e
@@ -22,7 +23,7 @@ def _update_schedule_day(data: dict) -> None:
 
 def save_schedule_day(data: dict) -> tuple[int | str, bool]:
     try:
-        # TODO validation
+        validation.check_save_schedule_entry(data=data)
 
         if data['ID']:
             result = _update_schedule_day(data=data)

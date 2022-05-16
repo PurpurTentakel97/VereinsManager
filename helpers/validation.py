@@ -275,28 +275,48 @@ def check_save_location(data: dict) -> None:
 
 
 # schedule
-
 def check_save_schedule_day(data: dict) -> None:
     must_dict(dict_=data)
 
     must_str(str_=data['uniform'])
+    must_int(int_=data['date'])
+    must_positive_int(int_=data['location'], max_length=None)
+
     if data['comment'] is not None:
         must_str(str_=data['comment'], length=2000)
-
-    must_int(int_=data['date'])
 
     must_int(int_=data['hour'], max_length=2)
     if 0 > data['hour'] > 24:
         raise e.WrongLength(str(data['hour']))
 
     must_int(int_=data['minute'], max_length=2)
-
     if 0 > data['minute'] > 60:
         raise e.WrongLength(str(data['minute']))
 
     if data['ID'] is not None:
         must_positive_int(int_=data['ID'], max_length=None)
-    must_positive_int(int_=data['location'], max_length=None)
+
+
+def check_save_schedule_entry(data: dict) -> None:
+    must_dict(dict_=data)
+
+    must_str(str_=data['title'])
+    must_positive_int(int_=data['entry_type'], max_length=None)
+    must_positive_int(int_=data['location'])
+
+    if data['ID'] is not None:
+        must_positive_int(int_=data['ID'], max_length=None)
+
+    must_int(int_=data['hour'])
+    if 0 > data['hour'] > 24:
+        raise e.WrongLength(str(data['hour']))
+
+    must_int(int_=data['minute'])
+    if 0 > data['minute'] > 60:
+        raise e.WrongLength(str(data['minute']))
+
+    if data['comment'] is not None:
+        must_str(str_=data['comment'], length=2000)
 
 
 # helpers

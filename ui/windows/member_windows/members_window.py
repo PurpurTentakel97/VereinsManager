@@ -542,12 +542,13 @@ class MembersWindow(BaseWindow):
 
     def load_single_member(self) -> None:
         current_member: ListItem = self._members_list.list.currentItem()
+        data: dict | str
         data, valid = transition.get_member_data_by_id(id_=current_member.ID)
         if not valid:
             self.set_error_bar(message=data)
             return
 
-        member_data = data["member_data"]
+        member_data: dict = data["member_data"]
         self._first_name_le.setText("" if member_data["first_name"] is None else member_data["first_name"])
         self._last_name_le.setText("" if member_data["last_name"] is None else member_data["last_name"])
         self._street_le.setText("" if member_data["street"] is None else member_data["street"])

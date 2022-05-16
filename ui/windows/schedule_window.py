@@ -28,16 +28,21 @@ class ScheduleWindow(BaseWindow):
 
         self._is_edit_mode: bool = bool()
         self._locations_ids: list = list()
+        self._entry_type_ids: list = list()
 
         self._create_ui()
         self._create_layout()
         self._set_window_information()
         self._load_locations()
+        self._load_entry_types()
+
         self._load_single_day()
 
     # global
     def _create_ui(self) -> None:
         self._open_list_btn: QPushButton = QPushButton("Zeitplan öffnen")
+
+        # day
         self._day_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_days_dates,
                                               list_method=self._load_single_day, active=True)
         self._add_day_btn: QPushButton = QPushButton("Tag hinzufügen")
@@ -65,6 +70,7 @@ class ScheduleWindow(BaseWindow):
         self._day_comment_text: QTextEdit = QTextEdit()
         self._day_comment_text.textChanged.connect(self._set_day_comment_edit)
 
+        # entry
         self.entry_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_entry_names,
                                                list_method=self._entry_list_method, active=True)
         self._add_entry_btn: QPushButton = QPushButton("Eintrag hinzufügen")
@@ -73,11 +79,16 @@ class ScheduleWindow(BaseWindow):
         self._recover_entry_btn: QPushButton = QPushButton("Eintrag wieder herstellen")
 
         self._entry_title_le: QLineEdit = QLineEdit()
+        self._entry_title_le.textChanged.connect(self._set_entry_name)
         self._entry_time: QTimeEdit = QTimeEdit()
+        self._entry_time.timeChanged.connect(self._set_entry_edit_mode)
         self._entry_time.setCalendarPopup(True)
-        self._entry_type_box: QComboBox = QComboBox()  # TODO
+        self._entry_type_box: QComboBox = QComboBox()
+        self._entry_type_box.currentTextChanged.connect(self._set_entry_edit_mode)
         self._entry_location_box: QComboBox = QComboBox()
+        self._entry_location_box.currentTextChanged.connect(self._set_entry_edit_mode)
         self._entry_comment_text: QTextEdit = QTextEdit()
+        self._entry_comment_text.textChanged.connect(self._set_entry_edit_mode)
 
     def _create_layout(self) -> None:
         header_hbox: QHBoxLayout = QHBoxLayout()
@@ -185,6 +196,28 @@ class ScheduleWindow(BaseWindow):
 
         self._is_edit_mode = edit
 
+    def _load_locations(self) -> None:
+        locations, valid = transition.get_all_location_name()
+        if not valid:
+            self.set_error_bar(message=locations)
+            return
+
+        for ID, name, _ in locations:
+            self._locations_ids.append((ID, name))
+            self._meeting_location_box.addItem(name)
+            self._entry_location_box.addItem(name)
+
+    def _load_entry_types(self) -> None:
+        entry_types, valid = transition.get_single_type(raw_type_id=c.config.raw_type_id['schedule_entry'], active=True)
+
+        if not valid:
+            self.set_error_bar(message=entry_types)
+            return
+
+        for ID, name, *_ in entry_types:
+            self._entry_type_ids.append((ID, name))
+            self._entry_type_box.addItem(name)
+
     def _save(self) -> None:
         message, valid = self._save_day()
         if not valid:
@@ -261,17 +294,6 @@ class ScheduleWindow(BaseWindow):
     def _set_day_date_edit(self) -> None:
         self._set_day_name_in_day_list()
         self._set_day_edit_mode()
-
-    def _load_locations(self) -> None:
-        locations, valid = transition.get_all_location_name()
-        if not valid:
-            self.set_error_bar(message=locations)
-            return
-
-        for ID, name, _ in locations:
-            self._locations_ids.append([ID, name])
-            self._meeting_location_box.addItem(name)
-            self._entry_location_box.addItem(name)
 
     def _load_single_day(self):
         current_day: ListItem = self._day_list.list.currentItem()
@@ -377,6 +399,14 @@ class ScheduleWindow(BaseWindow):
         if edit:
             self._set_day_edit_mode()
 
+    def _set_entry_name(self) -> None:
+        current_entry: ListItem = self.entry_list.list.currentItem()
+
+        current_entry.first_name = self._entry_title_le.text().strip().title()
+        current_entry.set_name()
+
+        self._set_entry_edit_mode()
+
     def _set_entry_None(self) -> None:
         self._entry_title_le.setText("")
         self._entry_time.setTime(QTime(0, 0, 0))
@@ -390,10 +420,34 @@ class ScheduleWindow(BaseWindow):
         if current_entry is None:
             return "Kein Eintrag vorhanden", False
 
-        location = self._entry_location_box.currentText()
+        location: str = self._entry_location_box.currentText()
         for ID, name in self._locations_ids:
             if name == location:
-                location = ID
+                location: int = ID
                 break
 
-        # TODO
+        entry_type: str = self._entry_type_box.currentText()
+        for ID, name in self._entry_type_ids:
+            if name == entry_type:
+                entry_type: int = ID
+                break
+
+        output: dict = {
+            "ID": current_entry.ID,
+            "title": None if self._entry_title_le.text().strip() == "" else self._entry_title_le.text().strip().title(),
+            "hour": self._entry_time.time().hour(),
+            "minute": self._entry_time.time().minute(),
+            "entry_type": entry_type,
+            "location": location,
+            "comment": None if self._entry_comment_text.toPlainText().strip() == "" \
+                else self._entry_comment_text.toPlainText().strip(),
+        }
+
+        ID, valid = transition.save_schedule_entry(data=output)
+        if not valid:
+            return ID, False
+
+        if isinstance(ID, int):
+            current_entry.ID = ID
+
+        return "", True

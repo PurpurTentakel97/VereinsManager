@@ -117,6 +117,7 @@ class MainWindow(BaseWindow):
             self._edit_types_btn,
             self._export_pdf_btn,
             self._organization_data_btn,
+            self._location_btn,
         )
 
         for button in buttons:
