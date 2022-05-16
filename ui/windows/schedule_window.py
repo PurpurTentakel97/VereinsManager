@@ -72,7 +72,7 @@ class ScheduleWindow(BaseWindow):
 
         # entry
         self.entry_list: ListFrame = ListFrame(window=self, get_names_method=transition.get_all_schedule_entry_names,
-                                               list_method=self._entry_list_method, active=True)
+                                               list_method=self._load_single_entry, active=True)
         self._add_entry_btn: QPushButton = QPushButton("Eintrag hinzufügen")
         self._add_entry_btn.clicked.connect(self._add_entry)
         self._remove_entry_btn: QPushButton = QPushButton("Eintrag löschen")
@@ -414,8 +414,32 @@ class ScheduleWindow(BaseWindow):
         self._entry_time.setTime(QTime(0, 0, 0))
         self._entry_comment_text.setText("")
 
-    def _entry_list_method(self):
-        pass  # TODO
+    def _load_single_entry(self):
+        current_entry: ListItem = self.entry_list.list.currentItem()
+        if current_entry is None:
+            self._add_entry()
+            return
+
+        data, valid = transition.get_schedule_entry_by_ID(ID=current_entry.ID)
+        if not valid:
+            self.set_error_bar(message=data)
+            return
+
+        self._entry_title_le.setText("" if data['title'] is None else data['title'])
+        self._entry_time.setTime(QTime(data['hour'], data['minute']))
+        self._entry_comment_text.setText("" if data['comment'] is None else data['comment'])
+
+        for ID, name in self._locations_ids:
+            if ID == data['location']:
+                self._entry_location_box.setCurrentText(name)
+                break
+
+        for ID, name in self._entry_type_ids:
+            if ID == data['entry_type']:
+                self._entry_type_box.setCurrentText(name)
+                break
+
+        self._set_entry_edit_mode(edit=False)
 
     def _save_entry(self) -> tuple[str, bool]:
         current_entry: ListItem = self.entry_list.list.currentItem()

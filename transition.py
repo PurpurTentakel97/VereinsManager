@@ -290,15 +290,25 @@ def get_all_schedule_days_dates(active: bool = True) -> tuple[str | list, bool]:
         handle_error()
 
 
-def get_schedule_day_by_ID(ID: int, active: bool) -> tuple[str | dict, bool]:
+def get_schedule_day_by_ID(ID: int, active: bool = True) -> tuple[str | dict, bool]:
     try:
         return schedule_day_handler.get_schedule_day_by_ID(ID=ID, active=active)
     except:
         handle_error()
 
 
-def get_all_schedule_entry_names(active: bool = True):
-    return schedule_entry_handler.get_al_schedule_day_names(active=active)
+def get_all_schedule_entry_names(active: bool = True) -> tuple[str | list, bool]:
+    try:
+        return schedule_entry_handler.get_all_schedule_day_names(active=active)
+    except:
+        handle_error()
+
+
+def get_schedule_entry_by_ID(ID: int, active: bool = True) -> tuple[str | dict, bool]:
+    try:
+        return schedule_entry_handler.get_schedule_day_by_ID(ID=ID, active=active)
+    except:
+        handle_error()
 
 
 def save_schedule_day(data: dict) -> tuple[str | int, bool]:
@@ -309,15 +319,24 @@ def save_schedule_day(data: dict) -> tuple[str | int, bool]:
 
 
 def save_schedule_day_activity(ID: int, active: bool) -> tuple[None | str, bool]:
-    return schedule_day_handler.update_schedule_day_activity(ID=ID, active=active)
+    try:
+        return schedule_day_handler.update_schedule_day_activity(ID=ID, active=active)
+    except:
+        handle_error()
 
 
 def save_schedule_entry(data: dict) -> tuple[str | int, bool]:
-    return schedule_entry_handler.save_schedule_day(data=data)
+    try:
+        return schedule_entry_handler.save_schedule_day(data=data)
+    except:
+        handle_error()
 
 
 def delete_schedule_day(ID: int) -> tuple[None | str, bool]:
-    return schedule_day_handler.delete_schedule_day(ID=ID)
+    try:
+        return schedule_day_handler.delete_schedule_day(ID=ID)
+    except:
+        handle_error()
 
 
 # pdf_handler

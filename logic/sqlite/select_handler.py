@@ -298,7 +298,7 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword=f"get_schedule_day_by_ID", error_=sys.exc_info())
             raise e.LoadingFailed("Load single Schedule Day")
 
-    def get_all_schedule_entry_names(self, active: bool, day_id: int) -> tuple:
+    def get_all_schedule_entry_names(self, active: bool, day_id: int) -> list:
         table: str = "v_active_schedule_entry" if active else "v_inactive_schedule_entry"
         sql_command: str = f"""SELECT ID,title FROM {table} WHERE day = ?;"""
         try:
@@ -306,7 +306,18 @@ class SelectHandler(Database):
 
         except self.OperationalError:
             debug.error(item=debug_str, keyword=f"get_all_schedule_entry_names", error_=sys.exc_info())
-            raise e.AddFailed("Add Schedule Entry")
+            raise e.LoadingFailed("Add Schedule Entry")
+
+    def get_schedule_entry_by_ID(self, ID: int, active: bool) -> tuple:
+        table: str = "v_active_schedule_entry" if active else "v_inactive_schedule_entry"
+        sql_command: str = f"""SELECT * FROM {table} WHERE ID is ?;"""
+
+        try:
+            return self.cursor.execute(sql_command, (ID,)).fetchone()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword=f"get_schedule_entry_by_ID", error_=sys.exc_info())
+            raise e.LoadingFailed("Load Schedule Entry")
 
     # log
     def get_member_log_data(self) -> list:
