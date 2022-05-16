@@ -6,7 +6,7 @@ import sys
 
 from helpers import validation
 from logic.main_handler import schedule_day_handler
-from logic.sqlite import add_handler as a_h, select_handler as s_h
+from logic.sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h
 from config import exception_sheet as e
 import debug
 
@@ -51,7 +51,7 @@ def _add_schedule_day(data: dict) -> int:
 
 
 def _update_schedule_day(data: dict) -> None:
-    pass
+    u_h.update_handler.update_schedule_entry(data=data)
 
 
 def save_schedule_day(data: dict) -> tuple[int | str, bool]:
