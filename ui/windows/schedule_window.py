@@ -37,6 +37,7 @@ class ScheduleWindow(BaseWindow):
         self._load_entry_types()
 
         self._load_single_day()
+        self._load_single_entry()
 
     # global
     def _create_ui(self) -> None:

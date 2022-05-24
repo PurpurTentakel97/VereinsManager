@@ -319,6 +319,16 @@ class SelectHandler(Database):
             debug.error(item=debug_str, keyword=f"get_schedule_entry_by_ID", error_=sys.exc_info())
             raise e.LoadingFailed("Load Schedule Entry")
 
+    def get_schedule_entry_IDs_by_day_id(self, day_id: int) -> list:
+        sql_command: str = """SELECT ID FROM schedule_entry WHERE day IS ?;"""
+
+        try:
+            return self.cursor.execute(sql_command,(day_id,)).fetchall()
+
+        except self.OperationalError:
+            debug.error(item=debug_str, keyword="get_schedule_entry_IDs_by_day_id", error_=sys.exc_info())
+            raise e.LoadingFailed("Entry IDs from day ID")
+
     # log
     def get_member_log_data(self) -> list:
         sql_command: str = """SELECT ID,target_table,target_id, log_date, target_column, old_data, new_data FROM log WHERE target_table Like 'member%' ORDER BY log_date DESC;"""

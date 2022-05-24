@@ -11,7 +11,6 @@ types
     refacor get id from name (select handler -> type handler)
 
 schedule
-    delete all entry when delete day
     update entry list when delete last day
 
 None Date

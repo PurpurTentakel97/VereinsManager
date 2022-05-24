@@ -46,6 +46,23 @@ def get_schedule_entry_by_ID(ID: int, active: bool) -> tuple[str | dict, bool]:
         return error.message, False
 
 
+def get_schedule_entry_IDs_by_day_id(day_id: int) -> tuple[str | list, bool]:
+    try:
+        validation.must_positive_int(int_=day_id)
+
+        entries: list = s_h.select_handler.get_schedule_entry_IDs_by_day_id(day_id=day_id)
+
+        return entries, True
+
+    except e.OperationalError as error:
+        debug.error(item=debug_str, keyword="get_schedule_entries_by_day_id", error_=sys.exc_info())
+        return error.message, False
+
+    except e.InputError as error:
+        debug.info(item=debug_str, keyword="get_schedule_entries_by_day_id", error_=sys.exc_info())
+        return error.message, False
+
+
 def _add_schedule_entry(data: dict) -> int:
     return a_h.add_handler.add_schedule_entry(data=data, day_id=schedule_day_handler.last_ID)
 
@@ -93,10 +110,10 @@ def save_schedule_entry(data: dict) -> tuple[int | str, bool]:
 
 def delete_schedule_entry(ID: int) -> tuple[str | None, bool]:
     try:
-        validation.must_positive_int(int_=ID,max_length=None)
+        validation.must_positive_int(int_=ID, max_length=None)
 
         d_h.delete_handler.delete_schedule_entry(ID=ID)
-        return None,True
+        return None, True
 
     except e.OperationalError as error:
         debug.error(item=debug_str, keyword=f"delete_schedule_entry", error_=sys.exc_info())

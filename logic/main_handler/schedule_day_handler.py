@@ -7,6 +7,7 @@ import locale
 from datetime import datetime, timedelta
 
 from logic.sqlite import add_handler as a_h, select_handler as s_h, update_handler as u_h, delete_handler as d_h
+from logic.main_handler import schedule_entry_handler
 from helpers import validation, helper
 from config import exception_sheet as e, config_sheet as c
 import debug
@@ -110,6 +111,13 @@ def save_schedule_day(data: dict) -> tuple[str | int | None, bool]:
 def delete_schedule_day(ID: int) -> tuple[None | str, bool]:
     try:
         validation.must_positive_int(int_=ID, max_length=None)
+
+        entries, valid = schedule_entry_handler.get_schedule_entry_IDs_by_day_id(day_id=ID)
+        if not valid:
+            return entries, valid
+
+        for entry_id in entries:
+            d_h.delete_handler.delete_schedule_entry(ID=entry_id)
 
         d_h.delete_handler.delete_schedule_day(ID=ID)
 
