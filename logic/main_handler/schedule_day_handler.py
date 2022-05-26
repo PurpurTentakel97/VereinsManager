@@ -117,7 +117,7 @@ def delete_schedule_day(ID: int) -> tuple[None | str, bool]:
             return entries, valid
 
         for entry_id in entries:
-            d_h.delete_handler.delete_schedule_entry(ID=entry_id)
+            d_h.delete_handler.delete_schedule_entry(ID=entry_id[0])
 
         d_h.delete_handler.delete_schedule_day(ID=ID)
 
