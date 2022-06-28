@@ -37,7 +37,7 @@ def _get_error_values(error_) -> list:
 
 def _add_error_to_list(print_type, item, keyword, error_type, error_value, error_traceback) -> None:
     entry: dict = {
-        "date": datetime.strftime(datetime.now(), c.config.date_format['long']),
+        "date": datetime.strftime(datetime.now(), c.config.date_format.long),
         "type": print_type.title(),
         "item": item,
         "keyword": keyword,
@@ -54,6 +54,6 @@ def export_error() -> None:
     if _error:
         path_handler.create_default_path(type_="error_log")
         with open(
-                f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['error']}/error_log_{datetime.strftime(datetime.now(), c.config.date_format['long_save'])}.json",
+                f"{c.config.dirs.save}/{c.config.dirs.organisation}/{c.config.dirs.error}/error_log_{datetime.strftime(datetime.now(), c.config.date_format.long_save)}.json",
                 "w", encoding='UTF-8') as file:
             json.dump(_error, file, ensure_ascii=False, indent=4)

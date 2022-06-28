@@ -77,7 +77,7 @@ def check_update_member(data: dict) -> None:
     must_dict(dict_=data)
 
     if data['membership_type'] is not None:
-        must_specific_type(data['membership_type'], c.config.raw_type_id['membership'])
+        must_specific_type(data['membership_type'], c.config.raw_type_id.membership)
 
     if data["comment_text"] is not None:
         must_str(str_=data["comment_text"], length=2000)
@@ -182,12 +182,12 @@ def check_delete_user(ID: int, active: bool) -> None:
 
 
 def must_current_user(ID: int, same: bool) -> None:
-    if (ID == c.config.user['ID']) != same:
+    if (ID == c.config.user.ID) != same:
         raise e.CurrentUserException()
 
 
 def must_default_user(ID: int, same: bool) -> None:
-    if (ID == c.config.user['default_user_id']) != same:
+    if (ID == c.config.user.default_user_id) != same:
         raise e.DefaultUserException()
 
 
@@ -271,7 +271,7 @@ def check_save_location(data: dict) -> None:
         "maps_link",
     ], data=data)
 
-    must_specific_type(str_=data['country'], raw_type_id=c.config.raw_type_id['country'])
+    must_specific_type(str_=data['country'], raw_type_id=c.config.raw_type_id.country)
 
 
 # schedule

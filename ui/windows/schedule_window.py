@@ -211,7 +211,7 @@ class ScheduleWindow(BaseWindow):
             self._entry_location_box.addItem(name)
 
     def _load_entry_types(self) -> None:
-        entry_types, valid = transition.get_single_type(raw_type_id=c.config.raw_type_id['schedule_entry'], active=True)
+        entry_types, valid = transition.get_single_type(raw_type_id=c.config.raw_type_id.schedule_entry, active=True)
 
         if not valid:
             self.set_error_bar(message=entry_types)
@@ -273,7 +273,7 @@ class ScheduleWindow(BaseWindow):
         self._is_edit_mode = edit
 
     def _set_day_None(self) -> None:
-        self._date.setDate(QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date())
+        self._date.setDate(QDateTime().currentDateTime().date())
         self._meeting_time.setTime(QTime(0, 0, 0))
         self._uniform_le.setText("")
         self._day_comment_text.setText("")
@@ -284,10 +284,9 @@ class ScheduleWindow(BaseWindow):
         current_timestamp: int = QDateTime.toSecsSinceEpoch(QDateTime(self._date.date()))
 
         current_day.first_name = None
-        if current_timestamp != c.config.date_format['None_date']:
-            day: str = datetime.strftime(current_date, '%A')
-            first_name: str = f"{day}, {datetime.strftime(current_date, c.config.date_format['short'])}"
-            current_day.first_name = first_name
+        day: str = datetime.strftime(current_date, '%A')
+        first_name: str = f"{day}, {datetime.strftime(current_date, c.config.date_format.short)}"
+        current_day.first_name = first_name
 
         current_day.set_name()
 

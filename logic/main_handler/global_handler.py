@@ -17,7 +17,7 @@ def get_is_delete_bool(updated: int) -> bool:
 
     updated: datetime.datetime = helper.transform_timestamp_to_datetime(timestamp=updated)
     days: int = (now - updated).days
-    if days > (c.config.date_format['delete_years'] * 365):
+    if days > (c.config.date_format.delete_years * 365):
         return True
 
     return False

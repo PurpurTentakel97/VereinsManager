@@ -54,7 +54,7 @@ class MemberAnniversaryPDF(BasePDF):
                 elements.append(
                     Paragraph("Keine Geburtstage vorhanden" if key == "b_day" else "Keine Jubiläen vorhanden",
                               self.style_sheet["BodyText"]))
-                elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+                elements.append(Spacer(width=0, height=1 * cm))
                 continue
 
             table_data: list = [
@@ -66,7 +66,7 @@ class MemberAnniversaryPDF(BasePDF):
             table = Table(table_data, style=style_data, repeatRows=1,
                           colWidths=[self._get_first_column_with(data[key]) * cm] + [None] * 3)
             elements.append(table)
-            elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+            elements.append(Spacer(width=0, height=1 * cm))
         return elements
 
     @staticmethod
@@ -105,9 +105,9 @@ class MemberAnniversaryPDF(BasePDF):
         if year:
             elements.append(Paragraph(f"Stand: {year}", self.custom_styles["CustomBodyTextRight"]))
         else:
-            elements.append(Paragraph(f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+            elements.append(Paragraph(f"Stand: {datetime.strftime(datetime.now(), c.config.date_format.short)}",
                                       self.custom_styles["CustomBodyTextRight"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+        elements.append(Spacer(width=0, height=0.5 * cm))
 
         organisation_data, valid = organisation_handler.get_organisation_data()
         if not valid:
@@ -117,7 +117,7 @@ class MemberAnniversaryPDF(BasePDF):
             elements.append(Paragraph(organisation_data['name'], self.style_sheet['Title']))
 
         elements.append(Paragraph("Geburtstage / Jubiläen", self.style_sheet['Title']))
-        elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+        elements.append(Spacer(width=0, height=1 * cm))
         return elements, True
 
     @staticmethod

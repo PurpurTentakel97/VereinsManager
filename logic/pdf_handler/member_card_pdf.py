@@ -138,12 +138,12 @@ class MemberCardPDF(BasePDF):
             row_count = self._get_comment_break_count(comment=data[1])
             return [
                 Table(table_data, rowHeights=[row_height] + [row_height * row_count]),
-                Spacer(0, c.config.spacer['0.5'] * cm),
+                Spacer(0, 0.5 * cm),
             ]
 
         return [
             Table(table_data, rowHeights=[row_height] * len(data)),
-            Spacer(0, c.config.spacer['0.5'] * cm),
+            Spacer(0, 0.5 * cm),
         ]
 
     @staticmethod
@@ -160,7 +160,7 @@ class MemberCardPDF(BasePDF):
             table_data.append([self._paragraph(_1), self._paragraph(_2)])
         return [
             Table(table_data, colWidths=[column_width] + [None], rowHeights=[row_height] * len(data)),
-            Spacer(0, c.config.spacer['0.5'] * cm),
+            Spacer(0, 0.5 * cm),
         ]
 
     def _get_header(self, data: dict) -> tuple[list | str, bool]:
@@ -168,9 +168,9 @@ class MemberCardPDF(BasePDF):
 
         if self._is_icon():
             elements.append(self._get_icon(type_="table"))
-        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format.short)}",
                                   self.custom_styles["CustomBodyTextRight"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+        elements.append(Spacer(width=0, height=0.5 * cm))
 
         organisation_data, valid = organisation_handler.get_organisation_data()
         if not valid:
@@ -179,7 +179,7 @@ class MemberCardPDF(BasePDF):
         if organisation_data['name']:
             elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
         elements.append(Paragraph(data['member_data']['name'], self.style_sheet["Title"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+        elements.append(Spacer(width=0, height=0.5 * cm))
 
         return elements, True
 
@@ -203,7 +203,7 @@ class MemberCardPDF(BasePDF):
 
     def _mo_data_return(self, doc: SimpleDocTemplate, elements: list) -> tuple[str | None, bool]:
         elements.append(Paragraph(
-            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format.short)}",
             self.style_sheet["BodyText"]))
         elements.append(Paragraph(
             f"Keine Daten vorhanden", self.style_sheet["BodyText"]))

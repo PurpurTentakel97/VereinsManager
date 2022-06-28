@@ -166,7 +166,7 @@ class TypesWindow(BaseWindow):
 
     def _set_extra_le(self) -> None:
         current_raw_type_id: int = self._get_raw_id_from_name(self._types_box.currentText())
-        if current_raw_type_id == c.config.raw_type_id['membership']:
+        if current_raw_type_id == c.config.raw_type_id.membership:
             self._edit_extra_le.setEnabled(True)
             self._edit_extra_le.setPlaceholderText("Beitrag")
             self._edit_extra_le.setValidator(QIntValidator())

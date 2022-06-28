@@ -11,7 +11,7 @@ debug_str: str = "Hasher"
 
 
 def hash_password(password: str) -> bytes:
-    result: bytes = bcrypt.hashpw(bytes(password, "UTF-8"), bcrypt.gensalt(rounds=c.config.constant['hash_rounds']))
+    result: bytes = bcrypt.hashpw(bytes(password, "UTF-8"), bcrypt.gensalt(rounds=c.config.constant.hash_rounds))
     return result
 
 

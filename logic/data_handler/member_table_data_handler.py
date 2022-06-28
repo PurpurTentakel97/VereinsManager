@@ -18,7 +18,7 @@ debug_str: str = "Table Data Handler"
 def get_member_table_data(active: bool) -> tuple[str | dict, bool]:
     # validation
     try:
-        types: tuple = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id['membership'], active=True)
+        types: tuple = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id.membership, active=True)
         type_ids: list = [x[0] for x in types]
 
         final_data: dict = dict()
@@ -129,7 +129,7 @@ def _transform_date_to_str(date: datetime) -> str:
     if not date:
         return helper.None_str
 
-    return date.strftime(c.config.date_format["short"])
+    return date.strftime(c.config.date_format.short)
 
 
 def _transform_street_and_number(street: str, number: str) -> str:

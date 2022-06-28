@@ -210,7 +210,7 @@ class LocationWindow(BaseWindow):
         self._location_list.load_list_data()
 
     def _load_countries(self) -> None:
-        data, valid = transition.get_single_type(raw_type_id=c.config.raw_type_id['country'], active=True)
+        data, valid = transition.get_single_type(raw_type_id=c.config.raw_type_id.country, active=True)
         if not valid:
             self.set_error_bar(message=data)
             return

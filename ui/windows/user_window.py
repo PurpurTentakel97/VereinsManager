@@ -276,7 +276,7 @@ class UserWindow(BaseWindow):
             index: int = 0
             for item in self._user_list.list_items:
                 item: ListItem
-                if item.ID == c.config.user['ID']:
+                if item.ID == c.config.user.ID:
                     index = self._user_list.list.indexFromItem(item).row()  # QModelIndex
                     break
 

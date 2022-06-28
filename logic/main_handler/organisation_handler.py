@@ -39,7 +39,7 @@ def _add_organisation(data: dict) -> int:
 def add_update_organisation(data: dict, log_date: int = None) -> tuple[int | str, bool]:
     try:
         validation.check_add_update_organisation(data=data)
-        validation.must_default_user(c.config.user['ID'], False)
+        validation.must_default_user(c.config.user.ID, False)
 
         if data['ID'] is None:
             data['ID'] = _add_organisation(data=data)

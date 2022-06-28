@@ -6,7 +6,6 @@
     "long": "%d.%m.%Y // %H:%M:%S",
     "long_save": "%Y_%m_%d__%H_%M_%S",
     "long_length": 20,
-    "None_date": -2208992400,
     "delete_years": 10
   },
   "raw_type_id": {
@@ -72,19 +71,7 @@
       "schneider": "VIP"
     }
   },
-  "spacer": {
-    "0.1": 0.1,
-    "0.2": 0.2,
-    "0.3": 0.3,
-    "0.5": 0.5,
-    "1": 1,
-    "2": 2,
-    "3": 3,
-    "5": 5,
-    "7.5": 7.5,
-    "10": 10
-  },
-  "letters": {
+  "letter": {
     "title": {
       "entry": "Eintrittsbestätigung",
       "chance": "Änderung der Mitgliedsart",

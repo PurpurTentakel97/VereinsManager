@@ -116,7 +116,7 @@ def save_location(data: dict) -> tuple[str | int | None, bool]:
 
 
 def _transform_country_to_ID(country: str) -> int:
-    return s_h.select_handler.get_id_by_type_name(raw_id=c.config.raw_type_id['country'], name=country)[0]
+    return s_h.select_handler.get_id_by_type_name(raw_id=c.config.raw_type_id.country, name=country)[0]
 
 
 def _transform_ID_to_country(ID: int) -> str:

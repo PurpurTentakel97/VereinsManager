@@ -31,11 +31,11 @@ class AddHandler(Database):
             function_ = None
             value = None
 
-            if raw_type_id == c.config.raw_type_id["phone"]:
+            if raw_type_id == c.config.raw_type_id.phone:
                 function_ = self.add_member_nexus_phone
-            elif raw_type_id == c.config.raw_type_id["mail"]:
+            elif raw_type_id == c.config.raw_type_id.mail:
                 function_ = self.add_member_nexus_mail
-            elif raw_type_id == c.config.raw_type_id["position"]:
+            elif raw_type_id == c.config.raw_type_id.position:
                 function_ = self.add_member_nexus_position
                 value = False
 

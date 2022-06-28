@@ -160,7 +160,7 @@ def _get_reference_entries() -> tuple:
 def _transform_timestamp_to_date(timestamp: int) -> str | None:
     if timestamp:
         return datetime.datetime.strftime(helper.transform_timestamp_to_datetime(timestamp=timestamp),
-                                          c.config.date_format['short'])
+                                          c.config.date_format.short)
 
 
 def _transform_type_id_into_name(entry: int) -> str | None:

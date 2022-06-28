@@ -16,12 +16,11 @@ debug_str: str = "Member Handler"
 
 # add
 def _add_member(data: dict, log_date: int | None) -> int:  # No Validation
-    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id['membership'], key="membership_type")
-    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id['country'], key="country")
-    data = _transform_dates_for_save(data=data)
+    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id.membership, key="membership_type")
+    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id.country, key="country")
     result = a_h.add_handler.add_member(data=data, log_date=log_date)
 
-    st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
+    st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id.membership,
                                        new_type_id=data["membership_type"], old_type_id=None)
 
     return result
@@ -79,7 +78,6 @@ def _get_member_data_by_id(ID: int, active: bool = True) -> dict:
     data = _transform_to_dict(data)
     data = _transform_type_for_load(data=data, key="membership_type")
     data = _transform_type_for_load(data=data, key="country")
-    data = _transform_dates_for_load(data)
 
     return data
 
@@ -107,7 +105,7 @@ def get_all_member_IDs_and_updated(active: bool) -> tuple[tuple | str, bool]:
 def add_update_member_data(ID: int, data: dict, log_date: int | None) -> tuple[str | dict, bool]:
     try:
         validation.must_dict(dict_=data)
-        validation.must_default_user(c.config.user['ID'], False)
+        validation.must_default_user(c.config.user.ID, False)
         if ID is not None:
             validation.must_positive_int(int_=ID, max_length=None)
 
@@ -140,14 +138,14 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> tuple
     try:
         validation.must_positive_int(int_=ID, max_length=None)
         validation.must_bool(bool_=active)
-        validation.must_default_user(c.config.user['ID'], False)
+        validation.must_default_user(c.config.user.ID, False)
 
         reference_data = _get_member_activity_and_membership_by_id(ID=ID)
         u_h.update_handler.update_member_activity(ID=ID, active=active)
         member_nexus_handler.update_member_nexus_activity(member_id=ID, active=active)
         l_h.log_handler.log_member_activity(target_id=ID, old_activity=reference_data[0], new_activity=active,
                                             log_date=log_date)
-        st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
+        st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id.membership,
                                            new_type_id=reference_data[1], old_type_id=None)
         return None, True
 
@@ -161,13 +159,12 @@ def update_member_activity(ID: int, active: bool, log_date: int | None) -> tuple
 
 
 def _update_member(ID: int | None, data: dict, log_date: int | None) -> None:  # No Validation
-    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id['membership'], key="membership_type")
-    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id['country'], key="country")
-    data = _transform_dates_for_save(data=data)
+    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id.membership, key="membership_type")
+    data = _transform_type_for_safe(data=data, raw_id=c.config.raw_type_id.country, key="country")
 
     reference_data = _get_member_data_by_id(ID=ID, active=True)
     u_h.update_handler.update_member(ID=ID, data=data)
-    st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id["membership"],
+    st_h.statistics_handler.statistics(type_="membership", raw_type_id=c.config.raw_type_id.membership,
                                        new_type_id=data["membership_type"],
                                        old_type_id=s_h.select_handler.get_id_by_type_name(raw_id=1, name=reference_data[
                                            "membership_type"])[0])
@@ -231,22 +228,6 @@ def _transform_type_for_load(data: dict, key: str) -> dict:
         type_name, extra_value = s_h.select_handler.get_type_name_and_extra_value_by_ID(data[key])
         data[key] = type_name
         data[f"{key}_extra_value"] = extra_value
-    return data
-
-
-def _transform_dates_for_save(data: dict) -> dict:
-    if data["birth_date"] == c.config.date_format["None_date"]:
-        data["birth_date"] = None
-    if data["entry_date"] == c.config.date_format["None_date"]:
-        data["entry_date"] = None
-    return data
-
-
-def _transform_dates_for_load(data: dict) -> dict:
-    if data["birth_date"] is None:
-        data["birth_date"] = c.config.date_format["None_date"]
-    if data["entry_date"] is None:
-        data["entry_date"] = c.config.date_format["None_date"]
     return data
 
 

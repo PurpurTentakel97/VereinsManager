@@ -44,7 +44,7 @@ class LocationPDF(BasePDF):
         elements: list = list()
         if self._is_icon():
             elements.append(self._get_icon('table'))
-        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format.short)}",
                                   self.custom_styles["CustomBodyTextRight"]))
         elements.append(Spacer(width=0, height=1 * cm))
 

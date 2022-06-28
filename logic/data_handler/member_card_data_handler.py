@@ -25,8 +25,6 @@ def get_card_member_data(active: bool, ID: int) -> tuple[str | dict, bool]:
 
 
 def _get_years_from_timestamp(timestamp: int) -> str:
-    if timestamp == c.config.date_format['None_date']:
-        return helper.None_str
     date = helper.transform_timestamp_to_datetime(timestamp)
     years: int = helper.get_accurate_years_from_date_to_now(date=date)
     return str(years)
@@ -133,6 +131,4 @@ def _transform_single_position(entry: tuple) -> str:
 
 
 def _transform_date(timestamp: int) -> str:
-    if timestamp == c.config.date_format['None_date']:
-        return helper.None_str
-    return datetime.datetime.strftime(helper.transform_timestamp_to_datetime(timestamp), c.config.date_format['short'])
+    return datetime.datetime.strftime(helper.transform_timestamp_to_datetime(timestamp), c.config.date_format.short)

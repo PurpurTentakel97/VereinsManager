@@ -200,7 +200,7 @@ class MembersWindow(BaseWindow):
         self._membership_type_box: QComboBox = QComboBox()
         self._membership_type_box.currentTextChanged.connect(self._set_membership_type_and_country)
         self._special_member_cb: QCheckBox = QCheckBox()
-        self._special_member_cb.setText(c.config.user['easter_egg'] if c.config.user['easter_egg'] else "Ehrenmitglied")
+        self._special_member_cb.setText(c.config.user.easter_egg if c.config.user.easter_egg else "Ehrenmitglied")
         self._special_member_cb.toggled.connect(self._set_special_member)
         self._positions_lb: QLabel = QLabel()
         self._positions_lb.setText("Positionen:")
@@ -315,27 +315,27 @@ class MembersWindow(BaseWindow):
             return
 
         for ID, name, type_id, type_name in data:
-            if type_id == c.config.raw_type_id["membership"]:
+            if type_id == c.config.raw_type_id.membership:
                 self.raw_membership_ids.append((ID, name))
                 self._membership_type_box.addItem(name)
 
-            elif type_id == c.config.raw_type_id["mail"]:
+            elif type_id == c.config.raw_type_id.mail:
                 self.raw_mail_ids.append((ID, name))
                 self._mail_address_type_box.addItem(name)
                 self.mail_addresses.append([None, ID, name, None])
 
-            elif type_id == c.config.raw_type_id["phone"]:
+            elif type_id == c.config.raw_type_id.phone:
                 self.raw_phone_number_ids.append((ID, name))
                 self._phone_number_type_box.addItem(name)
                 self.phone_numbers.append([None, ID, name, None])
 
-            elif type_id == c.config.raw_type_id["position"]:
+            elif type_id == c.config.raw_type_id.position:
                 new_position: PositionListItem = PositionListItem(name=name, raw_id=ID)
                 self.raw_position_ids.append((ID, new_position))
                 self._positions_list.addItem(new_position)
                 self.positions.append([None, ID, new_position, None])
 
-            elif type_id == c.config.raw_type_id['country']:
+            elif type_id == c.config.raw_type_id.country:
                 self.raw_country_ids.append((ID, name))
                 self._country_box.addItem(name)
 
@@ -473,8 +473,8 @@ class MembersWindow(BaseWindow):
         self._comment_text.setText("")
         self._special_member_cb.setChecked(False)
 
-        self._b_day_date.setDate(QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date())
-        self._entry_date.setDate(QDateTime().fromSecsSinceEpoch(c.config.date_format["None_date"]).date())
+        self._b_day_date.setDate(QDateTime().currentDateTime().date())
+        self._entry_date.setDate(QDateTime().currentDateTime().date())
 
         for _, _, position, _ in self.positions:
             position.set_active(active=False)

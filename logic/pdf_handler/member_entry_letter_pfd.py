@@ -4,7 +4,6 @@
 
 import datetime
 import sys
-from typing import Tuple
 
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Frame, PageTemplate, Paragraph, FrameBreak, Spacer
@@ -77,7 +76,7 @@ class MemberEntryLetterPDF(BasePDF):
         if not valid:
             return self.contact_person_data, valid
 
-        self.current_user_data, valid = user_handler.get_data_of_user_by_ID(ID=c.config.user['ID'], active=True)
+        self.current_user_data, valid = user_handler.get_data_of_user_by_ID(ID=c.config.user.ID, active=True)
         if not valid:
             return self.current_user_data, valid
 
@@ -142,11 +141,11 @@ class MemberEntryLetterPDF(BasePDF):
     def _get_letter_key(self) -> str:
         match self.log_data['target_column']:
             case 'membership_type':
-                return c.config.letters['keys']['chance']
+                return c.config.letters.keys['chance']
             case 'active':
                 if self.log_data['new_data']:
-                    return c.config.letters['keys']['entry']
-                return c.config.letters['keys']['exit']
+                    return c.config.letters.keys['entry']
+                return c.config.letters.keys['exit']
 
     def _get_header_data(self) -> list:
         elements: list = [
@@ -181,10 +180,10 @@ class MemberEntryLetterPDF(BasePDF):
         info_text: str = self._get_info_text(letter_key=letter_key)
 
         elements: list = [
-            Paragraph(datetime.datetime.strftime(datetime.datetime.now(), c.config.date_format['short']),
+            Paragraph(datetime.datetime.strftime(datetime.datetime.now(), c.config.date_format.short),
                       style=self.style_sheet['BodyText']),
             Spacer(0, 1.5 * cm),
-            Paragraph(f"<b>{helper.try_transform_to_None_string(string=c.config.letters['title'][letter_key])}</b>",
+            Paragraph(f"<b>{helper.try_transform_to_None_string(string=c.config.letters.text[letter_key])}</b>",
                       style=self.style_sheet['BodyText']),
             Spacer(0, 0.5 * cm),
             Paragraph(helper.try_transform_to_None_string(string=main_text), style=self.style_sheet['BodyText']),
@@ -240,9 +239,9 @@ class MemberEntryLetterPDF(BasePDF):
         return elements
 
     def _get_main_text(self, letter_key: str) -> str:
-        date = datetime.datetime.strftime(self.log_data['log_date'], c.config.date_format['short'])
+        date = datetime.datetime.strftime(self.log_data['log_date'], c.config.date_format.short)
 
-        main_text: str = c.config.letters['text'][letter_key]
+        main_text: str = c.config.letters.text[letter_key]
         main_text = main_text.replace("<member_name>", helper.combine_strings(strings=(self.member_data['first_name'],
                                                                                        self.member_data['last_name'])))
         main_text = main_text.replace("<date>", date)
@@ -259,7 +258,7 @@ class MemberEntryLetterPDF(BasePDF):
         return main_text
 
     def _get_info_text(self, letter_key: str) -> str:
-        info_text: str = c.config.letters['info'][letter_key]
+        info_text: str = c.config.letters.info[letter_key]
         info_text = info_text.replace("<membership_type>",
                                       helper.try_transform_to_None_string(string=self.member_data['membership_type']))
         info_text = info_text.replace("<amount>", helper.try_transform_to_None_string(

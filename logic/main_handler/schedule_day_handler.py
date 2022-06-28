@@ -34,7 +34,7 @@ def get_schedule_day_dates(active: bool = True) -> tuple[str | list, bool]:
             if today > timestamp:
                 continue
             date = helper.transform_timestamp_to_datetime(timestamp=timestamp)
-            day = f"{datetime.strftime(date, '%A')}, {datetime.strftime(date, c.config.date_format['short'])}"
+            day = f"{datetime.strftime(date, '%A')}, {datetime.strftime(date, c.config.date_format.short)}"
             ret_data.append((ID, day, None))
         return ret_data, True
 

@@ -70,7 +70,7 @@ class BasePDF:
             debug.info(item=debug_str, keyword="get_icon", error_=sys.exc_info())
 
     def _get_icon_ratio(self, type_: str) -> tuple:
-        image_ = image.open(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}")
+        image_ = image.open(f"{c.config.dirs.save}/{c.config.dirs.organisation}/{c.config.files.icon}")
         width, height = image_.size
         return self._transform_width_height(type_=type_, width=width, height=height)
 
@@ -87,21 +87,21 @@ class BasePDF:
         if path:
             self.dir_name, file_name = os.path.split(path)
             file_name = file_name.replace(" ", "_")
-            self.file_name = f"{file_name}_{now.strftime(c.config.date_format['short_save'])}.pdf"
+            self.file_name = f"{file_name}_{now.strftime(c.config.date_format.short_save)}.pdf"
         else:
-            self.dir_name = f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.dirs['member']}/\
-                {c.config.dirs['export']}"
-            self.file_name = f"Mitglieder_{now.strftime(c.config.date_format['short_save'])}.pdf"
+            self.dir_name = f"{c.config.dirs.save}/{c.config.dirs.organisation}/{c.config.dirs.member}/\
+                {c.config.dirs.export}"
+            self.file_name = f"Mitglieder_{now.strftime(c.config.date_format.short_save)}.pdf"
 
     @staticmethod
     def _transform_width_height(type_: str, width: int, height: int) -> tuple:
         match type_:
             case "letter":
-                icon_height = c.config.constant['icon_height_letter']
-                icon_max_width = c.config.constant['icon_max_width_letter']
+                icon_height = c.config.constant.icon_height_letter
+                icon_max_width = c.config.constant.icon_max_width_letter
             case "table":
-                icon_height = c.config.constant['icon_height_table']
-                icon_max_width = c.config.constant['icon_max_width_table']
+                icon_height = c.config.constant.icon_height_table
+                icon_max_width = c.config.constant.icon_max_width_table
             case _:
                 raise e.CaseException(type_)
 
@@ -120,7 +120,7 @@ class BasePDF:
     def _is_icon() -> bool:
         if os.path.exists(c.config.get_icon_path()):
             try:
-                _ = image.open(f"{c.config.dirs['save']}/{c.config.dirs['organisation']}/{c.config.files['icon']}")
+                _ = image.open(f"{c.config.dirs.save}/{c.config.dirs.organisation}/{c.config.files.icon}")
                 return True
             except UnidentifiedImageError:
                 debug.info(item=debug_str, keyword="is_icon", error_=sys.exc_info())

@@ -16,7 +16,7 @@ debug_str: str = "Type Handler"
 def add_type(type_name: str, raw_type_id: int, extra_value: str) -> tuple[str | int, bool]:
     try:
         validation.check_add_type(type_name=type_name, raw_type_id=raw_type_id, extra_value=extra_value)
-        validation.must_default_user(c.config.user['ID'], False)
+        validation.must_default_user(c.config.user.ID, False)
 
         return a_h.add_handler.add_type(type_name=type_name.strip().title(), raw_type_id=raw_type_id,
                                         extra_value=extra_value), True
@@ -84,7 +84,7 @@ def get_type_name_by_ID(ID: int) -> tuple[str | tuple, bool]:
 def update_type(ID: int, name: str, extra_value: str) -> tuple[str | None, bool]:
     try:
         validation.check_update_type(ID=ID, new_name=name, new_extra_value=extra_value)
-        validation.must_default_user(c.config.user['ID'], False)
+        validation.must_default_user(c.config.user.ID, False)
 
         name = name.strip().title()
 
@@ -107,7 +107,7 @@ def update_type(ID: int, name: str, extra_value: str) -> tuple[str | None, bool]
 def update_type_activity(ID: int, active: bool = True) -> tuple[str | None, bool]:
     try:
         validation.check_update_type_activity(ID=ID, active=active)
-        validation.must_default_user(c.config.user['ID'], False)
+        validation.must_default_user(c.config.user.ID, False)
 
         reference_data = s_h.select_handler.get_type_active_by_id(ID=ID)
         u_h.update_handler.update_type_activity(ID=ID, active=active)
@@ -127,7 +127,7 @@ def update_type_activity(ID: int, active: bool = True) -> tuple[str | None, bool
 def delete_type(ID: int) -> tuple[str | None, bool]:
     try:
         validation.must_positive_int(ID, max_length=None)
-        validation.must_default_user(c.config.user['ID'], False)
+        validation.must_default_user(c.config.user.ID, False)
 
         d_h.delete_handler.delete_type(ID=ID)
         return None, True

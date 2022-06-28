@@ -53,9 +53,9 @@ class MemberLogPDF(BasePDF):
         elements: list = list()
         if self._is_icon():
             elements.append(self._get_icon('table'))
-        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format.short)}",
                                   self.custom_styles["CustomBodyTextRight"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+        elements.append(Spacer(width=0, height=0.5 * cm))
 
         organisation_data, valid = organisation_handler.get_organisation_data()
         if not valid:
@@ -63,7 +63,7 @@ class MemberLogPDF(BasePDF):
         if organisation_data['name']:
             elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
         elements.append(Paragraph(self._get_member_name(ID=ID, active=active), self.style_sheet["Title"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.3'] * cm))
+        elements.append(Spacer(width=0, height=0.3* cm))
         return elements, True
 
     @staticmethod
@@ -81,7 +81,7 @@ class MemberLogPDF(BasePDF):
         table: Table = Table(table_data, style=style_data, repeatRows=1)
         return [
             Paragraph("Log", self.custom_styles['CustomCenterHeading3']),
-            Spacer(width=0, height=c.config.spacer['0.1'] * cm),
+            Spacer(width=0, height=0.1 * cm),
             table,
         ]
 

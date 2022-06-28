@@ -73,7 +73,7 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
     for entry in current_b_day:
         entry["year"] = helper.get_years_from_date_to_now(entry["date"])
         if entry["year"] % 10 == 0 or entry["year"] == 18:
-            entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
+            entry["date"] = entry["date"].strftime(c.config.date_format.short)[:-4]
             final_b_day_data.append(entry)
 
     current_entry_day: list = list()
@@ -86,7 +86,7 @@ def _transform_current_data(b_day: list, entry_day: list) -> dict:
     for entry in current_entry_day:
         entry["year"] = helper.get_years_from_date_to_now(entry["date"])
         if entry["year"] % 5 == 0:
-            entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
+            entry["date"] = entry["date"].strftime(c.config.date_format.short)[:-4]
             final_entry_date_data.append(entry)
 
     final_b_day_data: list = sorted(final_b_day_data, key=lambda x: [x["date"][-3:-1], x["date"][:2]])
@@ -107,7 +107,7 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
         if (year - entry["date"].year) % 10 == 0 or year - entry["date"].year == 18:
             entry["year"] = year - entry["date"].year
             if entry["year"] >= 0:
-                entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
+                entry["date"] = entry["date"].strftime(c.config.date_format.short)[:-4]
                 final_b_day_data.append(entry)
 
     final_entry_day_data: list = list()
@@ -115,7 +115,7 @@ def _transform_other_data(b_day: list, entry_day: list, year: int) -> dict:
         if (year - entry["date"].year) % 5 == 0:
             entry["year"] = year - entry["date"].year
             if entry["year"] >= 0:
-                entry["date"] = entry["date"].strftime(c.config.date_format["short"])[:-4]
+                entry["date"] = entry["date"].strftime(c.config.date_format.short)[:-4]
                 final_entry_day_data.append(entry)
 
     final_b_day_data = sorted(final_b_day_data, key=lambda x: [x["year"], x["date"][-3:-1], x["date"][:2]])

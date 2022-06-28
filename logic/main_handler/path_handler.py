@@ -21,62 +21,62 @@ def _get_default_path(type_: str) -> str:
         case "member_list":
             path: str = os.path.join(
                 os.getcwd(),
-                c.config.dirs['save'],
-                c.config.dirs['organisation'],
-                c.config.dirs['export'],
-                c.config.dirs['member'],
-                c.config.dirs['member_list'],
+                c.config.dirs.save,
+                c.config.dirs.organisation,
+                c.config.dirs.export,
+                c.config.dirs.member,
+                c.config.dirs.member_list,
             )
         case "member_anniversary":
             path: str = os.path.join(
                 os.getcwd(),
-                c.config.dirs['save'],
-                c.config.dirs['organisation'],
-                c.config.dirs['export'],
-                c.config.dirs['member'],
-                c.config.dirs['member_anniversary'],
+                c.config.dirs.save,
+                c.config.dirs.organisation,
+                c.config.dirs.export,
+                c.config.dirs.member,
+                c.config.dirs.member_anniversary,
             )
         case "member_card":
             path: str = os.path.join(
                 os.getcwd(),
-                c.config.dirs['save'],
-                c.config.dirs['organisation'],
-                c.config.dirs['export'],
-                c.config.dirs['member'],
-                c.config.dirs['member_card'],
+                c.config.dirs.save,
+                c.config.dirs.organisation,
+                c.config.dirs.export,
+                c.config.dirs.member,
+                c.config.dirs.member_card,
             )
         case "member_letter":
             path: str = os.path.join(
                 os.getcwd(),
-                c.config.dirs['save'],
-                c.config.dirs['organisation'],
-                c.config.dirs['export'],
-                c.config.dirs['member'],
-                c.config.dirs['member_letter'],
+                c.config.dirs.save,
+                c.config.dirs.organisation,
+                c.config.dirs.export,
+                c.config.dirs.member,
+                c.config.dirs.member_letter,
             )
         case "member_log":
             path: str = os.path.join(
                 os.getcwd(),
-                c.config.dirs['save'],
-                c.config.dirs['organisation'],
-                c.config.dirs['export'],
-                c.config.dirs['member'],
-                c.config.dirs['member_log'],
+                c.config.dirs.save,
+                c.config.dirs.organisation,
+                c.config.dirs.export,
+                c.config.dirs.member,
+                c.config.dirs.member_log,
             )
         case "error_log":
             path: str = os.path.join(
                 os.getcwd(),
-                c.config.dirs['save'],
-                c.config.dirs['organisation'],
-                c.config.dirs['error'],
+                c.config.dirs.save,
+                c.config.dirs.organisation,
+                c.config.dirs.error,
             )
         case "location":
             path: str = os.path.join(
                 os.getcwd(),
-                c.config.dirs['save'],
-                c.config.dirs['organisation'],
-                c.config.dirs['export'],
-                c.config.dirs['location'],
+                c.config.dirs.save,
+                c.config.dirs.organisation,
+                c.config.dirs.export,
+                c.config.dirs.location,
             )
 
     return path

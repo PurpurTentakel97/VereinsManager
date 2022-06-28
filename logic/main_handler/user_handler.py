@@ -39,7 +39,7 @@ def get_names_of_user_without_default(active: bool = True) -> [str | tuple, bool
     index = None
     for entry in data:
         ID, *_ = entry
-        if ID == c.config.user['default_user_id']:
+        if ID == c.config.user.default_user_id:
             index = data.index(entry)
             break
 
@@ -108,7 +108,7 @@ def add_update_user(data: dict) -> [str | int | None, bool]:
             return a_h.add_handler.add_user(data=data), True
 
         u_h.update_handler.update_user(ID=data["ID"], data=data)
-        c.config.set_user(ID=c.config.user['ID'])
+        c.config.set_user(ID=c.config.user.ID)
 
         if data["password_1"]:
             data["password_hashed"] = hasher.hash_password(data["password_1"])

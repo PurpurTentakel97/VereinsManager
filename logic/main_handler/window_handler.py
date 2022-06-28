@@ -33,7 +33,7 @@ def create_main_window() -> None:
 
 def _is_default_user() -> bool:
     try:
-        validation.must_default_user(c.config.user['ID'], True)
+        validation.must_default_user(c.config.user.ID, True)
         return True
     except e.DefaultUserException:
         return False

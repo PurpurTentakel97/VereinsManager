@@ -56,12 +56,12 @@ class MemberTablePDF(BasePDF):
         for type_id, type_ in type_ids:
             all_members: list = data[type_id]
             elements.append(Paragraph(f"{type_}", self.style_sheet["Heading3"]))
-            elements.append(Spacer(width=0, height=c.config.spacer['0.1'] * cm))
+            elements.append(Spacer(width=0, height=0.1 * cm))
             if not all_members:
                 elements.append(Paragraph(
                     f"Keine Mitglieder vorhanden.",
                     self.style_sheet["BodyText"]))
-                elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+                elements.append(Spacer(width=0, height=1 * cm))
                 continue
 
             table_data: list = self._get_default_table_data()
@@ -74,9 +74,9 @@ class MemberTablePDF(BasePDF):
             table = Table(table_data, style=style_data, repeatRows=1,
                           colWidths=[first_column_width * cm] + [None])
             elements.append(table)
-            elements.append(Spacer(width=0, height=c.config.spacer['0.1'] * cm))
+            elements.append(Spacer(width=0, height=0.1 * cm))
             elements.append(Paragraph("(E) = Ehrenmitglied"))
-            elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+            elements.append(Spacer(width=0, height=1 * cm))
         return elements
 
     def _get_single_table_data(self, all_members: list) -> tuple:
@@ -122,9 +122,9 @@ class MemberTablePDF(BasePDF):
         elements: list = list()
         if self._is_icon():
             elements.append(self._get_icon(type_="table"))
-        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+        elements.append(Paragraph(f"Stand:{datetime.strftime(datetime.now(), c.config.date_format.short)}",
                                   self.custom_styles["CustomBodyTextRight"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['0.5'] * cm))
+        elements.append(Spacer(width=0, height=0.5 * cm))
 
         organisation_data, valid = organisation_handler.get_organisation_data()
         if not valid:
@@ -132,7 +132,7 @@ class MemberTablePDF(BasePDF):
         if organisation_data['name']:
             elements.append(Paragraph(organisation_data['name'], self.style_sheet["Title"]))
         elements.append(Paragraph("Mitglieder", self.style_sheet["Title"]))
-        elements.append(Spacer(width=0, height=c.config.spacer['1'] * cm))
+        elements.append(Spacer(width=0, height=1 * cm))
         return elements, True
 
     @staticmethod
@@ -150,7 +150,7 @@ class MemberTablePDF(BasePDF):
     @staticmethod
     def _get_type_ids() -> tuple[str | list, bool]:
         try:
-            type_ids = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id["membership"], active=True)
+            type_ids = s_h.select_handler.get_single_raw_type_types(c.config.raw_type_id.membership, active=True)
             return [[x[0], x[1]] for x in type_ids], True
         except e.OperationalError as error:
             debug.error(item=debug_str, keyword=f"_get_type_ids", error_=sys.exc_info())
@@ -174,7 +174,7 @@ class MemberTablePDF(BasePDF):
 
     def _no_data_return(self, doc: SimpleDocTemplate, elements: list) -> tuple[str | None, bool]:
         elements.append(Paragraph(
-            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format['short'])}",
+            f"Stand: {datetime.strftime(datetime.now(), c.config.date_format.short)}",
             self.style_sheet["BodyText"]))
         elements.append(Paragraph(
             f"Keine Mitglieder vorhanden", self.style_sheet["BodyText"]))
